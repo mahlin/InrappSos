@@ -1,0 +1,245 @@
+﻿@model InrappSos.AstridWeb.Models.ViewModels.SystemViewModels.OpeningHours
+
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+@*<link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />*@
+<link href="~/Scripts/bootstrap-multiselect/dist/css/bootstrap-multiselect.css" rel="stylesheet" type="text/css" />
+<script src="~/Scripts/bootstrap-multiselect/dist/js/bootstrap-multiselect.js" type="text/javascript"></script>
+
+
+<script type="text/javascript">
+    var days = @Html.Raw(Json.Encode(Model.ClosedDaysList));
+
+    $(document).ready(function () {
+        $('input.openFrom').forceNumeric();
+        $('input.openTo').forceNumeric();
+        $('[id*=ClDays]').multiselect({
+            onInitialized: function() {
+                $.each(days, function (index, item) {
+                    if (item.Selected) {
+                        $("#ClDays > option")[index].selected = true;
+                        $("#ClDays > option")[index].checked = true;
+                    }
+                });
+                this.refresh();
+            },
+            onChange: function (option, checked, select) {
+                $.each(days, function (index, item) {
+                    if ($('#ClosedDaysList_' + index + '__NameEnglish').val() === $(option).val()) {
+                        if ($('#ClosedDaysList_' + index + '__Selected').val() === 'False')
+                            $('#ClosedDaysList_' + index + '__Selected').val('True');
+                        else
+                            $('#ClosedDaysList_' + index + '__Selected').val('False');
+                    }
+                });
+            },
+            onSelectAll: function() {
+                $.each(days, function (index, item) {
+                    $('#ClosedDaysList_' + index + '__Selected').val('True');
+                });
+            },
+            onDeselectAll: function () {
+                $.each(days, function (index, item) {
+                    $('#ClosedDaysList_' + index + '__Selected').val('False');
+                });
+            },
+            includeSelectAllOption: true,
+            nonSelectedText: 'Inget valt',
+            allSelectedText: 'Alla valda',
+            selectAllText: "Välj alla",
+            nSelectedText: "valda"
+        });
+
+    });
+
+
+    // forceNumeric() plug-in implementation
+    jQuery.fn.forceNumeric = function () {
+        return this.each(function () {
+            $(this).keydown(function (e) {
+                var key = e.which || e.keyCode;
+
+                if (!e.shiftKey && !e.altKey && !e.ctrlKey &&
+                    // numbers   
+                    key >= 48 && key <= 57 ||
+                    // Numeric keypad
+                    key >= 96 && key <= 105 ||
+                    // comma and minus, . on keypad
+                    key == 190 || key == 188 || key == 109 || key == 110 ||
+                    // Backspace and Tab and Enter
+                    key == 8 || key == 9 || key == 13 ||
+                    // Home and End
+                    key == 35 || key == 36 ||
+                    // left and right arrows
+                    key == 37 || key == 39 ||
+                    // Del and Ins
+                    key == 46 || key == 45)
+                    return true;
+
+                return false;
+            });
+        });
+    };
+</script>
+
+<script type="text/javascript">
+
+    $(function () {
+        $('.edit-mode').hide();
+        $('.edit-user, .cancel-user').on('click', function () {
+            var tr = $(this).parents('tr:first');
+            tr.find('.edit-mode, .display-mode').toggle();
+        });
+        $('.save-user').on('click', function () {
+            var tr = $(this).parents('tr:first');
+            var infoId = tr.find("#InfoId").html();
+            var informationsTyp = tr.find("#InfoTyp").val();
+            var infoText = tr.find("#InfoText").val();
+
+            //Creating AdmInformation JSON object
+            var infoText =
+                {
+                    "Id": infoId,
+                    "Informationstyp": informationsTyp,
+                    "Text": infoText
+                };
+            //Posting AdmInformation object to controller's Update action method
+            $.ajax({
+                url: '/System/UpdateInformationText',
+                data: JSON.stringify(infoText),
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    //location.reload();
+                    $("#pageContainer").html(data);
+                    tr.find('.edit-mode, .display-mode').toggle();
+                    $('#footer').hide();
+                    //alert('Record updated Successfully!!');
+                }
+            });
+
+        });
+
+        $('.edit-user').on('click', function () {
+            var tr = $(this).parents('tr:first');
+            var infoId = tr.find("#InfoId").html();
+            var informationsTyp = tr.find("#InfoTyp").val();
+            var infoText = tr.find("#InfoText").val();
+
+            tr.find("#lblInfoTyp").text(informationsTyp);
+            tr.find("#lblInfoText").text(infoText);
+        });
+    })
+</script>
+
+
+@{
+    ViewBag.Title = "Index";
+}
+
+
+<div id="pageContainer">
+    <div class="row">
+        <div class="col-md-8 padding-top-55">
+            <h4>Administrera öppettider</h4>
+        </div>
+    </div>
+
+    @if (Model != null)
+    {
+        <hr />
+
+        using (Html.BeginForm("SaveOpeningHoursInfo", "System", FormMethod.Post))
+        {
+
+            if (Model.ClosedDaysList != null)
+            {
+                for (int i = 0; i < Model.ClosedDaysList.Count; i++)
+                {
+                    @Html.HiddenFor(x => x.ClosedDaysList[i].NameEnglish)
+                    @Html.HiddenFor(x => x.ClosedDaysList[i].NameSwedish)
+                    @Html.HiddenFor(x => x.ClosedDaysList[i].Selected)
+                }
+            }
+
+            @Html.AntiForgeryToken()
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-12 padding-top-55">
+                        @Html.LabelFor(m => m.ClosedAnyway, new { @class = "control-label-medium" })
+                        @Html.CheckBoxFor(m => m.ClosedAnyway)
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-12">
+                        @Html.Label("Dagar då portalen är stängd: ", new { @class = "control-label-medium" })
+                        <select id="ClDays" multiple="multiple">
+                            @for (var i = 0; i < Model.ClosedDaysList.Count; i++)
+                            {
+                                <option value=@Model.ClosedDaysList[i].NameEnglish>@Model.ClosedDaysList[i].NameSwedish</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-8">
+                        @Html.Label("Öppet från", new { @class = "control-label-medium" })
+                        @*@Html.EditorFor(model => model.OpeningTime, new { @class = "form-control", style = "border-radius:40px" })*@
+                        @Html.TextBoxFor(m => m.OpeningTimeStr, new { @class = "form-control openFrom", style = "display:inline;width:80px;" })
+                        @Html.ValidationMessageFor(m => m.OpeningTimeStr, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-8">
+                        @Html.Label("Öppet till", new { @class = "control-label-medium" })
+                        @*@Html.EditorFor(model => model.OpeningTime, new { @class = "form-control", style = "border-radius:40px" })*@
+                        @Html.TextBoxFor(m => m.ClosingTimeStr, new { @class = "form-control openTo", style = "display:inline;width:80px;" })
+                        @Html.ValidationMessageFor(m => m.ClosingTimeStr, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+
+            @*<div class="form-group">
+                <div class="row">
+                    <div class="col-md-8">
+                        @Html.Label("Öppet till", new { @class = "control-label" })
+                        @Html.EditorFor(model => model.ClosingTime, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.ClosingTime, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                </div>*@
+            <br /><br />
+
+            @*@Html.EditorFor(model => model.Hour, new { @class = "form-control" })*@
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-8">
+                        @Html.Label("Informationstext då portalen är stängd: ", new { @class = "control-label-wide" })
+                        @Html.TextAreaFor(m => m.InfoTextForClosedPage, 5, 40, new { @class = "form-control required", style = "max-width:75% !important;" })
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10" style="margin-left: 475px;">
+                    <input type="submit" value="Spara" class="btn btn-default" />
+                </div>
+            </div>
+        }
+    }
+</div>
+<br /><br />
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

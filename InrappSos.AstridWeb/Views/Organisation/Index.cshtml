@@ -1,0 +1,432 @@
+﻿@using InrappSos.AstridWeb.Models.ViewModels
+@model InrappSos.AstridWeb.Models.ViewModels.OrganisationViewModels.OrganisationViewModel
+@{
+    ViewBag.Title = "Organisation";
+}
+
+<script src="@Url.Content("~/Scripts/custom.js")" type="text/javascript"></script>
+
+<script type="text/javascript">
+    $(function () {
+        $("#ddlOrganisation").focus();
+    });
+
+    $(document).ready(function () {
+        hideEditableForm();
+    });
+
+    function showEditableForm() {
+        $('#readOnlyOrg').hide();
+        $('#editOrg').show();
+    };
+
+    function hideEditableForm() {
+        $('#editOrg').hide();
+        $('#readOnlyOrg').show();
+    };
+
+
+    $('#cancelLink').click(function () {
+        $('#editOrg').hide();
+        $('#readOnlyOrg').show();
+        return false;
+    });
+
+    $('#editLink').click(function () {
+        $('#readOnlyOrg').hide();
+        $('#editOrg').show();
+        return false;
+    });
+
+    $(document).on('change', '#ddlOrganisation',
+        function () {
+            var selectedOrg = $('#ddlOrganisation').val();
+            $("#SelectedOrganisationId").val(selectedOrg);
+        });
+
+
+</script>
+
+<br /><br />
+<div class="row">
+    <div class="col-md-8 padding-top-25">
+        <section id="orgForm">
+            @using (Html.BeginForm("GetOrganisation", "Organisation", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+            {
+                @Html.HiddenFor(m => m.SelectedOrganisationId)
+                @Html.AntiForgeryToken()
+                <h4>Administrera organisation</h4>
+                <hr />
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div class="form-group">
+                    @Html.Label("Organisation", new { @class = "col-md-2 control-label" })
+                    <div class="col-md-10">
+                        @Html.DropDownListFor(m => m.SelectedOrganisationId, ViewBag.OrganisationList as SelectList, " - Välj kommunkod -", new { @class = "form-control", id = "ddlOrganisation" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" id="searchBtn" value="Sök organisation" class="btn btn-default" />
+                    </div>
+                </div>
+                <hr />
+            }
+        </section>
+    </div>
+</div>
+
+@if (Model != null)
+{
+    @Html.HiddenFor(m => m.Kommunkod);
+    @Html.HiddenFor(m => m.SelectedOrganisationId)
+    <div id="readOnlyOrg">
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Organisation.Landstingskod)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Organisation.Landstingskod)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Organisation.Kommunkod)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Organisation.Kommunkod)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Organisation.Inrapporteringskod)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Organisation.Inrapporteringskod)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Organisation.Organisationstyp)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Organisation.Organisationstyp)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Organisation.Organisationsnr)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Organisation.Organisationsnr)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Organisation.Organisationsnamn)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Organisation.Organisationsnamn)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Organisation.Hemsida)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Organisation.Hemsida)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Organisation.EpostAdress)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Organisation.EpostAdress)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Organisation.Telefonnr)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Organisation.Telefonnr)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Organisation.Adress)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Organisation.Adress)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Organisation.Postnr)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Organisation.Postnr)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Organisation.Postort)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Organisation.Postort)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Organisation.Epostdoman)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Organisation.Epostdoman)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Organisation.AktivFrom)
+            </dt>
+
+            <dd>
+                @*@Html.DisplayFor(model => model.Organisation.AktivFrom == null ? "": model.Organisation.AktivFrom.ToString('yyyy-MM-dd'))*@
+
+                @Html.DisplayFor(model => model.Organisation.AktivFrom)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Organisation.AktivTom)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Organisation.AktivTom)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Organisation.SkapadDatum)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Organisation.SkapadDatum)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Organisation.SkapadAv)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Organisation.SkapadAv)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Organisation.AndradDatum)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Organisation.AndradDatum)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Organisation.AndradAv)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Organisation.AndradAv)
+            </dd>
+
+        </dl>
+        <input type="button" class="btn btn-primary" value="Ändra organisation" id="editLink" onclick="showEditableForm(); return false;" />
+    </div>
+
+    <div id="editOrg" class="form-horizontal">
+        @using (Html.BeginForm("UpdateOrganisation", "Organisation", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.Organisation.Id)
+        @Html.HiddenFor(m => m.SelectedOrganisationId)
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Organisation.Landstingskod, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Organisation.Landstingskod, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Organisation.Landstingskod, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Organisation.Kommunkod, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Organisation.Kommunkod, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Organisation.Kommunkod, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Organisation.Inrapporteringskod, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Organisation.Inrapporteringskod, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Organisation.Inrapporteringskod, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Organisation.Organisationstyp, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Organisation.Organisationstyp, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Organisation.Organisationstyp, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Organisation.Organisationsnr, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Organisation.Organisationsnr, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Organisation.Organisationsnr, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Organisation.Organisationsnamn, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Organisation.Organisationsnamn, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Organisation.Organisationsnamn, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Organisation.Hemsida, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Organisation.Hemsida, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Organisation.Hemsida, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Organisation.EpostAdress, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Organisation.EpostAdress, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Organisation.EpostAdress, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Organisation.Telefonnr, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Organisation.Telefonnr, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Organisation.Telefonnr, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Organisation.Adress, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Organisation.Adress, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Organisation.Adress, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Organisation.Postnr, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Organisation.Postnr, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Organisation.Postnr, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Organisation.Postort, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Organisation.Postort, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Organisation.Postort, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Organisation.Epostdoman, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Organisation.Epostdoman, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Organisation.Epostdoman, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Organisation.AktivFrom, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Organisation.AktivFrom, "{0:yyyy-MM-dd}", new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Organisation.AktivFrom, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Organisation.AktivTom, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Organisation.AktivTom, "{0:yyyy-MM-dd}", new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Organisation.AktivTom, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="btn-toolbar">
+                <div class="col-md-offset-2">
+                    <input type="submit" value="Spara" class="btn btn-default" style="margin-right: 15px; margin-left: 20px;" />
+                    <input type="button" class="btn btn-default" value="Avbryt" id="cancelEditLink" onclick="hideEditableForm();return false;">
+                </div>
+            </div>
+        </div>
+}
+
+    </div>
+    <br /><br />
+
+
+    @Html.Partial("_Contactpersons")
+    <p>
+        @Html.ActionLink(HttpUtility.HtmlDecode("Administrera kontaktpersoner &raquo;"), "GetOrganisationsContacts", "Organisation", new { selectedOrgId = Model.SelectedOrganisationId }, new { @class = "btn btn-primary" })
+    </p>
+
+
+    <br /><br />
+
+    @Html.Partial("_OrgUnits")
+    <p>
+        @Html.ActionLink(HttpUtility.HtmlDecode("Administrera organisationsenheter &raquo;"), "GetOrganisationsOrgUnits", "Organisation", new { selectedOrgId = Model.SelectedOrganisationId }, new { @class = "btn btn-primary" })
+    </p>
+
+    <br /><br />
+
+    @Html.Partial("_ReportObligations")
+    <p>
+        @Html.ActionLink(HttpUtility.HtmlDecode("Administrera uppgiftsskyldighet &raquo;"), "GetOrganisationsReportObligations", "Organisation", new { selectedOrgId = Model.SelectedOrganisationId }, new { @class = "btn btn-primary" })
+    </p>
+
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+}
+
+
+@*<div class="row">
+        <div class="col-md-4">
+            <h2>jada jada</h2>
+            <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            </p>
+            <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
+        </div>
+        <div class="col-md-4">
+            <h2>bla bla</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum..</p>
+            <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
+        </div>
+        <div class="col-md-4">
+            <h2>Överkurs</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum..</p>
+            <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
+        </div>
+    </div>*@

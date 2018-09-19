@@ -1,0 +1,87 @@
+﻿@model InrappSos.AstridWeb.Models.ViewModels.OrganisationViewModels.UnitReportObligationsViewModel
+
+@{
+    ViewBag.Title = "Skapa ny enhetsuppgiftsskyldighet för " + Html.Raw(Model.Organisationsnamn);
+}
+
+<script>
+
+    $(document).ready(function () {
+        var y = $("#SelectedOrganisationsenhetsId").val(); 
+        
+        if ($("#SelectedOrganisationsenhetsId").val() !== "0") {
+            $('#ddlOrgenhet').val($("#SelectedOrganisationsenhetsId").val());
+        }
+    });
+
+    $(document).on('change', '#ddlOrgenhet', function () {
+        $("#SelectedOrganisationsenhetsId").val(parseInt($('#ddlOrgenhet').val()));
+    });
+
+        $(document).on('change', '#ddlDelregister', function () {
+            $("#SelectedDelregisterId").val(parseInt($('#ddlDelregister').val()));
+        });
+
+</script>
+
+
+@using (Html.BeginForm("CreateUnitReportObligation", "Organisation", FormMethod.Post, null))
+    {
+    
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.SelectedOrganisationsenhetsId)
+        @Html.HiddenFor(m => m.SelectedOrganisationId)
+
+    <div class="form-horizontal padding-top-55">
+        <h4>@ViewBag.Title</h4>
+        <hr />
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        
+        <div class="form-group">
+            @Html.Label("Organisationsenhet", new { @class = "control-label col-md-2" })
+            <div class="col-md-10" style="width: 225px !important;">
+                @Html.DropDownListFor(m => m.SelectedOrganisationsenhetsId, ViewBag.OrgenhetList as SelectList, " - Välj organisationsenhet -", new { id = "ddlOrgenhet", @class = "form-control", style = "width:275px !important" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Delregister", new { @class = "control-label col-md-2" })
+            <div class="col-md-10" style="width: 225px !important;">
+                @Html.DropDownListFor(m => m.SelectedDelregisterId, ViewBag.DelregisterList as SelectList, " - Välj delregister -", new { id = "ddlDelregister", @class = "form-control", style = "width:275px !important" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.SkyldigFrom, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.SkyldigFrom, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.SkyldigFrom, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.SkyldigTom, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.SkyldigTom, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.SkyldigTom, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Spara" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+    <div>
+        @Html.ActionLink("Tillbaka", "GetOrganisationsUnitReportObligations", "Organisation", new { selectedOrgId = Model.SelectedOrganisationId, selectedOrgenhetsId = Model.SelectedOrganisationsenhetsId }, null)
+
+    </div>
+}
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

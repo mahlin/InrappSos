@@ -1,0 +1,120 @@
+﻿@using Microsoft.Ajax.Utilities
+
+<script>
+    (function($){
+        $(document).ready(function(){
+            $('ul.dropdown-menu [data-toggle=dropdown]').on('click', function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+                $(this).parent().siblings().removeClass('open');
+                $(this).parent().toggleClass('open');
+            });
+        });
+    })(jQuery);
+</script>
+
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" rel="home" href='@Url.Action("Index", "Home")' title="Socialstyrelsen">
+                <img src="~/Content/Images/LoggaNew200px.PNG">
+            </a>
+            @Html.ActionLink("Astrid", "Index", "Home", new { area = "" }, new { @class = "navbar-brand", style = "margin-top: 17px; font-size:2em;padding-left:30px;" })
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav" style="margin-top: 20px">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">System <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li>@Html.ActionLink("FAQ", "GetFAQCategories", "System")</li>
+                        <li>@Html.ActionLink("Informationssidor", "GetInformationTexts", "System")</li>
+                        <li class="dropdown dropdown-submenu">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Öppettider</a>
+                            <ul class="dropdown-menu">
+                                <li>@Html.ActionLink("Ordinarie öppettider", "GetOpeningHours", "System")</li>
+                                <li>@Html.ActionLink("Helgdagar", "GetHolidays", "System")</li>
+                                <li>@Html.ActionLink("Specialdagar", "GetSpecialDays", "System")</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Register och delregister <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li>@Html.ActionLink("Register", "Index", "Register")</li>
+                        <li>@Html.ActionLink("Delregister", "GetAllSubDirectories", "Register")</li>
+                    </ul>
+                </li>
+
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Organisation <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li>@Html.ActionLink("Organisation", "Index", "Organisation")</li>
+                        <li>@Html.ActionLink("Skapa ny organisation", "CreateOrganisation", "Organisation")</li>
+                        <li>@Html.ActionLink("Kontaktpersoner", "GetContacts", "Organisation")</li>
+                        <li>@Html.ActionLink("Organisationsenheter", "GetOrgUnits", "Organisation")</li>
+                        <li>@Html.ActionLink("Uppgiftsskyldighet", "GetReportObligations", "Organisation")</li>
+                        <li>@Html.ActionLink("Enhetsuppgiftsskyldighet", "GetUnitReportObligations", "Organisation")</li>
+                        @*<li><a href="#">Something else here</a></li>
+        <li role="separator" class="divider"></li>
+        <li><a href="#">Separated link</a></li>
+        <li role="separator" class="divider"></li>
+        <li><a href="#">One more separated link</a></li>*@
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Leverans <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li>@Html.ActionLink("Insamlingsfrekvenser", "GetInsamlingsfrekvens", "Leverans")</li>
+                        <li>@Html.ActionLink("Filkrav", "GetFilkrav", "Leverans")</li>
+                        <li>@Html.ActionLink("Förväntad leverans", "Index", "Leverans")</li>
+                        <li>@Html.ActionLink("Förväntad fil", "GetForvantadeFiler", "Leverans")</li>
+                        <li class="dropdown dropdown-submenu">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Leveranser</a>
+                            <ul class="dropdown-menu">
+                                <li>@Html.ActionLink("Leveranshistorik", "GetDeliveries", "Leverans")</li>
+                                <li>@Html.ActionLink("Leveransstatus per organisation", "GetDeliveryStatus", "Leverans")</li>
+                            </ul>
+                        </li>
+                        <li>@Html.ActionLink("Påminnelser", "GetReminderinfo", "Leverans")</li>
+                    </ul>
+                </li>
+            @if (Request.IsAuthenticated)
+            {
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li>@Html.ActionLink("Användare", "GetAstridUsers", "Admin")</li>
+                        <li>@Html.ActionLink("Reg anv", "Register", "Account", routeValues: null, htmlAttributes: new {id = "registerLink"})</li>
+                    </ul>
+                </li>
+            }
+
+            </ul>
+            @if (Request.IsAuthenticated)
+            {
+                using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new {id = "logoutForm", @class = "navbar-right"}))
+                {
+                    @Html.AntiForgeryToken()
+                    <ul class="nav navbar-nav navbar-right" style="margin-top: 20px">
+                        @*<li>@Html.ActionLink("Reg anv", "Register", "Account", routeValues: null, htmlAttributes: new {id = "registerLink"})</li>*@
+                        <li>@Html.ActionLink("Min sida", "Index", "Manage", routeValues: null, htmlAttributes: new {title = "Manage"})</li>
+                        <li><a href="javascript:document.getElementById('logoutForm').submit()">Logga ut</a></li>
+                    </ul>
+                }
+            }
+            else
+            {
+                <ul class="nav navbar-nav navbar-right" style="margin-top: 20px">
+                    <li>@Html.ActionLink("Logga in", "Login", "Account", routeValues: null, htmlAttributes: new {id = "loginLink"})</li>
+                </ul>
+            }
+        </div>
+    </div>
+</div>

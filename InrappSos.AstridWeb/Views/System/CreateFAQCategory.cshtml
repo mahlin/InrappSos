@@ -1,0 +1,53 @@
+﻿@model InrappSos.AstridWeb.Models.ViewModels.SystemViewModels.FAQCategoryViewModel
+
+@{
+    ViewBag.Title = "Skapa ny FAQ-kategori";
+}
+<script>
+    $(function () {
+        $("#txtKategori").focus();
+    });
+</script>
+
+
+    @using (Html.BeginForm("CreateFAQCategory", "System", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal padding-top-55">
+            <h4>Skapa ny FAQ-kategori</h4>
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Kategori, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Kategori, new { htmlAttributes = new { @class = "form-control", id = "txtKategori" } })
+                    @Html.ValidationMessageFor(model => model.Kategori, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            
+            <div  class="form-group">
+                @Html.Label("Sorteringsordning", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10" style="margin-bottom: 15px !important">
+                    @Html.EditorFor(model => model.Sortering, new { htmlAttributes = new { @class = "form-control",style = "max-width:150px !important" } })
+                    @Html.ValidationMessageFor(model => model.Sortering, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Spara" class="btn btn-default" />
+                </div>
+            </div>
+        </div>
+    }
+
+    <div>
+        @Html.ActionLink("Tillbaka", "GetFAQCategories", "System", new { orgId = 29 }, null)
+
+    </div>
+
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }

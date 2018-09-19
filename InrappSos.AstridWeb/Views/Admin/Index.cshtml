@@ -1,0 +1,171 @@
+﻿@using System.Configuration
+@using InrappSos.AstridWeb.Models.ViewModels
+@model InrappSos.AstridWeb.Models.ViewModels.AdminViewModels.AdminViewModel
+@{
+    ViewBag.Title = "Admin";
+}
+
+@*<link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />*@
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        var modalConfirm = function test(callback) {
+
+            $("#modal-btn-si").on("click", function () {
+                callback(true);
+                $("#mi-modal").modal('hide');
+            });
+
+            $("#modal-btn-no").on("click", function () {
+                callback(false);
+                $("#mi-modal").modal('hide');
+            });
+        };
+
+        modalConfirm(function (confirm) {
+            if (confirm) {
+                var data = { 'userId': $('#SelectedUser').val() };
+                $.ajax({
+                    url: '/Admin/DeleteAdminUser',
+                    type: 'POST',
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify(data),
+                    success: function (data) {
+                        //On ajax success do this
+                        $("#pageContainer").html(data);
+                        tr.find('.edit-mode, .display-mode').toggle();
+                        $('#footer').hide();
+                    }
+                });
+            } else {
+                //Do nothing
+                //$("#result").html("NO CONFIRMADO");
+            }
+        });
+    });
+
+
+    function deleteAdminUser(id) {
+        $('#SelectedUser').val(id);
+        $("#mi-modal").modal("show");
+        $('#modal-body').html("Vill du verkligen ta bort ta bort användaren?");
+    }
+
+    $(function () {
+        $('.edit-mode').hide();
+        $('.edit-user, .cancel-user').on('click',
+            function () {
+                var tr = $(this).parents('tr:first');
+                tr.find('.edit-mode, .display-mode').toggle();
+            });
+        $('.save-user').on('click',
+            function () {
+                var tr = $(this).parents('tr:first');
+                var userId = tr.find("#Id").html();
+                var phonenumber = tr.find("#PhoneNumber").val();
+                var email = tr.find("#Email").val();
+
+                //Creating AppUserAdmin JSON object
+                var user =
+                    {
+                        "Id": userId,
+                        "Phonenumber": phonenumber,
+                        "Email": email
+                    };
+                //Posting AppUserAdmin object to controller's Update action method
+                $.ajax({
+                    url: '/Admin/UpdateAdminUser',
+                    data: JSON.stringify(user),
+                    type: 'POST',
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (data) {
+                        //location.reload();
+                        $("#pageContainer").html(data);
+                        tr.find('.edit-mode, .display-mode').toggle();
+                        $('#footer').hide();
+                        //alert('Record updated Successfully!!');
+                    }
+                });
+
+            });
+
+        $('.edit-user').on('click',
+            function () {
+                var tr = $(this).parents('tr:first');
+                var userId = tr.find("#Id").html();
+                var phonenumber = tr.find("#PhoneNumber").val();
+                var email = tr.find("#Email").val();
+
+                //tr.find("#lblName").text(regName);
+                //tr.find("#lblDescription").text(regDescription);
+                //tr.find("#lblShortName").text(regShortName);
+                //tr.find("#lblForPortal").text(regForPortal);
+            });
+    });
+</script>
+
+<div class="modal fade ui-widget-content" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" id="mi-modal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body" id="modal-body">
+                <p>
+
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" id="modal-btn-si">Ja</button>
+                <button type="button" class="btn btn-default" id="modal-btn-no">Avbryt</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model != null)
+{
+    @Html.HiddenFor(m => m.SelectedUser)
+
+    <div id="pageContainer">
+        <div class="row">
+            <div class="col-md-8 padding-top-55">
+                <h4>Administrera Astrid-användare</h4>
+                <section id="adminUsersForm">
+                    <br /><br />
+                    <hr />
+
+                    <div id="gridContent" style="font-family: Arial; padding: 20px;">
+                        @{
+                            ViewBag.Title = "Administrera Astrid-användare";
+                            var grid = new WebGrid(source: Model.AdminUsers, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "adminUsersGrid");
+                            grid.Pager(WebGridPagerModes.All);
+                        }
+
+                        @grid.GetHtml(htmlAttributes: new { id = "adminUsersTable" },
+                                 tableStyle: "webgrid-table",
+                                 headerStyle: "webgrid-header",
+                                 footerStyle: "webgrid-footer",
+                                 alternatingRowStyle: "webgrid-alternating-row",
+                                 selectedRowStyle: "webgrid-selected-row",
+                                 rowStyle: "webgrid-row-style",
+                                 mode: WebGridPagerModes.All,
+                                 columns: grid.Columns(
+                                     grid.Column(null, null, format: @<text><input type="hidden" id="Id" value="@item.Id" class="edit-mode form-control hide" /></text>, style: "colZeroWidth"),
+                                    grid.Column("Email", "Email", format: @<text><span class="display-mode"><label id="lblEmail" style="width: 300px;">@item.Email</label></span>
+                                        <input type="text" id="Email" value="@item.Email" class="edit-mode form-control" /></text>, style: "col4Width"),
+                                    grid.Column("PhoneNumber", "Telefonnummer", format: @<text><span class="display-mode"><label id="lblDescription" style="width: 200px;">@item.PhoneNumber  </label></span>
+                                        <input type="text" id="PhoneNumber" value="@item.PhoneNumber" class="edit-mode form-control" /></text>, style: "colMinWidth"),
+                                    grid.Column("StringOfRoles","Roller", format: @<text><label id="lblRoller" class="longColumnText" style="width: 200px;">@item.StringOfRoles</label></text>, style: "col3Width"),
+
+                                     grid.Column(null, format: @<text>
+                                        @*<button class="edit-user display-mode btn btn-default">Ändra</button>*@
+                                        <button class="display-mode btn btn-default" onclick="deleteAdminUser('@item.Id'); return false;">Ta bort</button>
+                                        <button class="save-user edit-mode btn btn-default">Spara</button>
+                                        <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
+                                    </text>, style: "col3Width", canSort: false)))
+
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+}

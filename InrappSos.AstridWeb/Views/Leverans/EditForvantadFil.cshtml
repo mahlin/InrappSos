@@ -1,0 +1,174 @@
+﻿@using System.Configuration
+@using InrappSos.AstridWeb.Models.ViewModels
+@model InrappSos.AstridWeb.Models.ViewModels.LeveransViewModels.LeveransViewModel
+@{
+    ViewBag.Title = "Leverans";
+}
+
+@*<link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />*@
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+    });
+
+    $(function () {
+        $("#txtRegkortnamn").focus();
+    });
+
+    $(function () {
+        $('th a, tfoot a').click(function () {
+            var newUrl = $(this).attr('href') +
+                "&regId=" +
+                $("#SelectedRegisterId").val();
+            $('form').attr('action', newUrl).submit();
+            return false;
+        });
+    });
+
+    $(document).on('change','#ddlRegister',function() {
+        $("#SelectedRegisterId").val($('#ddlRegister').val());
+    });
+
+    $(function() {
+        $('.edit-mode').hide();
+        $('.edit-user, .cancel-user').on('click',
+            function () {
+                var tr = $(this).parents('tr:first');
+                tr.find('.edit-mode, .display-mode').toggle();
+            });
+        $('.save-user').on('click',
+            function() {
+                var tr = $(this).parents('tr:first');
+                var forvFilId = tr.find("#ForvantadfilId").html();
+                var forvFilFilmask = tr.find("#Filmask").val();
+                var forvFilRegexp = tr.find("#Regexp").val();
+                var forvFilObligatory;
+                if (tr.find("#Obligatory").is(':checked')) {
+                    forvFilObligatory = true;
+                } else {
+                    forvFilObligatory = false;
+                }
+                var forvFilTom;
+                if (tr.find("#Tom").is(':checked')) {
+                    forvFilTom = true;
+                } else {
+                    forvFilTom = false;
+                }
+                //forvFilTom = tr.find("#Tom").val();
+
+                //Creating AdmForvantadfil JSON object
+                var admForvantadFil =
+                {
+                    "Id": forvFilId,
+                    "Filmask": forvFilFilmask,
+                    "Regexp": forvFilRegexp,
+                    "Obligatorisk": forvFilObligatory,
+                    "Tom": forvFilTom
+                };
+                var regId = $("#SelectedRegisterId").val();
+                //Posting AdmForvantadfil object to controller's Update action method
+                $.ajax({
+                    url: '/Leverans/UpdateForvantadFil',
+                    data: JSON.stringify({
+                        forvFilModel: admForvantadFil,
+                        regId: regId})
+                    ,
+                    type: 'POST',
+                    contentType: 'application/json; charset=utf-8',
+                    success: function(data) {
+                        //location.reload();
+                        $("#pageContainer").html(data);
+                        tr.find('.edit-mode, .display-mode').toggle();
+                        $('#footer').hide();
+                        //alert('Record updated Successfully!!');
+                    }
+                });
+
+            });
+
+        $('.edit-user').on('click',
+            function() {
+                var tr = $(this).parents('tr:first');
+                var forvFilFilmask = tr.find("#Filmask").val();
+                var forvFilRegexp = tr.find("#Regexp").val();
+                var forvFilObligatory = tr.find("#Obligatory").val();
+                var forvFilTom = tr.find("#Tom").val();
+
+                tr.find("#lblFilmask").text(forvFilFilmask);
+                tr.find("#lblRegexp").text(forvFilRegexp);
+                tr.find("#lblObligatory").text(forvFilObligatory);
+                tr.find("#lblTom").text(forvFilTom);
+
+            });
+    });
+</script>
+<div id="pageContainer">
+    <div class="row">
+        <div class="col-md-8 padding-top-55">
+            <h4>Administrera förväntade filer</h4>
+            <br />
+            <section id="orgForm">
+                @using (Html.BeginForm("GetDirectorysExpectedFiles", "Leverans", new { ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                {
+                    @Html.HiddenFor(m => m.SelectedRegisterId)
+                    <div class="row">
+                        <div class="col-md-8 form-group" style="width: 225px !important; margin-left: 5px;">
+                            @Html.DropDownListFor(m => m.SelectedRegisterId, ViewBag.RegisterList as SelectList, " - Välj Register -", new { id = "ddlRegister", @class = "form-control", style = "max-width:150px !important" })
+                        </div>
+                        <div class="col-md-8" style="padding-left: 0px; margin-left: -10px;"> 
+                            <div><input type="submit" value="Visa" class="btn btn-default" /></div>
+                        </div>
+                    </div>
+                }
+            </section>
+        </div>
+    </div>
+
+    @if (Model != null)
+    {
+        @Html.ActionLink("Skapa ny förväntad fil", "CreateForvantadFil", "Leverans", new { selectedRegId = Model.SelectedRegisterId }, null)
+
+    <div id="gridContent" style="font-family: Arial; padding: 20px;">
+        @{
+        ViewBag.Title = "Administrera förväntade filer";
+        var grid = new WebGrid(source: Model.ForvantadeFiler, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "forvFilGrid");
+        grid.Pager(WebGridPagerModes.All);
+        }
+
+        @grid.GetHtml(htmlAttributes: new { id = "forvFilTable" },
+                  tableStyle: "webgrid-table",
+                  headerStyle: "webgrid-header",
+                  footerStyle: "webgrid-footer",
+                  alternatingRowStyle: "webgrid-alternating-row",
+                  selectedRowStyle: "webgrid-selected-row",
+                  rowStyle: "webgrid-row-style",
+                  mode: WebGridPagerModes.All,
+                  columns: grid.Columns(
+                        grid.Column("Id", format: @<text><span class="display-mode">@item.ID</span><label id="ForvantadfilId" class="edit-mode colMinWidth">@item.Id</label></text>, style: "colMinWidth"),
+                        grid.Column("DelregisterKortnamn", "Delregister", format: @<text><span class="display-mode">@item.DelregisterKortnamn</span><label id="lblDelregister" class="edit-mode colMinWidth">@item.DelregisterKortnamn</label></text>, style: "colMinWidth"),
+                        grid.Column("Filkravnamn","Filkravnamn", format: @<text><span class="display-mode">@item.Filkravnamn</span><label id="lblFilkravnamn" class="edit-mode colMinWidth">@item.Filkravnamn</label></text>, style: "colMinWidth"),
+
+                        grid.Column("Filmask", "Filmask", format: @<text><span class="display-mode"><label id="lblFilmask" style="width:350px;">@item.Filmask </label></span>
+                        <input type="text" id="Filmask" value="@item.Filmask" class="edit-mode form-control" style="width: 400px !important;" /></text>, style: "col5Width"),
+                        grid.Column("Regexp", "Regexp", format: @<text><span class="display-mode"><label id="lblRegexp" class="longColumnText" style="width: 200px;">@item.Regexp </label></span>
+                        <textarea type="text" id="Regexp" TextWrapping="Wrap" class="edit-mode form-control" style="height: 200px; width: 300px;">@item.Regexp</textarea></text>, style: "col3Width"),
+
+                        grid.Column("Obligatorisk", "Obligatorisk", format: @<text>
+                        <span class="display-mode"><input id="lblObligatory" class="checkbox" name="select" type="checkbox" disabled @(item.Obligatorisk ? "checked='checked'" : "") value="@item.Obligatorisk" /></span>
+                        <input id="Obligatory" class="edit-mode checkbox" name="select" type="checkbox" @(item.Obligatorisk ? "checked='checked'" : "") value="@item.Obligatorisk"/></text>, style: "colMinWidth centered"),
+
+                        grid.Column("Tom", "Tom", format: @<text>
+                        <span class="display-mode"><input id="lblTom" class="checkbox" name="select" type="checkbox" disabled @(item.Tom ? "checked='checked'" : "") value="@item.Tom"/></span>
+                        <input id="Tom" class="edit-mode checkbox" name="select" type="checkbox" @(item.Tom ? "checked='checked'" : "") value="@item.Tom"/></text>, style: "colMinWidth centered"),
+
+                        grid.Column(null, format: @<text>
+                            <button class="edit-user display-mode btn btn-default">Ändra</button>
+                            <button class="save-user edit-mode btn btn-default">Spara</button>
+                            <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
+                        </text>, style: "col3Width", canSort: false)))
+
+    </div>
+    }
+</div>

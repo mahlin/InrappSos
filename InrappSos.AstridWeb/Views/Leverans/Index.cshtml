@@ -1,0 +1,433 @@
+﻿@using System.Configuration
+@using System.ServiceModel
+@using InrappSos.AstridWeb.Models.ViewModels
+@model InrappSos.AstridWeb.Models.ViewModels.LeveransViewModels.LeveransViewModel
+@{
+    ViewBag.Title = "Leverans";
+}
+
+<script>
+    var forvantadeLeveranserLista = @Html.Raw(Json.Encode(Model.ForvantadeLeveranser));
+</script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        //Sätt fast header och scroll om fler än 10 rader i listan
+        if (forvantadeLeveranserLista.length > 10) {
+            $("#GridHeader").html("<table id='headerTable'>" + $('#gridContent table thead').html() + "</table>");
+            $("#GridHeader table tr:first").append("<th style='width:12px;' ></th>");
+            $("#GridBody").html("<table>" + $('#gridContent table tbody').html() + "</table>");
+            $("#gridContent").hide();
+            $('#GridHeader tr th:eq(0)').hide();
+            $('#GridHeader tr th:eq(1)').hide();
+            $('#GridHeader tr th:eq(2)').hide();
+
+            $("#GridBody tr").each(function (i, row) {
+                setBackgroundColors(i, row);
+            });
+            setFixedTableHeaderWidths();
+        } else {
+            $("#GridBody").hide();
+            $('#gridContent tr th:eq(0)').hide();
+            $('#gridContent tr th:eq(1)').hide();
+            $('#gridContent tr th:eq(2)').hide();
+            $("#gridContent tr").each(function (i, row) {
+                setBackgroundColors(i, row);
+            });
+        }
+    }); 
+
+    function setBackgroundColors(i, row) {
+        var $actualRow = $(row);
+        $actualRow.find('td:eq(0)').hide();
+        $actualRow.find('td:eq(1)').hide();
+        $actualRow.find('td:eq(2)').hide();
+        if ($actualRow.find("#Pagaende").val() === 'True') {
+            $actualRow.css('background-color', '#82E0AA');  
+        }  
+        if ($actualRow.find("#Sen").val() === 'True') {
+            $actualRow.find('td:eq(10)').css('background-color', '#E74C3C');  
+        }
+        if ($('#FilterPagaende').val().toUpperCase() === 'TRUE') {
+            $('#chbxPagande').prop('checked', true);
+            //Om första raden i fasta gridden, dölj ej rubrikraden
+            if ($("#gridContent").is(":visible") && i === 0) {
+                $actualRow.show();
+            }
+            else if ($actualRow.find("#Pagaende").val() !== 'True') {
+                $actualRow.hide();
+            }
+        } else {
+            $('#chbxPagande').prop('checked', false); 
+        } 
+    };
+
+    $(document).on('change','#ddlRegister',function() {
+        $("#SelectedRegisterId").val($('#ddlRegister').val());
+    });
+
+    $(document).on('change', '#chbxPagande', function () {
+        if ($('#chbxPagande').is(':checked')) {
+            $('#FilterPagaende').val(true);
+        } else {
+            $('#FilterPagaende').val(false);
+        }
+
+        if ($("#GridBody").is(":visible")) {
+            $("#GridBody tr").each(function (i, row) {
+                var $actualRow = $(row);
+                if ($('#chbxPagande').is(':checked')) {
+                    if ($actualRow.find("#Pagaende").val() !== 'True') {
+                        $actualRow.hide();
+                    } else {
+                        $actualRow.show();
+                    }
+                } else {
+                    $actualRow.show();
+                }
+            });
+        }
+        else if ($("#gridContent").is(":visible")) {
+            $("#gridContent tr").each(function (i, row) {
+                var $actualRow = $(row);
+                if (i === 0) {
+                    $actualRow.show(); 
+                }
+                else if ($('#chbxPagande').is(':checked')) {
+                    if ($actualRow.find("#Pagaende").val() !== 'True') {
+                        $actualRow.hide();
+                    } else {
+                        $actualRow.show();
+                    }
+                } else {
+                    $actualRow.show();
+                }
+            });
+        }
+
+            
+
+        
+    });
+
+    function setFixedTableHeaderWidths() {
+
+        var headerCells = $("#GridHeader tr:eq(0) th");
+        var firstRowCells = $("#GridBody tr:eq(0) td");
+
+        $.each(firstRowCells, function (index, value) {
+            var c = $(this).width();
+            var m = $(firstRowCells[index]).attr("class");
+
+            //$(headerCells[index]).css('width', $(this).width());
+            //$(headerCells[index]).addClass($(firstRowCells[index]).attr("class"));
+
+            if (index === 3) {
+                $(headerCells[index]).css('width', 48);
+            }
+            else if (index === 4) {
+                $(headerCells[index]).css('width', 95);
+            }
+            else if (index === 5) {
+                $(headerCells[index]).css('width', 56);
+            }
+            else if (index === 6) {
+                $(headerCells[index]).css('width', 204);
+            }
+            else if (index === 7) {
+                $(headerCells[index]).css('width', 115);
+            }
+            else if (index === 8) {
+                $(headerCells[index]).css('width', 110);
+            }
+            else if (index === 9) {
+                $(headerCells[index]).css('width', 110);
+            }
+            else if (index === 10) {
+                $(headerCells[index]).css('width', 110);
+            }
+            else if (index === 11) {
+                $(headerCells[index]).css('width', 110);
+            }
+            else if (index === 12) {
+                $(headerCells[index]).css('width', 110);
+            }
+            else if (index === 13) {
+                $(headerCells[index]).css('width', 110);
+            }
+            else if (index === 14) {
+                $(headerCells[index]).css('width', 110);
+            }
+            else if (index === 15) {
+                $(headerCells[index]).css('width', 113);
+            }
+            else if (index === 16) {
+                $(headerCells[index]).css('width', 185);
+            }
+        });
+    }
+
+
+    $(function () {
+        if ($('#FilterPagaende').val().toUpperCase() === 'TRUE') {
+            $('#chbxPagande').prop('checked', true);
+        } else {
+            $('#chbxPagande').prop('checked', false);
+        }
+        //$('th a, tfoot a').click(function () {
+        //    var newUrl = $(this).attr('href') +
+        //        "&regId=" +
+        //        $("#SelectedRegisterId").val() +
+        //        "&filterPagaende=" +
+        //        $('#FilterPagaende').val();
+        //    $('form').attr('action', newUrl).submit();
+        //    return false;
+        //});
+    });
+
+    $(function() {
+        $('.edit-mode').hide();
+        $('.edit-user, .cancel-user').on('click',
+            function () {
+                var tr = $(this).parents('tr:first');
+                tr.find('.edit-mode, .display-mode').toggle();
+            });
+        $('.save-user').on('click',
+            function() {
+                var tr = $(this).parents('tr:first');
+                var forvLevId = tr.find("#Id").html();
+                var forvLevDelRegKortnamn = tr.find("#delregister").html();
+                var forvLevDelFilkravId = tr.find("#filkravId").html();
+                var forvLevPeriod = tr.find("#Period").val();
+                var forvLevUppgiftsstart = tr.find("#Uppgiftsstart").val();
+                var forvLevUppgiftsslut = tr.find("#Uppgiftsslut").val();
+                var forvLevRapporteringsstart = tr.find("#Rapporteringsstart").val();
+                var forvLevRapporteringsslut = tr.find("#Rapporteringsslut").val();
+                var forvLevRapporteringsenast = tr.find("#Rapporteringsenast").val();
+                var forvLevPaminnelse1 = tr.find("#Paminnelse1").val();
+                var forvLevPaminnelse2 = tr.find("#Paminnelse2").val();
+                var forvLevPaminnelse3 = tr.find("#Paminnelse3").val();
+
+                //Creating AdmForvantadLeverans JSON object
+                var admForvantadLev =
+                {
+                    "Id": forvLevId,
+                    "FilkravId": forvLevDelFilkravId,
+                    "DelregisterKortnamn": forvLevDelRegKortnamn,
+                    "Period": forvLevPeriod,
+                    "Uppgiftsstart": forvLevUppgiftsstart,
+                    "Uppgiftsslut": forvLevUppgiftsslut,
+                    "Rapporteringsstart": forvLevRapporteringsstart,
+                    "Rapporteringsslut": forvLevRapporteringsslut,
+                    "Rapporteringsenast": forvLevRapporteringsenast,
+                    "Paminnelse1": forvLevPaminnelse1,
+                    "Paminnelse2": forvLevPaminnelse2,
+                    "Paminnelse3": forvLevPaminnelse3
+                };
+                var regId = $("#SelectedRegisterId").val();
+                //Posting AdmForvantadleverans object to controller's Update action method
+                $.ajax({
+                    url: '/Leverans/UpdateForvantadLeverans',
+                    data: JSON.stringify({
+                        forvLevModel: admForvantadLev,
+                        regId: regId
+                    }),
+                    type: 'POST',
+                    contentType: 'application/json; charset=utf-8',
+                    success: function(data) {
+                        //location.reload();
+                        $("#pageContainer").html(data);
+                        tr.find('.edit-mode, .display-mode').toggle();
+                        $('#footer').hide();
+                        //alert('Record updated Successfully!!');
+                    }
+                });
+
+            });
+
+        $('.edit-user').on('click',
+            function() {
+                var tr = $(this).parents('tr:first');
+                var forvLevPeriod = tr.find("#Period").val();
+                var forvLevUppgiftsstart = tr.find("#Uppgiftsstart").val();
+                var forvLevUppgiftsslut = tr.find("#Uppgiftsslut").val();
+                var forvLevRapporteringsstart = tr.find("#Rapporteringsstart").val();
+                var forvLevRapporteringsslut = tr.find("#Rapporteringsslut").val();
+                var forvLevRapporteringsenast = tr.find("#Rapporteringsenast").val();
+
+                tr.find("#lblPeriod").text(forvLevPeriod);
+                tr.find("#lblUppgiftsstart").text(forvLevUppgiftsstart);
+                tr.find("#lblUppgiftsslut").text(forvLevUppgiftsslut);
+                tr.find("#lblRapporteringsstart").text(forvLevRapporteringsstart);
+                tr.find("#lblRapporteringsslut").text(forvLevRapporteringsslut);
+                tr.find("#lblRapporteringsenast").text(forvLevRapporteringsenast);
+
+            });
+    });
+</script>
+
+<style type="text/css">
+
+    #GridBody {
+        width: 1691px;
+        height: 400px;
+        overflow-y: scroll;
+        border: solid 1px #e8eef4;
+    }
+
+    #GridBody td {
+        border: 1px solid #C5C5C5;
+    }
+
+    #GridHeader table {
+        width: 1691px;
+        text-align: left;
+        margin-top: 0px;
+        /*border: solid 1px #A7C942;*/
+        padding: 0px;
+        border-collapse: collapse;
+    }
+
+    /*#GridHeader th {
+        margin: -5px;
+        padding: 3px 7px 2px;
+    }*/
+</style>
+
+<div id="pageContainer">
+    <div class="row">
+        <div class="col-md-8 padding-top-55">
+            <h4>Administrera förväntade leveranser</h4>
+            <br />
+            <section id="orgForm">
+                @using (Html.BeginForm("GetDirectorysExpectedDeliveries", "Leverans", new { ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                {
+                    @Html.HiddenFor(m => m.SelectedRegisterId)
+                    @Html.HiddenFor(m => m.FilterPagaende)
+
+                    <div class="row">
+                        <div class="col-md-8 form-group" style="width: 225px !important; margin-left: 5px;">
+                            @Html.DropDownListFor(m => m.SelectedRegisterId, ViewBag.RegisterList as SelectList, " - Välj Register -", new { id = "ddlRegister", @class = "form-control", style = "max-width:150px !important" })
+                        </div>
+                        <div class="col-md-8" style="padding-left: 0px; margin-left: -10px;">
+                            <div><input type="submit" value="Visa" class="btn btn-default" /></div>
+                        </div>
+                    </div>
+                }
+            </section>
+        </div>
+    </div>
+
+
+
+    <div class="row h-100">
+        <div class="col-md-6 form-group" style="width: 175px !important;white-space: nowrap">
+            @Html.LabelFor(m => m.FilterPagaende)
+        </div>
+        <div class="col-md-6" style="padding-left: 0px; font-size: 0.9em; margin-top: 3px;">
+            <div> @Html.CheckBoxFor(m => m.FilterPagaende, new { id = "chbxPagande" })</div>
+        </div>
+    </div>
+
+
+    @if (Model != null)
+    {
+        @Html.HiddenFor(m => m.SelectedRegisterId)
+        @Html.HiddenFor(m => m.FilterPagaende)
+
+             <div style = "padding-left: 4px;">
+                 @Html.ActionLink("Skapa ny förväntad leverans", "CreateForvantadLeverans", "Leverans", new { filterPgnde = Model.FilterPagaende, selectedRegId = Model.SelectedRegisterId }, null)
+             </div>
+
+
+             <div style = "padding-left: 4px;">
+                 @Html.ActionLink("Skapa förväntade leveranser (gäller f.n. endast månadsleveranser)", "CreateForvantadeLeveranser", "Leverans", new { filterPgnde = Model.FilterPagaende, selectedRegId = Model.SelectedRegisterId }, null)
+             </div>
+
+
+        <div id ="gridContent" style="font-family: Arial; padding-top: 20px;" >
+            @{
+                ViewBag.Title = "Administrera förväntade leveranser";
+                var grid = new WebGrid(source: Model.ForvantadeLeveranser, canPage: false, ajaxUpdateCallback: "webGridUpdated");
+            }
+
+            @Html.HiddenFor(m => m.SelectedRegisterId)
+
+            @grid.GetHtml(htmlAttributes: new { id = "forvLevTable" },
+                tableStyle: "webgrid-table",
+                headerStyle: "webgrid-header",
+                alternatingRowStyle: "webgrid-alternating-row",
+                selectedRowStyle: "webgrid-selected-row",
+                rowStyle: "webgrid-row-style",
+                mode: WebGridPagerModes.All,
+                columns: grid.Columns(
+                    grid.Column(null, null, format: @<text><input type="hidden" id="Pagaende" value="@item.Pagaende.ToString()" class="edit-mode form-control hide" /></text>, style: "colZeroWidth"),
+                    grid.Column(null, null, format: @<text><input type="hidden" id="Sen" value="@item.Sen.ToString()" class="edit-mode form-control hide" /></text>, style: "colZeroWidth"),
+                    grid.Column(null, null, format: @<text><input type="hidden" id="DelregisterId" value="@item.DelregisterId" class="edit-mode form-control" /></text>, style: "colZeroWidth"),
+                    grid.Column("Id", format: @<text><span class="display-mode" style="width: 50px;margin-left: 3px;">@item.ID</span><span id="Id" class="edit-mode" style="width: 50px;margin-left: 3px;">@item.Id</span></text>, style: "colMinWidth"),
+                    grid.Column("DelregisterKortnamn", "Delregister", format: @<text><span class="display-mode" style="white-space: nowrap; margin-right: 5px;">@item.DelregisterKortnamn</span><span id="delregister" class="edit-mode" style="white-space: nowrap; padding-left: 2px; margin-right:-15px;">@item.DelregisterKortnamn</span></text>, style: "col1Width"),
+                    grid.Column("FilkravId", "Filkravid", format: @<text><span class="display-mode" style="margin-left: 20px;margin-right: 29px;">@item.Filkravid</span><span id="filkravId" class="edit-mode" style="margin-left: 20px;margin-right: 29px;">@item.FilkravId</span></text>, style: "col70Width"),
+                    grid.Column("FilkravNamn", "Filkravnamn", format: @<text><span class="display-mode">@item.FilkravNamn</span><span id="filkravNamn" class="edit-mode">@item.FilkravNamn</span></text>, style: "col3Width"),
+
+
+                    grid.Column("Period", "Period", format: @<text><span class="display-mode"><label id="lblPeriod">@item.Period </label></span>
+                                                                <input type="text" id="Period" value="@item.Period" class="edit-mode form-control" /></text>, style: "col70Width"),
+
+                    grid.Column("Uppgiftsstart", "Uppgiftsstart", format: @<text><span class="display-mode">
+                                                                                  <label id="lblUppgiftsstart">@( item.Uppgiftsstart != null ? item.Uppgiftsstart.ToString("yyyy-MM-dd") : item.Uppgiftsstart)</label>
+                                                                              </span>
+                                                                              <input type="text" id="Uppgiftsstart" value="@( item.Uppgiftsstart != null ? item.Uppgiftsstart.ToString("yyyy-MM-dd") : item.Uppgiftsstart)" class="edit-mode form-control" /></text>, style: "col70Width"),
+                    grid.Column("Uppgiftsslut", "Uppgiftsslut", format: @<text><span class="display-mode">
+                                                                                <label id="lblUppgiftsslut">@( item.Uppgiftsslut != null ? item.Uppgiftsslut.ToString("yyyy-MM-dd") : item.Uppgiftsslut)</label>
+                                                                            </span>
+                                                                            <input type="text" id="Uppgiftsslut" value="@( item.Uppgiftsslut != null ? item.Uppgiftsslut.ToString("yyyy-MM-dd") : item.Uppgiftsslut)" class="edit-mode form-control" /></text>, style: "col70Width"),
+                    grid.Column("Rapporteringsstart", "Rapp.start", format: @<text><span class="display-mode">
+                                                                                            <label id="lblRapporteringsstart">@( item.Rapporteringsstart != null ? item.Rapporteringsstart.ToString("yyyy-MM-dd") : item.Rapporteringsstart)</label>
+                                                                                        </span>
+                                                                                        <input type="text" id="Rapporteringsstart" value="@( item.Rapporteringsstart != null ? item.Rapporteringsstart.ToString("yyyy-MM-dd") : item.Rapporteringsstart)" class="edit-mode form-control"/></text>, style: "col70Width"),
+                    grid.Column("Rapporteringsslut", "Rapp.slut", format: @<text><span class="display-mode">
+                                                                                          <label id="lblRapporteringsslut">@( item.Rapporteringsslut != null ? item.Rapporteringsslut.ToString("yyyy-MM-dd") : item.Rapporteringsslut)</label>
+                                                                                      </span>
+                                                                                      <input type="text" id="Rapporteringsslut" value="@( item.Rapporteringsslut != null ? item.Rapporteringsslut.ToString("yyyy-MM-dd") : item.Rapporteringsslut)" class="edit-mode form-control" /></text>, style: "col70Width"),
+                    grid.Column("Rapporteringsenast", "Rapp.senast", format: @<text><span class="display-mode">
+                                                                                            <label id="lblRapporteringsenast">@( item.Rapporteringsenast != null ? item.Rapporteringsenast.ToString("yyyy-MM-dd") : item.Rapporteringsenast)</label>
+                                                                                        </span>
+                                                                                        <input type="text" id="Rapporteringsenast" value="@( item.Rapporteringsenast != null ? item.Rapporteringsenast.ToString("yyyy-MM-dd") : item.Rapporteringsenast)" class="edit-mode form-control" /></text>, style: "col70Width"),
+
+                    grid.Column("Paminnelse1", "Paminnelse1", format: @<text><span class="display-mode">
+                                                                              <label id="lblPaminnelse1">@( item.Paminnelse1 != null ? item.Paminnelse1.ToString("yyyy-MM-dd") : item.Paminnelse1)</label>
+                                                                          </span>
+                                                                          <input type="text" id="Paminnelse1" value="@( item.Paminnelse1 != null ? item.Paminnelse1.ToString("yyyy-MM-dd") : item.Paminnelse1)" class="edit-mode form-control" /></text>, style: "col70Width"),
+                    grid.Column("Paminnelse2", "Paminnelse2", format: @<text><span class="display-mode">
+                                                                              <label id="lblPaminnelse2">@( item.Paminnelse2 != null ? item.Paminnelse2.ToString("yyyy-MM-dd") : item.Paminnelse2)</label>
+                                                                          </span>
+                                                                          <input type="text" id="Paminnelse2" value="@( item.Paminnelse2 != null ? item.Paminnelse2.ToString("yyyy-MM-dd") : item.Paminnelse2)" class="edit-mode form-control" /></text>, style: "col70Width"),
+
+                    grid.Column("Paminnelse3", "Paminnelse3", format: @<text><span class="display-mode">
+                                                                              <label id="lblPaminnelse3">@( item.Paminnelse3 != null ? item.Paminnelse3.ToString("yyyy-MM-dd") : item.Paminnelse3)</label>
+                                                                          </span>
+                                                                          <input type="text" id="Paminnelse3" value="@( item.Paminnelse3 != null ? item.Paminnelse3.ToString("yyyy-MM-dd") : item.Paminnelse3)" class="edit-mode form-control" /></text>, style: "col70Width"),
+
+                    grid.Column(null, format: @<text><span>
+                                                  <button class="edit-user display-mode btn btn-default">Ändra</button>
+                                                  <button class="save-user edit-mode btn btn-default">Spara</button>
+                                                  <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
+                                                  </span>
+                                               </text>, style: "col2Width", canSort: false)))
+        </div>
+
+        <div id="Outer" >
+            <div id="GridHeader"></div>
+            <div id="GridBody"></div>
+        </div>
+
+    }
+</div>
+
+<script type="text/javascript">
+    //function webGridUpdated(data) {
+    //    // Would like to be able to wrap this in a conditional
+    //    alert("Marie");
+    //}
+</script>

@@ -1,0 +1,183 @@
+﻿@model InrappSos.AstridWeb.Models.ViewModels.SystemViewModels.SystemViewModel
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        var modalConfirm = function test(callback) {
+            $("#modal-btn-si").on("click", function () {
+                callback(true);
+                $("#mi-modal").modal('hide');
+            });
+
+            $("#modal-btn-no").on("click", function () {
+                callback(false);
+                $("#mi-modal").modal('hide');
+            });
+        };
+
+        modalConfirm(function (confirm) {
+            if (confirm) {
+                //alert($('#SelectedSpecialDayId').val());
+                var data = { 'specialDayId': $('#SelectedSpecialDayId').val() };
+                $.ajax({
+                    url: '/System/DeleteSpecialDay',
+                    type: 'POST',
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify(data),
+                    success: function (data) {
+                        //On ajax success do this
+                        $("#pageContainer").html(data);
+                        //tr.find('.edit-mode, .display-mode').toggle();
+                        $('#footer').hide();
+                    }
+                });
+            }
+        });
+
+    });
+
+    function deleteSpecialDay(id, specialDayDate) {
+        $('#SelectedSpecialDayId').val(id);
+        var formattedDate = formatDate(specialDayDate);
+        $("#mi-modal").modal("show");
+        $('#modal-body').html("Vill du verkligen ta bort ta bort informationen för dagen <br>med datum: " + formattedDate + "?");
+    }
+
+    function formatDate(date) {
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+
+        if (month.length < 2) month = '0' + month;
+        if (day.length < 2) day = '0' + day;
+
+        return [year, month, day].join('-');
+    }
+
+
+    $(function () {
+        $('.edit-mode').hide();
+        $('.edit-user, .cancel-user').on('click', function () {
+            var tr = $(this).parents('tr:first');
+            tr.find('.edit-mode, .display-mode').toggle();
+        });
+        $('.save-user').on('click', function () {
+            var tr = $(this).parents('tr:first');
+            var specialDayId = tr.find("#SpecialDayId").html();
+            var specialDayInfoTyp = tr.find("#lblInfoTyp").html();
+            var specialDayDate = tr.find("#SpecialDayDate").val();
+            var open = tr.find("#Open").val();
+            var close = tr.find("#Close").val();
+            var reason = tr.find("#Reason").val();
+
+            //Creating AdmSpecialdag JSON object
+            var admSpecialdag =
+                {
+                    "Id": specialDayId,
+                    "Informationstyp": specialDayInfoTyp,
+                    "Specialdagdatum": specialDayDate,
+                    "Oppna": open,
+                    "Stang": close,
+                    "Anledning": reason
+                };
+            //Posting AdmSpecialdag object to controller's Update action method
+            $.ajax({
+                url: '/System/UpdateSpecialDay',
+                data: JSON.stringify(admSpecialdag),
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    //location.reload();
+                    $("#pageContainer").html(data);
+                    tr.find('.edit-mode, .display-mode').toggle();
+                    $('#footer').hide();
+                    //alert('Record updated Successfully!!');
+                }
+            });
+
+        });
+
+    });
+</script>
+
+
+
+@{
+    ViewBag.Title = "Specialdagar";
+}
+
+<div class="modal fade ui-widget-content" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" id="mi-modal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body" id="modal-body">
+                <p>
+
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" id="modal-btn-si">Ja</button>
+                <button type="button" class="btn btn-default" id="modal-btn-no">Avbryt</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="pageContainer" class="padding-top-55">
+
+    <h4>Specialdagar</h4>
+    <br />
+
+    @if (Model != null)
+    {
+        @Html.HiddenFor(m => m.SelectedHolidayId)
+        @Html.HiddenFor(m => m.SelectedSpecialDayId)
+        <div class="row">
+            <div class="col-md-8">
+                @Html.ActionLink("Lägg till specialdag", "CreateSpecialDay", "System")
+            </div>
+        </div>
+
+        <div id="gridContent" style="font-family: Arial; padding: 20px;">
+
+            @{
+                ViewBag.Title = "Administrera specialdagar";
+                var grid = new WebGrid(source: Model.SpecialDays, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "specialDaysGrid");
+                grid.Pager(WebGridPagerModes.All);
+            }
+
+            @grid.GetHtml(htmlAttributes: new { id = "specialDaysTable" },
+                     tableStyle: "webgrid-table",
+                     headerStyle: "webgrid-header",
+                     footerStyle: "webgrid-footer",
+                     alternatingRowStyle: "webgrid-alternating-row",
+                     selectedRowStyle: "webgrid-selected-row",
+                     rowStyle: "webgrid-row-style",
+                     mode: WebGridPagerModes.All,
+                     columns: grid.Columns(
+                      grid.Column("ID", format: @<text><label id="SpecialDayId">@item.Id</label></text>, style: "colMinWidth"),
+                             grid.Column("Informationstyp", format: @<text><label id="lblInfoTyp">@item.Informationstyp</label></text>, style: "colMinWidth"),
+                            grid.Column("Specialdagdatum", "Specialdagdatum", format: @<text><span class="display-mode">
+                                    <label id="lblHelgdatum">@( item.Specialdagdatum != null ? item.Specialdagdatum.ToString("yyyy-MM-dd") : item.Specialdagdatum)</label></span>
+                                    <input type="text" id="SpecialDayDate" value="@( item.Specialdagdatum != null ? item.Specialdagdatum.ToString("yyyy-MM-dd") : item.Specialdagdatum)" class="edit-mode form-control" /></text>, style: "col1Width"),
+                            grid.Column("Oppna", "Öppna", format: @<text><span class="display-mode"><label id="lblOpen">@item.Oppna</label></span>
+                                    <input type="text" id="Open" value="@item.Oppna" class="edit-mode form-control" /></text>, style: "col2Width"),
+                            grid.Column("Stang", "Stäng", format: @<text><span class="display-mode"><label id="lblClose">@item.Stang</label></span>
+                                    <input type="text" id="Close" value="@item.Stang" class="edit-mode form-control" /></text>, style: "col2Width"),
+                            grid.Column("Anledning", "Anledning", format: @<text><span class="display-mode"><label id="lblReason">@item.Anledning</label></span>
+                                    <input type="text" id="Reason" value="@item.Anledning" class="edit-mode form-control" /></text>, style: "col2Width"),
+
+                            grid.Column(null, format: @<text>
+                                <button class="edit-user display-mode btn btn-default">Ändra</button>
+                                <button class="display-mode btn btn-default" onclick="deleteSpecialDay(@item.Id,'@item.Specialdagdatum');return false;">Ta bort</button>
+                                <button class="save-user edit-mode btn btn-default">Spara</button>
+                                <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
+                            </text>, style: "col3Width", canSort: false)))
+        </div>
+
+    }
+</div>
+

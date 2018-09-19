@@ -1,0 +1,356 @@
+﻿@model InrappSos.AstridWeb.Models.ViewModels.SystemViewModels.SystemViewModel
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+@*<link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />*@
+
+
+<script type="text/javascript">
+    var faqLista = @Html.Raw(Json.Encode(Model.FAQs));
+
+    $(document).ready(function () {
+        //Sätt fast header och scroll om fler än 10 rader i listan
+        if (faqLista.length > 10) {
+            //Fix webgrid-header
+            $("#GridHeader").html("<table id='headerTable'>" + $('#gridContent table thead').html() + "</table>");
+            $("#GridHeader table tr:first").append("<th style='width:12px;' ></th>");
+            $("#GridBody").html("<table>" + $('#gridContent table tbody').html() + "</table>");
+            //$("#GridFooter").html("<table>" + $('#gridContent table tfoot').html() + "</table>");
+            $("#gridContent").hide();
+            setFixedTableHeaderWidths();
+        } else {
+            $("#GridBody").hide();
+        }
+
+        $("#editSelectedFAQForm").hide();
+
+        var modalConfirm = function test(callback) {
+            $("#modal-btn-si").on("click", function () {
+                callback(true);
+                $("#mi-modal").modal('hide');
+            });
+
+            $("#modal-btn-no").on("click", function () {
+                callback(false);
+                $("#mi-modal").modal('hide');
+            });
+        };
+
+        modalConfirm(function (confirm) {
+            if (confirm) {
+                var data = { 'faqId': $('#SelectedFAQId').val(), 'faqCatId': $('#SelectedFAQCategory').val() };
+                $.ajax({
+                    url: '/System/DeleteFAQ',
+                    type: 'POST',
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify(data),
+                    success: function (data) {
+                        //On ajax success do this
+                        $("#pageContainer").html(data);
+                        $('#footer').hide();
+                        tr.find('.edit-mode, .display-mode').toggle();
+                    }
+                });
+            }
+        });
+    });
+
+    function setFixedTableHeaderWidths() {
+        var x = $('#GridHeader table tbody');
+        //$('#GridHeader table tbody tr').find('th:nth-child(1)').css('background-color', '#E8A2A2');
+
+        var y = $('#GridBody table tbody');
+        //$('#GridBody table tbody tr').find('td:nth-child(1)').css('background-color', '#66E0ED');
+
+        var $body = $('#GridBody table tbody');
+        var $header = $('#GridHeader table tbody');
+
+        $body.find('tr:first-child').children().each(function (i) {
+            var x = $(this).width();
+            var y = $($header.find('tr:first-child'));
+            $($header.find('tr:first-child').children()[i]).css('width', $(this).width() + 12);
+
+            ////Dra bort 12 px från benämningskolumnen vid scroll för att få headern i linje med budgeten. Vet ej varför detta behövs. Nåt med i:et i konto-kolumnen?
+            //if (i === 2) {
+            //    $($header.find('tr:first-child').children()[i]).css('width', $(this).width() - 15);
+            //}
+        });
+    }
+
+    function deleteFAQ(id, fraga) {
+        $('#SelectedFAQId').val(id);
+        $("#mi-modal").modal("show");
+        $('#modal-body').html("Vill du verkligen ta bort ta bort hela FAQn för frågan: " + fraga + " ?");
+    }
+
+
+    function showEditForm(id) {
+        $('#SelectedFAQId').val(parseInt(id));
+        var y = parseInt(id);
+
+        $.ajax({
+            url: '/System/EditSelectedFAQ?faqId=' + y,
+            data: JSON.stringify({faqId: y}),
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                //location.reload();
+                $("#editSelectedFAQForm").html(data);
+                $("#editSelectedFAQForm").show();
+                $('#footer').hide();
+            }
+        });
+        //faqLista.forEach(function (info, index) {
+        //    if (info.Id === parseInt(id)) {
+        //        $('#textArea').html(info.Svar);
+        //    }
+        //});
+
+
+        //rows.each(function (i) {
+        //    var x = $('#FAQs_' + i + '__Id').val();
+        //    //if ($('#FAQs_' + i + '__Id').length > 0) {
+        //    //    deFormatAmounts(i);
+        //    //}
+        //});
+        //rows.each(function (faq, index) {
+        //    if (faq.Id === id) {
+        //        $('#textArea').html(faq.Svar);
+        //    }
+        //});
+    }
+
+    //$(function () {
+    //    var tr = $('#FAQAnswerTable').find('tr');
+    //    tr.bind('click', function (event) {
+    //        showTextarea($(this).find('input[type=text]').val());
+    //    });
+    //});
+
+    $(function () {
+        $('.edit-mode').hide();
+        $('.edit-user, .cancel-user').on('click', function () {
+            var tr = $(this).parents('tr:first');
+            tr.find('.edit-mode, .display-mode').toggle();
+            $("#editSelectedFAQForm").hide();
+        });
+        $('.save-user').on('click', function () {
+            var tr = $(this).parents('tr:first');
+            var faqId = tr.find("#FAQId").html();
+            var faqRegisterId = tr.find("#FAQRegisterId").val();
+            var faqFraga = tr.find("#FAQFraga").val();
+            var faqSvar = tr.find("#FAQSvar").val();
+
+            //Creating AdmFAQ JSON object
+            var admFAQ =
+            {
+                "Id": faqId,
+                "FAQkategoriId": $('#SelectedFAQCategory').val(),
+                "RegisterId": faqRegisterId,
+                "Fraga": faqFraga,
+                "Svar": faqSvar
+            };
+            //Posting AdmFAQ object to controller's Update action method
+            $.ajax({
+                url: '/System/UpdateFAQ',
+                data: JSON.stringify(admFAQ),
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    //location.reload();
+                    $("#pageContainer").html(data);
+                    $('#footer').hide();
+                    //alert('Record updated Successfully!!');
+                }
+            });
+
+        });
+
+        //$('.edit-user').on('click', function () {
+        //    var tr = $(this).parents('tr:first');
+        //    var faqId = tr.find("#FAQId").html();
+        //    var faqRegisterId = tr.find("#FAQRegisterId").val();
+        //    var faqFraga = tr.find("#FAQFraga").val();
+        //    var faqSvar = tr.find("#FAQSvar").val();
+
+        //    tr.find("#lblRegsiterId").text(faqRegisterId);
+        //    tr.find("#lblFraga").text(faqFraga);
+        //    tr.find("#lblSvar").text(faqSvar);
+        //});
+    });
+</script>
+
+<style type="text/css">
+    .webgrid-table td th {
+        /*border: 1px solid #98BF21;*/
+        /*margin: -5px;
+        padding: 3px 7px 2px;*/
+    }
+    /*.label {
+        padding: 3px 0px 2px !important;
+    }*/
+
+    /*.webgrid-header td th {
+        color: #FFFFFF;
+        text-align: left;
+        padding: 3px 28px 2px;
+    }*/
+
+    /*.webgrid-alternating-row {
+        background-color: #EAF2D3;
+    }*/
+
+    /*.colWidth {
+        width: 200px;
+    }*/
+
+    /*#Outer {
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    }*/
+
+    #GridBody {
+        width: 1020px;
+        height: 400px;
+        overflow-y: scroll;
+        border: solid 1px #e8eef4;
+    }
+
+    #GridHeader table {
+        width: 1022px;
+        text-align: left;
+        margin-top: 0px;
+        /*border: solid 1px #A7C942;*/
+        padding: 0px;
+        border-collapse: collapse;
+    }
+
+    /*#GridFooter {
+        border: solid 1px #e8eef4;
+        width: 1020px;
+    }*/
+
+    /*#GridHeader table th {
+        width: 200px;
+    }*/
+</style>
+
+
+
+@{
+    ViewBag.Title = "Frågor för FAQ-kategori";
+}
+
+<div class="modal fade ui-widget-content" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" id="mi-modal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body" id="modal-body">
+                <p>
+
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" id="modal-btn-si">Ja</button>
+                <button type="button" class="btn btn-default" id="modal-btn-no">Avbryt</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="pageContainer" class="padding-top-55">
+
+    <h4>Frågor för FAQ-kategori @Html.Raw(Json.Encode(Model.SelectedFAQCategoryName))</h4>
+    <br />
+
+    @if (Model != null)
+    {
+        @Html.HiddenFor(m => m.SelectedFAQ)
+        @Html.HiddenFor(m => m.SelectedFAQId)
+        @Html.HiddenFor(m => m.SelectedFAQCategory)
+
+        <div class="row">
+            <div class="col-md-8">
+                @Html.ActionLink("Skapa ny FAQ", "CreateFAQ", "System", routeValues: new { catId = Model.SelectedFAQCategory }, htmlAttributes: null)
+            </div>
+            @Html.ActionLink("Tillbaka till kategorier", "GetFAQCategories", "System", null, new { @style = "padding-left:90px;" })
+        </div>
+
+        <div id="gridContent" style="font-family: Arial; padding: 20px;">
+
+            @{
+                ViewBag.Title = "Administrera FAQs";
+                var grid = new WebGrid(source: Model.FAQs, canPage: false, rowsPerPage: 10, ajaxUpdateContainerId: "faqsGrid");
+                //grid.Pager(WebGridPagerModes.All);
+            }
+
+
+            @grid.GetHtml(htmlAttributes: new { id = "FAQAnswerTable" },
+                tableStyle: "webgrid-table",
+                headerStyle: "webgrid-header",
+                footerStyle: "webgrid-footer",
+                alternatingRowStyle: "webgrid-alternating-row",
+                selectedRowStyle: "webgrid-selected-row",
+                rowStyle: "webgrid-row-style",
+                mode: WebGridPagerModes.All,
+                columns: grid.Columns(
+                    grid.Column("Id", format: @<text><label id="FAQId">@item.Id</label></text>, style: "colMinWidth"),
+                    grid.Column("RegisterKortNamn","Register", format: @<text><label id="lblRegister">@item.RegisterKortNamn</label></text>, style: "colMinWidth"),
+                    grid.Column("Sortering", format: @<text><label id="lblSortering">@item.Sortering</label></text>, style: "colMinWidth"),
+                    grid.Column("Fraga", "Fråga", format: @<text><label id="lblFraga" class="longColumnText" style="width: 200px;">@item.Fraga</label></text>, style: "col2Width"),
+                    grid.Column("Svar", format: @<text> <label id="lblSvar" class="longColumnText" style="width: 200px;">@item.Svar</label></text>, style: "col3Width"),
+
+                    grid.Column(null, format: @<text>
+                                                  <button class="edit-user display-mode btn btn-default" style="padding-left: 10px;" onclick="showEditForm('@item.Id');">Ändra</button>
+                                                  <button class="display-mode btn btn-default" onclick="deleteFAQ(@item.Id,'@item.Fraga');return false;">Ta bort</button>
+                                                  @*<button class="save-user edit-mode btn btn-default">Spara</button>*@
+                                                  <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
+                                               </text>, style: "col3Width", canSort: false)))
+        </div>
+
+        <div id="Outer" >
+            <div id="GridHeader"></div>
+            <div id="GridBody"></div>
+            <div id="GridFooter"></div>
+        </div>
+
+        <div id="editSelectedFAQForm">
+            @Html.Partial("_EditSelectedFAQ")
+        </div>
+
+        @*<div id="editFAQAnswer">
+                @using (Html.BeginForm("UpdateFAQ", "System", FormMethod.Post))
+                {
+
+                    @Html.HiddenFor(x => Model.SelectedFAQ)
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.RegisterId, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.RegisterId, new { htmlAttributes = new { @class = "form-control", id = "txtRegisterId" } })
+                            @Html.ValidationMessageFor(model => model.RegisterId, "", new { @class = "text-danger", id = "FAQRegisterId" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Fraga, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.Fraga, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Fraga, "", new { @class = "text-danger", id = "FAQFraga" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-8">
+                                @Html.Label("FAQ svar: ", new { @class = "control-label" })
+                                @Html.TextAreaFor(m => Model.SelectedFAQAnswer, 10, 100, new { @class = "form-control", id = "FAQSvar", style = "max-width:95% !important;" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <input type="submit" value="Spara" class="save-user btn btn-default" />
+                        </div>
+                    </div>
+                }
+            </div>*@
+    }
+</div>
+

@@ -1,0 +1,182 @@
+﻿@model InrappSos.AstridWeb.Models.ViewModels.OrganisationViewModels.OrganisationViewModel
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+@*<link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />*@
+
+<script src="@Url.Content("~/Scripts/custom.js")" type="text/javascript"></script>
+<script type="text/javascript">
+
+    $(function () {
+        $("#ddlOrganisation").focus();
+    });
+
+    $(document).on('change', '#ddlOrganisation',
+        function () {
+            var selectedOrg = $('#ddlOrganisation').val();
+            $("#SelectedOrganisationId").val(selectedOrg);
+        });
+
+
+    $(function () {
+        $('th a, tfoot a').click(function () {
+            //if querystring already contains selectedOrgId, remove it
+            var index = $(this).attr('href').indexOf("&selectedOrgId=");
+            if (index >= 0) {
+                var cleanUrl = $(this).attr('href').substring(0, index);
+                $(this).attr('href', cleanUrl);
+            }
+            var newUrl = $(this).attr('href') +
+                "&selectedOrgId=" +
+                $("#SelectedOrganisationId").val();
+            $('form').attr('action', newUrl).submit();
+            return false;
+        });
+    });
+
+    $(function() {
+        $('.edit-mode').hide();
+        $('.edit-user, .cancel-user').on('click',
+            function() {
+                var tr = $(this).parents('tr:first');
+                tr.find('.edit-mode, .display-mode').toggle();
+            });
+        $('.save-user').on('click',
+            function() {
+                var tr = $(this).parents('tr:first');
+                var repId = tr.find("#RepId").html();
+                var repDelRegId = tr.find("#RepDelRegId").val();
+                var repSkyldigFrom = tr.find("#RepSkyldigFrom").val();
+                var repSkyldigTom = tr.find("#RepSkyldigTom").val();
+                var orgId = $('#Organisation_Id').val();
+                var repRapporterarPerEnhet;
+                if (tr.find("#RepRapporterarPerEnhet").is(':checked')) {
+                    repRapporterarPerEnhet = true;
+                } else {
+                    repRapporterarPerEnhet = false;
+                }
+
+                //Creating AdmUppgiftsskyldighet JSON object
+                var uppgiftsskyldighet =
+                {
+                    "Id": repId,
+                    "DelregisterId": repDelRegId,
+                    "SkyldigFrom": repSkyldigFrom,
+                    "SkyldigTom": repSkyldigTom,
+                    "RapporterarPerEnhet": repRapporterarPerEnhet,
+                    "OrganisationId": orgId
+                };
+                //Posting AdmUppgiftsskyldighet object to controller's Update action method
+                $.ajax({
+                    url: '/Organisation/UpdateOrganisationsReportObligation',
+                    data: JSON.stringify(uppgiftsskyldighet),
+                    type: 'POST',
+                    contentType: 'application/json; charset=utf-8',
+                    success: function(data) {
+                        //location.reload();
+                        $("#pageContainer").html(data);
+                        tr.find('.edit-mode, .display-mode').toggle();
+                        $('#footer').hide();
+                        //alert('Record updated Successfully!!');
+                    }
+                });
+
+            });
+
+        $('.edit-user').on('click',
+            function() {
+                var tr = $(this).parents('tr:first');
+                var repSkyldigFrom = tr.find("#RepSkyldigFrom").val();
+                var repSkyldigTom = tr.find("#RepSkyldigTom").val();
+                var repRapporterarPerEnhet = tr.find("#RepRapporterarPerEnhet").val();
+
+                tr.find("#lblSkyldigFrom").text(repSkyldigFrom);
+                tr.find("#lblSkyldigTom").text(repSkyldigTom);
+                tr.find("#lblRappPerEnhet").text(repRapporterarPerEnhet);
+            });
+    });
+</script>
+
+
+
+@{
+    ViewBag.Title = "Index";
+}
+
+
+<div id="pageContainer">
+    <div class="row">
+        <div class="col-md-8 padding-top-55">
+            <h4>Administrera uppgiftsskyldighet för organisation</h4>
+            <br />
+            <section id="orgForm">
+                @using (Html.BeginForm("GetOrganisationsReportObligations", "Organisation", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="form-group">
+                        @Html.Label("Organisation", new { @class = "col-md-2 control-label" })
+                        <div class="col-md-10">
+                            @Html.DropDownListFor(m => m.SelectedOrganisationId, ViewBag.OrganisationList as SelectList, " - Välj kommunkod -", new { @class = "form-control", id = "ddlOrganisation" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <input type="submit" id="searchBtn" value="Sök uppgiftskyldighet" class="btn btn-default" />
+                        </div>
+                    </div>
+                }
+            </section>
+        </div>
+    </div>
+
+
+    @if (Model != null)
+    {
+        <br /><br />
+        <hr />
+
+        @Html.HiddenFor(m => m.SelectedOrganisationId)
+        @Html.ActionLink("Skapa ny uppgiftsskyldighet", "CreateReportObligation", "Organisation", new { selectedOrgId = Model.SelectedOrganisationId }, null)
+
+        <div id="gridContent" style="font-family: Arial; padding: 20px;">
+            @{
+                ViewBag.Title = "Administrera uppgiftsskyldighet";
+                var grid = new WebGrid(source: Model.ReportObligations, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "reportObligationsGrid");
+                grid.Pager(WebGridPagerModes.All);
+            }
+
+
+            @grid.GetHtml(tableStyle: "webgrid-table",
+                             headerStyle: "webgrid-header",
+                             footerStyle: "webgrid-footer",
+                             alternatingRowStyle: "webgrid-alternating-row",
+                             selectedRowStyle: "webgrid-selected-row",
+                             rowStyle: "webgrid-row-style",
+                             mode: WebGridPagerModes.All,
+                             columns: grid.Columns(
+                                grid.Column(null, null, format: @<text><input type="hidden" id="RepDelRegId" value="@item.DelregisterId" class="edit-mode form-control"/></text>, style: "colMiniminiWidth"),
+
+                                grid.Column("Id", format: @<text><span class="display-mode">@item.ID</span><label id="RepId" class="edit-mode colMinWidth">@item.Id</label></text>,style: "colMinWidth"),
+                                grid.Column("DelregisterKortnamn", "Delregister", format: @<text><span class="display-mode"><label id="lblDelregister">@item.DelregisterKortnamn</label></span>
+                                <input type="text" id="Delregister" value="@item.DelregisterKortnamn" class="edit-mode form-control"/></text>, style: "colMinWidth"),
+                                grid.Column("SkyldigFrom", "Fr.o.m", format: @<text><span class="display-mode"><label id="lblSkyldigFrom">@( item.SkyldigFrom != null ? item.SkyldigFrom.ToString("yyyy-MM-dd") : item.SkyldigFrom)</label></span>
+                                <input type="text" id="RepSkyldigFrom" value="@( item.SkyldigFrom != null ? item.SkyldigFrom.ToString("yyyy-MM-dd") : item.SkyldigFrom)" class="edit-mode form-control" /></text>, style: "col2Width"),
+
+                                grid.Column("SkyldigTom", "T.o.m", format: @<text><span class="display-mode"><label id="lblSkyldigTom">@( item.SkyldigTom != null ? item.SkyldigTom.ToString("yyyy-MM-dd") : item.SkyldigTom)</label></span>
+                                <input type="text" id="RepSkyldigTom" value="@( item.SkyldigTom != null ? item.SkyldigTom.ToString("yyyy-MM-dd") : item.SkyldigTom)" class="edit-mode form-control" /></text>, style: "col2Width"),
+
+                                grid.Column("RapporterarPerEnhet", "Per enhet", format: @<text>
+                                <span class="display-mode"><input id="lblRappPerEnhet" class="checkbox" name="select" type="checkbox" disabled @(item.RapporterarPerEnhet ? "checked='checked'" : "") value="@item.RapporterarPerEnhet"/></span>
+                                <input id="RepRapporterarPerEnhet" class="edit-mode checkbox" name="select" type="checkbox" @(item.RapporterarPerEnhet ? "checked='checked'" : "") value="@item.RapporterarPerEnhet"/></text>, style: "colMinWidth centered"),
+
+
+                                grid.Column(null, format: @<text>
+                                <button class="edit-user display-mode btn btn-default">Ändra</button>
+                                <button class="save-user edit-mode btn btn-default">Spara</button>
+                                <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
+                                </text>, style: "col3Width", canSort: false)
+                                                                                                                                                                                                                                                                                           ))
+
+        </div>
+    }
+</div>
+

@@ -1,0 +1,140 @@
+﻿@model InrappSos.AstridWeb.Models.ViewModels.LeveransViewModels.AdmForvantadfilViewModel
+
+@{
+    ViewBag.Title = "Skapa ny förväntad fil";
+}
+
+<script type="text/javascript">
+
+    var registerLista = @Html.Raw(Json.Encode(Model.RegisterList));
+
+    $(document).ready(function() {
+        $('#submitBtn').prop('disabled', true);
+    });
+
+    $(document).on('change', '#ddlDelregister', function () {
+        //$("#SelectedDelregisterId").val($('#ddlDelregister').val());
+        //alert($("#SelectedDelregisterId").val());
+        //alert($("#SelectedFilkravId").val());
+        var x = $('#ddlDelregister').val();
+        if ($('#ddlDelregister').val() === "") {
+            addSelectFilkrav("FileRequirementsSelect-container", []);
+            $('#submitBtn').prop('disabled', true);
+        } else {
+            $("#SelectedDelregisterId").val(parseInt($('#ddlDelregister').val()));
+            registerLista.forEach(function (register, index) {
+                if ($('#ddlDelregister').val() === register.Id.toString()) {
+                    if ($('#ddlDelregister').val() !== 0) {
+                        //populera dropdown för filkrav
+                        addSelectFilkrav("FileRequirementsSelect-container", register.Filkrav);
+                        $('#FileRequirementsSelect-container').show();
+                    }
+                }
+            });
+        }
+    });
+
+    $(document).on('change', '#ddlFilkrav', function () {
+        $("#SelectedFilkravId").val($('#ddlFilkrav').val());
+        var x = $('#ddlFilkrav').val();
+        if ($('#ddlFilkrav').val() === "0") {
+            $('#submitBtn').prop('disabled', true);
+        }
+        else if ($('#ddlDelregister').val() !== "" && $("#SelectedFilkravId").val() !== "") {
+            $('#submitBtn').prop('disabled', false);
+        }
+    });
+
+    function addSelectFilkrav(divname, filkrav) {
+        var newDiv = document.createElement('div');
+        var html = '<label class="control-label col-md-2" for="Filkrav">Filkrav</label><div class="col-md-10" style="width: 225px !important;"> <select id="ddlFilkrav" class="form-control ddl" style="width:275px;display:inline-block;padding-left:10px;">', i;
+        html += "<option value='0'> - Välj - </option>";
+        if (filkrav.length !== 0) {
+            for (i = 0; i < filkrav.length; i++) {
+                html += "<option value='" + filkrav[i].Id + "'>" + filkrav[i].Namn + "</option>";
+            }
+        }
+        html += '</select></span>';
+        newDiv.innerHTML = html;
+        document.getElementById(divname).innerHTML = newDiv.innerHTML;
+    }
+
+</script>
+@using (Html.BeginForm("CreateForvantadFil", "Leverans", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.SelectedDelregisterId)
+    @Html.HiddenFor(m => m.SelectedFilkravId)
+
+    <div class="form-horizontal padding-top-55">
+        <h4>Skapa förväntad fil</h4>
+        <hr />
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.Label("Delregister", new { @class = "control-label col-md-2" })
+            <div class="col-md-10" style="width: 225px !important;">
+                @Html.DropDownListFor(m => m.SelectedDelregisterId, ViewBag.DelregisterList as SelectList, " - Välj delregister -", new { id = "ddlDelregister", @class = "form-control", style = "width:275px !important" })
+            </div>
+        </div>
+
+        <div class="form-group" id="FileRequirementsSelect-container">
+            @Html.Label("Filkrav", new { @class = "control-label col-md-2" })
+            <div class="col-md-10" style="width: 225px !important;">
+                @Html.DropDownListFor(m => m.SelectedFilkravId, ViewBag.FilkravList as SelectList, " - Välj filkrav -", new { id = "ddlFilkrav", @class = "form-control", style = "width:275px !important" })
+            </div>
+        </div>
+
+        @*<div class="form-group">
+                @Html.LabelFor(model => model.FilkravId, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.FilkravId, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>*@
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Filmask, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Filmask, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Filmask, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Regexp, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextAreaFor(model => model.Regexp, 2, 500, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Regexp, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Obligatorisk, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Obligatorisk, new { htmlAttributes = new { @class = "", style = "height:20px; width:20px;" } })
+                @Html.ValidationMessageFor(model => model.Obligatorisk, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Tom, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Tom, new { htmlAttributes = new { @class = "", style="height:20px; width:20px;"  } })
+                @Html.ValidationMessageFor(model => model.Tom, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" id="submitBtn" value="Spara" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Tillbaka", "GetDirectorysExpectedFiles", "Leverans", new { regId = Model.SelectedRegisterId }, null)
+
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

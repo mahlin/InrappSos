@@ -1,0 +1,188 @@
+﻿@model InrappSos.AstridWeb.Models.ViewModels.RegisterViewModels.RegisterViewModel
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+@*<link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />*@
+
+<script type="text/javascript">
+
+
+    $(document).ready(function() {
+        if ($('#RegisterShortName').val() !== "") {
+            $(".createSubDir").show();
+        } else {
+            $(".createSubDir").hide();
+        }
+    });
+
+
+    $(function () {
+        $("#txtRegisterKortNamn").focus();
+    });
+
+    $(document).on('blur','input.regShortName',function() {
+            var tmp = $('input.regShortName').val();
+            $('#RegisterShortName').val($('input.regShortName').val());
+            if ($('#RegisterShortName').val() !== "") {
+                $(".createSubDir").show();
+            } else {
+                $(".createSubDir").hide();
+            }
+    });
+
+
+    $(function() {
+        $('.edit-mode').hide();
+        $('.edit-user, .cancel-user').on('click', function() {
+                var tr = $(this).parents('tr:first');
+                tr.find('.edit-mode, .display-mode').toggle();
+            });
+        $('.save-user').on('click',
+            function() {
+                var tr = $(this).parents('tr:first');
+                var subDirId = tr.find("#SubDirectoryId").html();
+                var subDirName = tr.find("#SubDirectoryName").val();
+                var subDirDescription = tr.find("#SubDirectoryDecsription").val();
+                var subDirShortName = tr.find("#SubDirectoryShortName").val();
+                var subDirFolder = tr.find("#SubDirectoryFolder").val();
+                var subDirForPortal;
+                if (tr.find("#SubDirectoryForPortal").is(':checked')) {
+                    subDirForPortal = true;
+                } else {
+                    subDirForPortal = false;
+                }
+
+                //Creating AdmDelregister JSON object
+                var subDir =
+                {
+                    "Id": subDirId,
+                    "Delregisternamn": subDirName,
+                    "Beskrivning": subDirDescription,
+                    "Kortnamn": subDirShortName,
+                    "Inrapporteringsportal": subDirForPortal,
+                    "Slussmapp": subDirFolder,
+                    "RegisterId": $('#SelectedDirectoryId').val()
+                };
+                //Posting AdmDelregister object to controller's Update action method
+                $.ajax({
+                    url: '/Register/UpdateSubDirectory',
+                    data: JSON.stringify(subDir),
+                    type: 'POST',
+                    contentType: 'application/json; charset=utf-8',
+                    success: function(data) {
+                        //location.reload();
+                        $("#pageContainer").html(data);
+                        tr.find('.edit-mode, .display-mode').toggle();
+                        $('#footer').hide();
+                        //alert('Record updated Successfully!!');
+                    }
+                });
+
+            });
+
+        $('.edit-user').on('click',
+            function() {
+                var tr = $(this).parents('tr:first');
+                var subDirId = tr.find("#SubDirectoryId").html();
+                var subDirName = tr.find("#SubDirectoryName").val();
+                var subDirDescription = tr.find("#SubDirectoryDecsription").val();
+                var subDirShortName = tr.find("#SubDirectoryShortName").val();
+                var subDirForPortal = tr.find("#SubDirectoryForPortal").val();
+                var subDirFolder = tr.find("#SubDirectoryFolder").val();
+
+                tr.find("#lblName").text(subDirName);
+                tr.find("#lblDescription").text(subDirDescription);
+                tr.find("#lblShortName").text(subDirShortName);
+                tr.find("#lblForPortal").text(subDirForPortal);
+                tr.find("#lblFolder").text(subDirFolder);
+            });
+    });
+</script>
+
+
+
+@{
+    ViewBag.Title = "Index";
+}
+
+
+<div id="pageContainer">
+    <div class="row">
+        <div class="col-md-8 padding-top-55">
+            <h4>Administrera delregister</h4>
+            <br />
+            <section id="orgForm">
+                @using (Html.BeginForm("GetSubDirectoriesForDirectory", "Register", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(m => m.RegisterShortName)
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.RegisterShortName, new { @class = "col-md-2 control-label" })
+                        <div class="col-md-10">
+                            @Html.TextBoxFor(m => m.RegisterShortName, new { @class = "form-control regShortName", id = "txtRegisterKortNamn" })
+                            @Html.ValidationMessageFor(m => m.RegisterShortName, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <input type="submit" value="Sök delregister" id="searchBtn" class="btn btn-default" />
+                        </div>
+                    </div>
+                }
+            </section>
+        </div>
+    </div>
+
+
+    @if (Model != null)
+    {
+        @Html.HiddenFor(m => m.SelectedDirectoryId)
+        @Html.HiddenFor(m => m.RegisterShortName)
+        <br /><br />
+        <hr />
+        <div class="row">
+            <div class="col-md-8">
+                @Html.ActionLink("Skapa nytt delregister", "CreateSubDirectory", "Register", new { regShortName = Model.RegisterShortName }, new {@class = "createSubDir" })
+            </div>
+            @Html.ActionLink("Tillbaka till register", "Index", "Register")
+        </div>
+
+        <div id="gridContent" style="font-family: Arial; padding: 20px;">
+            @{
+                ViewBag.Title = "Administrera delregister";
+                var grid = new WebGrid(source: Model.DelRegisters, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "subDirectoriesGrid");
+                grid.Pager(WebGridPagerModes.All);
+            }
+
+
+            @grid.GetHtml(tableStyle: "webgrid-table",
+                      headerStyle: "webgrid-header",
+                      footerStyle: "webgrid-footer",
+                      alternatingRowStyle: "webgrid-alternating-row",
+                      selectedRowStyle: "webgrid-selected-row",
+                      rowStyle: "webgrid-row-style",
+                      mode: WebGridPagerModes.All,
+                      columns: grid.Columns(
+                          grid.Column("ID", format: @<text><span class="display-mode">@item.ID</span><label id="SubDirectoryId" class="edit-mode colMinWidth">@item.Id</label></text>, style: "colMinWidth"),
+
+                        grid.Column("Delregisternamn", "Delregisternamn", format: @<text><span class="display-mode"><label id="lblName" style="width: 300px;">@item.Delregisternamn</label></span>
+                        <input type="text" id="SubDirectoryName" value="@item.Delregisternamn" class="edit-mode form-control" /></text>, style: "col4Width"),
+                             grid.Column("Beskrivning", "Beskrivning", format: @<text><span class="display-mode"><label id="lblDescription" class="longColumnText">@item.Beskrivning</label></span>
+                            <textarea id="SubDirectoryDecsription" value="" class="edit-mode form-control" style="height: 300px; width: 300px;">@item.Beskrivning</textarea></text>, style: "col4Width"),
+
+                                 grid.Column("Kortnamn", "Kortnamn", format: @<text><span class="display-mode"><label id="lblShortName">@item.Kortnamn</label></span>
+                                <input type="text" id="SubDirectoryShortName" value="@item.Kortnamn" class="edit-mode form-control" /></text>, style: "colMinWidth"),
+                                     grid.Column("Slussmapp", "Slussmapp", format: @<text><span class="display-mode"><label id="lblFolder">@item.Slussmapp</label></span>
+                                    <input type="text" id="SubDirectoryFolder" value="@item.Slussmapp" class="edit-mode form-control" /></text>, style: "colMinWidth"),
+                                         grid.Column("Inrapporteringsportal", "Inrapporteringsportal", format: @<text>
+                                            <span class="display-mode"><input id="lblForPortal" class="checkbox" name="select" type="checkbox" disabled @(item.Inrapporteringsportal ? "checked='checked'" : "") value="@item.Inrapporteringsportal" /></span>
+                                            <input id="SubDirectoryForPortal" class="edit-mode checkbox" name="select" type="checkbox" @(item.Inrapporteringsportal ? "checked='checked'" : "") value="@item.Inrapporteringsportal" /></text>, style: "colMinWidth centered"),
+
+                                              grid.Column(null, format: @<text>
+                                                <button class="edit-user display-mode btn btn-default">Ändra</button>
+                                                <button class="save-user edit-mode btn btn-default">Spara</button>
+                                                <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
+                                            </text>, style: "col3Width", canSort: false)))
+        </div>
+    }
+</div>
+

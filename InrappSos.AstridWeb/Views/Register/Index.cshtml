@@ -1,0 +1,147 @@
+﻿@using System.Configuration
+@using InrappSos.AstridWeb.Models.ViewModels
+@model InrappSos.AstridWeb.Models.ViewModels.RegisterViewModels.RegisterViewModel
+@{
+    ViewBag.Title = "Register";
+}
+
+@*<link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />*@
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        //Gå igenom alla rader och se om något fält behöver kortas
+        //var rows = $('#registersTable tr');
+        //rows.each(function () {
+        //    var txt = $(this).find('td:eq(2)').text();
+        //    var desc = $(this).find('td:eq(2)').find('#lblDescription').val();
+        //    var descBig = $(this).find('#RegisterDecsription').val();
+        //    if (txt.length > 20) {
+        //        var x = txt.substr(0, 20) + "... ";
+        //        //$(this).find('td:eq(2)').text(txt.substr(0, 20) + "... ");
+        //        $(this).find('#lblDescription').val(x);
+        //    }
+        //});
+    });
+
+    $(function() {
+        $('.edit-mode').hide();
+        $('.edit-user, .cancel-user').on('click',
+            function () {
+                var tr = $(this).parents('tr:first');
+                tr.find('.edit-mode, .display-mode').toggle();
+            });
+        $('.save-user').on('click',
+            function() {
+                var tr = $(this).parents('tr:first');
+                var regId = tr.find("#RegisterId").html();
+                var regName = tr.find("#RegisterName").val();
+                var regDescription = tr.find("#RegisterDecsription").val();
+                var regShortName = tr.find("#RegisterShortName").val();
+                var regForPortal;
+                if (tr.find("#RegisterForPortal").is(':checked')) {
+                    regForPortal = true;
+                } else {
+                    regForPortal = false;
+                }
+
+                //Creating AdmRegister JSON object
+                var register =
+                {
+                    "Id": regId,
+                    "Registernamn": regName,
+                    "Beskrivning": regDescription,
+                    "Kortnamn": regShortName,
+                    "Inrapporteringsportal": regForPortal
+                };
+                //Posting AdmRegister object to controller's Update action method
+                $.ajax({
+                    url: '/Register/UpdateDirectory',
+                    data: JSON.stringify(register),
+                    type: 'POST',
+                    contentType: 'application/json; charset=utf-8',
+                    success: function(data) {
+                        //location.reload();
+                        $("#pageContainer").html(data);
+                        tr.find('.edit-mode, .display-mode').toggle();
+                        $('#footer').hide();
+                        //alert('Record updated Successfully!!');
+                    }
+                });
+
+            });
+
+        $('.edit-user').on('click',
+            function() {
+                var tr = $(this).parents('tr:first');
+                var regId = tr.find("#RegisterId").html();
+                var regName = tr.find("#RegisterName").val();
+                var regDescription = tr.find("#RegisterDecsription").val();
+                var regShortName = tr.find("#RegisterShortName").val();
+                var regForPortal = tr.find("#RegisterForPortal").val();
+
+                tr.find("#lblName").text(regName);
+                tr.find("#lblDescription").text(regDescription);
+                tr.find("#lblShortName").text(regShortName);
+                tr.find("#lblForPortal").text(regForPortal);
+            });
+    });
+</script>
+
+@if (Model != null)
+{
+    <div id="pageContainer">
+    <div class="row">
+        <div class="col-md-8 padding-top-55">
+            <h4>Administrera register</h4>
+            <section id="registerForm">
+                <br /><br />
+                <hr />
+                @Html.ActionLink("Skapa nytt register", "CreateDirectory", "Register")
+
+                <div id="gridContent" style="font-family: Arial; padding: 20px;">
+                    @{
+                        ViewBag.Title = "Administrera register";
+                        var grid = new WebGrid(source: Model.Registers, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "registersGrid");
+                        grid.Pager(WebGridPagerModes.All);
+                    }
+
+                    @grid.GetHtml(htmlAttributes: new { id = "registersTable" }, 
+                        tableStyle: "webgrid-table",
+                        headerStyle: "webgrid-header",
+                        footerStyle: "webgrid-footer",
+                        alternatingRowStyle: "webgrid-alternating-row",
+                        selectedRowStyle: "webgrid-selected-row",
+                        rowStyle: "webgrid-row-style",
+                        mode: WebGridPagerModes.All,
+                        columns: grid.Columns(
+                            grid.Column("ID", format: @<text><span class="display-mode">@item.ID</span><label id="RegisterId" class="edit-mode colMinWidth">@item.Id</label></text>, style: "colMinWidth"),
+
+                            grid.Column("Registernamn", "Registernamn", format: @<text><span class="display-mode"><label id="lblName" style="width: 300px;">@item.Registernamn</label></span>
+                                <input type="text" id="RegisterName" value="@item.Registernamn" class="edit-mode form-control" /></text>, style: "col4Width"),
+                            grid.Column("Beskrivning", "Beskrivning", format: @<text><span class="display-mode"><label id="lblDescription" class="longColumnText" style="width: 200px;">
+                                        @item.Beskrivning  </label></span>
+                            <textarea id="RegisterDecsription" class="edit-mode form-control" style="height: 300px; width: 300px;">@item.Beskrivning</textarea></text>, style: "col4Width"),
+
+                            grid.Column("Kortnamn", "Kortnamn", format: @<text><span class="display-mode"><label id="lblShortName">@item.Kortnamn</label></span>
+                                <input type="text" id="RegisterShortName" value="@item.Kortnamn" class="edit-mode form-control" /></text>, style: "colMinWidth"),
+                            grid.Column("Inrapporteringsportal", "Inrapporteringsportal", format: @<text>
+                                <span class="display-mode"><input id="lblForPortal" class="checkbox" name="select" type="checkbox" disabled @(item.Inrapporteringsportal ? "checked='checked'" : "") value="@item.Inrapporteringsportal"/></span>
+                                <input id="RegisterForPortal" class="edit-mode checkbox" name="select" type="checkbox" @(item.Inrapporteringsportal ? "checked='checked'" : "") value="@item.Inrapporteringsportal"/></text>, style: "colMinWidth centered"),
+
+
+
+                            grid.Column(null, format: @<text>
+                                <button class="edit-user display-mode btn btn-default">Ändra</button>
+                                <button class="save-user edit-mode btn btn-default">Spara</button>
+                                <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
+                                @Html.ActionLink(HttpUtility.HtmlDecode("Administrera delregister &raquo;"), "GetSubDirectoriesForDirectory", "Register", new { regShortName = item.Kortnamn }, new { @class = "btn btn-primary" })
+                            </text>, style: "col3Width", canSort: false)))
+
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+}

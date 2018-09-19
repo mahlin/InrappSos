@@ -1,0 +1,85 @@
+﻿@model InrappSos.AstridWeb.Models.ViewModels.OrganisationViewModels.ReportObligationsViewModel
+
+@{
+    ViewBag.Title = "Skapa ny uppgiftsskyldighet";
+}
+
+<script>
+
+        //$(document).ready(function () {
+        //    alert("Orgid: " + $('#Organisationsid').val());
+        //});
+
+    $(document).on('change', '#ddlDelregister', function () {
+        $("#DelregisterId").val(parseInt($('#ddlDelregister').val()));
+    });
+
+</script>
+
+
+@using (Html.BeginForm("CreateReportObligation", "Organisation", new { selectedOrgId = Model.OrganisationId }, FormMethod.Post, null))
+    {
+    @Html.AntiForgeryToken()
+
+    @Html.HiddenFor(m => m.OrganisationId)
+
+    <div class="form-horizontal padding-top-55">
+        <h4>Skapa uppgiftsskyldighet</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.OrganisationId, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.OrganisationId, htmlAttributes: new { @class = "form-control", disabled = "disabled" })
+            </div>
+        </div>
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.Label("Delregister", new { @class = "control-label col-md-2" })
+            <div class="col-md-10" style="width: 225px !important;">
+                @Html.DropDownListFor(m => m.DelregisterId, ViewBag.DelregisterList as SelectList, " - Välj delregister -", new { id = "ddlDelregister", @class = "form-control", style = "width:275px !important" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.SkyldigFrom, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.SkyldigFrom, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.SkyldigFrom, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.SkyldigTom, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.SkyldigTom, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.SkyldigTom, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.RapporterarPerEnhet, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.RapporterarPerEnhet, new { htmlAttributes = new { @class = "checkbox" } })
+                @Html.ValidationMessageFor(model => model.RapporterarPerEnhet, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Spara" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+    <div>
+        @Html.ActionLink("Tillbaka", "GetOrganisationsReportObligations", "Organisation", new { selectedOrgId = Model.OrganisationId }, null)
+
+    </div>
+}
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

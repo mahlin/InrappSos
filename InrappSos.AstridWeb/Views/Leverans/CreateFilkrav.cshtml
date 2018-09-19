@@ -1,0 +1,145 @@
+﻿@model InrappSos.AstridWeb.Models.ViewModels.LeveransViewModels.AdmFilkravViewModel
+
+@{
+    ViewBag.Title = "Skapa nytt filkrav";
+}
+
+<script type="text/javascript">
+    $(document).on('change', '#ddlDelregister', function () {
+        $("#SelectedDelregisterId").val($('#ddlDelregister').val());
+    });
+
+    $(document).on('change', '#ddlInsamlingsfrekvens', function () {
+        $("#SelectedInsamlingsfrekvensId").val($('#ddlInsamlingsfrekvens').val());
+    });
+
+</script>
+
+
+    @using (Html.BeginForm("CreateFilkrav", "Leverans", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal padding-top-55">
+            <h4>Skapa filkrav</h4>
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            
+            <div class="form-group">
+                @Html.LabelFor(model => model.ForeskriftsId, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.ForeskriftsId, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.ForeskriftsId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.Label("Delregister", new { @class = "control-label col-md-2" })
+                @*@Html.LabelFor(model => model.DelregisterId, htmlAttributes: new {@class = "control-label col-md-2"})*@
+                <div class="col-md-10" style="width: 255px !important;">
+                    @Html.DropDownListFor(m => m.SelectedDelregisterId, ViewBag.DelregisterList as SelectList, " - Välj delregister -", new {id = "ddlDelregister", @class = "form-control", style = "max-width:250px !important"})
+                </div>
+            </div>
+            
+            <div class="form-group">
+                @Html.LabelFor(model => model.Namn, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Namn, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Namn, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            
+            <div class="form-group">
+                @Html.Label("Insamlingsfrekvens", new { @class = "control-label col-md-2" })
+                <div class="col-md-10" style="width: 255px !important;">
+                    @Html.DropDownListFor(m => m.InsamlingsfrekvensId, ViewBag.InsamlingsfrekvensList as SelectList, " - Välj insamlingsfrekvens -", new {id = "ddlInsamlingsfrekvens", @class = "form-control", style = "max-width:250px !important"})
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Uppgiftsstartdag, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Uppgiftsstartdag, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Uppgiftsstartdag, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Uppgiftslutdag, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Uppgiftslutdag, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Uppgiftslutdag, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Rapporteringsstartdag, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Rapporteringsstartdag, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Rapporteringsstartdag, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Rapporteringsslutdag, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Rapporteringsslutdag, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Rapporteringsslutdag, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.RapporteringSenastdag, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.RapporteringSenastdag, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.RapporteringSenastdag, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Paminnelse1dag, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Paminnelse1dag, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Paminnelse1dag, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Paminnelse2dag, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Paminnelse2dag, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Paminnelse2dag, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Paminnelse3dag, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Paminnelse3dag, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Paminnelse3dag, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.RapporteringEfterAntalManader, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.RapporteringEfterAntalManader, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.RapporteringEfterAntalManader, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.UppgifterAntalmanader, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.UppgifterAntalmanader, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.UppgifterAntalmanader, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Spara" class="btn btn-default" />
+                </div>
+            </div>
+        </div>
+    }
+
+    <div>
+        @Html.ActionLink("Tillbaka", "GetDirectorysFilerequirements", "Leverans", new { regId = Model.SelectedRegisterId }, null)
+
+    </div>
+
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }

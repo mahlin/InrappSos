@@ -1,0 +1,49 @@
+﻿/* Bootstrap customizations*/
+.navbar-inverse {
+    background-color: #FF8000;
+    border-color: #FF8000;
+}
+
+    .navbar-inverse .navbar-brand {
+        color: #FFFFFF;
+    }
+
+    .navbar-inverse .navbar-text {
+        color: #E8E8E8;
+    }
+
+    .navbar-inverse .navbar-nav > .open > a,
+    .navbar-inverse .navbar-nav > .open > a:hover,
+    .navbar-inverse .navbar-nav > .open > a:focus {
+        color: #fff;
+        background-color: #FF8000;
+    }
+
+    .navbar-inverse .navbar-nav > .dropdown > a .caret {
+        border-top-color: #E8E8E8;
+        border-bottom-color: #E8E8E8;
+    }
+
+@media (max-width: 767px) {
+    .navbar-inverse .navbar-nav .open .dropdown-menu > .active > a,
+    .navbar-inverse .navbar-nav .open .dropdown-menu > .active > a:hover,
+    .navbar-inverse .navbar-nav .open .dropdown-menu > .active > a:focus {
+        color: #fff;
+        background-color: #FF8000;
+    }
+
+    .navbar-inverse .navbar-nav .open .dropdown-menu > .disabled > a,
+    .navbar-inverse .navbar-nav .open .dropdown-menu > .disabled > a:hover,
+    .navbar-inverse .navbar-nav .open .dropdown-menu > .disabled > a:focus {
+        color: #FF8000;
+        background-color: transparent;
+    }
+}
+
+.navbar-inverse .navbar-link {
+    color: #E8E8E8;
+}
+
+.navbar-inverse .navbar-nav > li > a {
+    color: #E8E8E8;
+}

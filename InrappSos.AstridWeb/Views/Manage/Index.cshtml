@@ -1,0 +1,59 @@
+﻿@model InrappSos.AstridWeb.Models.ViewModels.IndexViewModel
+@{
+    ViewBag.Title = "Kontohantering";
+}
+
+<link href="~/Scripts//bootstrap-multiselect/dist/css/bootstrap-multiselect.css" rel="stylesheet" type="text/css" />
+<script src="~/Scripts/bootstrap-multiselect/dist/js/bootstrap-multiselect.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+
+    $(function() {
+        var commentCount = 2;
+        $("#btn").click(function() {
+            commentCount= commentCount + 2;
+            $("#comments").load("post-list.php", 
+                {
+                    commentNewCount: commentCount });
+        });
+    });
+
+
+    $(document).ready(function () {
+    });
+</script>
+
+<div class="padding-top-55">
+    <h2>@ViewBag.Title</h2> 
+</div>
+
+
+<p class="text-success">@ViewBag.StatusMessage</p>
+<div>
+    <h4>Ändra kontouppgifter för @Model.Namn</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>Lösenord:</dt>
+        <dd style="padding-left: 15px">
+            [
+            @if (Model.HasPassword)
+            {
+                @Html.ActionLink("Ändra lösenord", "ChangePassword")
+            }
+            else
+            {
+                @Html.ActionLink("Ange lösenord", "SetPassword")
+            }
+            ]
+        </dd>
+        
+        @*<dt>Namn:</dt>
+        <dd style="padding-left: 15px">
+            @(Model.Namn ?? "Saknas")
+            [
+            @Html.ActionLink("Ändra namn", "ChangeName")
+            ]
+        </dd>*@
+
+    </dl>
+</div>

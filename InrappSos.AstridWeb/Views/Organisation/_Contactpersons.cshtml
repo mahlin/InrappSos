@@ -1,0 +1,51 @@
+﻿@model InrappSos.AstridWeb.Models.ViewModels.OrganisationViewModels.OrganisationViewModel
+
+<hr />
+
+<h4>Kontaktpersoner</h4>
+
+<table class="table table-small">
+    <tr>
+        <th>
+            Namn
+        </th>
+        <th>
+            E-postadress
+        </th>
+        <th>
+            Mobilnummer
+        </th>
+        <th>
+            Mobilnummer verifierat
+        </th>
+        <th>
+            Skapad
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model.ContactPersons)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Namn)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PhoneNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PhoneNumberConfirmed)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SkapadDatum)
+            </td>
+        </tr>
+
+    }
+
+
+</table>
+

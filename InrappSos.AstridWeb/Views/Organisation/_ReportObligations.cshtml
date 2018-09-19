@@ -1,0 +1,47 @@
+﻿@model InrappSos.AstridWeb.Models.ViewModels.OrganisationViewModels.OrganisationViewModel
+
+<hr />
+
+<h4>Uppgiftsskyldighet</h4>
+
+<table class="table table-small">
+    <tr>
+        <th>
+            Delregister
+        </th>
+        <th>
+            Skyldig från
+        </th>
+        <th>
+            Skyldig tom
+        </th>
+        <th>
+            Rapportera per enhet
+        </th>
+    </tr>
+    @foreach (var item in Model.ReportObligations)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.DelregisterKortnamn)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SkyldigFrom)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SkyldigTom)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RapporterarPerEnhet)
+            </td>
+
+            @*<td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.ID }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+                </td>*@
+        </tr>
+    }
+
+
+</table>

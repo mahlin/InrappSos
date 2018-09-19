@@ -46,10 +46,43 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.2\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.2\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Owin, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Owin.2.2.2\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.7\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Owin, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.4.0.0\lib\net451\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.4.0.0\lib\net451\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.3.0.1\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Cookies, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.Cookies.3.0.1\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.OAuth, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.OAuth.3.0.1\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
+    </Reference>
+    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -141,29 +174,61 @@
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\LeveransController.cs" />
+    <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\NavigationController.cs" />
+    <Compile Include="Controllers\OrganisationController.cs" />
+    <Compile Include="Controllers\RegisterController.cs" />
+    <Compile Include="Controllers\SystemController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\ErrorManager.cs" />
+    <Compile Include="Helpers\FileLogWriter.cs" />
+    <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\CustomErrorPageModel.cs" />
+    <Compile Include="Models\CustomIdentityResultErrorDescriber.cs" />
+    <Compile Include="Models\CustomNavBarViewModel.cs" />
+    <Compile Include="Models\ViewModels\AdminViewModels.cs" />
+    <Compile Include="Models\ViewModels\LeveransViewModels.cs" />
+    <Compile Include="Models\ViewModels\ManageViewModels.cs" />
+    <Compile Include="Models\ViewModels\OrganisationViewModels.cs" />
+    <Compile Include="Models\ViewModels\RegisterViewModels.cs" />
+    <Compile Include="Models\ViewModels\SystemViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\Images\LoggaNew200px.png" />
+    <Content Include="Content\NavBarDev.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Scripts\bootstrap-multiselect\dist\css\bootstrap-multiselect.css" />
+    <Content Include="Scripts\bootstrap-multiselect\dist\js\bootstrap-multiselect.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Scripts\bootstrap-multiselect\dist\less\bootstrap-multiselect.less" />
+    <Content Include="ConnectionStrings.config" />
+    <Content Include="PrivateSettings.config" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery-ui-1.11.4.js" />
+    <Content Include="Scripts\jquery-ui-1.11.4.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
@@ -185,10 +250,72 @@
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Account\ConfirmEmail.cshtml" />
+    <Content Include="Views\Account\ConfirmRegistration.cshtml" />
+    <Content Include="Views\Account\ForgotPassword.cshtml" />
+    <Content Include="Views\Account\ForgotPasswordConfirmation.cshtml" />
+    <Content Include="Views\Account\Login.cshtml" />
+    <Content Include="Views\Account\Register.cshtml" />
+    <Content Include="Views\Account\ResetPassword.cshtml" />
+    <Content Include="Views\Account\ResetPasswordConfirmation.cshtml" />
+    <Content Include="Views\Account\SendCode.cshtml" />
+    <Content Include="Views\Admin\Index.cshtml" />
+    <Content Include="Views\Leverans\CreateFilkrav.cshtml" />
+    <Content Include="Views\Leverans\CreateForvantadeLeveranser.cshtml" />
+    <Content Include="Views\Leverans\CreateForvantadFil.cshtml" />
+    <Content Include="Views\Leverans\CreateForvantadLeverans.cshtml" />
+    <Content Include="Views\Leverans\CreateInsamlingsfrekvens.cshtml" />
+    <Content Include="Views\Leverans\EditFilkrav.cshtml" />
+    <Content Include="Views\Leverans\EditForvantadFil.cshtml" />
+    <Content Include="Views\Leverans\EditInsamlingsfrekvens.cshtml" />
+    <Content Include="Views\Leverans\EditLeverans.cshtml" />
+    <Content Include="Views\Leverans\Index.cshtml" />
+    <Content Include="Views\Leverans\LatestDeliveries.cshtml" />
+    <Content Include="Views\Leverans\ReminderInfo.cshtml" />
+    <Content Include="Views\Manage\ChangeName.cshtml" />
+    <Content Include="Views\Manage\ChangePassword.cshtml" />
+    <Content Include="Views\Manage\Index.cshtml" />
+    <Content Include="Views\Manage\ManageLogins.cshtml" />
+    <Content Include="Views\Manage\SetPassword.cshtml" />
+    <Content Include="Views\Organisation\CreateOrganisation.cshtml" />
+    <Content Include="Views\Organisation\CreateOrganisationUnit.cshtml" />
+    <Content Include="Views\Organisation\CreateReportObligation.cshtml" />
+    <Content Include="Views\Organisation\CreateUnitReportObligation.cshtml" />
+    <Content Include="Views\Organisation\EditContacts.cshtml" />
+    <Content Include="Views\Organisation\EditOrgUnits.cshtml" />
+    <Content Include="Views\Organisation\EditReportObligations.cshtml" />
+    <Content Include="Views\Organisation\EditUnitReportObligations.cshtml" />
+    <Content Include="Views\Organisation\Index.cshtml" />
+    <Content Include="Views\Organisation\_Contactpersons.cshtml" />
+    <Content Include="Views\Organisation\_OrgUnits.cshtml" />
+    <Content Include="Views\Organisation\_ReportObligations.cshtml" />
+    <Content Include="Views\Register\CreateDirectory.cshtml" />
+    <Content Include="Views\Register\CreateSubDirectory.cshtml" />
+    <Content Include="Views\Register\EditSubDirectories.cshtml" />
+    <Content Include="Views\Register\Index.cshtml" />
+    <Content Include="Views\Shared\CustomError.cshtml" />
+    <Content Include="Views\Shared\FileNotFound.cshtml" />
+    <Content Include="Views\Shared\Lockout.cshtml" />
+    <Content Include="Views\Shared\_LayoutUtv.cshtml" />
+    <Content Include="Views\Shared\_LoginAdmin.cshtml" />
+    <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\System\CreateFAQ.cshtml" />
+    <Content Include="Views\System\CreateFAQCategory.cshtml" />
+    <Content Include="Views\System\CreateHoliday.cshtml" />
+    <Content Include="Views\System\CreateInformationText.cshtml" />
+    <Content Include="Views\System\CreateSpecialDay.cshtml" />
+    <Content Include="Views\System\EditFAQCategory.cshtml" />
+    <Content Include="Views\System\EditFAQs.cshtml" />
+    <Content Include="Views\System\EditHolidays.cshtml" />
+    <Content Include="Views\System\EditInfoTexts.cshtml" />
+    <Content Include="Views\System\EditOpeningHours.cshtml" />
+    <Content Include="Views\System\EditSpecialDays.cshtml" />
+    <Content Include="Views\System\Index.cshtml" />
+    <Content Include="Views\System\_EditSelectedFAQ.cshtml" />
+    <Content Include="Views\System\_EditText.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
@@ -202,6 +329,20 @@
   <ItemGroup>
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-1.10.2.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\InrappSos.ApplicationService\InrappSos.ApplicationService.csproj">
+      <Project>{97874577-75b0-40a7-a195-a25a2f0c16cb}</Project>
+      <Name>InrappSos.ApplicationService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\InrappSos.DataAccess\InrappSos.DataAccess.csproj">
+      <Project>{3f4ed4fa-27a2-4b11-bce8-5cede12297b2}</Project>
+      <Name>InrappSos.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\InrappSos.DomainModel\InrappSos.DomainModel.csproj">
+      <Project>{d48c58e7-ff52-45e0-8ce2-7d5ebde99b7f}</Project>
+      <Name>InrappSos.DomainModel</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -1,0 +1,46 @@
+﻿@model InrappSos.AstridWeb.Models.ViewModels.OrganisationViewModels.OrganisationViewModel
+
+<script>
+    var x =  @Html.Raw(Model.Organisation.Id);
+</script>
+
+<hr />
+
+<h4>Organisationsenheter</h4>
+
+<table class="table table-small">
+    <tr>
+        <th>
+            Enhetsnamn
+        </th>
+        <th>
+            Enhetskod
+        </th>
+        <th>
+            Aktiv från
+        </th>
+        <th>
+            Aktiv tom
+        </th>
+    </tr>
+    @foreach (var item in Model.OrgUnits)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Enhetsnamn)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Enhetskod)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AktivFrom)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AktivTom)
+            </td>
+
+        </tr>
+    }
+
+
+</table>

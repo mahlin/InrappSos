@@ -1,0 +1,104 @@
+﻿@using System.Configuration
+@using InrappSos.AstridWeb.Models.ViewModels
+@model InrappSos.AstridWeb.Models.ViewModels.LeveransViewModels.LeveransViewModel
+@{
+    ViewBag.Title = "Insamlingsfrekvens";
+}
+
+@*<link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />*@
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+    });
+
+    $(function() {
+        $('.edit-mode').hide();
+        $('.edit-user, .cancel-user').on('click',
+            function () {
+                var tr = $(this).parents('tr:first');
+                tr.find('.edit-mode, .display-mode').toggle();
+            });
+        $('.save-user').on('click',
+            function() {
+                var tr = $(this).parents('tr:first');
+                var id = tr.find("#InsamlingsfrekvensId").html();
+                var insamlingsfrekvens = tr.find("#Insamlingsfrekvens").val();
+                
+                //Creating AdmInsamlingsfrekvens JSON object
+                var admInsamlingsfrekvens =
+                {
+                    "Id": id,
+                    "Insamlingsfrekvens": insamlingsfrekvens
+                    };
+
+                //Posting AdmInsamlingsfrekvens object to controller's Update action method
+                $.ajax({
+                    url: '/Leverans/UpdateInsamlingsfrekvens',
+                    data: JSON.stringify({
+                        filkrav: admInsamlingsfrekvens
+                    }),
+                    type: 'POST',
+                    contentType: 'application/json; charset=utf-8',
+                    success: function(data) {
+                        //location.reload();
+                        $("#pageContainer").html(data);
+                        tr.find('.edit-mode, .display-mode').toggle();
+                        $('#footer').hide();
+                        //alert('Record updated Successfully!!');
+                    }
+                });
+
+            });
+
+        $('.edit-user').on('click',
+            function() {
+                var tr = $(this).parents('tr:first');
+                var insamlingsfrekvens = tr.find("#Insamlingsfrekvens").val();
+
+                tr.find("#lblInsamlingsfrekvens").text(insamlingsfrekvens);
+            });
+    });
+</script>
+<div id="pageContainer">
+    <div class="row">
+        <div class="col-md-8 padding-top-55">
+            <h4>Administrera insamlingsfrekvenser</h4>
+            <br />
+        </div>
+    </div>
+
+    @if (Model != null)
+    {
+        @Html.ActionLink("Skapa ny insamlingsfrekvens", "CreateInsamlingsfrekvens", "Leverans")
+
+        <div id="gridContent" style="font-family: Arial; padding: 20px;">
+            @{
+                ViewBag.Title = "Administrera insamlingsfrekvenser";
+                var grid = new WebGrid(source: Model.Insamlingsfrekvenser, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "filkravGrid");
+                grid.Pager(WebGridPagerModes.All);
+            }
+
+            @grid.GetHtml(htmlAttributes: new {id = "InsamlingsfrekvensTable"},
+                tableStyle: "webgrid-table300",
+                headerStyle: "webgrid-header",
+                footerStyle: "webgrid-footer",
+                alternatingRowStyle: "webgrid-alternating-row",
+                selectedRowStyle: "webgrid-selected-row",
+                rowStyle: "webgrid-row-style",
+                mode: WebGridPagerModes.All,
+                columns: grid.Columns(
+                    grid.Column("Id", format: @<text><span class="display-mode">@item.ID</span><label id="InsamlingsfrekvensId" class="edit-mode colMinWidth">@item.Id</label></text>, style: "colMinWidth"),
+                    grid.Column("Insamlingsfrekvens", "Insamlingsfrekvens", format: @<text><span class="display-mode"><label id="lblInsamlingsfrekvens">@item.Insamlingsfrekvens</label></span>
+                                                                                        <input type="text" id="Insamlingsfrekvens" value="@item.Insamlingsfrekvens" class="edit-mode form-control"/></text>, style: "col1Width"),
+
+                    grid.Column(null, format: @<text>
+                                                  <button class="edit-user display-mode btn btn-default">Ändra</button>
+                                                  <button class="save-user edit-mode btn btn-default">Spara</button>
+                                                  <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
+                                               </text>, style: "col3Width", canSort: false)))
+
+        </div>
+    }
+</div>

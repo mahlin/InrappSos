@@ -1,0 +1,140 @@
+﻿@model InrappSos.AstridWeb.Models.ViewModels.LeveransViewModels.AdmForvantadleveransViewModel
+
+@{
+    ViewBag.Title = "Skapa ny förväntad leverans";
+}
+
+<script type="text/javascript">
+
+    var registerLista = @Html.Raw(Json.Encode(Model.RegisterList));
+
+    $(document).on('change', '#ddlDelregister', function () {
+        //$("#SelectedDelregisterId").val($('#ddlDelregister').val());
+        //alert($("#SelectedDelregisterId").val());
+        //alert($("#SelectedFilkravId").val());
+        if ($('#ddlDelregister').val() === "") {
+            addSelectFilkrav("FileRequirementsSelect-container", []);
+        } else {
+            registerLista.forEach(function (register, index) {
+                if ($('#ddlDelregister').val() === register.Id.toString()) {
+                    if ($('#ddlDelregister').val() !== 0) {
+                        //populera dropdown för filkrav
+                        addSelectFilkrav("FileRequirementsSelect-container", register.Filkrav);
+                        $('#FileRequirementsSelect-container').show();
+                    }
+                }
+            });
+        }
+    });
+
+    $(document).on('change', '#ddlFilkrav', function () {
+        $("#SelectedFilkravId").val($('#ddlFilkrav').val());
+    });
+
+    function addSelectFilkrav(divname, filkrav) {
+        var newDiv = document.createElement('div');
+        var html = '<label class="control-label col-md-2" for="Filkrav">Filkrav</label><div class="col-md-10" style="width: 225px !important;"> <select id="ddlFilkrav" class="form-control ddl" style="width:275px;display:inline-block;padding-left:10px;">', i;
+        html += "<option value='0'> - Välj - </option>";
+        if (filkrav.length !== 0) {
+            for (i = 0; i < filkrav.length; i++) {
+                html += "<option value='" + filkrav[i].Id + "'>" + filkrav[i].Namn + "</option>";
+            }
+        }
+        html += '</select></span>';
+        newDiv.innerHTML = html;
+        document.getElementById(divname).innerHTML = newDiv.innerHTML;
+    }
+
+</script>
+
+
+@using (Html.BeginForm("CreateForvantadLeverans", "Leverans", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.SelectedFilkravId)
+    @Html.HiddenFor(m => m.SelectedRegisterId)
+    @Html.HiddenFor(m => m.Pagaende)
+
+
+
+    <div class="form-horizontal padding-top-55">
+        <h4>Skapa förväntad leverans</h4>
+        <hr />
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.Label("Delregister", new { @class = "control-label col-md-2" })
+            <div class="col-md-10" style="width: 225px !important;">
+                @Html.DropDownListFor(m => m.SelectedDelregisterId, ViewBag.DelregisterList as SelectList, " - Välj delregister -", new { id = "ddlDelregister", @class = "form-control", style = "width:275px !important" })
+            </div>
+        </div>
+
+        <div class="form-group" id="FileRequirementsSelect-container">
+            @Html.Label("Filkrav", new { @class = "control-label col-md-2" })
+            <div class="col-md-10" style="width: 225px !important;">
+                @Html.DropDownListFor(m => m.SelectedFilkravId, ViewBag.FilkravList as SelectList, " - Välj filkrav -", new { id = "ddlFilkrav", @class = "form-control", style = "width:275px !important" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Period, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Period, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Period, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Uppgiftsstart, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Uppgiftsstart, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Uppgiftsstart, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Uppgiftsslut, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Uppgiftsslut, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Uppgiftsslut, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Rapporteringsstart, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Rapporteringsstart, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Rapporteringsstart, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Rapporteringsslut, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Rapporteringsslut, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Rapporteringsslut, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Rapporteringsenast, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Rapporteringsenast, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Rapporteringsenast, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Spara" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Tillbaka", "GetDirectorysExpectedDeliveries", "Leverans", new { filterPgnde = Model.Pagaende, regId = Model.SelectedRegisterId }, null)
+
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

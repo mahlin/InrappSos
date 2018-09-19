@@ -1,0 +1,165 @@
+﻿@using InrappSos.AstridWeb.Models.ViewModels
+@model InrappSos.AstridWeb.Models.ViewModels.SystemViewModels.SystemViewModel
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+@*<link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />*@
+
+
+<script type="text/javascript">
+
+    var infoLista = @Html.Raw(Json.Encode(Model.InfoPages));
+
+    $(document).ready(function () {
+        //alert("Här");
+        //$('#editInfoText').hide();
+    });
+
+    function showTextarea(infoType) {
+        //$('#SelectedInfo').val(infoType);
+        //alert($('#SelectedInfo').val());
+        infoLista.forEach(function (info, index) {
+            if (info.Informationstyp === infoType) {
+                $('#SelectedInfoId').val(info.Id);
+                $('#textArea').html(info.Text);
+            }
+        });
+    }
+
+    //$(document).on('submit', '#infoTextForm', function () {
+    //    alert($('#SelectedInfo').val());
+    //    });
+
+    $(function () {
+        var tr = $('#infoTextsTable').find('tr');
+        tr.bind('click', function (event) {
+            var d = $(this).find("#lblInfoTyp").html();
+            showTextarea($(this).find("#lblInfoTyp").html());
+        });
+    });
+
+
+
+
+    $(function () {
+        $('.edit-mode').hide();
+        $('.edit-user').on('click', function () {
+            var tr = $(this).parents('tr:first');
+            tr.find('.edit-mode, .display-mode').toggle();
+        });
+
+        $('.cancel-user').on('click', function () {
+            var tr = $(this).parents('tr:first');
+            tr.find('.edit-mode, .display-mode').toggle();
+            var x = $('#textArea').html();
+            var y = $('#textArea').text();
+            var z = $('#textArea').val();
+            $('#textArea').html("");
+        });
+        $('.save-user').on('click', function () {
+            var tr = $(this).parents('tr:first');
+            var infoId = tr.find("#InfoId").html();
+            var informationsTyp = $('#SelectedInfo').val();
+
+            //Creating AdmInformation JSON object
+            var infoText =
+            {
+                "Id": infoId,
+                "Informationstyp": informationsTyp
+            };
+            //Posting AdmInformation object to controller's Update action method
+            $.ajax({
+                url: '/System/UpdateInformationText',
+                data: JSON.stringify(infoText),
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    //location.reload();
+                    $("#pageContainer").html(data);
+                    tr.find('.edit-mode, .display-mode').toggle();
+                    $('#footer').hide();
+                    //alert('Record updated Successfully!!');
+                }
+            });
+
+        });
+
+        //$('.edit-user').on('click', function () {
+        //    var tr = $(this).parents('tr:first');
+        //    var infoId = tr.find("#InfoId").html();
+        //    var informationsTyp = tr.find("#InfoTyp").val();
+
+        //    tr.find("#lblInfoTyp").text(informationsTyp);
+        //});
+    })
+</script>
+
+
+
+@{
+    ViewBag.Title = "Index";
+}
+
+
+<div id="pageContainer">
+    <div class="row">
+        <div class="col-md-8 padding-top-55">
+            <h4>Administrera informationstexter</h4>
+        </div>
+    </div>
+
+    @if (Model != null)
+    {
+        @Html.HiddenFor(m => m.InfoPages)
+        @Html.HiddenFor(x => Model.SelectedInfo)
+        <hr />
+
+        @Html.ActionLink("Skapa ny informationstext", "CreateInformationText", "System")
+
+        <div id="gridContent" style="font-family: Arial; padding: 20px;">
+            @{
+        ViewBag.Title = "Administrera informationstexter";
+        var grid = new WebGrid(source: Model.InfoPages, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "infoTextsGrid");
+        grid.Pager(WebGridPagerModes.All);
+            }
+
+
+            @grid.GetHtml(htmlAttributes: new { id = "infoTextsTable" },
+                            tableStyle: "webgrid-table",
+                            headerStyle: "webgrid-header",
+                            footerStyle: "webgrid-footer",
+                            alternatingRowStyle: "webgrid-alternating-row",
+                            selectedRowStyle: "webgrid-selected-row",
+                            rowStyle: "webgrid-row-style",
+                            mode: WebGridPagerModes.All,
+                            columns: grid.Columns(
+                                grid.Column("ID", format: @<text><label id="InfoId">@item.Id</label></text>, style: "colMiniminiWidth"),
+                                grid.Column("Informationstyp", format: @<text><label id="lblInfoTyp">@item.Informationstyp</label></text>, style: "col2Width")))
+        </div>
+
+        <div id="editInfoText">
+            @using (Html.BeginForm("UpdateInfoText", "System", FormMethod.Post, new { id = "infoTextForm" }))
+    {
+        @Html.HiddenFor(x => Model.SelectedInfoId)
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-8">
+                    @Html.Label("Informationstext: ", new { @class = "control-label" })
+                    @Html.TextAreaFor(m => Model.SelectedInfoText, 10, 100, new { @class = "form-control", id = "textArea", style = "max-width:95% !important;" })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Spara" class="btn btn-default" />
+            </div>
+        </div>
+}
+        </div>
+    }
+
+
+    @*@Html.Partial("_EditText", Model)*@
+</div>
+
+<br /><br />
+

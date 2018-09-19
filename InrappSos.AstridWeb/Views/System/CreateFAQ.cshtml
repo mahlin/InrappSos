@@ -1,0 +1,100 @@
+﻿@model InrappSos.AstridWeb.Models.ViewModels.SystemViewModels.FAQViewModel
+
+@{
+    ViewBag.Title = "Skapa ny FAQ";
+}
+<script>
+    $(function () {
+        $("#txtRegisterId").focus();
+    });
+
+    $(document).on('change', '#ddlRegister', function () {
+        $("#SelectedRegisterId").val($('#ddlRegister').val());
+    });
+
+    //$(document).on('submit', '#faqForm', function (e) {
+    //    var x = $('#SelectedRegisterId').val();
+    //    if ($('#SelectedRegisterId').val() === "0") {
+    //        alert("Inget register valt");
+    //        e.preventDefault();
+    //    } else {
+    //        alert("Valt registerid: " + $('#SelectedRegisterId').val());
+    //    }
+    //});
+
+</script>
+
+
+@using (Html.BeginForm("CreateFAQ", "System", FormMethod.Post, new { id = "faqForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.FAQkategoriId)
+    @Html.HiddenFor(m => m.SelectedRegisterId)
+
+    <div class="form-horizontal padding-top-55">
+        <h4>Skapa FAQ</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.FAQkategoriId, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.FAQkategoriId, htmlAttributes: new { @class = "form-control", disabled = "disabled" })
+            </div>
+        </div>
+
+        @*<div class="form-group">
+            @Html.LabelFor(model => model.RegisterId, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.RegisterId, new { htmlAttributes = new { @class = "form-control", id = "txtRegisterId" } })
+                @Html.ValidationMessageFor(model => model.RegisterId, "", new { @class = "text-danger" })
+            </div>
+        </div>*@
+
+        <div class="form-group">
+            @Html.Label("Register", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(m => m.SelectedRegisterId, ViewBag.RegisterList as SelectList, " - Välj Register -", new {id = "ddlRegister", @class = "form-control", style = "max-width:150px !important"})
+            </div>
+        </div>
+        
+        <div  class="form-group">
+            @Html.Label("Sorteringsordning", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10" style="margin-bottom: 15px !important">
+                @Html.EditorFor(model => model.Sortering, new { htmlAttributes = new { @class = "form-control",style = "max-width:150px !important" } })
+                @Html.ValidationMessageFor(model => model.Sortering, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Fraga, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Fraga, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Fraga, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Svar, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextAreaFor(m => Model.Svar, 10, 100, new { @class = "form-control", id = "textArea", style = "max-width:95% !important;" })
+
+                @Html.ValidationMessageFor(model => model.Svar, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Spara" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Tillbaka", "GetFAQs", "System", new { faqCatId = Model.FAQkategoriId }, null)
+
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

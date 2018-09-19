@@ -1,0 +1,65 @@
+﻿@model InrappSos.AstridWeb.Models.ViewModels.SystemViewModels.AdmHelgdagViewModel
+
+@{
+    ViewBag.Title = "Lägg till helgdag";
+}
+
+<script type="text/javascript">
+    $(document).on('change', '#ddlInformation', function () {
+        $("#SelectedInformationId").val($('#ddlInformation').val());
+    });
+
+</script>
+
+
+    @using (Html.BeginForm("CreateHoliday", "System", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.SelectedInformationId)
+
+        <div class="form-horizontal padding-top-55">
+            <h4>Lägg till helgdag</h4>
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            
+  
+            <div class="form-group">
+                @Html.Label("Informationstyp", new { @class = "control-label col-md-2" })
+                @*@Html.LabelFor(model => model.DelregisterId, htmlAttributes: new {@class = "control-label col-md-2"})*@
+                <div class="col-md-10" style="width: 225px !important;">
+                    @Html.DropDownListFor(m => m.SelectedInformationId, ViewBag.InformationTextList as SelectList, " - Välj informationstyp -", new {id = "ddlInformation", @class = "form-control", style = "max-width:250px !important"})
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Helgdatum, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Helgdatum, new { htmlAttributes = new { @class = "form-control", @placeholder = "ÅÅÅÅ-MM-dd" } })
+                    @Html.ValidationMessageFor(model => model.Helgdatum, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            
+            <div class="form-group">
+                @Html.LabelFor(model => model.Helgdag, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Helgdag, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Helgdag, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Spara" class="btn btn-default" />
+                </div>
+            </div>
+        </div>
+    }
+
+    <div>
+        @Html.ActionLink("Tillbaka", "GetHolidays", "System")
+
+    </div>
+
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }

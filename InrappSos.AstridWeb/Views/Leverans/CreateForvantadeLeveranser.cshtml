@@ -1,0 +1,308 @@
+﻿@model InrappSos.AstridWeb.Models.ViewModels.LeveransViewModels.LeveransViewModel
+@{
+    ViewBag.Title = "Skapa förväntade leveranser";
+}
+
+<script type="text/javascript">
+
+    var registerLista = @Html.Raw(Json.Encode(Model.RegisterList));
+    var utkastLista = @Html.Raw(Json.Encode(Model.BlivandeForvantadeLeveranser));
+
+    $(document).ready(function () {
+
+        $("#gridContent tbody tr").each(function(i, row) {
+            var $actualRow = $(row);
+            var x = $actualRow.find("#AlreadyExists").val();
+            if ($actualRow.find("#AlreadyExists").val() === 'True') {
+                $actualRow.css('background-color', '#a3a3c2');
+            }
+        });
+
+        //Sätt drop för filkravid
+        if ($('#SelectedDelregisterId') != null) {
+            delregChange();
+            $('#ddlFilkrav').val($('#SelectedFilkravId').val());
+        }
+
+        var x = utkastLista;
+        if (utkastLista != null) {
+            $('#dotText').show();
+            $('#showDraftBtn').hide();
+            $('#saveBtn').show();
+            $('#clearBtn').show();
+            $('#ddlYear').prop('disabled', true);
+            $('#ddlDelregister').prop('disabled', true);
+            $('#ddlFilkrav').prop('disabled', true);
+
+        } else {
+            $('#dotText').hide();
+            $('#saveBtn').hide();
+            $('#clearBtn').hide();
+            $('#showDraftBtn').show();
+            $('#ddlYear').prop('disabled', false);
+            $('#ddlDelregister').prop('disabled', false);
+            $('#ddlFilkrav').prop('disabled', false);
+
+        }
+
+    });
+
+    $(document).on('click', '#clearBtn', function () {
+        utkastLista = null;
+        $('#dotText').hide();
+        $('#BlivandeForvantadeLeveranser').empty();
+        $('#gridContent').hide();
+        $('#saveBtn').hide();
+        $('#clearBtn').hide();
+        $('#showDraftBtn').show();
+        $('#ddlYear').prop('disabled', false);
+        $('#ddlDelregister').prop('disabled', false);
+        $('#ddlFilkrav').prop('disabled', false);
+    });
+
+    //$(document).on('click', '#saveBtn', function () {
+    //    var x = $('#BlivandeBlivandeForvantadeLeveranser').val();
+    //    var y = utkastLista;
+    //    var z = $(this);
+    //    //var data = { 'forvLevLista': utkastLista };
+        
+    //    $.ajax({
+    //        url: '/Leverans/SaveForvantadeLeveranser',
+    //        type: 'POST',
+    //        contentType: 'application/json; charset=utf-8',
+    //        //data: JSON.stringify(data),
+    //        data: $(this).serialize(), // get the form data
+    //        success: function (data) {
+    //            //On ajax success do this
+    //            alert("success!");
+    //        }
+    //    });
+    //    //utkastLista = null;
+    //    //$('#BlivandeForvantadeLeveranser').empty();
+    //    //$('#gridContent').hide();
+    //    //$('#saveBtn').hide();
+    //    //$('#clearBtn').hide();
+    //    //$('#showDraftBtn').show();
+    //});
+
+    $(document).on('change', '#ddlDelregister', function () {
+        delregChange();
+        //if ($('#ddlDelregister').val() === "") {
+        //    addSelectFilkrav("FileRequirementsSelect-container", []);
+        //} else {
+        //    registerLista.forEach(function (register, index) {
+        //        if ($('#ddlDelregister').val() === register.Id.toString()) {
+        //            if ($('#ddlDelregister').val() !== 0) {
+        //                //populera dropdown för filkrav
+        //                addSelectFilkrav("FileRequirementsSelect-container", register.Filkrav);
+        //                $('#FileRequirementsSelect-container').show();
+        //            }
+        //        }
+        //    });
+        //}
+    });
+
+    function delregChange() {
+        $('#SelectedDelregisterId').val($('#ddlDelregister').val());
+        if ($('#ddlDelregister').val() === "") {
+            addSelectFilkrav("FileRequirementsSelect-container", []);
+        } else {
+            registerLista.forEach(function (register, index) {
+                if ($('#ddlDelregister').val() === register.Id.toString()) {
+                    if ($('#ddlDelregister').val() !== 0) {
+                        //populera dropdown för filkrav
+                        addSelectFilkrav("FileRequirementsSelect-container", register.Filkrav);
+                        $('#FileRequirementsSelect-container').show();
+                    }
+                }
+            });
+        }
+    }
+
+    $(document).on('change', '#ddlFilkrav', function () {
+        $("#SelectedFilkravId").val($('#ddlFilkrav').val());
+    });
+
+    function addSelectFilkrav(divname, filkrav) {
+        var newDiv = document.createElement('div');
+        var html = '<label class="control-label col-md-2" for="Filkrav">Filkrav</label><div class="col-md-10" style="width: 225px !important;"> <select id="ddlFilkrav" class="form-control ddl" style="width:275px;display:inline-block;padding-left:10px;">', i;
+        html += "<option value='0'> - Välj - </option>";
+        if (filkrav.length !== 0) {
+            for (i = 0; i < filkrav.length; i++) {
+                html += "<option value='" + filkrav[i].Id + "'>" + filkrav[i].Namn + "</option>";
+            }
+        }
+        html += '</select></span>';
+        newDiv.innerHTML = html;
+        document.getElementById(divname).innerHTML = newDiv.innerHTML;
+    }
+
+</script>
+
+
+<div class="form-horizontal padding-top-55">
+    <h4>Skapa förväntade leveranser</h4>
+    <hr />
+
+    @using (Html.BeginForm("CreateForvantadeLeveranserDraft", "Leverans", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.SelectedFilkravId)
+        @Html.HiddenFor(m => m.SelectedRegisterId)
+        @Html.HiddenFor(m => m.FilterPagaende)
+
+        @*if (Model.BlivandeForvantadeLeveranser != null)
+            {
+                for (int i = 0; i < Model.BlivandeForvantadeLeveranser.Count(); i++)
+                {
+                    @Html.HiddenFor(m => m.BlivandeForvantadeLeveranser[i].Id)
+                    @Html.HiddenFor(x => x.BlivandeForvantadeLeveranser[i].FilkravId)
+                    @Html.HiddenFor(x => x.BlivandeForvantadeLeveranser[i].FilkravNamn)
+                    @Html.HiddenFor(m => m.BlivandeForvantadeLeveranser[i].DelregisterId)
+                    @Html.HiddenFor(x => x.BlivandeForvantadeLeveranser[i].SelectedRegisterId)
+                    @Html.HiddenFor(x => x.BlivandeForvantadeLeveranser[i].SelectedDelregisterId)
+                    @Html.HiddenFor(m => m.BlivandeForvantadeLeveranser[i].SelectedFilkravId)
+                    @Html.HiddenFor(x => x.BlivandeForvantadeLeveranser[i].Period)
+                    @Html.HiddenFor(x => x.BlivandeForvantadeLeveranser[i].Uppgiftsstart)
+                    @Html.HiddenFor(m => m.BlivandeForvantadeLeveranser[i].Uppgiftsslut)
+                    @Html.HiddenFor(x => x.BlivandeForvantadeLeveranser[i].Rapporteringsstart)
+                    @Html.HiddenFor(x => x.BlivandeForvantadeLeveranser[i].Rapporteringsslut)
+                    @Html.HiddenFor(x => x.BlivandeForvantadeLeveranser[i].Rapporteringsenast)
+                    @Html.HiddenFor(m => m.BlivandeForvantadeLeveranser[i].Paminnelse1)
+                    @Html.HiddenFor(x => x.BlivandeForvantadeLeveranser[i].Paminnelse2)
+                    @Html.HiddenFor(x => x.BlivandeForvantadeLeveranser[i].Paminnelse3)
+                    @Html.HiddenFor(x => x.BlivandeForvantadeLeveranser[i].Pagaende)
+                }
+            }*@
+
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.SelectedYear, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10" style="width: 225px !important;">
+                @Html.DropDownListFor(m => m.SelectedYear, ViewBag.YearList as SelectList, " - Välj år -", new { id = "ddlYear", @class = "form-control", style = "width:275px !important" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Delregister", new { @class = "control-label col-md-2" })
+            <div class="col-md-10" style="width: 225px !important;">
+                @Html.DropDownListFor(m => m.SelectedDelregisterId, ViewBag.DelregisterList as SelectList, " - Välj delregister -", new { id = "ddlDelregister", @class = "form-control", style = "width:275px !important" })
+            </div>
+        </div>
+
+        <div class="form-group" id="FileRequirementsSelect-container">
+            @Html.Label("Filkrav", new { @class = "control-label col-md-2" })
+            <div class="col-md-10" style="width: 225px !important;">
+                @Html.DropDownListFor(m => m.SelectedFilkravId, ViewBag.FilkravList as SelectList, " - Välj filkrav -", new { id = "ddlFilkrav", @class = "form-control", style = "width:275px !important" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" id="showDraftBtn" value="Visa utkast" class="btn btn-default" />
+            </div>
+        </div>
+
+    }
+
+
+    @if (Model.BlivandeForvantadeLeveranser != null)
+    {
+
+        using (Html.BeginForm("SaveForvantadeLeveranser", "Leverans", FormMethod.Post))
+        {
+            @Html.HiddenFor(m => m.SelectedDelregisterId)
+            for (int i = 0; i < Model.BlivandeForvantadeLeveranser.Count(); i++)
+            {
+                @Html.HiddenFor(m => m.BlivandeForvantadeLeveranser[i].Id)
+                @Html.HiddenFor(x => x.BlivandeForvantadeLeveranser[i].FilkravId)
+                @Html.HiddenFor(x => x.BlivandeForvantadeLeveranser[i].FilkravNamn)
+                @Html.HiddenFor(m => m.BlivandeForvantadeLeveranser[i].DelregisterId)
+                @Html.HiddenFor(x => x.BlivandeForvantadeLeveranser[i].SelectedRegisterId)
+                @Html.HiddenFor(x => x.BlivandeForvantadeLeveranser[i].SelectedDelregisterId)
+                @Html.HiddenFor(m => m.BlivandeForvantadeLeveranser[i].SelectedFilkravId)
+                @Html.HiddenFor(x => x.BlivandeForvantadeLeveranser[i].Period)
+                @Html.HiddenFor(x => x.BlivandeForvantadeLeveranser[i].Uppgiftsstart)
+                @Html.HiddenFor(m => m.BlivandeForvantadeLeveranser[i].Uppgiftsslut)
+                @Html.HiddenFor(x => x.BlivandeForvantadeLeveranser[i].Rapporteringsstart)
+                @Html.HiddenFor(x => x.BlivandeForvantadeLeveranser[i].Rapporteringsslut)
+                @Html.HiddenFor(x => x.BlivandeForvantadeLeveranser[i].Rapporteringsenast)
+                @Html.HiddenFor(m => m.BlivandeForvantadeLeveranser[i].Paminnelse1)
+                @Html.HiddenFor(x => x.BlivandeForvantadeLeveranser[i].Paminnelse2)
+                @Html.HiddenFor(x => x.BlivandeForvantadeLeveranser[i].Paminnelse3)
+                @Html.HiddenFor(x => x.BlivandeForvantadeLeveranser[i].Pagaende)
+                @Html.HiddenFor(x => x.BlivandeForvantadeLeveranser[i].AlreadyExists)
+            }
+    <div class="row">
+        <div class="col-md-offset-2 col-md-2">
+            <input type = "submit" id="saveBtn" value="Spara" class="btn btn-default" />
+        </div>
+        <div class="col-md-2">
+            <input type = "button" id="clearBtn" value="Rensa" class="btn btn-default" />
+        </div>
+    </div>
+
+    <hr />
+    <br />
+
+    <div id = "dotText" >
+        <span class="dot" style="background-color: #a3a3c2; margin-left: 20px;"></span><label style = "font-size: 0.8em; width: 550px;" > Perioder med denna bakgrundsfärg finns redan i databasen och kommer ej förändras om du sparar.</label>
+    </div>
+    <div id = "gridContent" style= "font-family: Arial; padding: 20px;" >
+            @{
+    ViewBag.Title = "Administrera filkrav";
+    var grid = new WebGrid(source: Model.BlivandeForvantadeLeveranser, canPage: false, rowsPerPage: 15, ajaxUpdateContainerId: "forvantadeLeveranserUtkastGrid");
+}
+
+@grid.GetHtml(htmlAttributes: new { id = "forvantadeLeveranserUtkastTable" },
+                 tableStyle: "webgrid-table",
+                 headerStyle: "webgrid-header",
+                 footerStyle: "webgrid-footer",
+                 alternatingRowStyle: "webgrid-alternating-row",
+                 selectedRowStyle: "webgrid-selected-row",
+                 rowStyle: "webgrid-row-style",
+                 mode: WebGridPagerModes.All,
+                 columns: grid.Columns(
+                     grid.Column(null, null, format: @<text><input type="hidden" id="AlreadyExists" value="@item.AlreadyExists.ToString()" class="edit-mode form-control hide" /></text>, style: "colZeroWidth"),
+                grid.Column("FilkravId", "Filkravid", format: @<text><span class="display-mode"><label>@item.Filkravid</label></span></text>, style: "colMinWidth"),
+                grid.Column("FilkravNamn", "Filkravnamn", format: @<text><span class="display-mode"><label>@item.FilkravNamn</label></span></text>, style: "colMinWidth"),
+                grid.Column("Period", "Period", format: @<text><span class="display-mode"><label id="lblPeriod">@item.Period </label></span></text>, style: "col1Width"),
+                grid.Column("Uppgiftsstart", "Uppgiftsstart", format: @<text><span class="display-mode">
+                <label id="lblUppgiftsstart">@( item.Uppgiftsstart != null ? item.Uppgiftsstart.ToString("yyyy-MM-dd") : item.Uppgiftsstart)</label>
+                </span></text>, style: "col2Width"),
+                grid.Column("Uppgiftsslut", "Uppgiftsslut", format: @<text><span class="display-mode">
+                <label id="lblUppgiftsslut">@( item.Uppgiftsslut != null ? item.Uppgiftsslut.ToString("yyyy-MM-dd") : item.Uppgiftsslut)</label>
+                </span></text>, style: "col2Width"),
+                grid.Column("Rapporteringsstart", "Rapporteringsstart", format: @<text><span class="display-mode">
+                <label id="lblRapporteringsstart">@( item.Rapporteringsstart != null ? item.Rapporteringsstart.ToString("yyyy-MM-dd") : item.Rapporteringsstart)</label>
+                </span></text>, style: "col2Width"),
+                grid.Column("Rapporteringsslut", "Rapporteringsslut", format: @<text><span class="display-mode">
+                <label id="lblRapporteringsslut">@( item.Rapporteringsslut != null ? item.Rapporteringsslut.ToString("yyyy-MM-dd") : item.Rapporteringsslut)</label>
+                </span></text>, style: "col2Width"),
+                grid.Column("Rapporteringsenast", "Rapporteringsenast", format: @<text><span class="display-mode">
+                <label id="lblRapporteringsenast">@( item.Rapporteringsenast != null ? item.Rapporteringsenast.ToString("yyyy-MM-dd") : item.Rapporteringsenast)</label>
+                </span></text>, style: "col2Width"),
+                grid.Column("Paminnelse1", "Paminnelse1", format: @<text><span class="display-mode">
+                <label id="lblPaminnelse1">@( item.Paminnelse1 != null ? item.Paminnelse1.ToString("yyyy-MM-dd") : item.Paminnelse1)</label>
+                </span></text>, style: "col2Width"),
+                grid.Column("Paminnelse2", "Paminnelse2", format: @<text><span class="display-mode">
+                <label id="lblPaminnelse2">@( item.Paminnelse2 != null ? item.Paminnelse2.ToString("yyyy-MM-dd") : item.Paminnelse2)</label>
+                </span></text>, style: "col2Width"),
+                grid.Column("Paminnelse3", "Paminnelse3", format: @<text><span class="display-mode">
+                <label id="lblPaminnelse3">@( item.Paminnelse3 != null ? item.Paminnelse3.ToString("yyyy-MM-dd") : item.Paminnelse3)</label>
+                </span></text>, style: "col2Width")))
+        </div>
+        }
+    }
+</div>
+
+<div>
+    @Html.ActionLink("Tillbaka", "GetDirectorysExpectedDeliveries", "Leverans", new { filterPgnde = Model.FilterPagaende, regId = Model.SelectedRegisterId }, null)
+
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

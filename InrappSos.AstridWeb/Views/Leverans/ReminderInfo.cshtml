@@ -1,0 +1,422 @@
+﻿@model InrappSos.AstridWeb.Models.ViewModels.LeveransViewModels.ReminderViewModel
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+@*<link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />*@
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Fix webgrid-header
+        $("#GridHeader").html("<table id='headerTable'>" + $('#gridContent table thead').html() + "</table>");
+        $("#GridHeader table tr:first").append("<th style='width:12px;' ></th>");
+        $("#GridBody").html("<table>" + $('#gridContent table tbody').html() + "</table>");
+        //$("#GridFooter").html("<table>" + $('#gridContent table tfoot').html() + "</table>");
+        $("#gridContent").hide();
+        setFixedTableHeaderWidths();
+
+        if ($("#SelectedRegisterId").val() > 0) {
+            //set delreg-ddl
+            setDelregDrop($("#SelectedRegisterId").val());
+            setPeriodDropForReg();
+        }
+        if ($("#SelectedDelregisterId").val() !== "0") {
+            $('#ddlDelregister').val($("#SelectedDelregisterId").val());
+            //set period-ddl
+            setPeriodDropForDelreg($("#SelectedDelregisterId").val());
+        }
+        if ($("#SelectedPeriod").val()) {
+            $('#ddlPeriod').val($("#SelectedPeriod").val());
+            $("#btnSearch").removeAttr('disabled'); 
+        } else {
+            $('#btnSearch').attr('disabled', 'disabled');
+        }
+
+        //Sätt antal rader
+        $('#headerText').html("");
+        if (antalRader > 0) {
+            var x = $('#RapportResList').length;
+            $('<H4><span style="font-size: 0.7em">Antal rader: ' + antalRader + '</span></H4>').appendTo('#headerText');
+        }
+
+        $('#cbSelectAll').click(function() {
+            var ischecked = $(this).is(':checked');
+            $('#GridBody').find("input:checkbox").each(function() {
+                this.checked = ischecked;
+            });
+            $.each(rappResLista,function(index, item) {
+                if (ischecked)
+                    $('#RapportResList_' + index + '__Mail').val('True');
+                else
+                    $('#RapportResList_' + index + '__Mail').val('False');
+            });
+        });
+    });
+
+    function setFixedTableHeaderWidths() {
+        var x = $('#GridHeader table tbody');
+        //$('#GridHeader table tbody tr').find('th:nth-child(1)').css('background-color', '#E8A2A2');
+
+        var y = $('#GridBody table tbody');
+        //$('#GridBody table tbody tr').find('td:nth-child(1)').css('background-color', '#66E0ED');
+
+        var $body = $('#GridBody table tbody');
+        var $header = $('#GridHeader table tbody');
+
+        $body.find('tr:first-child').children().each(function (i) {
+            //if (i === 0) {
+            //    $($header.find('tr:first-child').children()[i]).css('width', 1);
+            //} else {
+                $($header.find('tr:first-child').children()[i]).css('width', $(this).width() + 15 );
+
+            //}
+
+        });
+    }
+
+    function setPeriodDropForReg() {
+        var selectedRegister = $('#ddlRegister').val();
+        //Hämta perioder för valt registers alla delregister
+        registerLista.forEach(function (register, index) {
+            if (selectedRegister === register.Id.toString()) {
+                if (register.DelregisterList.length !== 0) {
+                    var vals = {};
+                    register.DelregisterList.forEach(function (delregister, index) {
+                        if (delregister.ForvantadeLeveranserList.length !== 0) {
+                            delregister.ForvantadeLeveranserList.forEach(function (unit, index) {
+                                vals[unit.Period] = unit.Period;
+                            });
+                        }
+                        //Populera period-dropdown
+                        var $ddlPeriod = $("#ddlPeriod");
+                        $ddlPeriod.empty();
+                        $ddlPeriod.append("<option value=0> - Välj period - </option>");
+                        $.each(vals,
+                            function (index, value) {
+                                $ddlPeriod.append("<option value=" + index + " >" + value + "</option>");
+                            });
+                        $ddlPeriod.removeAttr('readonly');
+                    });
+                }
+            }
+        });
+    }
+
+    function setPeriodDropForDelreg(selectedDelregister) {
+        var selectedRegister = $('#ddlRegister').val();
+        //Hämta perioder för valt delregister
+        registerLista.forEach(function (register, index) {
+            if (selectedRegister === register.Id.toString()) {
+                if (register.DelregisterList.length !== 0) {
+                    register.DelregisterList.forEach(function (delregister, index) {
+                        if (selectedDelregister === delregister.Id.toString()) {
+                            if (delregister.ForvantadeLeveranserList.length !== 0) {
+                                //Populera period-dropdown
+                                var vals = {};
+                                delregister.ForvantadeLeveranserList.forEach(function (unit, index) {
+                                    vals[unit.Period] = unit.Period;
+                                });
+                                var $ddlPeriod = $("#ddlPeriod");
+                                $ddlPeriod.empty();
+                                $ddlPeriod.append("<option avlue=0> - Välj period - </option>");
+                                $.each(vals,
+                                    function (index, value) {
+                                        $ddlPeriod.append("<option value=" + index + " >" + value + "</option>");
+                                    });
+                                $ddlPeriod.removeAttr('readonly');
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    $(function() {
+        $("#ddlDelregister").focus();
+    });
+
+    $(function () {
+        $('th a, tfoot a').click(function () {
+            var newUrl = $(this).attr('href') +
+                "&regId=" +
+                $("#SelectedRegisterId").val() +
+                "&delregId=" +
+                $("#SelectedDelregisterId").val() +
+                "&period=" +
+                $("#SelectedPeriod").val();
+            $('form').attr('action', newUrl).submit();
+            return false;
+        });
+    });
+
+    function setDelregDrop(selectedRegister) {
+        //Hämta delregister för valt register
+        registerLista.forEach(function (register, index) {
+            if (selectedRegister === register.Id.toString()) {
+                if (register.DelregisterList.length !== 0) {
+                    //Populera delregister-dropdown
+                    var vals = {};
+                    register.DelregisterList.forEach(function (unit, index) {
+                        vals[unit.Id] = unit.Kortnamn;
+                    });
+
+                    var $ddlDelregister = $("#ddlDelregister");
+                    $ddlDelregister.empty();
+                    $ddlDelregister.append("<option value=0> - Välj delregister - </option>");
+                    $.each(vals,
+                        function (index, value) {
+                            $ddlDelregister.append("<option value=" + index + " >" + value + "</option>");
+                        });
+                    $ddlDelregister.removeAttr('readonly');
+                }
+            }
+        });
+    }
+
+    $(document).on('change','#ddlRegister',function () {
+            //Nollställ dropparna
+            $('#ddlPeriod').empty();
+            $("#ddlPeriod").append("<option value=0> - Välj period - </option>");
+            $('#ddlPeriod').attr('readonly', 'readonly');
+            $('#btnSearch').attr('disabled', 'disabled');
+            var selectedRegister = $('#ddlRegister').val();
+            $("#SelectedRegisterId").val(selectedRegister);
+            //Hämta delregister för valt register
+            if (selectedRegister !== "") {
+                setDelregDrop(selectedRegister);
+                setPeriodDropForReg();
+            } else {
+                $('#ddlDelregister').empty(); 
+                $("#ddlDelregister").append("<option value=0> - Välj delregister - </option>");
+                $('#ddlDelregister').attr('readonly', 'readonly');
+            }
+        });
+
+    $(document).on('change',
+        '#ddlDelregister',
+        function () {
+            var selectedRegister = $('#ddlRegister').val();
+            var selectedDelregister = $('#ddlDelregister').val();
+            $("#SelectedDelregisterId").val(selectedDelregister);
+            //Hämta perioder för valt delregister
+            if (selectedDelregister !== "0") {
+                setPeriodDropForDelreg(selectedDelregister);
+            } else if (selectedDelregister === "0" && selectedRegister !== "0") {
+                setPeriodDropForReg();
+            } else {
+                $('#ddlPeriod').empty(); 
+                $("#ddlPeriod").append("<option value=0> - Välj period - </option>");
+                $('#ddlPeriod').attr('readonly', 'readonly');
+            }
+            $('#btnSearch').attr('disabled', 'disabled');
+        });
+
+    $(document).on('change', '#ddlPeriod', function () {
+        var x = $('#ddlPeriod').val();
+        $("#SelectedPeriod").val($('#ddlPeriod').val());
+        if ($('#ddlPeriod').val() !== "0") {
+            $("#btnSearch").removeAttr('disabled');
+        } else {
+            $('#btnSearch').attr('disabled', 'disabled');
+        }
+
+    });
+
+    function setMail(id) {
+        //var rappResLista = @Html.Raw(Json.Encode(Model.RapportResList));
+        //var y = $('#RapportResList_1__Mail').val();
+        var selectedId = parseInt(id);
+        $.each(rappResLista,
+            function(index, item) {
+                if (rappResLista[index].Id === selectedId) {
+                    if ($('#RapportResList_' + index + '__Mail').val() === 'False')
+                        $('#RapportResList_' + index + '__Mail').val('True');
+                    else
+                        $('#RapportResList_' + index + '__Mail').val('False');
+                }
+            });
+    }
+
+    var rappResLista = @Html.Raw(Json.Encode(Model.RapportResList));
+    var registerLista = @Html.Raw(Json.Encode(Model.RegisterList));
+    var antalRader = @Html.Raw(Json.Encode(Model.AntRader));
+
+
+
+    @*function selectAll() {
+        var rappResLista = @Html.Raw(Json.Encode(Model.RapportResList));
+        $.each(rappResLista, function (index, item) {
+            var x = item;
+            $('#RapportResList_' + index + '__Mail').val('True');
+            var y = $('#RapportResList_0__Mail').val();
+        });
+        //var gridTable = document.getElementById('reminderGrid');
+        var tableRows = $('#reminderGrid tbody tr');
+        tableRows.each(function () {
+            var v = $(this);
+            var z = $(this).find('td .checkbox');
+            $(z).attr("value", true);
+            //$(this).find('td input.chkbxMail').val('True');
+        });
+        //var f = $('#gridContent table tbody').html();
+        //$("#GridBody").html("<table style='width:1140px;'>" + $('#gridContent table tbody').html() + "</table>");
+    }*@
+</script>
+
+<style type="text/css">
+
+    #GridBody {
+        width: 1070px;
+        height: 400px;
+        overflow-y: scroll;
+        border: solid 1px #e8eef4;
+    }
+
+    #GridHeader table {
+        width: 1072px;
+        text-align: left;
+        margin-top: 0px;
+        /*border: solid 1px #A7C942;*/
+        padding: 0px;
+        border-collapse: collapse;
+    }
+</style>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+
+<div id="pageContainer">
+    <div class="row">
+        <div class="col-md-8 padding-top-55">
+            <h4>Administrera påminnelser</h4>
+            <br />
+            <section id="searchForm">
+                @using (Html.BeginForm("GetReminderInfoForRegAndPeriod", "Leverans", new { ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                {
+
+                    @Html.HiddenFor(m => m.SelectedRegisterId)
+                    @Html.HiddenFor(m => m.SelectedDelregisterId)
+                    @Html.HiddenFor(m => m.SelectedPeriod)
+
+                    <div class="form-group">
+                        @Html.Label("Register", new { @class = "col-md-2 control-label" })
+                        @Html.DropDownListFor(m => m.SelectedRegisterId, ViewBag.RegisterList as SelectList, " - Välj register -", new { @class = "form-control", id = "ddlRegister" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.Label("Delregister", new { @class = "col-md-2 control-label" })
+                        @Html.DropDownListFor(m => m.SelectedDelregisterId, Enumerable.Empty<SelectListItem>(), " - Välj delregister -", new { @class = "form-control", id = "ddlDelregister", @readonly = "readonly" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.Label("Period", new { @class = "col-md-2 control-label" })
+                        @Html.DropDownListFor(m => m.SelectedPeriod, Enumerable.Empty<SelectListItem>(), " - Välj period -", new { @class = "form-control", id = "ddlPeriod", @readonly = "readonly" })
+                    </div>
+
+                    <div class="col-md-12" style="padding-left: 0px; margin-left: -10px;">
+                        <label class="col-md-2">&nbsp;</label>
+                        <div>
+                            <input type="submit" id="btnSearch" value="Sök" class="btn btn-default" disabled />
+                        </div>
+                    </div>
+
+                }
+            </section>
+        </div>
+    </div>
+    <hr>
+
+    <p class="text-success">@ViewBag.StatusMessage</p>
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+
+    @if (Model.RapportResList != null)
+    {
+        if (Model.RapportResList.Count > 0)
+        {
+            using (Html.BeginForm("SendReminder", "Leverans", FormMethod.Post, new { @class = "form-horizontal", role = "form", id = "reminderForm" }))
+            {
+                @Html.HiddenFor(m => m.SelectedRegisterId)
+                @Html.HiddenFor(m => m.SelectedDelregisterId)
+                @Html.HiddenFor(m => m.SelectedPeriod)
+
+                <div class="row col-md-12">
+                    <div class="col-md-10 padding-top-15" id="headerText" style="padding-left: 20px; ">
+                    </div>
+                    <div class="" style=""><input type="submit" value="Skicka påminnelse" class="btn btn-default" /></div>
+                </div>
+                <div class="row col-md-11">
+                    <div style="float: right;">
+                        <input type="checkbox" id="cbSelectAll" style="float: right;padding-right: 40px; margin-top: 7px;"/>
+                        <label for="cbSelectAll" style="width: 65px;">Välj alla</label>
+                    </div>
+                    @*<input type="checkbox" id="cbSelectAll" value="Välj alla TEST" class="btn btn-default" />*@
+                </div>
+
+                @Html.HiddenFor(m => m.AntRader)
+
+                for (var index = 0; index < Model.RapportResList.Count(); index++)
+                {
+                    @Html.HiddenFor(m => m.RapportResList[index].Lankod)
+                    @Html.HiddenFor(m => m.RapportResList[index].Kommunkod)
+                    @Html.HiddenFor(m => m.RapportResList[index].Organisationsnamn)
+                    @Html.HiddenFor(m => m.RapportResList[index].Register)
+                    @Html.HiddenFor(m => m.RapportResList[index].Period)
+                    @Html.HiddenFor(m => m.RapportResList[index].RegisterKortnamn)
+                    @Html.HiddenFor(m => m.RapportResList[index].Enhetskod)
+                    @Html.HiddenFor(m => m.RapportResList[index].AntalLeveranser)
+                    @Html.HiddenFor(m => m.RapportResList[index].Leveranstidpunkt)
+                    @Html.HiddenFor(m => m.RapportResList[index].Leveransstatus)
+                    @Html.HiddenFor(m => m.RapportResList[index].Email)
+                    @Html.HiddenFor(m => m.RapportResList[index].Filnamn)
+                    @Html.HiddenFor(m => m.RapportResList[index].NyttFilnamn)
+                    @Html.HiddenFor(m => m.RapportResList[index].Filstatus)
+                    @Html.HiddenFor(m => m.RapportResList[index].SkyldigFrom)
+                    @Html.HiddenFor(m => m.RapportResList[index].SkyldigTom)
+                    @Html.HiddenFor(m => m.RapportResList[index].Uppgiftsstart)
+                    @Html.HiddenFor(m => m.RapportResList[index].Uppgiftsslut)
+                    @Html.HiddenFor(m => m.RapportResList[index].Rapporteringsstart)
+                    @Html.HiddenFor(m => m.RapportResList[index].Rapporteringsslut)
+                    @Html.HiddenFor(m => m.RapportResList[index].Rapporteringsenast)
+                    @Html.HiddenFor(m => m.RapportResList[index].UppgiftsskyldighetId)
+                    @Html.HiddenFor(m => m.RapportResList[index].OrganisationsId)
+                    @Html.HiddenFor(m => m.RapportResList[index].DelregisterId)
+                    @Html.HiddenFor(m => m.RapportResList[index].ForvantadLeveransId)
+                    @Html.HiddenFor(m => m.RapportResList[index].OrganisationsenhetsId)
+                    @Html.HiddenFor(m => m.RapportResList[index].LeveransId)
+                    @Html.HiddenFor(m => m.RapportResList[index].Mail)
+                }
+
+                <div id="gridContent" style="font-family: Arial; padding: 20px;">
+
+                    @{
+                        ViewBag.Title = "Administrera påminnelser";
+                        var grid = new WebGrid(source: Model.RapportResList, canPage: false, rowsPerPage: 10, ajaxUpdateContainerId: "reminderGrid");
+                    }
+
+                    @grid.GetHtml(tableStyle: "webgrid-table",
+                              htmlAttributes: new { id = "reminderGrid" },
+                              headerStyle: "webgrid-header",
+                              footerStyle: "webgrid-footer",
+                              alternatingRowStyle: "webgrid-alternating-row",
+                              selectedRowStyle: "webgrid-selected-row",
+                              rowStyle: "webgrid-row-style",
+                              mode: WebGridPagerModes.All,
+                              columns: grid.Columns(
+                                @*grid.Column(null, format: @<text><input type="hidden" id="Id" value="@item.Id" class="form-control hide" /></text>, style: "colZeroWidth"),*@
+                                grid.Column("Kommunkod", "Kommunkod", format: @<text><span class="">@item.Kommunkod</span></text>, style: "col1Width"),
+                                grid.Column("Organisationsnamn", "Organisation", format: @<text><span class="">@item.Organisationsnamn</span></text>, style: "col3Width"),
+                                grid.Column("Email", "E-post, kontaktperson", format: @<text><label id="ContactEmail" class="">@item.Email</label></text>, style: "col5Width"),
+                                grid.Column("AntalLeveranser", "Antal leveranser", format: @<text><label id="NumberOfDeliveries" class="">@item.AntalLeveranser</label></text>, style: "col1Width"),
+                                grid.Column("Leveranstidpunkt", "Leveranstidpunkt", format: @<text><label id="DeliveryTime" class="">@item.Leveranstidpunkt</label></text>, style: "col2Width"),
+                                grid.Column("Mail","Skicka påminnelse", format: @<text><span class=""><input id="chkbxMail" class="checkbox" onchange="setMail('@item.Id');" name="select" type="checkbox" @( item.Mail ? "checked='checked'" : "") value="@item.Mail" /></span></text>, style: "colMinWidth", canSort: false)))
+                </div>
+                <div id="Outer">
+                    <div id="GridHeader"></div>
+                    <div id="GridBody"></div>
+                </div>
+            }
+        }
+    }
+</div>
+

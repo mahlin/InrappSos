@@ -1,0 +1,66 @@
+﻿@model InrappSos.AstridWeb.Models.ViewModels.SystemViewModels.SystemViewModel
+
+<script>
+    $(function () {
+        $("#txtRegisterId").focus();
+    });
+
+    $(document).on('change', '#ddlRegister', function () {
+        $("#SelectedFAQ_SelectedRegisterId").val($('#ddlRegister').val());
+        var x = $("#SelectedFAQ_SelectedRegisterId").val();
+    });
+</script>
+
+
+@using (Html.BeginForm("UpdateFAQ", "System", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.SelectedFAQ.FAQkategoriId)
+    @Html.HiddenFor(m => m.SelectedFAQ.Id)
+    @Html.HiddenFor(m => m.SelectedFAQ.SelectedRegisterId)
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="form-group">
+        @Html.Label("Register", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10" style="margin-bottom: 15px !important">
+            @Html.DropDownListFor(m => m.SelectedFAQ.SelectedRegisterId, ViewBag.RegisterList as SelectList, " - Välj Register -", new { id = "ddlRegister", @class = "form-control", style = "max-width:150px !important" })
+        </div>
+    </div>
+
+    <div  class="form-group">
+        @Html.Label("Sorteringsordning", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10" style="margin-bottom: 15px !important">
+            @Html.EditorFor(model => model.SelectedFAQ.Sortering, new { htmlAttributes = new { @class = "form-control",style = "max-width:150px !important" } })
+            @Html.ValidationMessageFor(model => model.SelectedFAQ.Sortering, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.SelectedFAQ.Fraga, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10" style="margin-bottom: 15px !important">
+            @Html.EditorFor(model => model.SelectedFAQ.Fraga, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.SelectedFAQ.Fraga, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.SelectedFAQ.Svar, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10" style="margin-bottom: 15px !important">
+            @*@Html.EditorFor(model => model.Svar, new { htmlAttributes = new { @class = "form-control" } })*@
+            @Html.TextAreaFor(m => Model.SelectedFAQ.Svar, 10, 100, new { @class = "form-control", id = "textArea", style = "max-width:95% !important;" })
+
+            @Html.ValidationMessageFor(model => model.SelectedFAQ.Svar, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Spara" class="btn btn-default" />
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

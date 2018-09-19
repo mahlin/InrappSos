@@ -1,0 +1,274 @@
+﻿@model InrappSos.AstridWeb.Models.ViewModels.OrganisationViewModels.UnitReportObligationsViewModel
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+
+<script src="@Url.Content("~/Scripts/custom.js")" type="text/javascript"></script>
+<script type="text/javascript">
+    var orgLista = @Html.Raw(Json.Encode(Model.OrganisationList));
+
+    $(function () {
+        $("#ddlOrganisation").focus();
+    });
+
+    $(function () {
+        $('th a, tfoot a').click(function () {
+            //if querystring already contains selectedOrgId, remove it
+            var index = $(this).attr('href').indexOf("&selectedOrgId=");
+            if (index >= 0) {
+                var cleanUrl = $(this).attr('href').substring(0, index);
+                $(this).attr('href', cleanUrl);
+            }
+            var newUrl = $(this).attr('href') +
+                "&selectedOrgId=" +
+                $("#SelectedOrganisationId").val();
+            $('form').attr('action', newUrl).submit();
+            return false;
+        });
+    });
+
+    $(document).ready(function () {
+        if ($("#SelectedOrganisationId").val() > 0) {
+            //set orgenhets-ddl
+            setOrgenhetsDrop($("#SelectedOrganisationId").val());
+        }
+        if ($("#SelectedOrganisationsenhetsId").val() > 0) {
+            $('#skapaNy').show();
+            $('#ddlOrgenheter').val($("#SelectedOrganisationsenhetsId").val());
+        } else {
+            $('#skapaNy').hide();
+        }
+    });
+
+
+    $(document).on('change', '#ddlOrganisation',
+        function() {
+            //Nollställ dropparna
+            $('#ddlOrgenheter').empty();
+            $("#ddlOrgenheter").append("<option> - Välj organisationsenhet - </option>");
+            var selectedOrg = $('#ddlOrganisation').val();
+            $("#SelectedOrganisationId").val(selectedOrg);
+
+            //Hämta orgenheter för vald kommun
+            setOrgenhetsDrop(selectedOrg);
+        });
+
+    $(document).on('change', '#ddlOrgenheter',
+        function () {
+            $('#raderSaknas').hide();
+            var selectedOrgenhet = $('#ddlOrgenheter').val();
+            $("#SelectedOrganisationsenhetsId").val(selectedOrgenhet);
+            
+            if (selectedOrgenhet > 0) {
+                $('#skapaNy').show();
+            } else {
+                $('#skapaNy').hide(); 
+            }
+        });
+
+
+    $(document).on('keydown', '#ddlOrgenheter', function (event) {
+        if (event.keyCode === 13) {
+            event.preventDefault();
+            $('#searchBtn').click();
+        }
+    });
+
+    function setOrgenhetsDrop(orgId) {
+        //Hämta orgenheter för vald organisation
+        orgLista.forEach(function(org, index) {
+            if (orgId === org.Id.toString()) {
+                if (org.Organisationsenheter.length !== 0) {
+                    //Populera orgenhets-dropdown
+                    var vals = {};
+                    org.Organisationsenheter.forEach(function(unit, index) {
+                        vals[unit.Id] = unit.Enhetsnamn;
+                        var x = unit.Id;
+                    });
+
+                    var $ddlOrgenheter = $("#ddlOrgenheter");
+                    $ddlOrgenheter.empty();
+                    $ddlOrgenheter.append("<option> - Välj organisationsenhet - </option>");
+                    $.each(vals,
+                        function (index, value) {
+                            var x = index;
+                            $ddlOrgenheter.append("<option value=" + index + " >" + value + "</option>");
+                        });
+                    $ddlOrgenheter.removeAttr('readonly');
+                }
+            }
+        });
+    }
+
+    $(function() {
+        $('.edit-mode').hide();
+        $('.edit-user, .cancel-user').on('click',
+            function() {
+                var tr = $(this).parents('tr:first');
+                tr.find('.edit-mode, .display-mode').toggle();
+            });
+        $('.save-user').on('click',
+            function() {
+                var tr = $(this).parents('tr:first');
+                var unitRepId = tr.find("#UnitRepId").html();
+                var uppgskyldighetsId = tr.find("#UnitRepUppgSkId").val();
+                var unitRepSkyldigFrom = tr.find("#UnitRepSkyldigFrom").val();
+                var unitRepSkyldigTom = tr.find("#UnitRepSkyldigTom").val();
+                var orgenhetsId = $('#SelectedOrganisationsenhetsId').val();
+
+                //Creating AdmEnhetsUppgiftsskyldighet JSON object
+                var uppgiftsskyldighet =
+                {
+                    "Id": unitRepId,
+                    "UppgiftsskyldighetId": uppgskyldighetsId,
+                    "SkyldigFrom": unitRepSkyldigFrom,
+                    "SkyldigTom": unitRepSkyldigTom,
+                    "OrganisationsenhetsId": orgenhetsId
+                };
+                //Posting AdmEnhetsUppgiftsskyldighet object to controller's Update action method
+                $.ajax({
+                    url: '/Organisation/UpdateOrganisationsUnitReportObligation',
+                    data: JSON.stringify(uppgiftsskyldighet),
+                    type: 'POST',
+                    contentType: 'application/json; charset=utf-8',
+                    success: function(data) {
+                        //location.reload();
+                        $("#pageContainer").html(data);
+                        tr.find('.edit-mode, .display-mode').toggle();
+                        $('#footer').hide();
+                        //alert('Record updated Successfully!!');
+                    }
+                });
+
+            });
+
+        $('.edit-user').on('click',
+            function() {
+                var tr = $(this).parents('tr:first');
+                var unitRepSkyldigFrom = tr.find("#UnitRepSkyldigFrom").val();
+                var unitRepSkyldigTom = tr.find("#UnitRepSkyldigTom").val();
+
+                tr.find("#lblSkyldigFrom").text(unitRepSkyldigFrom);
+                tr.find("#lblSkyldigTom").text(unitRepSkyldigTom);
+            });
+    });
+
+
+    $(document).on('click','.createNew',function(e) {
+            //Cancel original submission
+            e.preventDefault();
+            var orgId = $('#SelectedOrganisationId').val();
+            var orgenhetsId = $('#SelectedOrganisationsenhetsId').val();
+            var tmp = $(this).attr('href');
+
+            window.location = $(this).attr('href') + '?orgId=' + orgId + '&orgenhetsId=' + orgenhetsId;
+    });
+
+</script>
+
+
+
+@{
+    ViewBag.Title = "Index";
+}
+
+
+<div id="pageContainer">
+    <div class="row">
+        <div class="col-md-8 padding-top-55">
+            <h4>Administrera enhetsuppgiftsskyldighet för organisation</h4>
+            <br />
+            <section id="orgForm">
+                @using (Html.BeginForm("GetOrganisationsUnitReportObligations", "Organisation", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                {
+                    @Html.HiddenFor(m => m.SelectedOrganisationId)
+                    @Html.HiddenFor(m => m.SelectedOrganisationsenhetsId)
+
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                    <div class="form-group">
+                        @Html.Label("Organisation", new { @class = "col-md-2 control-label" })
+                        <div class="col-md-10">
+                            @Html.DropDownListFor(m => m.SelectedOrganisationId, ViewBag.OrganisationList as SelectList, " - Välj kommunkod -", new { @class = "form-control", id = "ddlOrganisation" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.Label("Organisationsenhet", new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.DropDownListFor(m => m.SelectedOrganisationsenhetsId, Enumerable.Empty<SelectListItem>(), " - Välj organisationsenhet -", new { @class = "form-control", id = "ddlOrgenheter", @readonly = "readonly" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <input type="submit" id="searchBtn" value="Sök enhetsuppgiftskyldighet" class="btn btn-default" />
+                        </div>
+                    </div>
+                }
+            </section>
+        </div>
+    </div>
+
+
+    @if (Model != null)
+    {
+        <br /><br />
+        <hr />
+
+        <div id="skapaNy">
+            @*@Html.ActionLink("Skapa ny enhetsuppgiftsskyldighet", "CreateUnitReportObligation", "Organisation", new { orgId = Model.SelectedOrganisationId, orgenhetsId = Model.SelectedOrganisationsenhetsId }, null)*@
+            @Html.ActionLink("Skapa ny enhetsuppgiftsskyldighet", "CreateUnitReportObligation", new { selectedOrgId = Model.SelectedOrganisationId, selectedOrgenhetsId = Model.SelectedOrganisationsenhetsId }, null)
+        </div>
+        @Html.HiddenFor(m => m.SelectedOrganisationId)
+
+        if (Model.UnitReportObligations != null)
+        {
+            if (Model.UnitReportObligations.Any())
+            {
+                @Html.HiddenFor(m => m.SelectedOrganisationsenhetsId)
+
+                <div id="gridContent" style="font-family: Arial; padding: 20px;">
+                    @{
+                        ViewBag.Title = "Administrera enhetsuppgiftsskyldighet";
+                        var grid = new WebGrid(source: Model.UnitReportObligations, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "unitReportObligationsGrid");
+                        grid.Pager(WebGridPagerModes.All);
+                    }
+
+
+                    @grid.GetHtml(tableStyle: "webgrid-table700",
+                            headerStyle: "webgrid-header",
+                            footerStyle: "webgrid-footer",
+                            alternatingRowStyle: "webgrid-alternating-row",
+                            selectedRowStyle: "webgrid-selected-row",
+                            rowStyle: "webgrid-row-style",
+                            mode: WebGridPagerModes.All,
+                            columns: grid.Columns(
+                                grid.Column(null, null, format: @<input type="hidden" id="UnitRepUppgSkId" value="@item.UppgiftsskyldighetId" class="edit-mode form-control colZeroWidth" />),
+                                grid.Column("Id", format: @<text><span class="display-mode">@item.Id</span><label id="UnitRepId" class="edit-mode colMinWidth">@item.Id</label> </text>, style: "colMinWidth"),
+                                grid.Column("DelregisterKortnamn","Delregister", format: @<text><span class="display-mode col2Width">@item.DelregisterKortnamn</span><label id="UnitRepSubdirName" class="edit-mode col2Width">@item.DelregisterKortnamn</label> </text>, style: "col2Width"),
+
+                                grid.Column("SkyldigFrom", "Fr.o.m", format: @<text>
+                                    <span class="display-mode"><label id="lblSkyldigFrom">@( item.SkyldigFrom != null ? item.SkyldigFrom.ToString("yyyy-MM-dd") : item.SkyldigFrom)</label></span>
+                                    <input type="text" id="UnitRepSkyldigFrom" value="@( item.SkyldigFrom != null ? item.SkyldigFrom.ToString("yyyy-MM-dd") : item.SkyldigFrom)" class="edit-mode form-control" /></text>, style: "col2Width"),
+                                grid.Column("SkyldigTom", "T.o.m", format: @<text>
+                                    <span class="display-mode"><label id="lblSkyldigTom">@( item.SkyldigTom != null ? item.SkyldigTom.ToString("yyyy-MM-dd") : item.SkyldigTom)</label></span>
+                                    <input type="text" id="UnitRepSkyldigTom" value="@( item.SkyldigTom != null ? item.SkyldigTom.ToString("yyyy-MM-dd") : item.SkyldigTom)" class="edit-mode form-control" /></text>, style: "col2Width"),
+                                grid.Column(null, format: @<text>
+                                    <button class="edit-user display-mode btn btn-default">Ändra</button>
+                                    <button class="save-user edit-mode btn btn-default">Spara</button>
+                                    <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
+                                </text>, style: "col3Width", canSort: false)))
+
+                </div>
+            }
+            else 
+            {
+                <div id="raderSaknas">
+                    <H5>Enhetsuppgiftsskyldighet för vald kommun saknas</H5>
+                </div>
+            }
+        }
+
+    }
+</div>
+

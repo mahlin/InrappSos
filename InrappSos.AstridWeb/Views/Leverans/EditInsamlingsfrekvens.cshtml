@@ -37,7 +37,7 @@
                 $.ajax({
                     url: '/Leverans/UpdateInsamlingsfrekvens',
                     data: JSON.stringify({
-                        filkrav: admInsamlingsfrekvens
+                        insamlingsfrekvens: admInsamlingsfrekvens
                     }),
                     type: 'POST',
                     contentType: 'application/json; charset=utf-8',
@@ -91,7 +91,7 @@
                 columns: grid.Columns(
                     grid.Column("Id", format: @<text><span class="display-mode">@item.ID</span><label id="InsamlingsfrekvensId" class="edit-mode colMinWidth">@item.Id</label></text>, style: "colMinWidth"),
                     grid.Column("Insamlingsfrekvens", "Insamlingsfrekvens", format: @<text><span class="display-mode"><label id="lblInsamlingsfrekvens">@item.Insamlingsfrekvens</label></span>
-                                                                                        <input type="text" id="Insamlingsfrekvens" value="@item.Insamlingsfrekvens" class="edit-mode form-control"/></text>, style: "col1Width"),
+                                    <input type="text" id="Insamlingsfrekvens" value="@item.Insamlingsfrekvens" class="edit-mode form-control"/></text>, style: "col1Width"),
 
                     grid.Column(null, format: @<text>
                                                   <button class="edit-user display-mode btn btn-default">Ändra</button>

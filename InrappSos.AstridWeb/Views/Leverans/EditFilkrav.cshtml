@@ -5,8 +5,6 @@
     ViewBag.Title = "Leverans";
 }
 
-@*<link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />*@
-
 <script type="text/javascript">
     var filkravsLista = @Html.Raw(Json.Encode(Model.Filkrav));
 
@@ -15,7 +13,7 @@
         //Göm kolumnen med dropdown/Insamlingsfrekvens om ej edit-mode
         $('#filkravTable tr th:eq(0)').hide();
         $('#filkravTable tr th:eq(5)').hide();
-        $("#filkravTable tr").each(function (i, row) {
+        $("#filkravTable tbody tr").each(function (i, row) {
             $(row).find('td:eq(0)').hide();
             $(row).find('td:eq(5)').hide();
         });
@@ -202,7 +200,6 @@
 
     @if (Model != null)
     {
-        @*@Html.HiddenFor(m => m.SelectedInsamlingsfrekvensId)*@
 
         @Html.ActionLink("Skapa nytt filkrav", "CreateFilkrav", "Leverans", new { selectedRegId = Model.SelectedRegisterId }, null)
 
@@ -235,62 +232,60 @@
                              grid.Column("Uppgiftsslut", "Uppgiftsslut", format: @<text><span class="display-mode"><label id="lblUppgiftsslut">@item.Uppgiftslutdag</label></span>
                                 <input type="text" id="Uppgiftslutdag" value="@item.Uppgiftslutdag" class="edit-mode form-control" />
                             </text>, style: "col2Width"),
-                                     grid.Column("Rapporteringsstart", "Rapporteringsstart", format: @<text>
+                                grid.Column("Rapporteringsstart", "Rapporteringsstart", format: @<text>
+                                <span class="display-mode">
+                                    <label id="lblRapporteringsstart">@item.Rapporteringsstartdag</label>
+                                </span>
+                                <input type="text" id="Rapporteringsstartdag" value="@item.Rapporteringsstartdag" class="edit-mode form-control" />
+                            </text>, style: "col2Width"),
+                                        grid.Column("Rapporteringsslut", "Rapporteringsslut", format: @<text>
                                         <span class="display-mode">
-                                            <label id="lblRapporteringsstart">@item.Rapporteringsstartdag</label>
+                                            <label id="lblRapporteringsslut">@item.Rapporteringsslutdag</label>
                                         </span>
-                                        <input type="text" id="Rapporteringsstartdag" value="@item.Rapporteringsstartdag" class="edit-mode form-control" />
-                                    </text>, style: "col2Width"),
-                                             grid.Column("Rapporteringsslut", "Rapporteringsslut", format: @<text>
-                                                <span class="display-mode">
-                                                    <label id="lblRapporteringsslut">@item.Rapporteringsslutdag</label>
-                                                </span>
-                                                <input type="text" id="Rapporteringsslutdag" value="@item.Rapporteringsslutdag" class="edit-mode form-control" />
-                                            </text>, style: "col2Width"),
-                                                     grid.Column("Rapportering senast", "Rapportering senast", format: @<text>
-                                                        <span class="display-mode">
-                                                            <label id="lblRapporteringsenast">@item.RapporteringSenastdag</label>
-                                                        </span>
-                                                        <input type="text" id="RapporteringSenastdag" value="@item.RapporteringSenastdag" class="edit-mode form-control" />
-                                                    </text>, style: "col2Width"),
+                                        <input type="text" id="Rapporteringsslutdag" value="@item.Rapporteringsslutdag" class="edit-mode form-control" />
+                            </text>, style: "col2Width"),
+                                grid.Column("Rapportering senast", "Rapportering senast", format: @<text>
+                                <span class="display-mode">
+                                    <label id="lblRapporteringsenast">@item.RapporteringSenastdag</label>
+                                </span>
+                                <input type="text" id="RapporteringSenastdag" value="@item.RapporteringSenastdag" class="edit-mode form-control" />
+                            </text>, style: "col2Width"),
 
-                                                             grid.Column("Påminnelse 1", "Påminnelse 1", format: @<text>
-                                                                <span class="display-mode">
-                                                                    <label id="lblPaminnelse1">@item.Paminnelse1dag</label>
+                                        grid.Column("Påminnelse 1", "Påminnelse 1", format: @<text>
+                                        <span class="display-mode">
+                                            <label id="lblPaminnelse1">@item.Paminnelse1dag</label>
                                                                 </span>
-                                                                <input type="text" id="Paminnelse1dag" value="@item.Paminnelse1dag" class="edit-mode form-control" />
-                                                            </text>, style: "col2Width"),
-                                                                     grid.Column("Påminnelse 2", "Påminnelse 2", format: @<text>
-                                                                        <span class="display-mode">
-                                                                            <label id="lblPaminnelse2">@item.Paminnelse2dag</label>
-                                                                        </span>
-                                                                        <input type="text" id="Paminnelse2dag" value="@item.Paminnelse2dag" class="edit-mode form-control" />
-                                                                    </text>, style: "col2Width"),
-                                                                             grid.Column("Påminnelse 3", "Påminnelse 3", format: @<text>
-                                                                                <span class="display-mode">
-                                                                                    <label id="lblPaminnelse3">@item.Paminnelse3dag</label>
-                                                                                </span>
-                                                                                <input type="text" id="Paminnelse3dag" value="@item.Paminnelse3dag" class="edit-mode form-control" />
-                                                                            </text>, style: "col2Width"),
-                                                                                     grid.Column("Rapportering efter antal månader", "Rapportering efter antal månader", format: @<text>
-                                                                                        <span class="display-mode">
-                                                                                            <label id="lblRapporteringEfterAntalManader">@item.RapporteringEfterAntalManader </label>
-                                                                                        </span>
-                                                                                        <input type="text" id="RapporteringEfterAntalManader" value="@item.RapporteringEfterAntalManader" class="edit-mode form-control" />
-                                                                                    </text>, style: "colMinWidth"),
-                                                                                             grid.Column("Uppgifter antal månader", "Uppgifter antal månader", format: @<text>
-                                                                                                <span class="display-mode">
-                                                                                                    <label id="lblUppgifterAntalmanader">@item.UppgifterAntalmanader </label>
-                                                                                                </span>
-                                                                                                <input type="text" id="UppgifterAntalmanader" value="@item.UppgifterAntalmanader" class="edit-mode form-control" />
-                                                                                            </text>, style: "colMinWidth"),
-
-
-                                                                                                     grid.Column(null, format: @<text>
-                                                                                                        <button class="edit-user display-mode btn btn-default">Ändra</button>
-                                                                                                        <button class="save-user edit-mode btn btn-default">Spara</button>
-                                                                                                        <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
-                                                                                                    </text>, style: "col3Width", canSort: false)))
+                                <input type="text" id="Paminnelse1dag" value="@item.Paminnelse1dag" class="edit-mode form-control" />
+                             </text>, style: "col2Width"),
+                                    grid.Column("Påminnelse 2", "Påminnelse 2", format: @<text>
+                                    <span class="display-mode">
+                                        <label id="lblPaminnelse2">@item.Paminnelse2dag</label>
+                                    </span>
+                                    <input type="text" id="Paminnelse2dag" value="@item.Paminnelse2dag" class="edit-mode form-control" />
+                            </text>, style: "col2Width"),
+                                            grid.Column("Påminnelse 3", "Påminnelse 3", format: @<text>
+                                            <span class="display-mode">
+                                                <label id="lblPaminnelse3">@item.Paminnelse3dag</label>
+                                            </span>
+                                            <input type="text" id="Paminnelse3dag" value="@item.Paminnelse3dag" class="edit-mode form-control" />
+                            </text>, style: "col2Width"),
+                                                    grid.Column("Rapportering efter antal månader", "Rapportering efter antal månader", format: @<text>
+                                                    <span class="display-mode">
+                                                        <label id="lblRapporteringEfterAntalManader">@item.RapporteringEfterAntalManader </label>
+                                                    </span>
+                                                    <input type="text" id="RapporteringEfterAntalManader" value="@item.RapporteringEfterAntalManader" class="edit-mode form-control" />
+                            </text>, style: "colMinWidth"),
+                                        grid.Column("Uppgifter antal månader", "Uppgifter antal månader", format: @<text>
+                                        <span class="display-mode">
+                                            <label id="lblUppgifterAntalmanader">@item.UppgifterAntalmanader </label>
+                                        </span>
+                                        <input type="text" id="UppgifterAntalmanader" value="@item.UppgifterAntalmanader" class="edit-mode form-control" />
+                            </text>, style: "colMinWidth"),
+                                grid.Column(null, format: @<text>
+                                <button class="edit-user display-mode btn btn-default">Ändra</button>
+                                <button class="save-user edit-mode btn btn-default">Spara</button>
+                                <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
+                            </text>, style: "col3Width", canSort: false)))
 
 </div>
     }

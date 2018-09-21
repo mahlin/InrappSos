@@ -5,6 +5,7 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
+        //$('[data-toggle=dropdown dropdown-submenu]').dropdown();
 
         var modalConfirm = function test(callback) {
             $("#modal-btn-si").on("click", function () {
@@ -30,7 +31,6 @@
                     success: function (data) {
                         //On ajax success do this
                         $("#pageContainer").html(data);
-                        tr.find('.edit-mode, .display-mode').toggle();
                         $('#footer').hide();
                     }
                 });

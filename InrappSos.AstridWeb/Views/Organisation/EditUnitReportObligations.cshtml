@@ -46,6 +46,7 @@
             $("#ddlOrgenheter").append("<option> - Välj organisationsenhet - </option>");
             var selectedOrg = $('#ddlOrganisation').val();
             $("#SelectedOrganisationId").val(selectedOrg);
+            $("#SelectedOrganisationsenhetsId").val("");
 
             //Hämta orgenheter för vald kommun
             setOrgenhetsDrop(selectedOrg);
@@ -152,14 +153,20 @@
     });
 
 
-    $(document).on('click','.createNew',function(e) {
-            //Cancel original submission
-            e.preventDefault();
-            var orgId = $('#SelectedOrganisationId').val();
-            var orgenhetsId = $('#SelectedOrganisationsenhetsId').val();
-            var tmp = $(this).attr('href');
+    $(document).on('click', '.createNew', function (e) {
+        //Cancel original submission
+        e.preventDefault();
+        var orgId = $('#SelectedOrganisationId').val();
+        var orgenhetsId = $('#SelectedOrganisationsenhetsId').val();
+        var cleanUrl = $(this).attr('href');
 
-            window.location = $(this).attr('href') + '?orgId=' + orgId + '&orgenhetsId=' + orgenhetsId;
+        //if querystring already contains selectedOrgId, orgenhetsId, remove it
+        var index = $(this).attr('href').indexOf("?selectedOrgId=");
+        if (index >= 0) {
+            cleanUrl = $(this).attr('href').substring(0, index);
+        }
+        var newUrl = cleanUrl + '?selectedOrgId=' + orgId + '&selectedOrgenhetsId=' + orgenhetsId;
+        window.location = newUrl;
     });
 
 </script>
@@ -217,7 +224,7 @@
 
         <div id="skapaNy">
             @*@Html.ActionLink("Skapa ny enhetsuppgiftsskyldighet", "CreateUnitReportObligation", "Organisation", new { orgId = Model.SelectedOrganisationId, orgenhetsId = Model.SelectedOrganisationsenhetsId }, null)*@
-            @Html.ActionLink("Skapa ny enhetsuppgiftsskyldighet", "CreateUnitReportObligation", new { selectedOrgId = Model.SelectedOrganisationId, selectedOrgenhetsId = Model.SelectedOrganisationsenhetsId }, null)
+            @Html.ActionLink("Skapa ny enhetsuppgiftsskyldighet", "CreateUnitReportObligation", new { selectedOrgId = Model.SelectedOrganisationId, selectedOrgenhetsId = Model.SelectedOrganisationsenhetsId }, new { @class = "createNew" })
         </div>
         @Html.HiddenFor(m => m.SelectedOrganisationId)
 

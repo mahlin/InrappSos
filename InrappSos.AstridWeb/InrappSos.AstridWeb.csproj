@@ -223,6 +223,7 @@
     <Content Include="Scripts\bootstrap-multiselect\dist\less\bootstrap-multiselect.less" />
     <Content Include="ConnectionStrings.config" />
     <Content Include="PrivateSettings.config" />
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\custom.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />

@@ -19,12 +19,12 @@ namespace InrappSos.AstridWeb.Controllers
     public class RegisterController : Controller
     {
 
-        private readonly IPortalAdminService _portalAdminService;
+        private readonly IPortalSosService _portalSosService;
 
         public RegisterController()
         {
-            _portalAdminService =
-                new PortalAdminService(new PortalAdminRepository(new InrappSosDbContext(), new InrappSosIdentityDbContext()));
+            _portalSosService =
+                new PortalSosService(new PortalSosRepository(new InrappSosDbContext(), new InrappSosIdentityDbContext()));
         }
 
 
@@ -36,7 +36,7 @@ namespace InrappSos.AstridWeb.Controllers
             var registerViewList = new List<RegisterViewModels.AdmRegisterViewModel>();
             try
             {
-                 var registerList = _portalAdminService.HamtaRegister();
+                 var registerList = _portalSosService.HamtaRegister();
 
                 foreach (var register in registerList)
                 {
@@ -45,7 +45,7 @@ namespace InrappSos.AstridWeb.Controllers
                     registerView.Beskrivning = register.Beskrivning;
                     registerView.Kortnamn = register.Kortnamn;
                     registerView.Registernamn = register.Registernamn;
-                    registerView.Inrapporteringsportal = register.Inrapporteringsportal;
+                    registerView.InrappSos = register.InrappSos;
 
                     registerViewList.Add(registerView);
                 }
@@ -81,17 +81,17 @@ namespace InrappSos.AstridWeb.Controllers
                 if (!model.RegisterShortName.IsNullOrWhiteSpace())
                 {
                     model.RegisterShortName = model.RegisterShortName;
-                    register = _portalAdminService.HamtaRegisterMedKortnamn(model.RegisterShortName);
+                    register = _portalSosService.HamtaRegisterMedKortnamn(model.RegisterShortName);
                 }
                 else if(regShortName != "")
                 {
                     model.RegisterShortName = regShortName;
-                    register = _portalAdminService.HamtaRegisterMedKortnamn(regShortName);
+                    register = _portalSosService.HamtaRegisterMedKortnamn(regShortName);
                 }
 
                 
                 model.SelectedDirectoryId = register.Id;
-                model.DelRegisters = _portalAdminService.HamtaDelRegisterForRegister(register.Id);
+                model.DelRegisters = _portalSosService.HamtaDelRegisterForRegister(register.Id);
             }
             catch (Exception e)
             {
@@ -116,7 +116,7 @@ namespace InrappSos.AstridWeb.Controllers
             var model = new RegisterViewModels.RegisterViewModel();
             try
             {
-                model.DelRegisters = _portalAdminService.HamtaDelRegister();
+                model.DelRegisters = _portalSosService.HamtaDelRegister();
                 model.RegisterShortName = "";
             }
             catch (Exception e)
@@ -146,7 +146,7 @@ namespace InrappSos.AstridWeb.Controllers
                 try
                 {
                     var userName = User.Identity.GetUserName();
-                    _portalAdminService.UppdateraRegister(register, userName);
+                    _portalSosService.UppdateraRegister(register, userName);
                 }
                 catch (Exception e)
                 {
@@ -177,10 +177,10 @@ namespace InrappSos.AstridWeb.Controllers
                     var userName = User.Identity.GetUserName();
                     if (delRegister.RegisterId != 0)
                     {
-                        var register = _portalAdminService.HamtaRegisterMedId(delRegister.RegisterId);
+                        var register = _portalSosService.HamtaRegisterMedId(delRegister.RegisterId);
                         regShortName = register.Kortnamn;
                     }
-                    _portalAdminService.UppdateraDelregister(delRegister, userName);
+                    _portalSosService.UppdateraDelregister(delRegister, userName);
                 }
                 catch (Exception e)
                 {
@@ -223,9 +223,9 @@ namespace InrappSos.AstridWeb.Controllers
                         Registernamn = model.Registernamn,
                         Beskrivning = model.Beskrivning,
                         Kortnamn = model.Kortnamn,
-                        Inrapporteringsportal = model.Inrapporteringsportal
+                        InrappSos = model.InrappSos
                     };
-                    _portalAdminService.SkapaRegister(register, userName);
+                    _portalSosService.SkapaRegister(register, userName);
                 }
                 catch (Exception e)
                 {
@@ -256,7 +256,7 @@ namespace InrappSos.AstridWeb.Controllers
             }
             else
             {
-                var register = _portalAdminService.HamtaRegisterMedKortnamn(regShortName);
+                var register = _portalSosService.HamtaRegisterMedKortnamn(regShortName);
                 model.RegisterShortName = register.Kortnamn;
                 model.RegisterId = register.Id;
             }
@@ -276,8 +276,8 @@ namespace InrappSos.AstridWeb.Controllers
                 {
                     var userName = User.Identity.GetUserName();
 
-                    _portalAdminService.SkapaDelregister(subDir, userName);
-                    var register = _portalAdminService.HamtaRegisterMedId(subDir.RegisterId);
+                    _portalSosService.SkapaDelregister(subDir, userName);
+                    var register = _portalSosService.HamtaRegisterMedId(subDir.RegisterId);
                     regShortName = register.Kortnamn;
                 }
                 catch (Exception e)

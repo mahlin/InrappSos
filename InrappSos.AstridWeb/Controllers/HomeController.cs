@@ -14,12 +14,12 @@ namespace InrappSos.AstridWeb.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IPortalAdminService _portalService;
+        private readonly IPortalSosService _portalSosService;
 
         public HomeController()
         {
-            _portalService =
-                new PortalAdminService(new PortalAdminRepository(new InrappSosDbContext(), new InrappSosIdentityDbContext()));
+            _portalSosService =
+                new PortalSosService(new PortalSosRepository(new InrappSosDbContext(), new InrappSosIdentityDbContext()));
 
         }
 
@@ -48,7 +48,7 @@ namespace InrappSos.AstridWeb.Controllers
             try
             {
                 //Uppdatera valda register
-                var x = _portalService.HamtaHistorikForOrganisation(29);
+                var x = _portalSosService.HamtaHistorikForOrganisation(29);
                 return RedirectToAction("Index", new { Message = ManageMessageId.ChangeChosenRegister });
             }
             catch (Exception e)

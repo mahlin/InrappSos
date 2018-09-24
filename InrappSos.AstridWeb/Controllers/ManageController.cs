@@ -21,13 +21,13 @@ namespace InrappSos.AstridWeb.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
-        private readonly IPortalAdminService _portalAdminService;
+        private readonly IPortalSosService _portalSosService;
         private CustomIdentityResultErrorDescriber _errorDecsriber;
 
         public ManageController()
         {
-            _portalAdminService =
-                new PortalAdminService(new PortalAdminRepository(new InrappSosDbContext(), new InrappSosIdentityDbContext()));
+            _portalSosService =
+                new PortalSosService(new PortalSosRepository(new InrappSosDbContext(), new InrappSosIdentityDbContext()));
             _errorDecsriber = new CustomIdentityResultErrorDescriber();
 
         }
@@ -36,8 +36,8 @@ namespace InrappSos.AstridWeb.Controllers
         {
             UserManager = userManager;
             SignInManager = signInManager;
-            _portalAdminService =
-                new PortalAdminService(new PortalAdminRepository(new InrappSosDbContext(), new InrappSosIdentityDbContext()));
+            _portalSosService =
+                new PortalSosService(new PortalSosRepository(new InrappSosDbContext(), new InrappSosIdentityDbContext()));
             _errorDecsriber = new CustomIdentityResultErrorDescriber();
 
         }
@@ -175,7 +175,7 @@ namespace InrappSos.AstridWeb.Controllers
                 {
                     user.AndradAv = user.Email;
                     user.AndradDatum = DateTime.Now;
-                    _portalAdminService.UppdateraAnvandarInfo(user, User.Identity.GetUserName());
+                    _portalSosService.UppdateraAnvandarInfo(user, User.Identity.GetUserName());
                     await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
                 }
                 return RedirectToAction("Index", new { Message = ManageMessageId.ChangePasswordSuccess });
@@ -207,7 +207,7 @@ namespace InrappSos.AstridWeb.Controllers
                     {
                         user.AndradAv = user.Email;
                         user.AndradDatum = DateTime.Now;
-                        _portalAdminService.UppdateraAnvandarInfo(user, User.Identity.GetUserName());
+                        _portalSosService.UppdateraAnvandarInfo(user, User.Identity.GetUserName());
                         await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
                     }
                     return RedirectToAction("Index", new { Message = ManageMessageId.SetPasswordSuccess });
@@ -239,7 +239,7 @@ namespace InrappSos.AstridWeb.Controllers
         //    }
         //    try
         //    {
-        //        _portalAdminService.UppdateraNamnForAnvandare(User.Identity.GetUserId(), model.Name);
+        //        _portalSosService.UppdateraNamnForAnvandare(User.Identity.GetUserId(), model.Name);
         //        return RedirectToAction("Index", new { Message = ManageMessageId.ChangeNameSuccess });
         //    }
         //    catch (Exception e)

@@ -19,20 +19,20 @@ namespace InrappSos.AstridWeb.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly IPortalAdminService _portalAdminService;
+        private readonly IPortalSosService _portalSosService;
         private ApplicationUserManager _userManager;
 
         public AdminController(ApplicationUserManager userManager)
         {
             UserManager = userManager;
-            _portalAdminService =
-                new PortalAdminService(new PortalAdminRepository(new InrappSosDbContext(), new InrappSosIdentityDbContext()));
+            _portalSosService =
+                new PortalSosService(new PortalSosRepository(new InrappSosDbContext(), new InrappSosIdentityDbContext()));
         }
 
         public AdminController()
         {
-            _portalAdminService =
-                new PortalAdminService(new PortalAdminRepository(new InrappSosDbContext(), new InrappSosIdentityDbContext()));
+            _portalSosService =
+                new PortalSosService(new PortalSosRepository(new InrappSosDbContext(), new InrappSosIdentityDbContext()));
         }
 
         public ApplicationUserManager UserManager
@@ -56,7 +56,7 @@ namespace InrappSos.AstridWeb.Controllers
             
             try
             {
-                var adminUsers = _portalAdminService.HamtaAdminUsers();
+                var adminUsers = _portalSosService.HamtaAdminUsers();
                 model.AdminUsers = ConvertAdminUsersToViewModel(adminUsers);
             }
             catch (Exception e)
@@ -84,7 +84,7 @@ namespace InrappSos.AstridWeb.Controllers
                 {
                     var userName = User.Identity.GetUserName();
                     var userToUpdate = ConvertViewModelToAppUserAdmin(user);
-                    _portalAdminService.UppdateraAdminAnvandare(userToUpdate, userName);
+                    _portalSosService.UppdateraAdminAnvandare(userToUpdate, userName);
                 }
             }
             catch (Exception e)
@@ -109,7 +109,7 @@ namespace InrappSos.AstridWeb.Controllers
         {
             try
             {
-                _portalAdminService.TaBortAdminAnvandare(userId);
+                _portalSosService.TaBortAdminAnvandare(userId);
             }
             catch (Exception e)
             {

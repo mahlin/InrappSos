@@ -19,12 +19,12 @@ namespace InrappSos.AstridWeb.Controllers
 {
     public class SystemController : Controller
     {
-        private readonly IPortalAdminService _portalAdminService;
+        private readonly IPortalSosService _portalSosService;
 
         public SystemController()
         {
-            _portalAdminService =
-                new PortalAdminService(new PortalAdminRepository(new InrappSosDbContext(), new InrappSosIdentityDbContext()));
+            _portalSosService =
+                new PortalSosService(new PortalSosRepository(new InrappSosDbContext(), new InrappSosIdentityDbContext()));
         }
 
         // GET: System
@@ -41,7 +41,7 @@ namespace InrappSos.AstridWeb.Controllers
             var model = new SystemViewModels.SystemViewModel();
             try
             {
-                model.FAQCategories = _portalAdminService.HamtaFAQkategorier();
+                model.FAQCategories = _portalSosService.HamtaFAQkategorier();
             }
             catch (Exception e)
             {
@@ -66,12 +66,12 @@ namespace InrappSos.AstridWeb.Controllers
             var model = new SystemViewModels.SystemViewModel();
             try
             {
-                var faqs = _portalAdminService.HamtaFAQs(faqCatId);
+                var faqs = _portalSosService.HamtaFAQs(faqCatId);
                 model.FAQs = ConvertAdmFAQToViewModel(faqs.ToList());
                 model.SelectedFAQCategory = faqCatId;
                 if (faqCatId != 0 && faqCatName.IsEmpty())
                 {
-                    var faqCat = _portalAdminService.HamtaFAQKategori(faqCatId);
+                    var faqCat = _portalSosService.HamtaFAQKategori(faqCatId);
                     model.SelectedFAQCategoryName = faqCat.Kategori;
                 }
                 else
@@ -80,7 +80,7 @@ namespace InrappSos.AstridWeb.Controllers
                 }
                 
                 // Ladda drop down lists. 
-                var registerList = _portalAdminService.HamtaAllaRegisterForPortalen();
+                var registerList = _portalSosService.HamtaAllaRegisterForPortalen();
                 this.ViewBag.RegisterList = CreateRegisterDropDownList(registerList);
                 //model.SelectedFAQ.SelectedRegisterId = 0;
             }
@@ -108,7 +108,7 @@ namespace InrappSos.AstridWeb.Controllers
             var model = new SystemViewModels.SystemViewModel();
             try
             {
-                model.InfoPages = _portalAdminService.HamtaInformationstexter();
+                model.InfoPages = _portalSosService.HamtaInformationstexter();
                 model.SelectedInfo = selectedInfoType;
                 model.SelectedInfoText = selectedText;
             }
@@ -135,9 +135,9 @@ namespace InrappSos.AstridWeb.Controllers
             var model = new SystemViewModels.OpeningHours();
             try
             {
-                var admKonf = _portalAdminService.HamtaOppettider();
+                var admKonf = _portalSosService.HamtaOppettider();
                 model.ClosedAnyway = admKonf.ClosedAnyway;
-                model.ClosedDaysList = _portalAdminService.MarkeraStangdaDagar(admKonf.ClosedDays);
+                model.ClosedDaysList = _portalSosService.MarkeraStangdaDagar(admKonf.ClosedDays);
                 //model.OpeningTime = SetTime(admKonf.ClosedToHour, admKonf.ClosedToMin);
                 //model.ClosingTime = SetTime(admKonf.ClosedFromHour, admKonf.ClosedFromMin);
                 DateTime s = DateTime.MinValue;
@@ -146,7 +146,7 @@ namespace InrappSos.AstridWeb.Controllers
                 model.OpeningTimeStr = admKonf.ClosedToHour.ToString() + ":" + admKonf.ClosedToMin.ToString();
                 //model.ClosingTime = SetTime(admKonf.ClosedFromHour, admKonf.ClosedFromMin);
                 model.ClosingTimeStr = admKonf.ClosedFromHour.ToString() + ":" + admKonf.ClosedFromMin.ToString();
-                model.InfoTextForClosedPage = _portalAdminService.HamtaInfoText("Stangtsida").Text;
+                model.InfoTextForClosedPage = _portalSosService.HamtaInfoText("Stangtsida").Text;
             }
             catch (Exception e)
             {
@@ -171,7 +171,7 @@ namespace InrappSos.AstridWeb.Controllers
             var model = new SystemViewModels.SystemViewModel();
             try
             {
-                var holidayList = _portalAdminService.HamtaAllaHelgdagar();
+                var holidayList = _portalSosService.HamtaAllaHelgdagar();
                 model.Holidays = ConvertAdmHelgdagToViewModel(holidayList.ToList());
             }
             catch (Exception e)
@@ -196,7 +196,7 @@ namespace InrappSos.AstridWeb.Controllers
             var model = new SystemViewModels.SystemViewModel();
             try
             {
-                var specialdaysList = _portalAdminService.HamtaAllaSpecialdagar();
+                var specialdaysList = _portalSosService.HamtaAllaSpecialdagar();
                 model.SpecialDays = ConvertAdmSpecialdagToViewModel(specialdaysList.ToList());
             }
             catch (Exception e)
@@ -223,7 +223,7 @@ namespace InrappSos.AstridWeb.Controllers
                 try
                 {
                     var userName = User.Identity.GetUserName();
-                    _portalAdminService.UppdateraFAQKategori(faqCategory, userName);
+                    _portalSosService.UppdateraFAQKategori(faqCategory, userName);
                 }
                 catch (Exception e)
                 {
@@ -252,7 +252,7 @@ namespace InrappSos.AstridWeb.Controllers
                 {
                     var userName = User.Identity.GetUserName();
                     var faqDb = ConvertViewModelToAdmFAQ(model.SelectedFAQ);
-                    _portalAdminService.UppdateraFAQ(faqDb, userName);
+                    _portalSosService.UppdateraFAQ(faqDb, userName);
                 }
                 catch (Exception e)
                 {
@@ -280,7 +280,7 @@ namespace InrappSos.AstridWeb.Controllers
                 {
                     var userName = User.Identity.GetUserName();
                     var holidayDb = ConvertViewModelToAdmHelgdag(holiday);
-                    _portalAdminService.UppdateraHelgdag(holidayDb, userName);
+                    _portalSosService.UppdateraHelgdag(holidayDb, userName);
                 }
                 catch (Exception e)
                 {
@@ -308,7 +308,7 @@ namespace InrappSos.AstridWeb.Controllers
                 {
                     var userName = User.Identity.GetUserName();
                     var specialDayDb = ConvertViewModelToAdmSpecialdag(specialDay);
-                    _portalAdminService.UppdateraSpecialdag(specialDayDb, userName);
+                    _portalSosService.UppdateraSpecialdag(specialDayDb, userName);
                 }
                 catch (Exception e)
                 {
@@ -341,7 +341,7 @@ namespace InrappSos.AstridWeb.Controllers
                         Id = model.SelectedInfoId,
                         Text = model.SelectedInfoText
                     };
-                    _portalAdminService.UppdateraInformationstext(info, userName);
+                    _portalSosService.UppdateraInformationstext(info, userName);
                 }
                 catch (Exception e)
                 {
@@ -377,7 +377,7 @@ namespace InrappSos.AstridWeb.Controllers
                 try
                 {
                     var userName = User.Identity.GetUserName();
-                    _portalAdminService.SkapaFAQKategori(faqCategory, userName);
+                    _portalSosService.SkapaFAQKategori(faqCategory, userName);
                 }
                 catch (Exception e)
                 {
@@ -404,7 +404,7 @@ namespace InrappSos.AstridWeb.Controllers
             var model = new SystemViewModels.FAQViewModel();
             model.FAQkategoriId = catId;
             // Ladda drop down lists. 
-            var registerList = _portalAdminService.HamtaAllaRegisterForPortalen();
+            var registerList = _portalSosService.HamtaAllaRegisterForPortalen();
             this.ViewBag.RegisterList = CreateRegisterDropDownList(registerList);
             model.SelectedRegisterId = 0;
             return View(model);
@@ -435,7 +435,7 @@ namespace InrappSos.AstridWeb.Controllers
                     {
                         faq.RegisterId = null;
                     }
-                    _portalAdminService.SkapaFAQ(faq, userName);
+                    _portalSosService.SkapaFAQ(faq, userName);
                 }
                 catch (Exception e)
                 {
@@ -460,7 +460,7 @@ namespace InrappSos.AstridWeb.Controllers
         {
             var model = new SystemViewModels.AdmHelgdagViewModel();
             // Ladda drop down lists. 
-            var informationList = _portalAdminService.HamtaInformationstexter();
+            var informationList = _portalSosService.HamtaInformationstexter();
             this.ViewBag.InformationTextList = CreateInformationTextDropDownList(informationList);
             model.SelectedInformationId = 0;
             return View(model);
@@ -484,7 +484,7 @@ namespace InrappSos.AstridWeb.Controllers
                         Helgdatum = model.Helgdatum,
                         Helgdag = model.Helgdag
                     };
-                    _portalAdminService.SkapaHelgdag(holiday, userName);
+                    _portalSosService.SkapaHelgdag(holiday, userName);
                 }
                 catch (Exception e)
                 {
@@ -509,7 +509,7 @@ namespace InrappSos.AstridWeb.Controllers
         {
             var model = new SystemViewModels.AdmSpecialdagViewModel();
             // Ladda drop down lists. 
-            var informationList = _portalAdminService.HamtaInformationstexter();
+            var informationList = _portalSosService.HamtaInformationstexter();
             this.ViewBag.InformationTextList = CreateInformationTextDropDownList(informationList);
             model.SelectedInformationId = 0;
             return View(model);
@@ -535,7 +535,7 @@ namespace InrappSos.AstridWeb.Controllers
                         Stang = model.Stang,
                         Anledning = model.Anledning
                     };
-                    _portalAdminService.SkapaSpecialdag(specialDay, userName);
+                    _portalSosService.SkapaSpecialdag(specialDay, userName);
                 }
                 catch (Exception e)
                 {
@@ -561,7 +561,7 @@ namespace InrappSos.AstridWeb.Controllers
         {
             var model = new SystemViewModels.SystemViewModel();
             model.SelectedFAQ = new SystemViewModels.FAQViewModel();
-            var selectedFAQDb = _portalAdminService.HamtaFAQ(faqId);
+            var selectedFAQDb = _portalSosService.HamtaFAQ(faqId);
             model.SelectedFAQ.FAQkategoriId = selectedFAQDb.FAQkategoriId;
             model.SelectedFAQ.Id = selectedFAQDb.Id;
             model.SelectedFAQ.Fraga = selectedFAQDb.Fraga;
@@ -582,7 +582,7 @@ namespace InrappSos.AstridWeb.Controllers
                 model.SelectedFAQ.SelectedRegisterId = 0;
             }
             // Ladda drop down lists. 
-            var registerList = _portalAdminService.HamtaAllaRegisterForPortalen();
+            var registerList = _portalSosService.HamtaAllaRegisterForPortalen();
             this.ViewBag.RegisterList = CreateRegisterDropDownList(registerList);
 
             
@@ -612,7 +612,7 @@ namespace InrappSos.AstridWeb.Controllers
                         Sortering = model.SelectedFAQ.Sortering
 
                     };
-                    _portalAdminService.UppdateraFAQ(faq, userName);
+                    _portalSosService.UppdateraFAQ(faq, userName);
                 }
                 catch (Exception e)
                 {
@@ -656,7 +656,7 @@ namespace InrappSos.AstridWeb.Controllers
                        Text =  model.Text,
                     };
                     infoText.Text = model.Text;
-                    _portalAdminService.SkapaInformationsText(infoText, userName);
+                    _portalSosService.SkapaInformationsText(infoText, userName);
                 }
                 catch (Exception e)
                 {
@@ -702,7 +702,7 @@ namespace InrappSos.AstridWeb.Controllers
                     }
                     openHoursDTO.ClosedDays = daysListDTO;
 
-                    _portalAdminService.SparaOppettider(openHoursDTO, userName);
+                    _portalSosService.SparaOppettider(openHoursDTO, userName);
                 }
                 catch (Exception e)
                 {
@@ -728,7 +728,7 @@ namespace InrappSos.AstridWeb.Controllers
         {
             try
             {
-               _portalAdminService.TaBortFAQKategori(faqCatId);
+               _portalSosService.TaBortFAQKategori(faqCatId);
             }
             catch (Exception e)
             {
@@ -750,7 +750,7 @@ namespace InrappSos.AstridWeb.Controllers
         {
             try
             {
-                _portalAdminService.TaBortFAQ(faqId);
+                _portalSosService.TaBortFAQ(faqId);
             }
             catch (Exception e)
             {
@@ -772,7 +772,7 @@ namespace InrappSos.AstridWeb.Controllers
         {
             try
             {
-                _portalAdminService.TaBortHelgdag(holidayId);
+                _portalSosService.TaBortHelgdag(holidayId);
             }
             catch (Exception e)
             {
@@ -794,7 +794,7 @@ namespace InrappSos.AstridWeb.Controllers
         {
             try
             {
-                _portalAdminService.TaBortSpecialdag(specialDayId);
+                _portalSosService.TaBortSpecialdag(specialDayId);
             }
             catch (Exception e)
             {
@@ -889,7 +889,7 @@ namespace InrappSos.AstridWeb.Controllers
                     Id = holiday.Id,
                     Helgdatum = holiday.Helgdatum,
                     Helgdag = holiday.Helgdag,
-                    Informationstyp = _portalAdminService.HamtaInfo(holiday.InformationsId).Informationstyp
+                    Informationstyp = _portalSosService.HamtaInfo(holiday.InformationsId).Informationstyp
                 };
 
                 holidayViewList.Add(holidayView);
@@ -909,7 +909,7 @@ namespace InrappSos.AstridWeb.Controllers
                     Oppna = specialdag.Oppna,
                     Stang = specialdag.Stang,
                     Anledning = specialdag.Anledning,
-                    Informationstyp = _portalAdminService.HamtaInfo(specialdag.InformationsId).Informationstyp
+                    Informationstyp = _portalSosService.HamtaInfo(specialdag.InformationsId).Informationstyp
                 };
 
                 specialdayViewList.Add(specialdayView);
@@ -936,7 +936,7 @@ namespace InrappSos.AstridWeb.Controllers
                 if (faq.RegisterId != null )
                 {
                     var id = Convert.ToInt32(faq.RegisterId);
-                    faqView.RegisterKortNamn = _portalAdminService.HamtaKortnamnForRegister(id);
+                    faqView.RegisterKortNamn = _portalSosService.HamtaKortnamnForRegister(id);
                 }
 
                 faqViewList.Add(faqView);
@@ -972,7 +972,7 @@ namespace InrappSos.AstridWeb.Controllers
             var holidayDb = new AdmHelgdag()
             {
                 Id = holiday.Id,
-                InformationsId = _portalAdminService.HamtaInfoText(holiday.Informationstyp).Id,
+                InformationsId = _portalSosService.HamtaInfoText(holiday.Informationstyp).Id,
                 Helgdatum = holiday.Helgdatum,
                 Helgdag = holiday.Helgdag
             };
@@ -984,7 +984,7 @@ namespace InrappSos.AstridWeb.Controllers
             var specialDayDb = new AdmSpecialdag()
             {
                 Id = specialDay.Id,
-                InformationsId = _portalAdminService.HamtaInfoText(specialDay.Informationstyp).Id,
+                InformationsId = _portalSosService.HamtaInfoText(specialDay.Informationstyp).Id,
                 Specialdagdatum = specialDay.Specialdagdatum,
                 Oppna = specialDay.Oppna,
                 Stang = specialDay.Stang,

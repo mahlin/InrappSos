@@ -8,13 +8,30 @@ using InrappSos.ApplicationService.DTOModel;
 
 namespace InrappSos.ApplicationService.Interface
 {
-    public interface IPortalAdminService
+    public interface IPortalSosService
     {
+        void AktiveraKontaktperson(string userId);
+        string ClosedComingWeek();
+        string HelgdagComingWeek();
+        string SpecialdagComingWeek();
+        IEnumerable<FilloggDetaljDTO> FiltreraHistorikForAnvandare(string userId, IEnumerable<FilloggDetaljDTO> historikForOrganisation);
+
+        string HamtaAnvandaresNamn(string userId);
+
+        string HamtaAnvandaresKontaktnummer(string userId);
+
+        string HamtaAnvandaresMobilnummer(string userId);
+
+        int HamtaUserOrganisationId(string userId);
 
         Organisation HamtaOrganisation(int orgId);
 
         Organisation HamtaOrganisationForKommunkod(string kommunkod);
+
+        Organisation HamtaOrgForEmailDomain(string modelEmail);
         string HamtaKommunkodForOrg(int orgId);
+        string HamtaKommunKodForAnvandare(string userId);
+
         Organisation HamtaOrgForAnvandare(string userId);
         Organisation HamtaOrgForOrganisationsenhet(int orgUnitId);
 
@@ -23,8 +40,10 @@ namespace InrappSos.ApplicationService.Interface
         IEnumerable<ApplicationUser> HamtaKontaktpersonerForOrg(int orgId);
 
         IEnumerable<Organisationsenhet> HamtaOrgEnheterForOrg(int orgId);
+        Organisationsenhet HamtaOrganisationsenhetMedEnhetskod(string kod, int orgId);
 
         IEnumerable<AdmUppgiftsskyldighet> HamtaUppgiftsskyldighetForOrg(int orgId);
+        AdmUppgiftsskyldighet HamtaUppgiftsskyldighetForOrganisationOchRegister(int orgId, int delregid);
 
         AdmUppgiftsskyldighet HamtaUppgiftsskyldighetForOrgOchDelreg(int orgId, int delregId);
 
@@ -47,6 +66,7 @@ namespace InrappSos.ApplicationService.Interface
         OpeningHoursInfoDTO HamtaOppettider();
 
         AdmInformation HamtaInfoText(string infoTyp);
+        
 
         AdmInformation HamtaInfo(int infoId);
 
@@ -71,16 +91,30 @@ namespace InrappSos.ApplicationService.Interface
         IEnumerable<AdmFilkrav> HamtaAllaFilkrav();
 
         IEnumerable<AdmForvantadfil> HamtaForvantadeFilerForRegister(int regId);
+
+        IEnumerable<AdmForvantadfil> HamtaForvantadFil(int filkravId);
+
         IEnumerable<AdmForvantadleverans> HamtaForvantadeLeveranserForRegister(int regId);
 
         IEnumerable<AdmForvantadleverans> HamtaForvantadeLeveranserForDelregister(int delregId);
 
+        int HamtaForvantadleveransIdForRegisterOchPeriod(int delregId, string period);
+        List<string> HamtaGiltigaPerioderForDelregister(int delregId);
+
         IEnumerable<AdmFilkrav> HamtaFilkravForRegister(int regId);
+
+        string HamtaHelgEllerSpecialdagsInfo();
+
+        string HamtaHelgdagsInfo();
+
+        string HamtaSpecialdagsInfo();
+
         IEnumerable<AdmRegister> HamtaAllaRegister();
         IEnumerable<AdmRegister> HamtaAllaRegisterForPortalen();
 
         IEnumerable<AdmDelregister> HamtaAllaDelregisterForPortalen();
 
+        IEnumerable<RegisterInfo> HamtaAllRegisterInformation();
         IEnumerable<AdmInsamlingsfrekvens> HamtaAllaInsamlingsfrekvenser();
 
         IEnumerable<Organisation> HamtaAllaOrganisationer();
@@ -94,6 +128,8 @@ namespace InrappSos.ApplicationService.Interface
         string HamtaKortnamnForRegister(int regId);
 
         string HamtaNamnForFilkrav(int filkravId);
+        int HamtaNyttLeveransId(string userId, string userName, int orgId, int registerId, int orgenhetsId, int forvLevId, string status);
+
 
         AdmForeskrift HamtaForeskriftByFilkrav(int filkravId);
 
@@ -123,6 +159,15 @@ namespace InrappSos.ApplicationService.Interface
 
         IEnumerable<RegisterInfo> HamtaValdaRegistersForAnvandare(string userId, int orgId);
 
+        IEnumerable<RegisterInfo> HamtaRegistersMedAnvandaresVal(string userId, int orgId);
+
+        IEnumerable<AdmRegister> HamtaRegisterForAnvandare(string userId, int orgId);
+
+        void InaktiveraKontaktperson(string userId);
+
+        bool IsOpen();
+        bool IsHelgdag();
+        bool IsSpecialdag();
 
         int SkapaOrganisation(Organisation org, string userName);
 
@@ -159,12 +204,21 @@ namespace InrappSos.ApplicationService.Interface
         void UppdateraOrganisation(Organisation org, string userName);
 
         void UppdateraKontaktperson(ApplicationUser user, string userName);
+        void UppdateraNamnForAnvandare(string userId, string userName);
+        void UppdateraKontaktnummerForAnvandare(string userId, string tfnnr);
+
+        void UppdateraAktivFromForAnvandare(string userId);
+        void UppdateraAnvandarInfo(ApplicationUser user);
 
         void UppdateraAdminAnvandare(AppUserAdmin user, string userName);
 
         void UppdateraOrganisationsenhet(Organisationsenhet orgUnit, string userName);
 
         void UppdateraUppgiftsskyldighet(AdmUppgiftsskyldighet uppgSkyldighet, string userName);
+
+
+        void UppdateraValdaRegistersForAnvandare(string userId, string userName, List<RegisterInfo> registerList);
+
 
         void UppdateraEnhetsUppgiftsskyldighet(AdmEnhetsUppgiftsskyldighet enhetsUppgSkyldighet, string userName);
 
@@ -193,6 +247,10 @@ namespace InrappSos.ApplicationService.Interface
         void UppdateraAnvandarInfo(AppUserAdmin user, string userName);
 
         void SparaOppettider(OpeningHoursInfoDTO oppetTider, string userName);
+        void SparaTillDatabasFillogg(string userName, string ursprungligtFilNamn, string nyttFilNamn, int leveransId, int sequenceNumber);
+        void SparaValdaRegistersForAnvandare(string userId, string userName, List<RegisterInfo> registerList);
+        void SaveToLoginLog(string userid, string userName);
+
 
         void TaBortFAQKategori(int faqKategoriId);
 
@@ -207,6 +265,7 @@ namespace InrappSos.ApplicationService.Interface
         void TaBortAdminAnvandare(string userId);
 
         List<OpeningDay> MarkeraStangdaDagar(List<string> closedDays);
+        string MaskPhoneNumber(string phoneNumber);
 
         void SkickaPaminnelse(IEnumerable<RapporteringsresultatDTO> rappResList, string userId);
 

@@ -18,13 +18,13 @@ namespace InrappSos.AstridWeb.Controllers
 {
     public class OrganisationController : Controller
     {
-        private readonly IPortalAdminService _portalAdminService;
+        private readonly IPortalSosService _portalSosService;
 
 
         public OrganisationController()
         {
-            _portalAdminService =
-                new PortalAdminService(new PortalAdminRepository(new InrappSosDbContext(), new InrappSosIdentityDbContext()));
+            _portalSosService =
+                new PortalSosService(new PortalSosRepository(new InrappSosDbContext(), new InrappSosIdentityDbContext()));
         }
 
         [Authorize]
@@ -46,13 +46,13 @@ namespace InrappSos.AstridWeb.Controllers
                 {
                     model.SelectedOrganisationId = selectedOrganisationId;
                 }
-                model.Organisation = _portalAdminService.HamtaOrganisation(model.SelectedOrganisationId);
+                model.Organisation = _portalSosService.HamtaOrganisation(model.SelectedOrganisationId);
                 model.Kommunkod = model.Organisation.Kommunkod;
-                var contacts = _portalAdminService.HamtaKontaktpersonerForOrg(model.Organisation.Id);
+                var contacts = _portalSosService.HamtaKontaktpersonerForOrg(model.Organisation.Id);
                 model.ContactPersons = ConvertUsersViewModelUser(contacts);
 
-                model.OrgUnits = _portalAdminService.HamtaOrgEnheterForOrg(model.Organisation.Id);
-                var reportObligationsDb = _portalAdminService.HamtaUppgiftsskyldighetForOrg(model.Organisation.Id);
+                model.OrgUnits = _portalSosService.HamtaOrgEnheterForOrg(model.Organisation.Id);
+                var reportObligationsDb = _portalSosService.HamtaUppgiftsskyldighetForOrg(model.Organisation.Id);
                 model.ReportObligations = ConvertAdmUppgiftsskyldighetToViewModel(reportObligationsDb.ToList());
                 // Ladda drop down lists. 
                 var orgListDTO = GetOrganisationDTOList();
@@ -102,9 +102,9 @@ namespace InrappSos.AstridWeb.Controllers
                 {
                     model.SelectedOrganisationId = selectedOrgId;
                 }
-                model.Organisation = _portalAdminService.HamtaOrganisation(model.SelectedOrganisationId);
+                model.Organisation = _portalSosService.HamtaOrganisation(model.SelectedOrganisationId);
                 model.Kommunkod = model.Organisation.Kommunkod;
-                var contacts = _portalAdminService.HamtaKontaktpersonerForOrg(model.Organisation.Id);
+                var contacts = _portalSosService.HamtaKontaktpersonerForOrg(model.Organisation.Id);
                 model.ContactPersons = ConvertUsersViewModelUser(contacts);
                 foreach (var contact in model.ContactPersons)
                 {
@@ -155,9 +155,9 @@ namespace InrappSos.AstridWeb.Controllers
                     model.SelectedOrganisationId = selectedOrgId;
                 }
 
-                model.Organisation = _portalAdminService.HamtaOrganisation(model.SelectedOrganisationId);
+                model.Organisation = _portalSosService.HamtaOrganisation(model.SelectedOrganisationId);
                 model.Kommunkod = model.Organisation.Kommunkod;
-                model.OrgUnits = _portalAdminService.HamtaOrgEnheterForOrg(model.Organisation.Id);
+                model.OrgUnits = _portalSosService.HamtaOrgEnheterForOrg(model.Organisation.Id);
                 // Ladda drop down lists. 
                 var orgListDTO = GetOrganisationDTOList();
                 ViewBag.OrganisationList = new SelectList(orgListDTO, "Id", "KommunkodOchOrgnamn");
@@ -202,9 +202,9 @@ namespace InrappSos.AstridWeb.Controllers
                 {
                     model.SelectedOrganisationId = selectedOrgId;
                 }
-                model.Organisation = _portalAdminService.HamtaOrganisation(model.SelectedOrganisationId);
+                model.Organisation = _portalSosService.HamtaOrganisation(model.SelectedOrganisationId);
                 model.Kommunkod = model.Organisation.Kommunkod;
-                var admUppgSkyldighetList = _portalAdminService.HamtaUppgiftsskyldighetForOrg(model.Organisation.Id);
+                var admUppgSkyldighetList = _portalSosService.HamtaUppgiftsskyldighetForOrg(model.Organisation.Id);
                 model.ReportObligations = ConvertAdmUppgiftsskyldighetToViewModel(admUppgSkyldighetList.ToList());
                 // Ladda drop down lists. 
                 var orgListDTO = GetOrganisationDTOList();
@@ -254,7 +254,7 @@ namespace InrappSos.AstridWeb.Controllers
                 {
                     model.SelectedOrganisationsenhetsId = selectedOrgenhetsId;
                 }
-                var admEnhetUppgSkyldighetList = _portalAdminService.HamtaEnhetsUppgiftsskyldighetForOrgEnhet(model.SelectedOrganisationsenhetsId).ToList();
+                var admEnhetUppgSkyldighetList = _portalSosService.HamtaEnhetsUppgiftsskyldighetForOrgEnhet(model.SelectedOrganisationsenhetsId).ToList();
                 model.UnitReportObligations = ConvertEnhetsUppgSkyldighetToViewModel(admEnhetUppgSkyldighetList);
                 // Ladda drop down lists. 
                 model = GetOrgDropDownLists(model);
@@ -288,7 +288,7 @@ namespace InrappSos.AstridWeb.Controllers
                 if (ModelState.IsValid)
                 {
                     var userName = User.Identity.GetUserName();
-                    _portalAdminService.UppdateraOrganisation(model.Organisation, userName);
+                    _portalSosService.UppdateraOrganisation(model.Organisation, userName);
                 }
             }
             catch (Exception e)
@@ -313,11 +313,11 @@ namespace InrappSos.AstridWeb.Controllers
             var org = new Organisation();
             try
             {
-                org = _portalAdminService.HamtaOrgForAnvandare(user.Id);
+                org = _portalSosService.HamtaOrgForAnvandare(user.Id);
                 if (ModelState.IsValid)
                 {
                     var userName = User.Identity.GetUserName();
-                    _portalAdminService.UppdateraKontaktperson(user, userName);
+                    _portalSosService.UppdateraKontaktperson(user, userName);
                 }
             }
             catch (Exception e)
@@ -343,11 +343,11 @@ namespace InrappSos.AstridWeb.Controllers
             var org = new Organisation();
             try
             {
-                org = _portalAdminService.HamtaOrgForOrganisationsenhet(orgUnit.Id);
+                org = _portalSosService.HamtaOrgForOrganisationsenhet(orgUnit.Id);
                 if (ModelState.IsValid)
                 {
                     var userName = User.Identity.GetUserName();
-                    _portalAdminService.UppdateraOrganisationsenhet(orgUnit, userName);
+                    _portalSosService.UppdateraOrganisationsenhet(orgUnit, userName);
                 }
             }
             catch (Exception e)
@@ -373,12 +373,12 @@ namespace InrappSos.AstridWeb.Controllers
             var org = new Organisation();
             try
             {
-                org = _portalAdminService.HamtaOrgForUppgiftsskyldighet(admUppgSkyldighet.Id);
+                org = _portalSosService.HamtaOrgForUppgiftsskyldighet(admUppgSkyldighet.Id);
                 if (ModelState.IsValid)
                 {
                     var userName = User.Identity.GetUserName();
                     var admUppgiftsskyldighetToDb = ConvertViewModelToAdmUppgiftsskyldighet(admUppgSkyldighet);
-                    _portalAdminService.UppdateraUppgiftsskyldighet(admUppgiftsskyldighetToDb, userName);
+                    _portalSosService.UppdateraUppgiftsskyldighet(admUppgiftsskyldighetToDb, userName);
                 }
             }
             catch (Exception e)
@@ -404,11 +404,11 @@ namespace InrappSos.AstridWeb.Controllers
             var org = new Organisation();
             try
             {
-                org = _portalAdminService.HamtaOrgForUppgiftsskyldighet(admEnhetsUppgSkyldighet.UppgiftsskyldighetId);
+                org = _portalSosService.HamtaOrgForUppgiftsskyldighet(admEnhetsUppgSkyldighet.UppgiftsskyldighetId);
                 if (ModelState.IsValid)
                 {
                     var userName = User.Identity.GetUserName();
-                    _portalAdminService.UppdateraEnhetsUppgiftsskyldighet(admEnhetsUppgSkyldighet, userName);
+                    _portalSosService.UppdateraEnhetsUppgiftsskyldighet(admEnhetsUppgSkyldighet, userName);
                 }
             }
             catch (Exception e)
@@ -446,8 +446,8 @@ namespace InrappSos.AstridWeb.Controllers
                 try
                 {
                     var userName = User.Identity.GetUserName();
-                    orgId = _portalAdminService.SkapaOrganisation(model.Organisation, userName);
-                    //kommunkod = _portalAdminService.HamtaKommunkodForOrg(orgId);
+                    orgId = _portalSosService.SkapaOrganisation(model.Organisation, userName);
+                    //kommunkod = _portalSosService.HamtaKommunkodForOrg(orgId);
                 }
                 catch (Exception e)
                 {
@@ -486,7 +486,7 @@ namespace InrappSos.AstridWeb.Controllers
                 try
                 {
                     var userName = User.Identity.GetUserName();
-                    _portalAdminService.SkapaOrganisationsenhet(orgenhet, userName);
+                    _portalSosService.SkapaOrganisationsenhet(orgenhet, userName);
                 }
                 catch (Exception e)
                 {
@@ -510,8 +510,8 @@ namespace InrappSos.AstridWeb.Controllers
         {
             var model = new OrganisationViewModels.ReportObligationsViewModel();
             model.OrganisationId = selectedOrgId;
-            var delregisterList = _portalAdminService.HamtaAllaDelregisterForPortalen().ToList();
-            var uppgiftsskyldighetList = _portalAdminService.HamtaUppgiftsskyldighetForOrg(selectedOrgId).ToList();
+            var delregisterList = _portalSosService.HamtaAllaDelregisterForPortalen().ToList();
+            var uppgiftsskyldighetList = _portalSosService.HamtaUppgiftsskyldighetForOrg(selectedOrgId).ToList();
             var delregisterUtanUppgiftsskyldighetForOrgList = new List<AdmDelregister>();
             //Endast delregister som saknar uppgiftsskyldighet ska visas i dropdown
             foreach (var delregister in delregisterList)
@@ -541,7 +541,7 @@ namespace InrappSos.AstridWeb.Controllers
                     var userName = User.Identity.GetUserName();
                     var admUppgSkyldighet = ConvertToDbFromVM(uppgSk);
                     admUppgSkyldighet.OrganisationId = selectedOrgId;
-                    _portalAdminService.SkapaUppgiftsskyldighet(admUppgSkyldighet, userName);
+                    _portalSosService.SkapaUppgiftsskyldighet(admUppgSkyldighet, userName);
                 }
                 catch (Exception e)
                 {
@@ -570,8 +570,8 @@ namespace InrappSos.AstridWeb.Controllers
                 model.SelectedOrganisationId = selectedOrgId;
                 model.SelectedOrganisationsenhetsId = selectedOrgenhetsId;
                 //Skapa dropdown för valbara delregister
-                var delregisterList = _portalAdminService.HamtaAllaDelregisterForPortalen();
-                var admUppgSkyldighetList = _portalAdminService.HamtaUppgiftsskyldighetForOrg(selectedOrgId);
+                var delregisterList = _portalSosService.HamtaAllaDelregisterForPortalen();
+                var admUppgSkyldighetList = _portalSosService.HamtaUppgiftsskyldighetForOrg(selectedOrgId);
                 var delregisterDropDownList = new List<AdmDelregister>();
                 foreach (var delregister in delregisterList)
                 {
@@ -588,10 +588,10 @@ namespace InrappSos.AstridWeb.Controllers
 
                 if (selectedOrgId != 0)
                 {
-                    model.Organisationsnamn = _portalAdminService.HamtaOrganisation(selectedOrgId).Organisationsnamn;
+                    model.Organisationsnamn = _portalSosService.HamtaOrganisation(selectedOrgId).Organisationsnamn;
                 }
 
-                var orgenhetsList = _portalAdminService.HamtaOrgEnheterForOrg(selectedOrgId);
+                var orgenhetsList = _portalSosService.HamtaOrgEnheterForOrg(selectedOrgId);
                 this.ViewBag.OrgenhetList = CreateOrgenhetDropDownList(orgenhetsList);
             }
             catch (Exception e)
@@ -621,9 +621,9 @@ namespace InrappSos.AstridWeb.Controllers
                 {
                     var userName = User.Identity.GetUserName();
                     var admEnhetsUppgSkyldighet = ConvertViewModelToAdmEnhetsUppgiftsskyldighet(enhetsUppgSk);
-                    admEnhetsUppgSkyldighet.UppgiftsskyldighetId = _portalAdminService.HamtaUppgiftsskyldighetForOrgOchDelreg(Convert.ToInt32(enhetsUppgSk.SelectedOrganisationId),
+                    admEnhetsUppgSkyldighet.UppgiftsskyldighetId = _portalSosService.HamtaUppgiftsskyldighetForOrgOchDelreg(Convert.ToInt32(enhetsUppgSk.SelectedOrganisationId),
                             Convert.ToInt32(enhetsUppgSk.SelectedDelregisterId)).Id;
-                    _portalAdminService.SkapaEnhetsUppgiftsskyldighet(admEnhetsUppgSkyldighet, userName);
+                    _portalSosService.SkapaEnhetsUppgiftsskyldighet(admEnhetsUppgSkyldighet, userName);
                 }
                 catch (Exception e)
                 {
@@ -648,7 +648,7 @@ namespace InrappSos.AstridWeb.Controllers
         {
             try
             {
-                _portalAdminService.TaBortKontaktperson(contactId);
+                _portalSosService.TaBortKontaktperson(contactId);
             }
             catch (Exception e)
             {
@@ -667,12 +667,12 @@ namespace InrappSos.AstridWeb.Controllers
 
         private OrganisationViewModels.UnitReportObligationsViewModel GetOrgDropDownLists(OrganisationViewModels.UnitReportObligationsViewModel model)
         {
-            var orgList = _portalAdminService.HamtaAllaOrganisationer();
+            var orgList = _portalSosService.HamtaAllaOrganisationer();
             var orgListDTO = GetOrganisationDTOList();
 
             foreach (var org in orgListDTO)
             {
-                    var orgenheter = _portalAdminService.HamtaOrgEnheterForOrg(org.Id).ToList();
+                    var orgenheter = _portalSosService.HamtaOrgEnheterForOrg(org.Id).ToList();
                     var orgenhetsListDTO = new List<OrganisationsenhetDTO>();
 
                     foreach (var orgenhet in orgenheter)
@@ -697,7 +697,7 @@ namespace InrappSos.AstridWeb.Controllers
 
         private IEnumerable<OrganisationDTO> GetOrganisationDTOList()
         {
-            var orgList = _portalAdminService.HamtaAllaOrganisationer();
+            var orgList = _portalSosService.HamtaAllaOrganisationer();
             var orgListDTO = new List<OrganisationDTO>();
 
             foreach (var org in orgList)
@@ -787,7 +787,7 @@ namespace InrappSos.AstridWeb.Controllers
                     Id = admUppgskyldighet.Id,
                     OrganisationId = admUppgskyldighet.OrganisationId,
                     DelregisterId = admUppgskyldighet.DelregisterId,
-                    DelregisterKortnamn = _portalAdminService.HamtaKortnamnForDelregister(admUppgskyldighet.DelregisterId),
+                    DelregisterKortnamn = _portalSosService.HamtaKortnamnForDelregister(admUppgskyldighet.DelregisterId),
                     SkyldigFrom = admUppgskyldighet.SkyldigFrom,
                     SkyldigTom = admUppgskyldighet.SkyldigTom,
                     RapporterarPerEnhet = admUppgskyldighet.RapporterarPerEnhet
@@ -812,7 +812,7 @@ namespace InrappSos.AstridWeb.Controllers
                     UppgiftsskyldighetId = admEnhetsUppgskyldighet.UppgiftsskyldighetId,
                     SkyldigFrom = admEnhetsUppgskyldighet.SkyldigFrom,
                     SkyldigTom = admEnhetsUppgskyldighet.SkyldigTom,
-                    DelregisterKortnamn = _portalAdminService.HamtaDelRegisterForUppgiftsskyldighet(admEnhetsUppgskyldighet.UppgiftsskyldighetId).Kortnamn
+                    DelregisterKortnamn = _portalSosService.HamtaDelRegisterForUppgiftsskyldighet(admEnhetsUppgskyldighet.UppgiftsskyldighetId).Kortnamn
                 };
 
                 enhUppgSkyldigheter.Add(enhetsUppgSkyldighetView);
@@ -910,7 +910,7 @@ namespace InrappSos.AstridWeb.Controllers
         private string GetContactsChosenSubDirectories(OrganisationViewModels.ApplicationUserViewModel contact)
         {
             var valdaDelregister = String.Empty;
-            var regList = _portalAdminService.HamtaValdaRegistersForAnvandare(contact.ID, contact.OrganisationId).ToList();
+            var regList = _portalSosService.HamtaValdaRegistersForAnvandare(contact.ID, contact.OrganisationId).ToList();
 
             for (int i = 0; i < regList.Count(); i++)
             {

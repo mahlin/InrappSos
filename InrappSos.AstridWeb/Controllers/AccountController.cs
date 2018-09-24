@@ -24,14 +24,14 @@ namespace InrappSos.AstridWeb.Controllers
    {
         private ApplicationUserManager _userManager;
         private CustomIdentityResultErrorDescriber _errorDecsriber;
-        private readonly IPortalAdminService _portalAdminService;
+        private readonly IPortalSosService _portalSosService;
         private ApplicationRoleManager _roleManager;
 
 
         public AccountController()
         {
-          _portalAdminService =
-              new PortalAdminService(new PortalAdminRepository(new InrappSosDbContext(), new InrappSosIdentityDbContext()));
+          _portalSosService =
+              new PortalSosService(new PortalSosRepository(new InrappSosDbContext(), new InrappSosIdentityDbContext()));
             _errorDecsriber = new CustomIdentityResultErrorDescriber();
 
         }
@@ -42,8 +42,8 @@ namespace InrappSos.AstridWeb.Controllers
           UserManager = userManager;
           SignInManager = signInManager;
           RoleManager = roleManager;
-          _portalAdminService =
-              new PortalAdminService(new PortalAdminRepository(new InrappSosDbContext(), new InrappSosIdentityDbContext()));
+          _portalSosService =
+              new PortalSosService(new PortalSosRepository(new InrappSosDbContext(), new InrappSosIdentityDbContext()));
           _errorDecsriber = new CustomIdentityResultErrorDescriber();
 
         }
@@ -300,7 +300,7 @@ namespace InrappSos.AstridWeb.Controllers
             {
                 user.AndradAv = user.Email;
                 user.AndradDatum = DateTime.Now;
-                _portalAdminService.UppdateraAnvandarInfo(user, User.Identity.GetUserName());
+                _portalSosService.UppdateraAnvandarInfo(user, User.Identity.GetUserName());
                 return RedirectToAction("ResetPasswordConfirmation", "Account");
             }
             AddErrors(result);

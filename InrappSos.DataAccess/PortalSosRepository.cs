@@ -10,14 +10,19 @@ using Microsoft.Owin.Security;
 
 namespace InrappSos.DataAccess
 {
-    public class PortalAdminRepository : IPortalAdminRepository
+    public class PortalSosRepository : IPortalSosRepository
     {
 
         private InrappSosDbContext DbContext { get; }
 
         private InrappSosIdentityDbContext IdentityDbContext { get; }
 
-        public PortalAdminRepository(InrappSosDbContext dbContext, InrappSosIdentityDbContext identityDbContext)
+        public PortalSosRepository(InrappSosDbContext dbContext)
+        {
+            DbContext = dbContext;
+        }
+
+        public PortalSosRepository(InrappSosDbContext dbContext, InrappSosIdentityDbContext identityDbContext)
         {
             DbContext = dbContext;
             IdentityDbContext = identityDbContext;
@@ -28,9 +33,29 @@ namespace InrappSos.DataAccess
             return DbContext.Leverans;
         }
 
+        public void DisableContact(string userId)
+        {
+            var contactDb = DbContext.ApplicationUser.SingleOrDefault(x => x.Id == userId);
+            contactDb.AktivTom = DateTime.Now;
+            DbContext.SaveChanges();
+        }
+
+        public void EnableContact(string userId)
+        {
+            var contactDb = DbContext.ApplicationUser.SingleOrDefault(x => x.Id == userId);
+            contactDb.AktivTom = null;
+            DbContext.SaveChanges();
+        }
+
         public IEnumerable<Leverans> GetLeveranserForOrganisation(int orgId)
         {
             var levIdnForOrg = AllaLeveranser().Where(a => a.OrganisationId == orgId).ToList();
+            return levIdnForOrg;
+        }
+
+        public IEnumerable<int> GetLeveransIdnForOrganisation(int orgId)
+        {
+            var levIdnForOrg = AllaLeveranser().Where(a => a.OrganisationId == orgId).Select(a => a.Id).ToList();
             return levIdnForOrg;
         }
 
@@ -76,10 +101,14 @@ namespace InrappSos.DataAccess
         public Organisation GetOrgForUser(string userId)
         {
             var orgId = GetUserOrganisationId(userId);
-
             var org = DbContext.Organisation.Where(o => o.Id == orgId).Select(o => o).FirstOrDefault();
-
             return org;
+        }
+
+        public Organisation GetOrgForEmailDomain(string modelEmailDomain)
+        {
+            var organisation = DbContext.Organisation.Where(a => a.Epostdoman == modelEmailDomain).Select(o => o).FirstOrDefault();
+            return organisation;
         }
 
         public Organisation GetOrgForOrgUnit(int orgUnitId)
@@ -156,6 +185,18 @@ namespace InrappSos.DataAccess
             return orgUnits;
         }
 
+        public int GetOrganisationsenhetsId(string orgUnitCode, int orgId)
+        {
+            var orgenhetsId = DbContext.Organisationsenhet.Where(x => x.Enhetskod == orgUnitCode && x.OrganisationsId == orgId).Select(x => x.Id).FirstOrDefault();
+            return orgenhetsId;
+        }
+
+        public Organisationsenhet GetOrganisationUnitByCode(string code, int orgId)
+        {
+            var orgUnit = DbContext.Organisationsenhet.SingleOrDefault(x => x.Enhetskod == code && x.OrganisationsId == orgId);
+            return orgUnit;
+        }
+
         public IEnumerable<AdmUppgiftsskyldighet> GetReportObligationInformationForOrg(int orgId)
         {
             var reportObligationInfo = DbContext.AdmUppgiftsskyldighet.Where(x => x.OrganisationId == orgId).Include(x => x.AdmDelregister).ToList();
@@ -175,10 +216,57 @@ namespace InrappSos.DataAccess
 
         }
 
-        public string GetKommunkodForOrg(int orgId)
+        public string GetKommunkodForOrganisation(int orgId)
         {
             var kommunkod = DbContext.Organisation.Where(x => x.Id == orgId).Select(x => x.Kommunkod).SingleOrDefault();
             return kommunkod;
+        }
+
+        public int GetNewLeveransId(string userId, string userName, int orgId, int regId, int orgenhetsId, int forvLevId, string status)
+        {
+            var dbStatus = "Levererad";
+            if (!String.IsNullOrEmpty(status))
+            {
+                dbStatus = status;
+            }
+            var leverans = new Leverans
+            {
+                ForvantadleveransId = forvLevId,
+                OrganisationId = orgId,
+                ApplicationUserId = userId,
+                DelregisterId = regId,
+                Leveranstidpunkt = DateTime.Now,
+                Leveransstatus = dbStatus,
+                SkapadDatum = DateTime.Now,
+                SkapadAv = userName,
+                AndradDatum = DateTime.Now,
+                AndradAv = userName
+            };
+
+            if (orgenhetsId != 0)
+            {
+                leverans.OrganisationsenhetsId = orgenhetsId;
+            }
+
+
+            DbContext.Leverans.Add(leverans);
+
+            DbContext.SaveChanges();
+            return leverans.Id;
+        }
+
+        public IEnumerable<AdmFAQKategori> GetAllFAQs()
+        {
+            //var faqs = DbContext.AdmFAQKategori.Include(x => x.AdmFAQ).OrderBy(x => x.Sortering).ToList();
+            var faqs = DbContext.AdmFAQKategori.OrderBy(x => x.Sortering).ToList();
+
+            //Hämta FAQs per kategori separat (pga orderby)
+            foreach (var faqCat in faqs)
+            {
+                faqCat.AdmFAQ = DbContext.AdmFAQ.Where(x => x.FAQkategoriId == faqCat.Id).OrderBy(x => x.Sortering).ToList();
+            }
+
+            return faqs;
         }
 
         public IEnumerable<AdmFAQKategori> GetFAQCategories()
@@ -364,6 +452,12 @@ namespace InrappSos.DataAccess
             return expectedDeliveriesList;
         }
 
+        public IEnumerable<AdmForvantadfil> GetExpectedFile(int fileReq)
+        {
+            var expectedFiles = DbContext.AdmForvantadfil.Where(x => x.FilkravId == fileReq).ToList();
+            return expectedFiles;
+        }
+
         public IEnumerable<AdmFilkrav> GetFileRequirementsForDirectory(int dirId)
         {
             var fileRequirementsList = new List<AdmFilkrav>();
@@ -388,6 +482,13 @@ namespace InrappSos.DataAccess
             return fileRequirement;
         }
 
+        public List<AdmFilkrav> GetFileRequirementsAndExpectedFilesForSubDirectory(int subDirId)
+        {
+            var fileReqAndExpectedFileList = DbContext.AdmFilkrav.Where(x => x.DelregisterId == subDirId)
+                .Include(x => x.AdmForvantadfil).ToList();
+            return fileReqAndExpectedFileList;
+        }
+
         public IEnumerable<AdmRegister> GetAllRegisters()
         {
             var registersList = DbContext.AdmRegister.ToList();
@@ -402,13 +503,13 @@ namespace InrappSos.DataAccess
 
         public IEnumerable<AdmRegister> GetAllRegistersForPortal()
         {
-            var registersList = DbContext.AdmRegister.Where(x => x.Inrapporteringsportal).ToList();
+            var registersList = DbContext.AdmRegister.Where(x => x.InrappSos).ToList();
             return registersList;
         }
 
         public IEnumerable<AdmDelregister> GetAllSubDirectoriesForPortal()
         {
-            var delregistersList = DbContext.AdmDelregister.Where(x => x.Inrapporteringsportal).ToList();
+            var delregistersList = DbContext.AdmDelregister.Where(x => x.InrappSos).ToList();
             return delregistersList;
         }
 
@@ -539,6 +640,23 @@ namespace InrappSos.DataAccess
             return email;
         }
 
+        public string GetUserName(string userId)
+        {
+            var userName = DbContext.ApplicationUser.Where(u => u.Id == userId).Select(u => u.Namn).SingleOrDefault();
+            return userName;
+        }
+
+        public string GetUserContactNumber(string userId)
+        {
+            var userContactNumber = DbContext.ApplicationUser.Where(u => u.Id == userId).Select(u => u.Kontaktnummer).SingleOrDefault();
+            return userContactNumber;
+        }
+        public string GetUserPhoneNumber(string userId)
+        {
+            var phoneNumber = DbContext.Users.Where(u => u.Id == userId).Select(u => u.PhoneNumber).SingleOrDefault();
+            return phoneNumber;
+        }
+
         public ApplicationUser GetUserByEmail(string email)
         {
             var user = DbContext.ApplicationUser.SingleOrDefault(x => x.Email == email);
@@ -548,10 +666,107 @@ namespace InrappSos.DataAccess
         public IEnumerable<Roll> GetChosenDelRegistersForUser(string userId)
         {
             var rollList = new List<Roll>();
+            rollList = DbContext.Roll.Where(x => x.ApplicationUserId == userId).ToList();
+            return rollList;
+        }
+
+        public IEnumerable<AdmRegister> GetChosenRegistersForUser(string userId)
+        {
+            var rollList = new List<Roll>();
+            var registerList = new List<AdmRegister>();
+            var regIdList = new List<int>();
 
             rollList = DbContext.Roll.Where(x => x.ApplicationUserId == userId).ToList();
 
-            return rollList;
+            foreach (var roll in rollList)
+            {
+                var tmp = DbContext.AdmDelregister.Where(x => x.Id == roll.DelregisterId).FirstOrDefault();
+                var delregister = DbContext.AdmDelregister.SingleOrDefault(x => x.Id == roll.DelregisterId);
+                var registerId = DbContext.AdmRegister.Where(x => x.Id == delregister.RegisterId).Select(x => x.Id)
+                    .SingleOrDefault();
+                regIdList.Add(registerId);
+            }
+
+            //rensa bort dubbletter och hämta delregister för varje register
+            var regIdListDistinct = regIdList.Distinct();
+            foreach (var registerId in regIdListDistinct)
+            {
+                var register = DbContext.AdmRegister.Where(x => x.Id == registerId).Include(x => x.AdmDelregister).SingleOrDefault();
+                registerList.Add(register);
+            }
+            return registerList;
+        }
+
+        public string GetClosedDays()
+        {
+            var closedDays = String.Empty;
+            closedDays = DbContext.AdmKonfiguration.Where(x => x.Typ == "ClosedDays").Select(x => x.Varde).SingleOrDefault();
+            return closedDays;
+        }
+        public string GetClosedFromHour()
+        {
+            var closedFromHour = "0";
+            closedFromHour = DbContext.AdmKonfiguration.Where(x => x.Typ == "ClosedFromHour").Select(x => x.Varde).SingleOrDefault();
+            return closedFromHour;
+        }
+
+        public string GetClosedFromMin()
+        {
+            var closedFromMin = "0";
+            closedFromMin = DbContext.AdmKonfiguration.Where(x => x.Typ == "ClosedFromMin").Select(x => x.Varde).SingleOrDefault();
+            return closedFromMin;
+        }
+
+        public string GetClosedToHour()
+        {
+            var closedToHour = "0";
+            closedToHour = DbContext.AdmKonfiguration.Where(x => x.Typ == "ClosedToHour").Select(x => x.Varde).SingleOrDefault();
+            return closedToHour;
+        }
+
+        public string GetClosedToMin()
+        {
+            var closedToMin = "0";
+            closedToMin = DbContext.AdmKonfiguration.Where(x => x.Typ == "ClosedToMin").Select(x => x.Varde).SingleOrDefault();
+            return closedToMin;
+        }
+
+        public string GetClosedAnnyway()
+        {
+            var closedAnyway = "false";
+            closedAnyway = DbContext.AdmKonfiguration.Where(x => x.Typ == "ClosedAnyway").Select(x => x.Varde).SingleOrDefault();
+            return closedAnyway;
+        }
+
+        public IEnumerable<AdmHelgdag> GetHolidays()
+        {
+            var holidays = DbContext.AdmHelgdag.ToList();
+            return holidays;
+        }
+
+        public IEnumerable<AdmSpecialdag> GetSpecialDays()
+        {
+            var specialDays = DbContext.AdmSpecialdag.ToList();
+            return specialDays;
+        }
+
+        public IEnumerable<RegisterInfo> GetAllRegisterInformation()
+        {
+            var registerInfoList = new List<RegisterInfo>();
+
+            var delregister = DbContext.AdmDelregister
+                .Include(f => f.AdmFilkrav.Select(q => q.AdmForvantadfil))
+                .Where(x => x.InrappSos)
+                .ToList();
+
+
+            foreach (var item in delregister)
+            {
+                var regInfoObj = CreateRegisterInfoObj(item);
+                registerInfoList.Add(regInfoObj);
+            }
+
+            return registerInfoList;
         }
 
         public IEnumerable<RegisterInfo> GetAllRegisterInformationForOrganisation(int orgId)
@@ -563,7 +778,7 @@ namespace InrappSos.DataAccess
             var delregister = DbContext.AdmDelregister
                 .Include(z => z.AdmRegister)
                 .Include(f => f.AdmFilkrav.Select(q => q.AdmForvantadfil))
-                .Where(x => x.Inrapporteringsportal && uppgSkyldighetDelRegIds.Contains(x.Id))
+                .Where(x => x.InrappSos && uppgSkyldighetDelRegIds.Contains(x.Id))
                 .Include(f => f.AdmFilkrav.Select(q => q.AdmForvantadleverans))
                 .ToList();
 
@@ -727,6 +942,61 @@ namespace InrappSos.DataAccess
             DbContext.SaveChanges();
         }
 
+        public void UpdateChosenRegistersForUser(string userId, string userName, List<RegisterInfo> registerList)
+        {
+            //delete prevoious choices
+            DbContext.Roll.RemoveRange(DbContext.Roll.Where(x => x.ApplicationUserId == userId));
+
+            //Insert new choices
+            foreach (var register in registerList)
+            {
+                if (register.Selected)
+                {
+                    var roll = new Roll
+                    {
+                        DelregisterId = register.Id,
+                        ApplicationUserId = userId,
+                        SkapadDatum = DateTime.Now,
+                        SkapadAv = userName,
+                        AndradDatum = DateTime.Now,
+                        AndradAv = userName
+                    };
+
+                    DbContext.Roll.Add(roll);
+                }
+            }
+            DbContext.SaveChanges();
+        }
+
+        public void UpdateNameForUser(string userId, string userName)
+        {
+            var user = DbContext.ApplicationUser.Where(u => u.Id == userId).Select(u => u).SingleOrDefault();
+            user.Namn = userName;
+            DbContext.SaveChanges();
+        }
+
+        public void UpdateContactNumberForUser(string userId, string number)
+        {
+            var user = DbContext.ApplicationUser.Where(u => u.Id == userId).Select(u => u).SingleOrDefault();
+            user.Kontaktnummer = number;
+            DbContext.SaveChanges();
+        }
+
+        public void UpdateActiveFromForUser(string userId)
+        {
+            var user = DbContext.ApplicationUser.Where(u => u.Id == userId).Select(u => u).SingleOrDefault();
+            user.AktivFrom = DateTime.Now;
+            DbContext.SaveChanges();
+        }
+
+        public void UpdateUserInfo(ApplicationUser user)
+        {
+            var userDb = DbContext.ApplicationUser.SingleOrDefault(x => x.Id == user.Id);
+            userDb.AndradAv = user.AndradAv;
+            userDb.AndradDatum = user.AndradDatum;
+            DbContext.SaveChanges();
+        }
+
         public void UpdateOrgUnit(Organisationsenhet orgUnit)
         {
             var orgU = DbContext.Organisationsenhet.Where(u => u.Id == orgUnit.Id).Select(u => u).SingleOrDefault();
@@ -827,7 +1097,7 @@ namespace InrappSos.DataAccess
             registerToUpdate.Registernamn = directory.Registernamn;
             registerToUpdate.Beskrivning = directory.Beskrivning;
             registerToUpdate.Kortnamn = directory.Kortnamn;
-            registerToUpdate.Inrapporteringsportal = directory.Inrapporteringsportal;
+            registerToUpdate.InrappSos = directory.InrappSos;
             registerToUpdate.AndradAv = directory.AndradAv;
             registerToUpdate.AndradDatum = directory.AndradDatum;
 
@@ -840,7 +1110,7 @@ namespace InrappSos.DataAccess
             subDirectoryToUpdate.Delregisternamn = subDirectory.Delregisternamn;
             subDirectoryToUpdate.Beskrivning = subDirectory.Beskrivning;
             subDirectoryToUpdate.Kortnamn = subDirectory.Kortnamn;
-            subDirectoryToUpdate.Inrapporteringsportal = subDirectory.Inrapporteringsportal;
+            subDirectoryToUpdate.InrappSos = subDirectory.InrappSos;
             subDirectoryToUpdate.Slussmapp = subDirectory.Slussmapp;
             subDirectoryToUpdate.AndradAv = subDirectory.AndradAv;
             subDirectoryToUpdate.AndradDatum = subDirectory.AndradDatum;
@@ -927,6 +1197,61 @@ namespace InrappSos.DataAccess
 
             DbContext.SaveChanges();
         }
+        public void SaveToFilelogg(string userName, string ursprungligtFilNamn, string nyttFilNamn, int leveransId, int sequenceNumber)
+        {
+            var logFil = new LevereradFil
+            {
+                LeveransId = leveransId,
+                Filnamn = ursprungligtFilNamn,
+                NyttFilnamn = nyttFilNamn,
+                Ordningsnr = sequenceNumber,
+                SkapadDatum = DateTime.Now,
+                SkapadAv = userName,
+                AndradDatum = DateTime.Now,
+                AndradAv = userName,
+                Filstatus = "Levererad"
+            };
+
+            DbContext.LevereradFil.Add(logFil);
+
+            DbContext.SaveChanges();
+        }
+
+        public void SaveToLoginLog(string userid, string userName)
+        {
+            var inloggning = new Inloggning
+            {
+                ApplicationUserId = userid,
+                SkapadDatum = DateTime.Now,
+                SkapadAv = userName
+            };
+
+            DbContext.Inloggning.Add(inloggning);
+
+            DbContext.SaveChanges();
+        }
+
+        public void SaveChosenRegistersForUser(string userId, string userName, List<RegisterInfo> registerList)
+        {
+            foreach (var register in registerList)
+            {
+                if (register.Selected)
+                {
+                    var roll = new Roll
+                    {
+                        DelregisterId = register.Id,
+                        ApplicationUserId = userId,
+                        SkapadDatum = DateTime.Now,
+                        SkapadAv = userName,
+                        AndradDatum = DateTime.Now,
+                        AndradAv = userName
+                    };
+
+                    DbContext.Roll.Add(roll);
+                }
+            }
+            DbContext.SaveChanges();
+        }
 
         public void DeleteFAQCategory(int faqCategoryId)
         {
@@ -1003,7 +1328,19 @@ namespace InrappSos.DataAccess
             IdentityDbContext.SaveChanges();
         }
 
+        public void DeleteDelivery(int deliveryId)
+        {
+            var deliveryToDelete = DbContext.Leverans.SingleOrDefault(x => x.Id == deliveryId);
+            DbContext.Leverans.Remove(deliveryToDelete);
+            DbContext.SaveChanges();
+        }
 
+        public void DeleteChosenSubDirectoriesForUser(string userId)
+        {
+            var rollList = DbContext.Roll.Where(x => x.ApplicationUserId == userId).ToList();
+            DbContext.Roll.RemoveRange(rollList);
+            DbContext.SaveChanges();
+        }
 
 
         private RegisterInfo CreateRegisterInfoObj(AdmDelregister delReg)

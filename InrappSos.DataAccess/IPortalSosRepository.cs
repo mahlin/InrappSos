@@ -7,10 +7,14 @@ using InrappSos.DomainModel;
 
 namespace InrappSos.DataAccess
 {
-    public interface IPortalAdminRepository
+    public interface IPortalSosRepository
     {
-
+        void DisableContact(string userId);
+        void EnableContact(string userId);
         IEnumerable<Leverans> GetLeveranserForOrganisation(int orgId);
+        IEnumerable<int> GetLeveransIdnForOrganisation(int orgId);
+
+        int GetNewLeveransId(string userId, string userName, int orgId, int regId, int orgenhetsId, int forvLevId, string status);
 
         Aterkoppling GetAterkopplingForLeverans(int levId);
 
@@ -18,9 +22,11 @@ namespace InrappSos.DataAccess
 
         Organisation GetOrganisationFromKommunkod(string kommunkod);
 
-        string GetKommunkodForOrg(int orgId);
+        string GetKommunkodForOrganisation(int orgId);
 
         Organisation GetOrgForUser(string userId);
+
+        Organisation GetOrgForEmailDomain(string modelEmailDomain);
 
         Organisation GetOrgForOrgUnit(int orgUnitId);
 
@@ -39,12 +45,16 @@ namespace InrappSos.DataAccess
         IEnumerable<AppUserAdmin> GetAdminUsers();
 
         IEnumerable<Organisationsenhet> GetOrgUnitsForOrg(int orgId);
+        int GetOrganisationsenhetsId(string orgUnitCode, int orgId);
+        Organisationsenhet GetOrganisationUnitByCode(string code, int orgId);
 
         IEnumerable<AdmUppgiftsskyldighet> GetReportObligationInformationForOrg(int orgId);
 
         AdmUppgiftsskyldighet GetReportObligationInformationForOrgAndSubDir(int orgId, int subdirId);
 
         IEnumerable<AdmEnhetsUppgiftsskyldighet> GetUnitReportObligationInformationForOrgUnit(int orgUnitId);
+
+        IEnumerable<AdmFAQKategori> GetAllFAQs();
 
         IEnumerable<AdmFAQKategori> GetFAQCategories();
 
@@ -98,6 +108,8 @@ namespace InrappSos.DataAccess
         IEnumerable<AdmFilkrav> GetFileRequirementsForSubDirectory(int subdirId);
         AdmFilkrav GetFileRequirementsForSubDirectoryAndFileReqId(int subdirId, int filereqId);
 
+        List<AdmFilkrav> GetFileRequirementsAndExpectedFilesForSubDirectory(int subDirId);
+
         IEnumerable<AdmForvantadfil> GetExpectedFilesForDirectory(int dirId);
 
         IEnumerable<AdmRegister> GetAllRegisters();
@@ -119,6 +131,8 @@ namespace InrappSos.DataAccess
         string GetEnhetskodForLeverans(int orgenhetsid);
 
         string GetPeriodForAktuellLeverans(int forvLevid);
+
+        void GetPeriodsForAktuellLeverans(AdmFilkrav filkrav, RegisterFilkrav regfilkrav);
 
         AdmForeskrift GetForeskriftByFileReq(int fileReqId);
 
@@ -144,15 +158,34 @@ namespace InrappSos.DataAccess
 
         AdmForvantadleverans GetExpectedDeliveryBySubDirAndFileReqIdAndPeriod(int subDirId, int fileReqId, string period);
 
+        IEnumerable<AdmForvantadfil> GetExpectedFile(int fileReq);
+
         Leverans GetLatestDeliveryForOrganisationSubDirectoryAndPeriod(int orgId, int subdirId, int forvlevId);
 
         Leverans GetLatestDeliveryForOrganisationSubDirectoryPeriodAndOrgUnit(int orgId, int subdirId, int forvlevId, int orgUnitId);
 
         string GetUserEmail(string userId);
 
+        string GetUserName(string userId);
+        string GetUserPhoneNumber(string userId);
+
+        string GetUserContactNumber(string userId);
+
         ApplicationUser GetUserByEmail(string email);
+        IEnumerable<AdmRegister> GetChosenRegistersForUser(string userId);
+
+        string GetClosedDays();
+        string GetClosedFromHour();
+        string GetClosedFromMin();
+        string GetClosedToHour();
+        string GetClosedToMin();
+        string GetClosedAnnyway();
+
+        IEnumerable<AdmHelgdag> GetHolidays();
+        IEnumerable<AdmSpecialdag> GetSpecialDays();
 
         IEnumerable<Roll> GetChosenDelRegistersForUser(string userId);
+        IEnumerable<RegisterInfo> GetAllRegisterInformation();
 
         IEnumerable<RegisterInfo> GetAllRegisterInformationForOrganisation(int orgId);
 
@@ -189,8 +222,15 @@ namespace InrappSos.DataAccess
         void UpdateOrganisation(Organisation org);
 
         void UpdateContactPerson(ApplicationUser user);
+        void UpdateContactNumberForUser(string userId, string number);
+
+        void UpdateActiveFromForUser(string userId);
+
+        void UpdateUserInfo(ApplicationUser user);
+        void UpdateChosenRegistersForUser(string userId, string userName, List<RegisterInfo> registerList);
 
         void UpdateAdminUser(AppUserAdmin user);
+        void UpdateNameForUser(string userId, string userName);
         void UpdateOrgUnit(Organisationsenhet orgUnit);
 
         void UpdateReportObligation(AdmUppgiftsskyldighet repObligation);
@@ -222,6 +262,10 @@ namespace InrappSos.DataAccess
         void UpdateUserInfo(AppUserAdmin user);
 
         void SaveOpeningHours(AdmKonfiguration admKonf);
+        void SaveToFilelogg(string userName, string ursprungligtFilNamn, string nyttFilNamn, int leveransId, int sequenceNumber);
+
+        void SaveToLoginLog(string userid, string userName);
+        void SaveChosenRegistersForUser(string userId, string userName, List<RegisterInfo> registerList);
 
         void DeleteFAQCategory(int faqCategoryId);
 
@@ -234,5 +278,9 @@ namespace InrappSos.DataAccess
         void DeleteContact(string contactId);
 
         void DeleteAdminUser(string userId);
+
+        void DeleteChosenSubDirectoriesForUser(string userId);
+
+        void DeleteDelivery(int deliveryId);
     }
 }

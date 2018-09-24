@@ -13,7 +13,7 @@ namespace InrappSos.DomainModel
         public string Kortnamn { get; set; }
         public string Beskrivning { get; set; }
         public string Slussmapp { get; set; }
-        public bool Inrapporteringsportal { get; set; }
+        public bool InrappSos { get; set; }
         public DateTime SkapadDatum { get; set; }
         public string SkapadAv { get; set; }
         public DateTime AndradDatum { get; set; }

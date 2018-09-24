@@ -20,126 +20,275 @@ using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace InrappSos.ApplicationService
 {
-    public class PortalAdminService : IPortalAdminService
+    public class PortalSosService : IPortalSosService
     {
 
-        private readonly IPortalAdminRepository _portalAdminRepository;
+        private readonly IPortalSosRepository _portalSosRepository;
+        System.Globalization.CultureInfo _culture = new System.Globalization.CultureInfo("sv-SE");
 
-        public PortalAdminService(IPortalAdminRepository portalRepository)
+
+        public PortalSosService(IPortalSosRepository portalSosRepository)
         {
-            _portalAdminRepository = portalRepository;
+            _portalSosRepository = portalSosRepository;
+
+        }
+
+        public void AktiveraKontaktperson(string userId)
+        {
+            _portalSosRepository.EnableContact(userId);
+        }
+        public string ClosedComingWeek()
+        {
+            string avvikandeOppettider = String.Empty;
+            avvikandeOppettider = SpecialdagComingWeek();
+            avvikandeOppettider = avvikandeOppettider + HelgdagComingWeek();
+            return avvikandeOppettider;
+        }
+
+        public string HelgdagComingWeek()
+        {
+            var helgdagarInomEnVecka = String.Empty;
+            var date = DateTime.Now.Date;
+            var dateNowPlusOneWeek = date.AddDays(7);
+            var helgdagar = _portalSosRepository.GetHolidays();
+
+            foreach (var helgdag in helgdagar)
+            {
+                if (helgdag.Helgdatum >= date && helgdag.Helgdatum <= dateNowPlusOneWeek)
+                {
+                    var veckodag = helgdag.Helgdatum.ToString("dddd", _culture);
+                    veckodag = char.ToUpper(veckodag[0]) + veckodag.Substring(1);
+                    var dagNr = helgdag.Helgdatum.Day;
+                    var manad = helgdag.Helgdatum.ToString("MMMM", _culture);
+                    var dagStr = veckodag + " " + dagNr + " " + manad + " stängt " + helgdag.Helgdag + "<br>";
+                    helgdagarInomEnVecka = helgdagarInomEnVecka + dagStr;
+                }
+            }
+
+            return helgdagarInomEnVecka;
+        }
+
+        public string SpecialdagComingWeek()
+        {
+            var specialdagarInomEnVecka = String.Empty;
+            var now = DateTime.Now;
+            var dateNow = DateTime.Now.Date;
+            var dateNowPlusOneWeek = dateNow.AddDays(7);
+
+            var specialdagar = _portalSosRepository.GetSpecialDays();
+
+            foreach (var dag in specialdagar)
+            {
+                if (dag.Specialdagdatum >= dateNow && dag.Specialdagdatum <= dateNowPlusOneWeek)
+                {
+                    //string FormatDate = dag.Specialdagdatum.ToString("dddd dd MMMM yyyy", culture);
+                    var veckodag = dag.Specialdagdatum.ToString("dddd", _culture);
+                    veckodag = char.ToUpper(veckodag[0]) + veckodag.Substring(1);
+                    var dagNr = dag.Specialdagdatum.Day;
+                    var manad = dag.Specialdagdatum.ToString("MMMM", _culture);
+                    var klockslagFrom = dag.Oppna.ToString(@"hh\:mm");
+                    var klockslagTom = dag.Stang.ToString(@"hh\:mm");
+                    var dagStr = veckodag + " " + dagNr + " " + manad + " " + klockslagFrom + "-" + klockslagTom + " " + dag.Anledning + "<br>";
+
+                    specialdagarInomEnVecka = specialdagarInomEnVecka + dagStr;
+                }
+            }
+            return specialdagarInomEnVecka;
+        }
+
+        public IEnumerable<FilloggDetaljDTO> FiltreraHistorikForAnvandare(string userId, IEnumerable<FilloggDetaljDTO> historikForOrganisation)
+        {
+            var userOrg = HamtaOrgForAnvandare(userId);
+            var registerInfoList = HamtaValdaRegistersForAnvandare(userId, userOrg.Id);
+
+            var historikForAnvandareList = new List<FilloggDetaljDTO>();
+
+            foreach (var rad in historikForOrganisation)
+            {
+                foreach (var valtRegister in registerInfoList)
+                {
+                    if (rad.RegisterKortnamn == valtRegister.Kortnamn)
+                    {
+                        historikForAnvandareList.Add(rad);
+                    }
+                }
+
+            }
+            return historikForAnvandareList;
         }
 
         public Organisation HamtaOrganisation(int orgId)
         {
-            var org = _portalAdminRepository.GetOrganisation(orgId);
+            var org = _portalSosRepository.GetOrganisation(orgId);
             return org;
+        }
+
+        public string HamtaAnvandaresNamn(string userId)
+        {
+            var userName = _portalSosRepository.GetUserName(userId);
+            return userName;
+        }
+
+        public string HamtaAnvandaresKontaktnummer(string userId)
+        {
+            var contactNumber = _portalSosRepository.GetUserContactNumber(userId);
+            return contactNumber;
+        }
+
+        public string HamtaAnvandaresMobilnummer(string userId)
+        {
+            var phoneNumber = _portalSosRepository.GetUserPhoneNumber(userId);
+            return phoneNumber;
+        }
+        public int HamtaUserOrganisationId(string userId)
+        {
+            var orgId = _portalSosRepository.GetUserOrganisationId(userId);
+            return orgId;
         }
 
         public string HamtaKommunkodForOrg(int orgId)
         {
-            var kommunkod = _portalAdminRepository.GetKommunkodForOrg(orgId);
+            var kommunkod = _portalSosRepository.GetKommunkodForOrganisation(orgId);
             return kommunkod;
+        }
+
+        public string HamtaKommunKodForAnvandare(string userId)
+        {
+            var orgId = _portalSosRepository.GetUserOrganisationId(userId);
+            var kommunKod = _portalSosRepository.GetKommunkodForOrganisation(orgId);
+            return kommunKod;
         }
 
         public IEnumerable<ApplicationUser> HamtaKontaktpersonerForOrg(int orgId)
         {
-            var contacts = _portalAdminRepository.GetContactPersonsForOrg(orgId);
+            var contacts = _portalSosRepository.GetContactPersonsForOrg(orgId);
             return contacts;
         }
 
         public IEnumerable<AppUserAdmin> HamtaAdminUsers()
         {
-            var adminUsers = _portalAdminRepository.GetAdminUsers();
+            var adminUsers = _portalSosRepository.GetAdminUsers();
             return adminUsers;
         }
 
         public Organisation HamtaOrganisationForKommunkod(string kommunkod)
         {
-            var org = _portalAdminRepository.GetOrganisationFromKommunkod(kommunkod);
+            var org = _portalSosRepository.GetOrganisationFromKommunkod(kommunkod);
             return org;
+        }
+
+        public Organisation HamtaOrgForEmailDomain(string modelEmail)
+        {
+            MailAddress address = new MailAddress(modelEmail);
+            string host = address.Host;
+            //Check if Host contains multiple parts, get the last one
+            string domain = GetLastPartOfHostAdress(host);
+
+            var organisation = _portalSosRepository.GetOrgForEmailDomain(domain);
+            return organisation;
         }
 
         public IEnumerable<Organisationsenhet> HamtaOrgEnheterForOrg(int orgId)
         {
-            var orgEnheter = _portalAdminRepository.GetOrgUnitsForOrg(orgId);
+            var orgEnheter = _portalSosRepository.GetOrgUnitsForOrg(orgId);
             return orgEnheter;
+        }
+        public Organisationsenhet HamtaOrganisationsenhetMedEnhetskod(string kod, int orgId)
+        {
+            var orgenhet = _portalSosRepository.GetOrganisationUnitByCode(kod, orgId);
+            return orgenhet;
         }
 
         public IEnumerable<AdmUppgiftsskyldighet> HamtaUppgiftsskyldighetForOrg(int orgId)
         {
-            var uppgiftsskyldigheter = _portalAdminRepository.GetReportObligationInformationForOrg(orgId);
+            var uppgiftsskyldigheter = _portalSosRepository.GetReportObligationInformationForOrg(orgId);
             return uppgiftsskyldigheter;
         }
 
+
         public AdmUppgiftsskyldighet HamtaUppgiftsskyldighetForOrgOchDelreg(int orgId, int delregId)
         {
-            var uppgiftsskyldighet = _portalAdminRepository.GetReportObligationInformationForOrgAndSubDir(orgId, delregId);
+            var uppgiftsskyldighet = _portalSosRepository.GetReportObligationInformationForOrgAndSubDir(orgId, delregId);
             return uppgiftsskyldighet;
         }
 
         public IEnumerable<AdmEnhetsUppgiftsskyldighet> HamtaEnhetsUppgiftsskyldighetForOrgEnhet(int orgenhetId)
         {
-            var uppgiftsskyldigheter = _portalAdminRepository.GetUnitReportObligationInformationForOrgUnit(orgenhetId);
+            var uppgiftsskyldigheter = _portalSosRepository.GetUnitReportObligationInformationForOrgUnit(orgenhetId);
             return uppgiftsskyldigheter;
         }
         public Organisation HamtaOrgForAnvandare(string userId)
         {
-            var org = _portalAdminRepository.GetOrgForUser(userId);
+            var org = _portalSosRepository.GetOrgForUser(userId);
             return org;
         }
 
         public Organisation HamtaOrgForOrganisationsenhet(int orgUnitId)
         {
-            var org = _portalAdminRepository.GetOrgForOrgUnit(orgUnitId);
+            var org = _portalSosRepository.GetOrgForOrgUnit(orgUnitId);
             return org;
         }
 
         public Organisation HamtaOrgForUppgiftsskyldighet(int uppgSkId)
         {
-            var org = _portalAdminRepository.GetOrgForReportObligation(uppgSkId);
+            var org = _portalSosRepository.GetOrgForReportObligation(uppgSkId);
             return org;
         }
 
         public IEnumerable<AdmFAQKategori> HamtaFAQkategorier()
         {
-            var faqCats = _portalAdminRepository.GetFAQCategories();
+            var faqCats = _portalSosRepository.GetFAQCategories();
             return faqCats;
         }
 
         public IEnumerable<AdmFAQ> HamtaFAQs(int faqCatId)
         {
-            var faqs = _portalAdminRepository.GetFAQs(faqCatId);
+            var faqs = _portalSosRepository.GetFAQs(faqCatId);
             return faqs;
         }
 
         public IEnumerable<AdmHelgdag> HamtaAllaHelgdagar()
         {
-            var helgdagar = _portalAdminRepository.GetAllHolidays();
+            var helgdagar = _portalSosRepository.GetAllHolidays();
             return helgdagar;
         }
 
         public IEnumerable<AdmSpecialdag> HamtaAllaSpecialdagar()
         {
-            var specialdagar = _portalAdminRepository.GetAllSpecialDays();
+            var specialdagar = _portalSosRepository.GetAllSpecialDays();
             return specialdagar;
         }
 
         public IEnumerable<AdmInformation> HamtaInformationstexter()
         {
-            var infoTexts = _portalAdminRepository.GetInformationTexts();
+            var infoTexts = _portalSosRepository.GetInformationTexts();
             return infoTexts;
         }
 
         public AdmInsamlingsfrekvens HamtaInsamlingsfrekvens(int insamlingsid)
         {
-            var insamlingsfrekvens = _portalAdminRepository.GetInsamlingsfrekvens(insamlingsid);
+            var insamlingsfrekvens = _portalSosRepository.GetInsamlingsfrekvens(insamlingsid);
             return insamlingsfrekvens;
         }
 
+        public string HamtaHelgEllerSpecialdagsInfo()
+        {
+            var text = String.Empty;
+            if (IsHelgdag())
+            {
+                text = HamtaHelgdagsInfo();
+            }
+            else if (IsSpecialdag())
+            {
+                text = HamtaSpecialdagsInfo();
+            }
+
+            return text;
+        }
+        
         public OpeningHoursInfoDTO HamtaOppettider()
         {
-            var configInfo = _portalAdminRepository.GetAdmConfiguration();
+            var configInfo = _portalSosRepository.GetAdmConfiguration();
             var oppettiderObj = new OpeningHoursInfoDTO();
 
             foreach (var item in configInfo)
@@ -172,57 +321,63 @@ namespace InrappSos.ApplicationService
 
         public AdmInformation HamtaInfoText(string infoTyp)
         {
-            var info = _portalAdminRepository.GetInfoText(infoTyp);
+            var info = _portalSosRepository.GetInfoText(infoTyp);
             return info;
+        }
+
+        public string HamtaInformationsText(string infoTyp)
+        {
+            var infoText = _portalSosRepository.GetInfoText(infoTyp).Text;
+            return infoText;
         }
 
         public AdmInformation HamtaInfo(int infoId)
         {
-            var info = _portalAdminRepository.GetInfoText(infoId);
+            var info = _portalSosRepository.GetInfoText(infoId);
             return info;
         }
 
         public IEnumerable<AdmRegister> HamtaRegister()
         {
-            var registerList = _portalAdminRepository.GetDirectories();
+            var registerList = _portalSosRepository.GetDirectories();
             return registerList;
         }
 
         public AdmRegister HamtaRegisterMedKortnamn(string regKortNamn)
         {
-            var register = _portalAdminRepository.GetDirectoryByShortName(regKortNamn);
+            var register = _portalSosRepository.GetDirectoryByShortName(regKortNamn);
             return register;
         }
 
         public AdmRegister HamtaRegisterMedId(int regId)
         {
-            var register = _portalAdminRepository.GetDirectoryById(regId);
+            var register = _portalSosRepository.GetDirectoryById(regId);
             return register;
         }
 
         public IEnumerable<AdmDelregister> HamtaDelRegister()
         {
-            var subDirectories = _portalAdminRepository.GetSubDirectories();
+            var subDirectories = _portalSosRepository.GetSubDirectories();
             return subDirectories;
         }
 
         public IEnumerable<AdmDelregister> HamtaDelRegisterForRegister(int regId)
         {
-            var subDirectories = _portalAdminRepository.GetSubDirectoriesForDirectory(regId);
+            var subDirectories = _portalSosRepository.GetSubDirectoriesForDirectory(regId);
             return subDirectories;
         }
 
         public AdmDelregister HamtaDelRegisterForUppgiftsskyldighet(int uppgSkId)
         {
-            var reportObligation = _portalAdminRepository.GetReportObligationById(uppgSkId);
-            var subdir = _portalAdminRepository.GetSubDirectoryById(reportObligation.DelregisterId);
+            var reportObligation = _portalSosRepository.GetReportObligationById(uppgSkId);
+            var subdir = _portalSosRepository.GetSubDirectoryById(reportObligation.DelregisterId);
             return subdir;
         }
 
 
         public AdmDelregister HamtaDelRegisterForKortnamn(string shortName)
         {
-            var subDirectory = _portalAdminRepository.GetSubDirectoryByShortName(shortName);
+            var subDirectory = _portalSosRepository.GetSubDirectoryByShortName(shortName);
             return subDirectory;
         }
 
@@ -230,7 +385,7 @@ namespace InrappSos.ApplicationService
         {
             var delregMedFilkravList = new List<RegisterInfo>();
 
-            var delregList = _portalAdminRepository.GetAllSubDirectoriesForPortal();
+            var delregList = _portalSosRepository.GetAllSubDirectoriesForPortal();
             foreach (var delreg in delregList)
             {
                 var regFilkravList = new List<RegisterFilkrav>();
@@ -241,7 +396,7 @@ namespace InrappSos.ApplicationService
                 };
 
                 //Hämta varje delregisters filkrav
-                var filkravList = _portalAdminRepository.GetFileRequirementsForSubDirectory(delreg.Id).ToList();
+                var filkravList = _portalSosRepository.GetFileRequirementsForSubDirectory(delreg.Id).ToList();
                 foreach (var filkrav in filkravList)
                 {
                     var regFilkrav = new RegisterFilkrav
@@ -266,109 +421,154 @@ namespace InrappSos.ApplicationService
 
         public IEnumerable<AdmForvantadleverans> HamtaForvantadeLeveranser()
         {
-            var forvlevList = _portalAdminRepository.GetExpectedDeliveries();
+            var forvlevList = _portalSosRepository.GetExpectedDeliveries();
             return forvlevList;
         }
 
         public IEnumerable<AdmForvantadfil> HamtaAllaForvantadeFiler()
         {
-            var forvFilList = _portalAdminRepository.GetAllExpectedFiles();
+            var forvFilList = _portalSosRepository.GetAllExpectedFiles();
             return forvFilList;
         }
 
         public IEnumerable<AdmFilkrav> HamtaAllaFilkrav()
         {
-            var filkravList = _portalAdminRepository.GetAllFileRequirements();
+            var filkravList = _portalSosRepository.GetAllFileRequirements();
             return filkravList;
         }
 
         public IEnumerable<AdmInsamlingsfrekvens> HamtaAllaInsamlingsfrekvenser()
         {
-            var insamlingsfrekvensList = _portalAdminRepository.GetAllCollectionFrequencies();
+            var insamlingsfrekvensList = _portalSosRepository.GetAllCollectionFrequencies();
             return insamlingsfrekvensList;
         }
 
         public string HamtaKortnamnForDelregisterMedFilkravsId(int filkravId)
         {
-            var delRegKortnamn = _portalAdminRepository.GetSubDirectoryShortNameForExpectedFile(filkravId);
+            var delRegKortnamn = _portalSosRepository.GetSubDirectoryShortNameForExpectedFile(filkravId);
             return delRegKortnamn;
         }
 
         public string HamtaKortnamnForRegister(int regId)
         {
-            var regKortnamn = _portalAdminRepository.GetDirectoryShortName(regId);
+            var regKortnamn = _portalSosRepository.GetDirectoryShortName(regId);
             return regKortnamn;
         }
 
         public string HamtaNamnForFilkrav(int filkravId)
         {
-            var filkravNamn = _portalAdminRepository.GetFileRequirementName(filkravId);
+            var filkravNamn = _portalSosRepository.GetFileRequirementName(filkravId);
             return filkravNamn;
+        }
+        public int HamtaNyttLeveransId(string userId, string userName, int orgId, int registerId, int orgenhetsId, int forvLevId, string status)
+        {
+            var levId = _portalSosRepository.GetNewLeveransId(userId, userName, orgId, registerId, orgenhetsId, forvLevId, status);
+            return levId;
         }
 
         public string HamtaKortnamnForDelregister(int delregId)
         {
-            var delRegKortnamn = _portalAdminRepository.GetSubDirectoryShortName(delregId);
+            var delRegKortnamn = _portalSosRepository.GetSubDirectoryShortName(delregId);
             return delRegKortnamn;
         }
 
         public IEnumerable<AdmForvantadfil> HamtaForvantadeFilerForRegister(int regId)
         {
-            var forvantadeFiler = _portalAdminRepository.GetExpectedFilesForDirectory(regId);
+            var forvantadeFiler = _portalSosRepository.GetExpectedFilesForDirectory(regId);
             return forvantadeFiler;
+        }
+
+        public IEnumerable<AdmForvantadfil> HamtaForvantadFil(int filkravId)
+        {
+            var forvFiler = _portalSosRepository.GetExpectedFile(filkravId);
+            return forvFiler;
         }
 
         public IEnumerable<AdmRegister> HamtaAllaRegister()
         {
-            var registersList = _portalAdminRepository.GetAllRegisters();
+            var registersList = _portalSosRepository.GetAllRegisters();
             return registersList;
         }
 
         public IEnumerable<AdmRegister> HamtaAllaRegisterForPortalen()
         {
-            var registersList = _portalAdminRepository.GetAllRegistersForPortal();
+            var registersList = _portalSosRepository.GetAllRegistersForPortal();
             return registersList;
         }
 
         public IEnumerable<AdmDelregister> HamtaAllaDelregisterForPortalen()
         {
-            var delregistersList = _portalAdminRepository.GetAllSubDirectoriesForPortal();
+            var delregistersList = _portalSosRepository.GetAllSubDirectoriesForPortal();
             return delregistersList;
+        }
+
+        public IEnumerable<RegisterInfo> HamtaAllRegisterInformation()
+        {
+            var registerList = _portalSosRepository.GetAllRegisterInformation();
+            return registerList;
         }
 
         public IEnumerable<Organisation> HamtaAllaOrganisationer()
         {
-            var orgList = _portalAdminRepository.GetAllOrganisations();
+            var orgList = _portalSosRepository.GetAllOrganisations();
             return orgList;
         }
 
         public IEnumerable<AdmForvantadleverans> HamtaForvantadeLeveranserForRegister(int regId)
         {
-            var forvLeveranser = _portalAdminRepository.GetExpectedDeliveriesForDirectory(regId);
+            var forvLeveranser = _portalSosRepository.GetExpectedDeliveriesForDirectory(regId);
             return forvLeveranser;
         }
 
         public IEnumerable<AdmForvantadleverans> HamtaForvantadeLeveranserForDelregister(int delregId)
         {
-            var forvLeveranser = _portalAdminRepository.GetExpectedDeliveriesForSubDirectory(delregId);
+            var forvLeveranser = _portalSosRepository.GetExpectedDeliveriesForSubDirectory(delregId);
             return forvLeveranser;
+        }
+
+        public int HamtaForvantadleveransIdForRegisterOchPeriod(int delregId, string period)
+        {
+            var forvLevId = _portalSosRepository.GetExpextedDeliveryIdForSubDirAndPeriod(delregId, period);
+            return forvLevId;
+        }
+
+        public List<string> HamtaGiltigaPerioderForDelregister(int delregId)
+        {
+            var allaForvLevForDelreg = _portalSosRepository.GetExpectedDeliveriesForSubDirectory(delregId);
+            string period = String.Empty;
+            DateTime startDate;
+            DateTime endDate;
+
+            DateTime dagensDatum = DateTime.Now.Date;
+            var perioder = new List<string>();
+
+            foreach (var forvLev in allaForvLevForDelreg)
+            {
+                startDate = forvLev.Rapporteringsstart;
+                endDate = forvLev.Rapporteringsslut;
+                if (dagensDatum >= startDate && dagensDatum <= endDate)
+                {
+                    perioder.Add(forvLev.Period);
+                }
+            }
+            return perioder;
         }
 
         public IEnumerable<AdmFilkrav> HamtaFilkravForRegister(int regId)
         {
-            var filkrav= _portalAdminRepository.GetFileRequirementsForDirectory(regId); 
+            var filkrav= _portalSosRepository.GetFileRequirementsForDirectory(regId); 
             return filkrav;
         }
 
         public AdmFAQKategori HamtaFAQKategori(int faqCatId)
         {
-            var faqcat = _portalAdminRepository.GetFAQCategory(faqCatId);
+            var faqcat = _portalSosRepository.GetFAQCategory(faqCatId);
             return faqcat;
         }
 
         public AdmFAQ HamtaFAQ(int faqId)
         {
-            var faq = _portalAdminRepository.GetFAQ(faqId);
+            var faq = _portalSosRepository.GetFAQ(faqId);
             return faq;
         }
 
@@ -376,28 +576,28 @@ namespace InrappSos.ApplicationService
         {
             var historikLista = new List<FilloggDetaljDTO>();
             //TODO - tidsintervall?
-            //var leveransIdList = _portalRepository.GetLeveransIdnForOrganisation(orgId).OrderByDescending(x => x);
-            var leveransList = _portalAdminRepository.GetLeveranserForOrganisation(orgId);
+            //var leveransIdList = _portalSosRepository.GetLeveransIdnForOrganisation(orgId).OrderByDescending(x => x);
+            var leveransList = _portalSosRepository.GetLeveranserForOrganisation(orgId);
             foreach (var leverans in leveransList)
             {
                 var filloggDetalj = new FilloggDetaljDTO();
                 //Kolla om återkopplingsfil finns för aktuell leverans
-                var aterkoppling = _portalAdminRepository.GetAterkopplingForLeverans(leverans.Id);
+                var aterkoppling = _portalSosRepository.GetAterkopplingForLeverans(leverans.Id);
 
                 //Kolla om enhetskod finns för aktuell leverans (stadsdelsleverans)
                 var enhetskod = String.Empty;
                 if (leverans.OrganisationsenhetsId != null)
                 {
                     var orgenhetid = Convert.ToInt32(leverans.OrganisationsenhetsId);
-                    enhetskod = _portalAdminRepository.GetEnhetskodForLeverans(orgenhetid);
+                    enhetskod = _portalSosRepository.GetEnhetskodForLeverans(orgenhetid);
                 }
 
                 //Hämta period för aktuell leverans
-                var period = _portalAdminRepository.GetPeriodForAktuellLeverans(leverans.ForvantadleveransId);
+                var period = _portalSosRepository.GetPeriodForAktuellLeverans(leverans.ForvantadleveransId);
 
 
-                var filer = _portalAdminRepository.GetFilerForLeveransId(leverans.Id).ToList();
-                var registerKortnamn = _portalAdminRepository.GetSubDirectoryShortName(leverans.DelregisterId);
+                var filer = _portalSosRepository.GetFilerForLeveransId(leverans.Id).ToList();
+                var registerKortnamn = _portalSosRepository.GetSubDirectoryShortName(leverans.DelregisterId);
 
                 //Vid "Inget att rapportera" finns det leveranser som saknar filer. Se till att även dessa visas i historiken (#101)
                 if (!filer.Any())
@@ -443,13 +643,13 @@ namespace InrappSos.ApplicationService
 
         public AdmForeskrift HamtaForeskriftByFilkrav(int filkravId)
         {
-            var foreskrift = _portalAdminRepository.GetForeskriftByFileReq(filkravId);
+            var foreskrift = _portalSosRepository.GetForeskriftByFileReq(filkravId);
             return foreskrift;
         }
 
         public IEnumerable<RapporteringsresultatDTO> HamtaRapporteringsresultatForDelregOchPeriod(int delRegId, string period)
         {
-            var rappResList = _portalAdminRepository.GetReportResultForSubdirAndPeriod(delRegId, period);
+            var rappResList = _portalSosRepository.GetReportResultForSubdirAndPeriod(delRegId, period);
             var ejLevList = new List<Rapporteringsresultat>();
 
             //Ta bara med dem som inte rapporterat alls eller som har leveransstatus "Leveransen är inte godkänd"
@@ -472,7 +672,7 @@ namespace InrappSos.ApplicationService
 
         public IEnumerable<RapporteringsresultatDTO> HamtaRapporteringsresultatForRegOchPeriod(int regId, string period)
         {
-            var rappResList = _portalAdminRepository.GetReportResultForDirAndPeriod(regId, period);
+            var rappResList = _portalSosRepository.GetReportResultForDirAndPeriod(regId, period);
             var ejLevList = new List<Rapporteringsresultat>();
 
             //Ta bara med dem som inte rapporterat alls eller som har leveransstatus "Leveransen är inte godkänd"
@@ -495,18 +695,18 @@ namespace InrappSos.ApplicationService
 
         public IEnumerable<AdmRegister> HamtaRegisterForOrg(int orgId)
         {
-            var uppgskyldighetList = _portalAdminRepository.GetReportObligationInformationForOrg(orgId);
+            var uppgskyldighetList = _portalSosRepository.GetReportObligationInformationForOrg(orgId);
             var delregList = new List<AdmDelregister>();
             var regList = new List<AdmRegister>();
             foreach (var uppgskyldighet in uppgskyldighetList)
             {
-                var delreg = _portalAdminRepository.GetSubDirectoryById(uppgskyldighet.DelregisterId);
+                var delreg = _portalSosRepository.GetSubDirectoryById(uppgskyldighet.DelregisterId);
                 delregList.Add(delreg);
             }
 
             foreach (var delreg in delregList)
             {
-                var reg = _portalAdminRepository.GetDirectoryById(delreg.RegisterId);
+                var reg = _portalSosRepository.GetDirectoryById(delreg.RegisterId);
                 if (!regList.Contains(reg))
                         regList.Add(reg);
             }
@@ -516,14 +716,14 @@ namespace InrappSos.ApplicationService
 
         public IEnumerable<string> HamtaDelregistersPerioderForAr(int delregId, int ar)
         {
-            var perioder = _portalAdminRepository.GetSubDirectoysPeriodsForAYear(delregId, ar);
+            var perioder = _portalSosRepository.GetSubDirectoysPeriodsForAYear(delregId, ar);
             return perioder;
         }
 
         public List<int> HamtaValbaraAr(int delregId)
         {
             var arsLista = new List<int>();
-            var uppgiftsstartLista = _portalAdminRepository.GetTaskStartForSubdir(delregId);
+            var uppgiftsstartLista = _portalSosRepository.GetTaskStartForSubdir(delregId);
 
             foreach (var uppgiftsstart in uppgiftsstartLista)
             {
@@ -537,26 +737,26 @@ namespace InrappSos.ApplicationService
 
         public DateTime HamtaRapporteringsstartForRegisterOchPeriod(int regId, string period)
         {
-            var rappStart = _portalAdminRepository.GetReportstartForRegisterAndPeriod(regId, period);
+            var rappStart = _portalSosRepository.GetReportstartForRegisterAndPeriod(regId, period);
             return rappStart;
         }
 
         public DateTime HamtaSenasteRapporteringForRegisterOchPeriod(int regId, string period)
         {
-            var rappSenast = _portalAdminRepository.GetLatestReportDateForRegisterAndPeriod(regId, period);
+            var rappSenast = _portalSosRepository.GetLatestReportDateForRegisterAndPeriod(regId, period);
             return rappSenast;
         }
 
         //TODO - special för EKB-År. Lös på annat sätt.
         public DateTime HamtaRapporteringsstartForRegisterOchPeriodSpecial(int regId, string period)
         {
-            var rappStart = _portalAdminRepository.GetReportstartForRegisterAndPeriodSpecial(regId, period);
+            var rappStart = _portalSosRepository.GetReportstartForRegisterAndPeriodSpecial(regId, period);
             return rappStart;
         }
 
         public DateTime HamtaSenasteRapporteringForRegisterOchPeriodSpecial(int regId, string period)
         {
-            var rappSenast = _portalAdminRepository.GetLatestReportDateForRegisterAndPeriodSpecial(regId, period);
+            var rappSenast = _portalSosRepository.GetLatestReportDateForRegisterAndPeriodSpecial(regId, period);
             return rappSenast;
         }
 
@@ -564,26 +764,26 @@ namespace InrappSos.ApplicationService
         {
             var historikLista = new List<FilloggDetaljDTO>();
             var sorteradHistorikLista = new List<FilloggDetaljDTO>();
-            var delregisterLista = _portalAdminRepository.GetSubdirsForDirectory(regId);
-            //var forvLevId = _portalRepository.get
+            var delregisterLista = _portalSosRepository.GetSubdirsForDirectory(regId);
+            //var forvLevId = _portalSosRepository.get
 
             foreach (var delregister in delregisterLista)
             {
                 //Hämta forvantadleveransid för delregister och period
-                var forvLevId = _portalAdminRepository.GetExpextedDeliveryIdForSubDirAndPeriod(delregister.Id, periodForReg);
+                var forvLevId = _portalSosRepository.GetExpextedDeliveryIdForSubDirAndPeriod(delregister.Id, periodForReg);
 
                 var senasteLeverans = new Leverans();
                 //kan org rapportera per enhet för aktuellt delregister? => hämta senaste leverans per enhet
-                var uppgiftsskyldighet = _portalAdminRepository.GetUppgiftsskyldighetForOrganisationAndRegister(orgId, delregister.Id);
+                var uppgiftsskyldighet = _portalSosRepository.GetUppgiftsskyldighetForOrganisationAndRegister(orgId, delregister.Id);
                 if (uppgiftsskyldighet != null)
                 {
                     if (uppgiftsskyldighet.RapporterarPerEnhet)
                     {
-                        var orgEnhetsList = _portalAdminRepository.GetOrgUnitsForOrg(orgId);
+                        var orgEnhetsList = _portalSosRepository.GetOrgUnitsForOrg(orgId);
                         foreach (var orgenhet in orgEnhetsList)
                         {
                             senasteLeverans =
-                                _portalAdminRepository.GetLatestDeliveryForOrganisationSubDirectoryPeriodAndOrgUnit(orgId, delregister.Id, forvLevId, orgenhet.Id);
+                                _portalSosRepository.GetLatestDeliveryForOrganisationSubDirectoryPeriodAndOrgUnit(orgId, delregister.Id, forvLevId, orgenhet.Id);
                             if (senasteLeverans != null)
                             {
                                 AddHistorikListItem(senasteLeverans, historikLista);
@@ -593,7 +793,7 @@ namespace InrappSos.ApplicationService
                     else
                     {
                         senasteLeverans =
-                            _portalAdminRepository.GetLatestDeliveryForOrganisationSubDirectoryAndPeriod(orgId, delregister.Id,
+                            _portalSosRepository.GetLatestDeliveryForOrganisationSubDirectoryAndPeriod(orgId, delregister.Id,
                                 forvLevId);
                         if (senasteLeverans != null)
                         {
@@ -675,9 +875,9 @@ namespace InrappSos.ApplicationService
 
         public IEnumerable<RegisterInfo> HamtaValdaRegistersForAnvandare(string userId, int orgId)
         {
-            var registerList = _portalAdminRepository.GetChosenDelRegistersForUser(userId);
-            //var allaRegisterList = _portalRepository.GetAllRegisterInformation();
-            var allaRegisterList = _portalAdminRepository.GetAllRegisterInformationForOrganisation(orgId);
+            var registerList = _portalSosRepository.GetChosenDelRegistersForUser(userId);
+            //var allaRegisterList = _portalSosRepository.GetAllRegisterInformation();
+            var allaRegisterList = _portalSosRepository.GetAllRegisterInformationForOrganisation(orgId);
             var userRegisterList = new List<RegisterInfo>();
 
             foreach (var register in allaRegisterList)
@@ -699,7 +899,7 @@ namespace InrappSos.ApplicationService
                 if (uppgiftsskyldighet.RapporterarPerEnhet)
                 {
                     item.RapporterarPerEnhet = true;
-                    var orgUnits = _portalAdminRepository.GetOrganisationUnits(orgId);
+                    var orgUnits = _portalSosRepository.GetOrganisationUnits(orgId);
                     item.Organisationsenheter = new List<KeyValuePair<string, string>>();
                     foreach (var orgUnit in orgUnits)
                     {
@@ -713,11 +913,47 @@ namespace InrappSos.ApplicationService
             return userRegisterList;
         }
 
+        public IEnumerable<RegisterInfo> HamtaRegistersMedAnvandaresVal(string userId, int orgId)
+        {
+            var registerList = _portalSosRepository.GetChosenDelRegistersForUser(userId);
+            //var allaRegisterList = _portalRepository.GetAllRegisterInformation();
+            var allaRegisterList = _portalSosRepository.GetAllRegisterInformationForOrganisation(orgId);
+
+            foreach (var register in allaRegisterList)
+            {
+                foreach (var userRegister in registerList)
+                {
+                    if (register.Id == userRegister.DelregisterId)
+                    {
+                        register.Selected = true;
+                    }
+                }
+            }
+
+            return allaRegisterList;
+        }
+
+        public IEnumerable<AdmRegister> HamtaRegisterForAnvandare(string userId, int orgId)
+        {
+            var registerList = _portalSosRepository.GetChosenRegistersForUser(userId);
+            //Rensa bort dubbletter avseende kortnamn
+            //IEnumerable<string> allaKortnamn = registerList.Select(x => x.Kortnamn).Distinct();
+
+            return registerList;
+        }
+
         public AdmUppgiftsskyldighet HamtaUppgiftsskyldighetForOrganisationOchRegister(int orgId, int delregid)
         {
-            var uppgiftsskyldighet = _portalAdminRepository.GetUppgiftsskyldighetForOrganisationAndRegister(orgId, delregid);
+            var uppgiftsskyldighet = _portalSosRepository.GetUppgiftsskyldighetForOrganisationAndRegister(orgId, delregid);
 
             return uppgiftsskyldighet;
+        }
+
+        public void InaktiveraKontaktperson(string userId)
+        {
+            _portalSosRepository.DisableContact(userId);
+            //Remove users chosen registers
+            _portalSosRepository.DeleteChosenSubDirectoriesForUser(userId);
         }
 
         public int SkapaOrganisation(Organisation org, string userName)
@@ -728,7 +964,7 @@ namespace InrappSos.ApplicationService
             org.AndradDatum = DateTime.Now;
             org.AndradAv = userName;
 
-            var orgId = _portalAdminRepository.CreateOrganisation(org);
+            var orgId = _portalSosRepository.CreateOrganisation(org);
             return orgId;
         }
 
@@ -740,7 +976,7 @@ namespace InrappSos.ApplicationService
             orgUnit.AndradDatum = DateTime.Now;
             orgUnit.AndradAv = userName;
 
-            _portalAdminRepository.CreateOrgUnit(orgUnit);
+            _portalSosRepository.CreateOrgUnit(orgUnit);
         }
 
         public void SkapaFAQKategori(AdmFAQKategori faqKategori, string userName)
@@ -751,7 +987,7 @@ namespace InrappSos.ApplicationService
             faqKategori.AndradDatum = DateTime.Now;
             faqKategori.AndradAv = userName;
 
-            _portalAdminRepository.CreateFAQCategory(faqKategori);
+            _portalSosRepository.CreateFAQCategory(faqKategori);
         }
 
         public void SkapaFAQ(AdmFAQ faq, string userName)
@@ -762,7 +998,7 @@ namespace InrappSos.ApplicationService
             faq.AndradDatum = DateTime.Now;
             faq.AndradAv = userName;
 
-            _portalAdminRepository.CreateFAQ(faq);
+            _portalSosRepository.CreateFAQ(faq);
         }
 
         public void SkapaHelgdag(AdmHelgdag helgdag, string userName)
@@ -773,7 +1009,7 @@ namespace InrappSos.ApplicationService
             helgdag.AndradDatum = DateTime.Now;
             helgdag.AndradAv = userName;
 
-            _portalAdminRepository.CreateHoliday(helgdag);
+            _portalSosRepository.CreateHoliday(helgdag);
         }
 
         public void SkapaSpecialdag(AdmSpecialdag specialdag, string userName)
@@ -784,7 +1020,7 @@ namespace InrappSos.ApplicationService
             specialdag.AndradDatum = DateTime.Now;
             specialdag.AndradAv = userName;
 
-            _portalAdminRepository.CreateSpecialDay(specialdag);
+            _portalSosRepository.CreateSpecialDay(specialdag);
         }
 
         public void SkapaInformationsText(AdmInformation infoText, string userName)
@@ -794,7 +1030,7 @@ namespace InrappSos.ApplicationService
             infoText.SkapadAv = userName;
             infoText.AndradDatum = DateTime.Now;
             infoText.AndradAv = userName;
-            _portalAdminRepository.CreateInformationText(infoText);
+            _portalSosRepository.CreateInformationText(infoText);
         }
 
         public void SkapaUppgiftsskyldighet(AdmUppgiftsskyldighet uppgSk, string userName)
@@ -804,7 +1040,7 @@ namespace InrappSos.ApplicationService
             uppgSk.SkapadAv = userName;
             uppgSk.AndradDatum = DateTime.Now;
             uppgSk.AndradAv = userName;
-            _portalAdminRepository.CreateReportObligation(uppgSk);
+            _portalSosRepository.CreateReportObligation(uppgSk);
         }
 
         public void SkapaEnhetsUppgiftsskyldighet(AdmEnhetsUppgiftsskyldighet enhetsUppgSk, string userName)
@@ -814,7 +1050,7 @@ namespace InrappSos.ApplicationService
             enhetsUppgSk.SkapadAv = userName;
             enhetsUppgSk.AndradDatum = DateTime.Now;
             enhetsUppgSk.AndradAv = userName;
-            _portalAdminRepository.CreateUnitReportObligation(enhetsUppgSk);
+            _portalSosRepository.CreateUnitReportObligation(enhetsUppgSk);
         }
 
         public void SkapaRegister(AdmRegister reg, string userName)
@@ -824,7 +1060,7 @@ namespace InrappSos.ApplicationService
             reg.SkapadAv = userName;
             reg.AndradDatum = DateTime.Now;
             reg.AndradAv = userName; 
-            _portalAdminRepository.CreateDirectory(reg);
+            _portalSosRepository.CreateDirectory(reg);
         }
 
         public void SkapaDelregister(AdmDelregister delReg, string userName)
@@ -834,7 +1070,7 @@ namespace InrappSos.ApplicationService
             delReg.SkapadAv = userName;
             delReg.AndradDatum = DateTime.Now;
             delReg.AndradAv = userName;
-            _portalAdminRepository.CreateSubDirectory(delReg);
+            _portalSosRepository.CreateSubDirectory(delReg);
         }
 
         public void SkapaForvantadLeverans(AdmForvantadleverans forvLev, string userName)
@@ -844,7 +1080,7 @@ namespace InrappSos.ApplicationService
             forvLev.SkapadAv = userName;
             forvLev.AndradDatum = DateTime.Now;
             forvLev.AndradAv = userName;
-            _portalAdminRepository.CreateExpectedDelivery(forvLev);
+            _portalSosRepository.CreateExpectedDelivery(forvLev);
         }
 
         public void SkapaForvantadLeveranser(IEnumerable<AdmForvantadleverans> forvLevList, string userName)
@@ -856,7 +1092,7 @@ namespace InrappSos.ApplicationService
                 forvLev.SkapadAv = userName;
                 forvLev.AndradDatum = DateTime.Now;
                 forvLev.AndradAv = userName;
-                _portalAdminRepository.CreateExpectedDelivery(forvLev);
+                _portalSosRepository.CreateExpectedDelivery(forvLev);
             }
         }
 
@@ -865,7 +1101,7 @@ namespace InrappSos.ApplicationService
             var forvantadeLeveranser = new List<ForvantadLeveransDTO>();
             var forvantadeLeveranserUtkast = new List<ForvantadLeveransDTO>();
             //Hämta regler från aktuellt AdmFilkrav 
-            var filkrav = _portalAdminRepository.GetFileRequirementsForSubDirectoryAndFileReqId(selectedDelRegId, selectedFilkravId);
+            var filkrav = _portalSosRepository.GetFileRequirementsForSubDirectoryAndFileReqId(selectedDelRegId, selectedFilkravId);
             //Skapa forväntade leveranser
             switch (filkrav.InsamlingsfrekvensId)
             {
@@ -891,7 +1127,7 @@ namespace InrappSos.ApplicationService
             forvFil.SkapadAv = userName;
             forvFil.AndradDatum = DateTime.Now;
             forvFil.AndradAv = userName;
-            _portalAdminRepository.CreateExpectedFile(forvFil);
+            _portalSosRepository.CreateExpectedFile(forvFil);
         }
 
         public void SkapaFilkrav(AdmFilkrav filkrav, string userName)
@@ -901,7 +1137,7 @@ namespace InrappSos.ApplicationService
             filkrav.SkapadAv = userName;
             filkrav.AndradDatum = DateTime.Now;
             filkrav.AndradAv = userName;
-            _portalAdminRepository.CreateFileRequirement(filkrav);
+            _portalSosRepository.CreateFileRequirement(filkrav);
         }
 
         public void SkapaInsamlingsfrekvens(AdmInsamlingsfrekvens insamlingsfrekvens, string userName)
@@ -911,7 +1147,7 @@ namespace InrappSos.ApplicationService
             insamlingsfrekvens.SkapadAv = userName;
             insamlingsfrekvens.AndradDatum = DateTime.Now;
             insamlingsfrekvens.AndradAv = userName;
-            _portalAdminRepository.CreateCollectFrequence(insamlingsfrekvens);
+            _portalSosRepository.CreateCollectFrequence(insamlingsfrekvens);
         }
 
         public void UppdateraOrganisation(Organisation org, string userName)
@@ -919,7 +1155,7 @@ namespace InrappSos.ApplicationService
             //Sätt datum och användare
             org.AndradDatum = DateTime.Now;
             org.AndradAv = userName;
-            _portalAdminRepository.UpdateOrganisation(org);
+            _portalSosRepository.UpdateOrganisation(org);
         }
 
         public void UppdateraKontaktperson(ApplicationUser user, string userName)
@@ -931,14 +1167,34 @@ namespace InrappSos.ApplicationService
             {
                 user.PhoneNumberConfirmed = false;
             }
-            _portalAdminRepository.UpdateContactPerson(user);
+            _portalSosRepository.UpdateContactPerson(user);
+        }
+
+        public void UppdateraNamnForAnvandare(string userId, string userName)
+        {
+            _portalSosRepository.UpdateNameForUser(userId, userName);
         }
 
         public void UppdateraAdminAnvandare(AppUserAdmin user, string userName)
         {
             user.AndradDatum = DateTime.Now;
             user.AndradAv = userName;
-            _portalAdminRepository.UpdateAdminUser(user);
+            _portalSosRepository.UpdateAdminUser(user);
+        }
+
+        public void UppdateraKontaktnummerForAnvandare(string userId, string tfnnr)
+        {
+            _portalSosRepository.UpdateContactNumberForUser(userId, tfnnr);
+        }
+
+        public void UppdateraAktivFromForAnvandare(string userId)
+        {
+            _portalSosRepository.UpdateActiveFromForUser(userId);
+        }
+
+        public void UppdateraAnvandarInfo(ApplicationUser user)
+        {
+            _portalSosRepository.UpdateUserInfo(user);
         }
 
         public void UppdateraOrganisationsenhet(Organisationsenhet orgUnit, string userName)
@@ -946,7 +1202,7 @@ namespace InrappSos.ApplicationService
             //Sätt datum och användare
             orgUnit.AndradDatum = DateTime.Now;
             orgUnit.AndradAv = userName;
-            _portalAdminRepository.UpdateOrgUnit(orgUnit);
+            _portalSosRepository.UpdateOrgUnit(orgUnit);
         }
 
         public void UppdateraUppgiftsskyldighet(AdmUppgiftsskyldighet uppgSkyldighet, string userName)
@@ -954,7 +1210,12 @@ namespace InrappSos.ApplicationService
             //Sätt datum och användare
             uppgSkyldighet.AndradDatum = DateTime.Now;
             uppgSkyldighet.AndradAv = userName;
-            _portalAdminRepository.UpdateReportObligation(uppgSkyldighet);
+            _portalSosRepository.UpdateReportObligation(uppgSkyldighet);
+        }
+
+        public void UppdateraValdaRegistersForAnvandare(string userId, string userName, List<RegisterInfo> registerList)
+        {
+            _portalSosRepository.UpdateChosenRegistersForUser(userId, userName, registerList);
         }
 
         public void UppdateraEnhetsUppgiftsskyldighet(AdmEnhetsUppgiftsskyldighet enhetsUppgSkyldighet, string userName)
@@ -962,7 +1223,7 @@ namespace InrappSos.ApplicationService
             //Sätt datum och användare
             enhetsUppgSkyldighet.AndradDatum = DateTime.Now;
             enhetsUppgSkyldighet.AndradAv = userName;
-            _portalAdminRepository.UpdateUnitReportObligation(enhetsUppgSkyldighet);
+            _portalSosRepository.UpdateUnitReportObligation(enhetsUppgSkyldighet);
         }
 
         public void UppdateraFAQKategori(AdmFAQKategori faqKategori, string userName)
@@ -970,14 +1231,14 @@ namespace InrappSos.ApplicationService
             faqKategori.AndradDatum = DateTime.Now;
             faqKategori.AndradAv = userName;
             faqKategori.Sortering = Convert.ToInt32(faqKategori.Sortering);
-            _portalAdminRepository.UpdateFAQCategory(faqKategori);
+            _portalSosRepository.UpdateFAQCategory(faqKategori);
         }
 
         public void UppdateraFAQ(AdmFAQ faq, string userName)
         {
             faq.AndradDatum = DateTime.Now;
             faq.AndradAv = userName;
-            _portalAdminRepository.UpdateFAQ(faq);
+            _portalSosRepository.UpdateFAQ(faq);
         }
 
 
@@ -985,14 +1246,14 @@ namespace InrappSos.ApplicationService
         {
             holiday.AndradDatum = DateTime.Now;
             holiday.AndradAv = userName;
-            _portalAdminRepository.UpdateHoliday(holiday);
+            _portalSosRepository.UpdateHoliday(holiday);
         }
 
         public void UppdateraSpecialdag(AdmSpecialdag specialday, string userName)
         {
             specialday.AndradDatum = DateTime.Now;
             specialday.AndradAv = userName;
-            _portalAdminRepository.UpdateSpecialDay(specialday);
+            _portalSosRepository.UpdateSpecialDay(specialday);
         }
 
 
@@ -1000,56 +1261,56 @@ namespace InrappSos.ApplicationService
         {
             infoText.AndradDatum = DateTime.Now;
             infoText.AndradAv = userName;
-            _portalAdminRepository.UpdateInfoText(infoText);
+            _portalSosRepository.UpdateInfoText(infoText);
         }
 
         public void UppdateraRegister(AdmRegister register, string userName)
         {
             register.AndradAv = userName;
             register.AndradDatum = DateTime.Now;
-            _portalAdminRepository.UpdateDirectory(register);
+            _portalSosRepository.UpdateDirectory(register);
         }
 
         public void UppdateraDelregister(AdmDelregister delregister, string userName)
         {
             delregister.AndradAv = userName;
             delregister.AndradDatum = DateTime.Now;
-            _portalAdminRepository.UpdateSubDirectory(delregister);
+            _portalSosRepository.UpdateSubDirectory(delregister);
         }
 
         public void UppdateraForvantadLeverans(AdmForvantadleverans forvLev, string userName)
         {
             forvLev.AndradAv = userName;
             forvLev.AndradDatum = DateTime.Now;
-            _portalAdminRepository.UpdateExpectedDelivery(forvLev);
+            _portalSosRepository.UpdateExpectedDelivery(forvLev);
         }
 
         public void UppdateraForvantadFil(AdmForvantadfil forvFil, string userName)
         {
             forvFil.AndradAv = userName;
             forvFil.AndradDatum = DateTime.Now;
-            _portalAdminRepository.UpdateExpectedFile(forvFil);
+            _portalSosRepository.UpdateExpectedFile(forvFil);
         }
 
         public void UppdateraFilkrav(AdmFilkrav filkrav, string userName)
         {
             filkrav.AndradAv = userName;
             filkrav.AndradDatum = DateTime.Now;
-            _portalAdminRepository.UpdateFileRequirement(filkrav);
+            _portalSosRepository.UpdateFileRequirement(filkrav);
         }
 
         public void UppdateraInsamlingsfrekvens(AdmInsamlingsfrekvens insamlingsfrekvens, string userName)
         {
             insamlingsfrekvens.AndradAv = userName;
             insamlingsfrekvens.AndradDatum = DateTime.Now;
-            _portalAdminRepository.UpdateCollectFrequency(insamlingsfrekvens);
+            _portalSosRepository.UpdateCollectFrequency(insamlingsfrekvens);
         }
 
         public void UppdateraAnvandarInfo(AppUserAdmin user, string userName)
         {
             user.AndradAv = userName;
             user.AndradDatum = DateTime.Now;
-            _portalAdminRepository.UpdateUserInfo(user);
+            _portalSosRepository.UpdateUserInfo(user);
         }
 
         public void SparaOppettider(OpeningHoursInfoDTO oppetTider, string userName)
@@ -1069,7 +1330,7 @@ namespace InrappSos.ApplicationService
             {
                 admKonfClosedAnayway.Varde = "False";
             }
-            _portalAdminRepository.SaveOpeningHours(admKonfClosedAnayway);
+            _portalSosRepository.SaveOpeningHours(admKonfClosedAnayway);
 
             //Closed days
             string daysJoined = string.Join(",", oppetTider.ClosedDays);
@@ -1080,7 +1341,7 @@ namespace InrappSos.ApplicationService
             };
             admKonfClosedDays.AndradAv = userName;
             admKonfClosedDays.AndradDatum = DateTime.Now;
-            _portalAdminRepository.SaveOpeningHours(admKonfClosedDays);
+            _portalSosRepository.SaveOpeningHours(admKonfClosedDays);
 
             //Closed from hour
             AdmKonfiguration admKonfClosedFromHour = new AdmKonfiguration
@@ -1090,7 +1351,7 @@ namespace InrappSos.ApplicationService
             };
             admKonfClosedFromHour.AndradAv = userName;
             admKonfClosedFromHour.AndradDatum = DateTime.Now;
-            _portalAdminRepository.SaveOpeningHours(admKonfClosedFromHour);
+            _portalSosRepository.SaveOpeningHours(admKonfClosedFromHour);
 
             //Closed from minute
             AdmKonfiguration admKonfClosedFromMin = new AdmKonfiguration
@@ -1100,7 +1361,7 @@ namespace InrappSos.ApplicationService
             };
             admKonfClosedFromMin.AndradAv = userName;
             admKonfClosedFromMin.AndradDatum = DateTime.Now;
-            _portalAdminRepository.SaveOpeningHours(admKonfClosedFromMin);
+            _portalSosRepository.SaveOpeningHours(admKonfClosedFromMin);
 
             //Closed to hour
             AdmKonfiguration admKonfClosedToHour = new AdmKonfiguration
@@ -1110,7 +1371,7 @@ namespace InrappSos.ApplicationService
             };
             admKonfClosedToHour.AndradAv = userName;
             admKonfClosedToHour.AndradDatum = DateTime.Now;
-            _portalAdminRepository.SaveOpeningHours(admKonfClosedToHour);
+            _portalSosRepository.SaveOpeningHours(admKonfClosedToHour);
 
             //Closed to minute
             AdmKonfiguration admKonfClosedToMin = new AdmKonfiguration
@@ -1120,10 +1381,10 @@ namespace InrappSos.ApplicationService
             };
             admKonfClosedToMin.AndradAv = userName;
             admKonfClosedToMin.AndradDatum = DateTime.Now;
-            _portalAdminRepository.SaveOpeningHours(admKonfClosedToMin);
+            _portalSosRepository.SaveOpeningHours(admKonfClosedToMin);
 
             //Closed informationtext
-            var infoPageId = _portalAdminRepository.GetPageInfoTextId("Stangtsida");
+            var infoPageId = _portalSosRepository.GetPageInfoTextId("Stangtsida");
             AdmInformation infoTextClosedpage = new AdmInformation
             {
                 Id = infoPageId,
@@ -1132,9 +1393,24 @@ namespace InrappSos.ApplicationService
             };
             infoTextClosedpage.AndradAv = userName;
             infoTextClosedpage.AndradDatum = DateTime.Now;
-            _portalAdminRepository.UpdateInfoText(infoTextClosedpage);
+            _portalSosRepository.UpdateInfoText(infoTextClosedpage);
         }
-        
+
+        public void SparaTillDatabasFillogg(string userName, string ursprungligFilNamn, string nyttFilNamn, int leveransId, int sequenceNumber)
+        {
+            _portalSosRepository.SaveToFilelogg(userName, ursprungligFilNamn, nyttFilNamn, leveransId, sequenceNumber);
+        }
+
+        public void SparaValdaRegistersForAnvandare(string userId, string userName, List<RegisterInfo> regIdList)
+        {
+            _portalSosRepository.SaveChosenRegistersForUser(userId, userName, regIdList);
+        }
+
+        public void SaveToLoginLog(string userid, string userName)
+        {
+            _portalSosRepository.SaveToLoginLog(userid, userName);
+        }
+
         public List<OpeningDay> MarkeraStangdaDagar(List<string> closedDays)
         {
             var daysOfWeek = ExtensionMethods.GetDaysOfWeek();
@@ -1149,36 +1425,52 @@ namespace InrappSos.ApplicationService
             return daysOfWeek;
         }
 
+        public string MaskPhoneNumber(string phoneNumber)
+        {
+            var maskedPhoneNumber = String.Empty;
+
+            //Replace initial numbers with *
+            var lengthToMask = phoneNumber.Length - 4;
+            for (int i = 0; i < lengthToMask; i++)
+            {
+                maskedPhoneNumber += "*";
+            }
+            //Add four last number to masked string
+            maskedPhoneNumber += phoneNumber.Substring(lengthToMask);
+
+            return maskedPhoneNumber;
+        }
+
         public void TaBortFAQKategori(int faqKategoriId)
         {
-            _portalAdminRepository.DeleteFAQCategory(faqKategoriId);
+            _portalSosRepository.DeleteFAQCategory(faqKategoriId);
         }
 
 
 
         public void TaBortFAQ(int faqId)
         {
-            _portalAdminRepository.DeleteFAQ(faqId);
+            _portalSosRepository.DeleteFAQ(faqId);
         }
 
         public void TaBortHelgdag(int holidayId)
         {
-            _portalAdminRepository.DeleteHoliday(holidayId);
+            _portalSosRepository.DeleteHoliday(holidayId);
         }
 
         public void TaBortSpecialdag(int specialDayId)
         {
-            _portalAdminRepository.DeleteSpecialDay(specialDayId);
+            _portalSosRepository.DeleteSpecialDay(specialDayId);
         }
 
         public void TaBortKontaktperson(string contactId)
         {
-            _portalAdminRepository.DeleteContact(contactId);
+            _portalSosRepository.DeleteContact(contactId);
         }
 
         public void TaBortAdminAnvandare(string userId)
         {
-            _portalAdminRepository.DeleteAdminUser(userId);
+            _portalSosRepository.DeleteAdminUser(userId);
         }
 
         private IEnumerable<RapporteringsresultatDTO> ConvertRappListDBToVM(IEnumerable<Rapporteringsresultat> rappResList, int regId, int delRegId)
@@ -1225,7 +1517,7 @@ namespace InrappSos.ApplicationService
                 //If user is inactive, remove emailadress from list
                 if (!String.IsNullOrEmpty(rappResRadVM.Email))
                 {
-                    var user = _portalAdminRepository.GetUserByEmail(rappResRadVM.Email);
+                    var user = _portalSosRepository.GetUserByEmail(rappResRadVM.Email);
                     if (user.AktivTom < DateTime.Now.Date)
                         rappResRadVM.Email = null;
                 }
@@ -1250,17 +1542,17 @@ namespace InrappSos.ApplicationService
             {
                 var delregContactList = new List<ApplicationUser>();
                 //Hämta delregister för valt register
-                var delregisterList = _portalAdminRepository.GetSubDirectoriesForDirectory(regId);
+                var delregisterList = _portalSosRepository.GetSubDirectoriesForDirectory(regId);
                 foreach (var delregister in delregisterList)
                 {
-                    delregContactList = _portalAdminRepository.GetContactPersonsForOrgAndSubdir(rappRes.OrganisationsId, delregister.Id).ToList();
+                    delregContactList = _portalSosRepository.GetContactPersonsForOrgAndSubdir(rappRes.OrganisationsId, delregister.Id).ToList();
                     contactList.Union(delregContactList).ToList();
                 }
                 
             }
             else
             {
-                contactList = _portalAdminRepository.GetContactPersonsForOrgAndSubdir(rappRes.OrganisationsId, delRegId).ToList();
+                contactList = _portalSosRepository.GetContactPersonsForOrgAndSubdir(rappRes.OrganisationsId, delRegId).ToList();
             }
 
             if (contactList.Count > 0)
@@ -1299,7 +1591,7 @@ namespace InrappSos.ApplicationService
             else
             {
                 //Get email from organisation
-                var org = _portalAdminRepository.GetOrganisation(rappRes.OrganisationsId);
+                var org = _portalSosRepository.GetOrganisation(rappRes.OrganisationsId);
                 if (org != null)
                 {
                     email = org.EpostAdress;
@@ -1349,7 +1641,7 @@ namespace InrappSos.ApplicationService
                     msg.From = new MailAddress(ConfigurationManager.AppSettings["MailSender"]);
                     //TODO
                     //msg.To.Add(new MailAddress("marie.ahlin@socialstyrelsen.se"));
-                    msg.To.Add(new MailAddress(_portalAdminRepository.GetUserEmail(userId)));
+                    msg.To.Add(new MailAddress(_portalSosRepository.GetUserEmail(userId)));
                     msg.Subject = "Påminnelse";
                     msg.Body = "'Påminnelsetext här'.<br /> Detta mail innehåller en bifogad fil med epostadresser till användare/organisationer som inte levererat godkända filer för valt register och period.<br />Med vänliga hälsningar Astrid";
 
@@ -1386,6 +1678,147 @@ namespace InrappSos.ApplicationService
             //var x = stream.Length;
             //string jsonString = Encoding.ASCII.GetString(stream.ToArray());
             return stream;
+        }
+
+        public string HamtaHelgdagsInfo()
+        {
+            var date = DateTime.Now.Date;
+            var text = String.Empty;
+            var helgdagar = _portalSosRepository.GetHolidays();
+
+            foreach (var helgdag in helgdagar)
+            {
+                if (helgdag.Helgdatum == date)
+                {
+                    text = _portalSosRepository.GetInfoText(helgdag.InformationsId).Text;
+                }
+            }
+
+            return text;
+        }
+
+        public string HamtaSpecialdagsInfo()
+        {
+            var date = DateTime.Now.Date;
+            var text = String.Empty;
+            var specialdagar = _portalSosRepository.GetSpecialDays();
+
+            foreach (var dag in specialdagar)
+            {
+                if (dag.Specialdagdatum == date)
+                {
+                    text = _portalSosRepository.GetInfoText(dag.InformationsId).Text;
+                }
+            }
+
+            return text;
+        }
+
+
+        public bool IsHelgdag()
+        {
+            var date = DateTime.Now.Date;
+            var helgdagar = _portalSosRepository.GetHolidays();
+
+            foreach (var helgdag in helgdagar)
+            {
+                if (helgdag.Helgdatum == date)
+                    return true;
+            }
+
+            return false;
+        }
+
+        public bool IsSpecialdag()
+        {
+            var now = DateTime.Now;
+            var date = DateTime.Now.Date;
+
+            var timeNow = now.TimeOfDay;
+            var specialdagar = _portalSosRepository.GetSpecialDays();
+
+            foreach (var dag in specialdagar)
+            {
+                if (dag.Specialdagdatum == date)
+                    //Kolla klockslag
+                    if (timeNow < dag.Oppna || timeNow >= dag.Stang)
+                    {
+                        return true;
+                    }
+            }
+            return false;
+        }
+
+        public bool IsOpen()
+        {
+            if (IsHelgdag())
+            {
+                return false;
+            }
+            else if (IsSpecialdag())
+            {
+                return false;
+            }
+
+            var now = DateTime.Now;
+            var today = now.DayOfWeek.ToString();
+            var hourNow = now.Hour;
+            var minuteNow = now.Minute;
+
+            //Get Openinghours from database
+            var closedDays = _portalSosRepository.GetClosedDays().Split(new char[] { ',' });
+            var closedFromHour = Int32.Parse(_portalSosRepository.GetClosedFromHour());
+            var closedFromMin = Int32.Parse(_portalSosRepository.GetClosedFromMin());
+            var closedToHour = Int32.Parse(_portalSosRepository.GetClosedToHour());
+            var closedToMin = Int32.Parse(_portalSosRepository.GetClosedToMin());
+            var closedAnyway = Convert.ToBoolean(_portalSosRepository.GetClosedAnnyway());
+
+            //Test
+            //hourNow = 8;
+            //minuteNow = 2;
+
+            if (closedAnyway)
+            {
+                return false;
+            }
+
+            //Check day
+            foreach (var day in closedDays)
+            {
+                if (day == today)
+                {
+                    return false;
+                }
+            }
+
+            //After closing
+            if ((closedFromHour <= hourNow))
+            {
+                //Check minute
+                if (minuteNow < closedFromMin)
+                {
+                    return true;
+                }
+                return false;
+            }
+
+            //Before opening?
+            if ((closedToHour > hourNow))
+            {
+                return false;
+            }
+
+            if (closedToHour == hourNow)
+            {
+                //Check minute
+                if (minuteNow > closedToMin)
+                {
+                    return true;
+                }
+                return false;
+            }
+
+            return true;
         }
 
         private IEnumerable<ForvantadLeveransDTO> CreateMonthlyDeliveries(AdmFilkrav filkrav, int selectedYear)
@@ -1579,7 +2012,7 @@ namespace InrappSos.ApplicationService
             foreach (var forvLev in forvLevList)
             {
                 var dbForvLev =
-                    _portalAdminRepository.GetExpectedDeliveryBySubDirAndFileReqIdAndPeriod(forvLev.DelregisterId, forvLev.FilkravId, forvLev.Period);
+                    _portalSosRepository.GetExpectedDeliveryBySubDirAndFileReqIdAndPeriod(forvLev.DelregisterId, forvLev.FilkravId, forvLev.Period);
                 if (dbForvLev != null)
                 {
                     var forvLevDTO = new ForvantadLeveransDTO()
@@ -1617,21 +2050,21 @@ namespace InrappSos.ApplicationService
         {
             var filloggDetalj = new FilloggDetaljDTO();
             //Kolla om återkopplingsfil finns för aktuell leverans
-            var aterkoppling = _portalAdminRepository.GetAterkopplingForLeverans(senasteLeverans.Id);
+            var aterkoppling = _portalSosRepository.GetAterkopplingForLeverans(senasteLeverans.Id);
             //Kolla om enhetskod finns för aktuell leverans (stadsdelsleverans)
             var enhetskod = String.Empty;
 
             if (senasteLeverans.OrganisationsenhetsId != null)
             {
                 var orgenhetid = Convert.ToInt32(senasteLeverans.OrganisationsenhetsId);
-                enhetskod = _portalAdminRepository.GetEnhetskodForLeverans(orgenhetid);
+                enhetskod = _portalSosRepository.GetEnhetskodForLeverans(orgenhetid);
             }
 
             //Hämta period för aktuell leverans
-            var period = _portalAdminRepository.GetPeriodForAktuellLeverans(senasteLeverans.ForvantadleveransId);
+            var period = _portalSosRepository.GetPeriodForAktuellLeverans(senasteLeverans.ForvantadleveransId);
 
-            var filer = _portalAdminRepository.GetFilerForLeveransId(senasteLeverans.Id).ToList();
-            var registerKortnamn = _portalAdminRepository.GetSubDirectoryShortName(senasteLeverans.DelregisterId);
+            var filer = _portalSosRepository.GetFilerForLeveransId(senasteLeverans.Id).ToList();
+            var registerKortnamn = _portalSosRepository.GetSubDirectoryShortName(senasteLeverans.DelregisterId);
 
             if (!filer.Any())
             {
@@ -1675,6 +2108,18 @@ namespace InrappSos.ApplicationService
                 }
             }
             return historikLista;
+        }
+
+        private string GetLastPartOfHostAdress(string hostAdress)
+        {
+            List<int> indexes = hostAdress.AllIndexesOf(".");
+
+            if (indexes.Count == 1)
+                return hostAdress;
+
+            var indexToCutFrom = indexes[indexes.Count - 2];
+            return hostAdress.Substring(indexToCutFrom + 1);
+
         }
 
     }

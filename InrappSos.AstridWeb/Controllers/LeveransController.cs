@@ -23,12 +23,12 @@ namespace InrappSos.AstridWeb.Controllers
     public class LeveransController : Controller
     {
 
-        private readonly IPortalAdminService _portalAdminService;
+        private readonly IPortalSosService _portalSosService;
 
         public LeveransController()
         {
-            _portalAdminService =
-                new PortalAdminService(new PortalAdminRepository(new InrappSosDbContext(), new InrappSosIdentityDbContext()));
+            _portalSosService =
+                new PortalSosService(new PortalSosRepository(new InrappSosDbContext(), new InrappSosIdentityDbContext()));
         }
 
         [Authorize]
@@ -52,10 +52,10 @@ namespace InrappSos.AstridWeb.Controllers
                 {
                     filterPagaende = filterPgnde;
                 }
-                var forvLevList = _portalAdminService.HamtaForvantadeLeveranser();
+                var forvLevList = _portalSosService.HamtaForvantadeLeveranser();
                 model.ForvantadeLeveranser = ConvertForvLevToViewModel(forvLevList.ToList());
                 // Ladda drop down lists. 
-                var registerList = _portalAdminService.HamtaAllaRegisterForPortalen();
+                var registerList = _portalSosService.HamtaAllaRegisterForPortalen();
                 this.ViewBag.RegisterList = CreateRegisterDropDownList(registerList);
                 model.SelectedRegisterId = regId;
                 model.FilterPagaende = filterPagaende;
@@ -106,11 +106,11 @@ namespace InrappSos.AstridWeb.Controllers
                 }
                 if (dirId != 0)
                 {
-                    var forvLevList = _portalAdminService.HamtaForvantadeLeveranserForRegister(dirId);
+                    var forvLevList = _portalSosService.HamtaForvantadeLeveranserForRegister(dirId);
                     //Lägg över i modellen
                     model.ForvantadeLeveranser = ConvertForvLevToViewModel(forvLevList.ToList());
                     // Ladda drop down lists. 
-                    var registerList = _portalAdminService.HamtaAllaRegisterForPortalen();
+                    var registerList = _portalSosService.HamtaAllaRegisterForPortalen();
                     this.ViewBag.RegisterList = CreateRegisterDropDownList(registerList);
                     model.SelectedRegisterId = dirId;
                     model.FilterPagaende = filterPagaende;
@@ -148,12 +148,12 @@ namespace InrappSos.AstridWeb.Controllers
                 }
                 if (dirId != 0)
                 {
-                    var register = _portalAdminService.HamtaRegisterMedId(dirId);
-                    var forvFilList = _portalAdminService.HamtaForvantadeFilerForRegister(register.Id);
+                    var register = _portalSosService.HamtaRegisterMedId(dirId);
+                    var forvFilList = _portalSosService.HamtaForvantadeFilerForRegister(register.Id);
                     //Lägg över i modellen
                     model.ForvantadeFiler = ConvertForvFilToViewModel(forvFilList.ToList());
                     // Ladda drop down lists. 
-                    var registerList = _portalAdminService.HamtaAllaRegisterForPortalen();
+                    var registerList = _portalSosService.HamtaAllaRegisterForPortalen();
                     this.ViewBag.RegisterList = CreateRegisterDropDownList(registerList);
                     model.SelectedRegisterId = dirId;
                 }
@@ -189,15 +189,15 @@ namespace InrappSos.AstridWeb.Controllers
                 }
                 if (dirId != 0)
                 {
-                    var register = _portalAdminService.HamtaRegisterMedId(dirId);
-                    var filkravList = _portalAdminService.HamtaFilkravForRegister(register.Id);
+                    var register = _portalSosService.HamtaRegisterMedId(dirId);
+                    var filkravList = _portalSosService.HamtaFilkravForRegister(register.Id);
                     //Lägg över i modellen
                     model.Filkrav = ConvertFilkravToViewModel(filkravList.ToList());
                     // Ladda drop down lists. 
-                    var registerList = _portalAdminService.HamtaAllaRegisterForPortalen();
+                    var registerList = _portalSosService.HamtaAllaRegisterForPortalen();
                     this.ViewBag.RegisterList = CreateRegisterDropDownList(registerList);
                     model.SelectedRegisterId = dirId;
-                    var insamlingsfrekvensList = _portalAdminService.HamtaAllaInsamlingsfrekvenser();
+                    var insamlingsfrekvensList = _portalSosService.HamtaAllaInsamlingsfrekvenser();
                     ViewBag.InsamlingsfrekvensList = CreateInsamlingsfrekvensDropDownList(insamlingsfrekvensList);
                     model.SelectedInsamlingsfrekvensId = 0;
                 }
@@ -230,7 +230,7 @@ namespace InrappSos.AstridWeb.Controllers
             try
             {
                 var forvFilViewList = new List<LeveransViewModels.AdmForvantadfilViewModel>();
-                var forvFiler = _portalAdminService.HamtaAllaForvantadeFiler();
+                var forvFiler = _portalSosService.HamtaAllaForvantadeFiler();
 
                 foreach (var forvFil in forvFiler)
                 {
@@ -238,9 +238,9 @@ namespace InrappSos.AstridWeb.Controllers
                         {
                           Id  = forvFil.Id,
                           FilkravId = forvFil.FilkravId,
-                          FilkravNamn = _portalAdminService.HamtaNamnForFilkrav(forvFil.FilkravId),
+                          FilkravNamn = _portalSosService.HamtaNamnForFilkrav(forvFil.FilkravId),
                           ForeskriftsId = forvFil.ForeskriftsId,
-                          DelregisterKortnamn = _portalAdminService.HamtaKortnamnForDelregisterMedFilkravsId(forvFil.FilkravId),
+                          DelregisterKortnamn = _portalSosService.HamtaKortnamnForDelregisterMedFilkravsId(forvFil.FilkravId),
                           Filmask = forvFil.Filmask,
                           Regexp = forvFil.Regexp,
                           Obligatorisk = forvFil.Obligatorisk,
@@ -253,7 +253,7 @@ namespace InrappSos.AstridWeb.Controllers
                 model.ForvantadeFiler = forvFilViewList;
 
                 // Ladda drop down lists. 
-                var registerList = _portalAdminService.HamtaAllaRegisterForPortalen();
+                var registerList = _portalSosService.HamtaAllaRegisterForPortalen();
                 this.ViewBag.RegisterList = CreateRegisterDropDownList(registerList);
                 model.SelectedRegisterId = 0;
             }
@@ -280,16 +280,16 @@ namespace InrappSos.AstridWeb.Controllers
             try
             {
                 var filkravViewList = new List<LeveransViewModels.AdmFilkravViewModel>();
-                var filkravList = _portalAdminService.HamtaAllaFilkrav();
+                var filkravList = _portalSosService.HamtaAllaFilkrav();
                
                 //Lägg över i modellen
                 model.Filkrav = ConvertFilkravToViewModel(filkravList.ToList());
 
                 // Ladda drop down lists. 
-                var registerList = _portalAdminService.HamtaAllaRegisterForPortalen();
+                var registerList = _portalSosService.HamtaAllaRegisterForPortalen();
                 this.ViewBag.RegisterList = CreateRegisterDropDownList(registerList);
                 model.SelectedRegisterId = regId;
-                var insamlingsfrekvensList = _portalAdminService.HamtaAllaInsamlingsfrekvenser();
+                var insamlingsfrekvensList = _portalSosService.HamtaAllaInsamlingsfrekvenser();
                 ViewBag.InsamlingsfrekvensList = CreateInsamlingsfrekvensDropDownList(insamlingsfrekvensList);
             }
             catch (Exception e)
@@ -314,7 +314,7 @@ namespace InrappSos.AstridWeb.Controllers
             var model = new LeveransViewModels.LeveransViewModel();
             try
             {
-                model.Insamlingsfrekvenser = _portalAdminService.HamtaAllaInsamlingsfrekvenser();
+                model.Insamlingsfrekvenser = _portalSosService.HamtaAllaInsamlingsfrekvenser();
 
             }
             catch (Exception e)
@@ -351,9 +351,9 @@ namespace InrappSos.AstridWeb.Controllers
 
             try
             {
-                var org = _portalAdminService.HamtaOrganisation(selectedOrganisationId);
+                var org = _portalSosService.HamtaOrganisation(selectedOrganisationId);
                 IEnumerable<FilloggDetaljDTO>
-                    historyFileList = _portalAdminService.HamtaHistorikForOrganisation(org.Id);
+                    historyFileList = _portalSosService.HamtaHistorikForOrganisation(org.Id);
                 
                 model.Leveranser = historyFileList;
                 model.Kommunkod = org.Kommunkod;
@@ -412,11 +412,11 @@ namespace InrappSos.AstridWeb.Controllers
 
                 if (model.SelectedDelregisterId != 0)
                 {
-                    rappList = _portalAdminService.HamtaRapporteringsresultatForDelregOchPeriod(model.SelectedDelregisterId, model.SelectedPeriod).ToList();
+                    rappList = _portalSosService.HamtaRapporteringsresultatForDelregOchPeriod(model.SelectedDelregisterId, model.SelectedPeriod).ToList();
                 }
                 else
                 {
-                    rappList = _portalAdminService.HamtaRapporteringsresultatForRegOchPeriod(model.SelectedRegisterId, model.SelectedPeriod).ToList();
+                    rappList = _portalSosService.HamtaRapporteringsresultatForRegOchPeriod(model.SelectedRegisterId, model.SelectedPeriod).ToList();
                 }
                 
                 model.RapportResList = rappList.ToList();
@@ -457,7 +457,7 @@ namespace InrappSos.AstridWeb.Controllers
                     return View("ReminderInfo",model);
                 }
                 var userId = User.Identity.GetUserId();
-                _portalAdminService.SkickaPaminnelse(model.RapportResList, userId);
+                _portalSosService.SkickaPaminnelse(model.RapportResList, userId);
             }
             catch (Exception e)
             {
@@ -488,7 +488,7 @@ namespace InrappSos.AstridWeb.Controllers
         // POST: Leveransstatus
         public ActionResult GetDeliveryStatusForOrg( int selectedOrganisationId,int chosenYear = 0)
         {
-            var org = _portalAdminService.HamtaOrganisation(selectedOrganisationId);
+            var org = _portalSosService.HamtaOrganisation(selectedOrganisationId);
             var model = new LeveransViewModels.HistoryViewModel();
             model.LeveransListaRegister = new List<RegisterLeveransDTO>();
             var selectableYearsForUser = new List<int>();
@@ -504,7 +504,7 @@ namespace InrappSos.AstridWeb.Controllers
                 model.Kommunkod = org.Kommunkod;
                 model.SelectedOrganisationId = selectedOrganisationId;
                 model.OrganisationsNamn = org.Organisationsnamn;
-                IEnumerable<AdmRegister> admRegList = _portalAdminService.HamtaRegisterForOrg(org.Id);
+                IEnumerable<AdmRegister> admRegList = _portalSosService.HamtaRegisterForOrg(org.Id);
 
                 //hämta historik före resp register och period inom valt år
                 foreach (var register in admRegList)
@@ -519,7 +519,7 @@ namespace InrappSos.AstridWeb.Controllers
                     //För att hitta giltiga perioder för valt år måste vi ner på registrets delregister
                     foreach (var delregister in register.AdmDelregister)
                     {
-                        var delregPerioder = _portalAdminService.HamtaDelregistersPerioderForAr(delregister.Id, chosenYear);
+                        var delregPerioder = _portalSosService.HamtaDelregistersPerioderForAr(delregister.Id, chosenYear);
                         //för varje period för delregistret, spara i lista med perioder för registret
                         foreach (var period in delregPerioder)
                         {
@@ -527,7 +527,7 @@ namespace InrappSos.AstridWeb.Controllers
                                 periodsForRegister.Add(period);
                         }
                         //Hämta valbara år för användarens valda register
-                        var yearsForSubDir = _portalAdminService.HamtaValbaraAr(delregister.Id);
+                        var yearsForSubDir = _portalSosService.HamtaValbaraAr(delregister.Id);
                         foreach (var year in yearsForSubDir)
                         {
                             if (!selectableYearsForUser.Contains(year))
@@ -549,18 +549,18 @@ namespace InrappSos.AstridWeb.Controllers
                         //TODO - fulfix. Refactor this. Special för EKB-År
                         if (register.Kortnamn == "EKB" && period.Length == 4)
                         {
-                            leveransStatus.Rapporteringsstart = _portalAdminService.HamtaRapporteringsstartForRegisterOchPeriodSpecial(register.Id, period);
-                            leveransStatus.Rapporteringssenast = _portalAdminService.HamtaSenasteRapporteringForRegisterOchPeriodSpecial(register.Id, period);
+                            leveransStatus.Rapporteringsstart = _portalSosService.HamtaRapporteringsstartForRegisterOchPeriodSpecial(register.Id, period);
+                            leveransStatus.Rapporteringssenast = _portalSosService.HamtaSenasteRapporteringForRegisterOchPeriodSpecial(register.Id, period);
                         }
                         else
                         {
-                            leveransStatus.Rapporteringsstart = _portalAdminService.HamtaRapporteringsstartForRegisterOchPeriod(register.Id, period);
-                            leveransStatus.Rapporteringssenast = _portalAdminService.HamtaSenasteRapporteringForRegisterOchPeriod(register.Id, period);
+                            leveransStatus.Rapporteringsstart = _portalSosService.HamtaRapporteringsstartForRegisterOchPeriod(register.Id, period);
+                            leveransStatus.Rapporteringssenast = _portalSosService.HamtaSenasteRapporteringForRegisterOchPeriod(register.Id, period);
                         }
-                        leveransStatus.HistorikLista = _portalAdminService.HamtaHistorikForOrganisationRegisterPeriod(org.Id, register.Id, period).ToList();
+                        leveransStatus.HistorikLista = _portalSosService.HamtaHistorikForOrganisationRegisterPeriod(org.Id, register.Id, period).ToList();
                         if (leveransStatus.HistorikLista.Any())
                         {
-                            leveransStatus.Status = _portalAdminService.HamtaSammanlagdStatusForPeriod(leveransStatus.HistorikLista);
+                            leveransStatus.Status = _portalSosService.HamtaSammanlagdStatusForPeriod(leveransStatus.HistorikLista);
                         }
                         else
                         {
@@ -614,7 +614,7 @@ namespace InrappSos.AstridWeb.Controllers
                 {
                     var userName = User.Identity.GetUserName();
                     var forvLev = ConvertViewModelToForvLev(forvLevModel);
-                    _portalAdminService.UppdateraForvantadLeverans(forvLev, userName);
+                    _portalSosService.UppdateraForvantadLeverans(forvLev, userName);
                 }
                 catch (Exception e)
                 {
@@ -656,7 +656,7 @@ namespace InrappSos.AstridWeb.Controllers
             }
             else if (forvLevModel.DelregisterKortnamn != null)
             {
-                forvLev.DelregisterId = _portalAdminService.HamtaDelRegisterForKortnamn(forvLevModel.DelregisterKortnamn).Id;
+                forvLev.DelregisterId = _portalSosService.HamtaDelRegisterForKortnamn(forvLevModel.DelregisterKortnamn).Id;
             }
 
             return forvLev;
@@ -687,7 +687,7 @@ namespace InrappSos.AstridWeb.Controllers
                 {
                     var userName = User.Identity.GetUserName();
                     var forvFil = ConvertViewModelToForvFil(forvFilModel);
-                    _portalAdminService.UppdateraForvantadFil(forvFil, userName);
+                    _portalSosService.UppdateraForvantadFil(forvFil, userName);
                 }
                 catch (Exception e)
                 {
@@ -718,7 +718,7 @@ namespace InrappSos.AstridWeb.Controllers
                     var userName = User.Identity.GetUserName();
                     var filkravDb = ConvertAdmFilkravVMToDb(filkrav);
 
-                     _portalAdminService.UppdateraFilkrav(filkravDb, userName);
+                     _portalSosService.UppdateraFilkrav(filkravDb, userName);
                 }
                 catch (Exception e)
                 {
@@ -747,7 +747,7 @@ namespace InrappSos.AstridWeb.Controllers
                 try
                 {
                     var userName = User.Identity.GetUserName();
-                    _portalAdminService.UppdateraInsamlingsfrekvens(insamlingsfrekvens, userName);
+                    _portalSosService.UppdateraInsamlingsfrekvens(insamlingsfrekvens, userName);
                 }
                 catch (Exception e)
                 {
@@ -772,8 +772,8 @@ namespace InrappSos.AstridWeb.Controllers
         {
             // Ladda drop down lists
             var model = new LeveransViewModels.LeveransViewModel();
-            model.RegisterList = _portalAdminService.HamtaDelregisterOchFilkrav();
-            var delregisterList = _portalAdminService.HamtaAllaDelregisterForPortalen();
+            model.RegisterList = _portalSosService.HamtaDelregisterOchFilkrav();
+            var delregisterList = _portalSosService.HamtaAllaDelregisterForPortalen();
             ViewBag.DelregisterList = CreateDelRegisterDropDownList(delregisterList);
             ViewBag.FilkravList = CreateDummyFilkravDropDownList();
             ViewBag.YearList = CreateYearDropDownList();
@@ -794,11 +794,11 @@ namespace InrappSos.AstridWeb.Controllers
             {
                 try
                 {
-                    var forvLevList = _portalAdminService.SkapaForvantadeLeveranserUtkast(model.SelectedYear, model.SelectedDelregisterId, model.SelectedFilkravId);
+                    var forvLevList = _portalSosService.SkapaForvantadeLeveranserUtkast(model.SelectedYear, model.SelectedDelregisterId, model.SelectedFilkravId);
                     //Lägg över i modellen
                     model.BlivandeForvantadeLeveranser = ConvertForvLevDTOToViewModel(forvLevList.ToList());
-                    model.RegisterList = _portalAdminService.HamtaDelregisterOchFilkrav();
-                    var delregisterList = _portalAdminService.HamtaAllaDelregisterForPortalen();
+                    model.RegisterList = _portalSosService.HamtaDelregisterOchFilkrav();
+                    var delregisterList = _portalSosService.HamtaAllaDelregisterForPortalen();
                     ViewBag.DelregisterList = CreateDelRegisterDropDownList(delregisterList);
                     ViewBag.FilkravList = CreateDummyFilkravDropDownList();
                     ViewBag.YearList = CreateYearDropDownList();
@@ -840,7 +840,7 @@ namespace InrappSos.AstridWeb.Controllers
                             forvLevDbList.Add(forvLevDB);
                         }
                     }
-                    _portalAdminService.SkapaForvantadLeveranser(forvLevDbList, userName);
+                    _portalSosService.SkapaForvantadLeveranser(forvLevDbList, userName);
                 }
                 catch (Exception e)
                 {
@@ -865,8 +865,8 @@ namespace InrappSos.AstridWeb.Controllers
         {
             // Ladda drop down lists
             var model = new LeveransViewModels.AdmForvantadleveransViewModel();
-            model.RegisterList = _portalAdminService.HamtaDelregisterOchFilkrav();
-            var delregisterList = _portalAdminService.HamtaAllaDelregisterForPortalen();
+            model.RegisterList = _portalSosService.HamtaDelregisterOchFilkrav();
+            var delregisterList = _portalSosService.HamtaAllaDelregisterForPortalen();
             ViewBag.DelregisterList = CreateDelRegisterDropDownList(delregisterList);
             ViewBag.FilkravList = CreateDummyFilkravDropDownList();
             model.SelectedDelregisterId = 0;
@@ -897,7 +897,7 @@ namespace InrappSos.AstridWeb.Controllers
                     admForvlev.Rapporteringsstart = forvantadLeverans.Rapporteringsstart;
                     admForvlev.Rapporteringsslut = forvantadLeverans.Rapporteringsslut;
                     admForvlev.Rapporteringsenast = forvantadLeverans.Rapporteringsenast;
-                    _portalAdminService.SkapaForvantadLeverans(admForvlev, userName);
+                    _portalSosService.SkapaForvantadLeverans(admForvlev, userName);
                 }
                 catch (Exception e)
                 {
@@ -922,8 +922,8 @@ namespace InrappSos.AstridWeb.Controllers
         {
             // Ladda drop down lists
             var model = new LeveransViewModels.AdmForvantadfilViewModel();
-            model.RegisterList = _portalAdminService.HamtaDelregisterOchFilkrav();
-            var delregisterList = _portalAdminService.HamtaAllaDelregisterForPortalen();
+            model.RegisterList = _portalSosService.HamtaDelregisterOchFilkrav();
+            var delregisterList = _portalSosService.HamtaAllaDelregisterForPortalen();
             this.ViewBag.DelregisterList = CreateDelRegisterDropDownList(delregisterList);
             ViewBag.FilkravList = CreateDummyFilkravDropDownList();
             model.SelectedDelregisterId = 0;
@@ -948,13 +948,13 @@ namespace InrappSos.AstridWeb.Controllers
                     admForvFil.FilkravId = forvantadFil.SelectedFilkravId;
                     if (forvantadFil.SelectedFilkravId > 0)
                     {
-                        admForvFil.ForeskriftsId = _portalAdminService.HamtaForeskriftByFilkrav(forvantadFil.SelectedFilkravId).Id;
+                        admForvFil.ForeskriftsId = _portalSosService.HamtaForeskriftByFilkrav(forvantadFil.SelectedFilkravId).Id;
                     }
                     admForvFil.Filmask= forvantadFil.Filmask;
                     admForvFil.Regexp = forvantadFil.Regexp;
                     admForvFil.Obligatorisk = forvantadFil.Obligatorisk;
                     admForvFil.Tom = forvantadFil.Tom;
-                    _portalAdminService.SkapaForvantadFil(admForvFil, userName);
+                    _portalSosService.SkapaForvantadFil(admForvFil, userName);
                 }
                 catch (Exception e)
                 {
@@ -979,11 +979,11 @@ namespace InrappSos.AstridWeb.Controllers
         {
             // Ladda drop down lists
             var model = new LeveransViewModels.AdmFilkravViewModel();
-            var delregisterList = _portalAdminService.HamtaAllaDelregisterForPortalen();
+            var delregisterList = _portalSosService.HamtaAllaDelregisterForPortalen();
             this.ViewBag.DelregisterList = CreateDelRegisterDropDownList(delregisterList);
             model.SelectedDelregisterId = 0;
             model.SelectedRegisterId = selectedRegId;
-            var insamlingsfrekvensList = _portalAdminService.HamtaAllaInsamlingsfrekvenser();
+            var insamlingsfrekvensList = _portalSosService.HamtaAllaInsamlingsfrekvenser();
             ViewBag.InsamlingsfrekvensList = CreateInsamlingsfrekvensDropDownList(insamlingsfrekvensList);
             model.InsamlingsfrekvensId = 0;
             return View(model);
@@ -1002,7 +1002,7 @@ namespace InrappSos.AstridWeb.Controllers
                     var userName = User.Identity.GetUserName();
 
                     var admFilkrav = ConvertAdmFilkravVMToDb(filkrav);
-                    _portalAdminService.SkapaFilkrav(admFilkrav, userName);
+                    _portalSosService.SkapaFilkrav(admFilkrav, userName);
                 }
                 catch (Exception e)
                 {
@@ -1039,7 +1039,7 @@ namespace InrappSos.AstridWeb.Controllers
                 try
                 {
                     var userName = User.Identity.GetUserName();
-                    _portalAdminService.SkapaInsamlingsfrekvens(model.Insamlingsfrekvens, userName);
+                    _portalSosService.SkapaInsamlingsfrekvens(model.Insamlingsfrekvens, userName);
                 }
                 catch (Exception e)
                 {
@@ -1067,7 +1067,7 @@ namespace InrappSos.AstridWeb.Controllers
                 {
                     Id = forvFil.Id,
                     FilkravId = forvFil.FilkravId,
-                    DelregisterKortnamn = _portalAdminService.HamtaKortnamnForDelregisterMedFilkravsId(forvFil.FilkravId),
+                    DelregisterKortnamn = _portalSosService.HamtaKortnamnForDelregisterMedFilkravsId(forvFil.FilkravId),
                     Filmask = forvFil.Filmask,
                     Regexp = forvFil.Regexp,
                     Obligatorisk = forvFil.Obligatorisk,
@@ -1088,9 +1088,9 @@ namespace InrappSos.AstridWeb.Controllers
                 {
                     Id = forvLev.Id,
                     FilkravId = forvLev.FilkravId,
-                    FilkravNamn = _portalAdminService.HamtaNamnForFilkrav(forvLev.FilkravId),
+                    FilkravNamn = _portalSosService.HamtaNamnForFilkrav(forvLev.FilkravId),
                     DelregisterId = forvLev.DelregisterId,
-                    DelregisterKortnamn = _portalAdminService.HamtaKortnamnForDelregisterMedFilkravsId(forvLev.FilkravId),
+                    DelregisterKortnamn = _portalSosService.HamtaKortnamnForDelregisterMedFilkravsId(forvLev.FilkravId),
                     Period = forvLev.Period,
                     Uppgiftsstart = forvLev.Uppgiftsstart,
                     Uppgiftsslut = forvLev.Uppgiftsslut,
@@ -1124,9 +1124,9 @@ namespace InrappSos.AstridWeb.Controllers
                 {
                     Id = forvLev.Id,
                     FilkravId = forvLev.FilkravId,
-                    FilkravNamn = _portalAdminService.HamtaNamnForFilkrav(forvLev.FilkravId),
+                    FilkravNamn = _portalSosService.HamtaNamnForFilkrav(forvLev.FilkravId),
                     DelregisterId = forvLev.DelregisterId,
-                    DelregisterKortnamn = _portalAdminService.HamtaKortnamnForDelregisterMedFilkravsId(forvLev.FilkravId),
+                    DelregisterKortnamn = _portalSosService.HamtaKortnamnForDelregisterMedFilkravsId(forvLev.FilkravId),
                     Period = forvLev.Period,
                     Uppgiftsstart = forvLev.Uppgiftsstart,
                     Uppgiftsslut = forvLev.Uppgiftsslut,
@@ -1153,7 +1153,7 @@ namespace InrappSos.AstridWeb.Controllers
                 {
                     Id = filkrav.Id,
                     DelregisterId = filkrav.DelregisterId,
-                    DelregisterKortnamn = _portalAdminService.HamtaKortnamnForDelregister(filkrav.DelregisterId),
+                    DelregisterKortnamn = _portalSosService.HamtaKortnamnForDelregister(filkrav.DelregisterId),
                     InsamlingsfrekvensId = filkrav.InsamlingsfrekvensId,
                     ForeskriftsId = filkrav.ForeskriftsId,
                     Namn = filkrav.Namn,
@@ -1173,7 +1173,7 @@ namespace InrappSos.AstridWeb.Controllers
                 {
                     var id = filkravView.InsamlingsfrekvensId.Value;
                     filkravView.Insamlingsfrekvens =
-                        _portalAdminService.HamtaInsamlingsfrekvens(id).Insamlingsfrekvens;
+                        _portalSosService.HamtaInsamlingsfrekvens(id).Insamlingsfrekvens;
                     filkravView.InsamlingsfrekvensId = filkravView.InsamlingsfrekvensId.Value;
                 }
                 else
@@ -1354,7 +1354,7 @@ namespace InrappSos.AstridWeb.Controllers
 
         private LeveransViewModels.ReminderViewModel GetDropDownLists(LeveransViewModels.ReminderViewModel model)
         {
-            var registerList = _portalAdminService.HamtaAllaRegisterForPortalen();
+            var registerList = _portalSosService.HamtaAllaRegisterForPortalen();
             var regListDTO = new List<RegisterBasicDTO>();
            
             foreach (var registerDB in registerList)
@@ -1367,7 +1367,7 @@ namespace InrappSos.AstridWeb.Controllers
                 };
                 var delregListDTO = new List<DelregisterBasicDTO>();
 
-                var delregisterList = _portalAdminService.HamtaDelRegisterForRegister(registerDB.Id);
+                var delregisterList = _portalSosService.HamtaDelRegisterForRegister(registerDB.Id);
                 foreach (var delregisterDB in delregisterList)
                 {
                     var delregDTO = new DelregisterBasicDTO
@@ -1377,7 +1377,7 @@ namespace InrappSos.AstridWeb.Controllers
                         Kortnamn = delregisterDB.Kortnamn
                     };
 
-                    var forvLevList = _portalAdminService.HamtaForvantadeLeveranserForDelregister(delregisterDB.Id);
+                    var forvLevList = _portalSosService.HamtaForvantadeLeveranserForDelregister(delregisterDB.Id);
                     var forvLevListDTO = new List<ForvantadLeveransBasicDTO>();
                     foreach (var forvLevDB in forvLevList)
                     {
@@ -1407,7 +1407,7 @@ namespace InrappSos.AstridWeb.Controllers
 
         private IEnumerable<OrganisationDTO> GetOrganisationDTOList()
         {
-            var orgList = _portalAdminService.HamtaAllaOrganisationer();
+            var orgList = _portalSosService.HamtaAllaOrganisationer();
             var orgListDTO = new List<OrganisationDTO>();
 
             foreach (var org in orgList)

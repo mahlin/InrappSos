@@ -10,7 +10,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace InrappSos.DomainModel
 {
-    public class ApplicationUser 
+    public class ApplicationUser :IdentityUser
     {
         public string Id { get; set; }
         public int OrganisationId { get; set; }
@@ -28,6 +28,13 @@ namespace InrappSos.DomainModel
         public string AndradAv { get; set; }
         public virtual ICollection<Leverans> Leveranser { get; set; }
         public virtual ICollection<Inloggning> Inloggningar { get; set; }
+        public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
+        {
+            // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
+            var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);
+            // Add custom user claims here
+            return userIdentity;
+        }
 
     }
 }

@@ -1,0 +1,146 @@
+﻿@model InrappSos.FilipWeb.Models.ViewModels.FilesViewModel 
+    
+
+<script>
+    var register = @Html.Raw(Json.Encode(Model.RegisterList));
+</script>
+
+<form id="fileupload" method="POST" enctype="multipart/form-data" data-url="@Url.Action("Upload", "FileUpload")">
+    @Html.HiddenFor(m => m.SelectedRegisterId)
+    @Html.HiddenFor(m => m.SelectedUnitId)
+    @Html.HiddenFor(m => m.SelectedPeriod)
+    @Html.HiddenFor(m => m.GiltigKommunKod)
+    @if (Model.RegisterList != null)
+    {
+        for (int i = 0; i < Model.RegisterList.Count; i++)
+        {
+            @Html.HiddenFor(x => x.RegisterList[i].Id)
+            @Html.HiddenFor(x => x.RegisterList[i].Kortnamn)
+            @Html.HiddenFor(x => x.RegisterList[i].Namn)
+            @Html.HiddenFor(x => x.RegisterList[i].Slussmapp)
+            @Html.HiddenFor(x => x.RegisterList[i].RapporterarPerEnhet)
+
+        }
+    }
+    <div class="row fileupload-buttonbar">
+        <div class="col-lg-7">
+            <!-- The fileinput-button span is used to style the file input field as button -->
+            <span class="btn btn-success fileinput-button" id="fileinputButton" onclick="checkIfDisabled()">
+                <i class="glyphicon glyphicon-plus"></i>
+                <span>Välj fil...</span>
+                <input type="file" name="files[]" accept="txt/xls" multiple id="filesExplorerOpener">
+            </span>
+            <button type="submit" class="btn btn-primary start" id="btnSubmit">
+                <i class="glyphicon glyphicon-upload"></i>
+                <span>Ladda upp</span>
+            </button>
+            <button type="reset" class="btn btn-warning cancel" style="visibility: hidden">
+                <i class="glyphicon glyphicon-ban-circle"></i>
+                <span>Cancel upload</span>
+            </button>
+        </div>
+        <!-- The global progress state -->
+        <div class="col-lg-5 fileupload-progress fade">
+            <!-- The global progress bar -->
+            <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-bar progress-bar-success" style="width: 0%;"></div>
+            </div>
+            <!-- The extended global progress state -->
+            <div class="progress-extended">&nbsp;</div>
+        </div>
+    </div>
+
+    <!-- The table listing the files available for upload/download -->
+    <table role="presentation" class="table table-striped" id="filTabell">
+        <thead>
+            <tr class="template-upload"><th id="thText" colspan="4">Filer för uppladdning</th></tr>
+        </thead>
+        <tbody class="files"></tbody>
+    </table>
+</form>
+<hr />
+<br>
+<!-- The blueimp Gallery widget -->
+<div id="blueimp-gallery" class="blueimp-gallery blueimp-gallery-controls" data-filter=":even">
+    <div class="slides"></div>
+    <h3 class="title"></h3>
+    <a class="prev">‹</a>
+    <a class="next">›</a>
+    <a class="close">×</a>
+    <a class="play-pause"></a>
+    <ol class="indicator"></ol>
+</div>
+<!-- The template to display files available for upload -->
+
+<script id="template-upload" type="text/x-tmpl">
+
+    {% for (var i=0, file; file=o.files[i]; i++) { %}
+    <tr class="template-upload fade">
+        <td style="height:50px;">
+            <p class="name">{%=file.name%}</p>
+            <strong class="error text-danger"></strong>
+        </td>
+        <td style="height:50px;">
+            <p class="size" style="visibility:hidden">Laddar upp...</p>
+            @*<div style="visibility:hidden" class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="progress-bar progress-bar-success" style="width:0%;"></div></div>*@
+        </td>
+        <td style="height:50px;">
+            {% if (!i && !o.options.autoUpload) { %}
+            @*<button class="btn btn-primary start" disabled style="visibility:hidden">
+                <i class="glyphicon glyphicon-upload"></i>
+                <span>Ladda upp</span>
+            </button>*@
+            {% } %}
+            {% if (!i) { %}
+            <button class="btn btn-warning cancel">
+                <i class="glyphicon glyphicon-ban-circle"></i>
+                <span>Ångra vald fil</span>
+            </button>
+            {% } %}
+        </td>
+    </tr>
+    {% } %}
+
+
+</script>
+
+<!-- The template to display files available for download -->
+<script id="template-download" type="text/x-tmpl">
+    {% for (var i=0, file; file=o.files[i]; i++) { %}
+    <tr class="template-download fade">
+        @*<td style="padding-left: 2px !important;">
+            <span class="preview">
+                {% if (file.thumbnailUrl) { %}
+                <a href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" data-gallery></a>
+                {% } %}
+            </span>
+        </td>*@
+        <td>
+            <p class="name">
+                <span>{%=file.name%}</span>
+            </p>
+            {% if (file.error) { %}
+            <div><span class="label label-danger">Fel</span> {%=file.error%}</div>
+            {% } %}
+        </td>
+        <td>
+            <span class="size">{%=o.formatFileSize(file.size)%}</span>
+        </td>
+        <td>
+            @*{% if (file.deleteUrl) { %}
+            <button class="btn btn-danger delete" data-type="{%=file.deleteType%}" data-url="{%=file.deleteUrl%}" {% if (file.deletewithcredentials) { %} data-xhr-fields='{"withCredentials":true}' {% } %}>
+                <i class="glyphicon glyphicon-trash"></i>
+                <span>Delete</span>
+            </button>
+            <input type="checkbox" name="delete" value="1" class="toggle">
+            {% } else { %}
+            <button class="btn btn-warning cancel">
+                <i class="glyphicon glyphicon-ban-circle"></i>
+                <span>Cancel</span>
+            </button>
+            {% } %}*@
+        </td>
+    </tr>
+    {% } %}
+</script>
+

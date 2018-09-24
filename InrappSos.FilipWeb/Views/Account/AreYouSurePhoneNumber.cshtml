@@ -1,0 +1,32 @@
+﻿@model InrappSos.FilipWeb.Models.RegisterPhoneNumberViewModel
+@{
+    ViewBag.Title = "Mobilnummer";
+}
+
+<div class="row padding-top-55">
+    <h2>@ViewBag.Title</h2>
+</div>
+
+<p>Du har angett detta mobilnummer   @Html.Raw(Model.Number). Stämmer det?</p>
+
+@using (Html.BeginForm("AddPhoneNumber", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    @Html.HiddenFor(m => m.Id)
+    @Html.HiddenFor(m => m.Number)
+    @Html.AntiForgeryToken()
+    
+    <div class="form-group" style="padding-left: 15px">
+        <div class="">
+            <input type="submit" class="btn btn-default" value="Ja, fortsätt" />
+        </div>
+    </div>
+}
+
+    <a href="@Url.Action("AddPhoneNumber", "Account", new { id = Model.Id})" class="btn btn-default">
+        Nej, byt mobilnummer
+        <span class="glyphicon" aria-hidden="true"></span>
+    </a>
+
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }

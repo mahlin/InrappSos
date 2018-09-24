@@ -1,0 +1,99 @@
+﻿@model InrappSos.FilipWeb.Models.ViewModels.IndexViewModel
+@{
+    ViewBag.Title = "Kontot avaktiverat";
+}
+
+
+<div id="pageContainer">
+
+    <p class="text-success">@ViewBag.Text</p>
+    <div class="row" style="margin-bottom: -10px;">
+        <span style="font-size: 18px; padding-top: 20px; margin-bottom: -10px;">Ändra dina kontouppgifter</span>
+        <input type="button" class="btn btn-default" style="float: right; margin-top: -10px;" value="Inaktivera kontot" id="btnCloseAccount" onclick="disableAccount();" />
+    </div>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>Pinkod:</dt>
+        <dd style="padding-left: 15px">
+            [
+            @if (Model.HasPassword)
+            {
+                @Html.ActionLink("Ändra pinkod", "ChangePassword")
+            }
+            else
+            {
+                @Html.ActionLink("Ange pinkod", "SetPassword")
+            }
+            ]
+        </dd>
+        <dt>Mobilnummer:</dt>
+        <dd style="padding-left: 15px">
+            @(Model.PhoneNumber ?? "Saknas")
+            [
+            @if (Model.PhoneNumber != null)
+            {
+                @Html.ActionLink("Ändra", "AddPhoneNumber")
+            }
+            else
+            {
+                @Html.ActionLink("Lägg till", "AddPhoneNumber")
+            }
+            ]
+        </dd>
+        <dt>Kontaktnummer:</dt>
+        <dd style="padding-left: 15px">
+            @(Model.ContactNumber ?? "Saknas")
+            [
+            @if (Model.ContactNumber != null)
+            {
+                @Html.ActionLink("Ändra", "AddContactNumber")
+            }
+            else
+            {
+                @Html.ActionLink("Lägg till", "AddContactNumber")
+            }
+            ]
+        </dd>
+        <dt>Namn:</dt>
+        <dd style="padding-left: 15px">
+            @(Model.Namn ?? "Saknas")
+            [
+            @Html.ActionLink("Ändra namn", "ChangeName")
+            ]
+        </dd>
+    </dl>
+
+    <!-- Ändra valda register att rapportera till -->
+    @using (Html.BeginForm("ChangeChosenRegisters", "Manage", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+    {
+        if (Model.RegisterList != null)
+        {
+            for (int i = 0; i < Model.RegisterList.Count; i++)
+            {
+                @Html.HiddenFor(x => x.RegisterList[i].Id)
+                @Html.HiddenFor(x => x.RegisterList[i].Namn)
+                @Html.HiddenFor(x => x.RegisterList[i].Selected)
+            }
+        }
+        @Html.AntiForgeryToken()
+        <div class="form-group">
+            @Html.Label("Välj register: ", new { @class = "col-md-2 control-label", style = "font-weight:bold" })
+            <div class="col-md-10">
+                <select id="RegList" multiple="multiple">
+                    @for (var i = 0; i < Model.RegisterList.Count; i++)
+                    {
+                        <option value=@Model.RegisterList[i].Id>@Model.RegisterList[i].Namn</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" class="btn btn-default" value="Spara valda register" />
+            </div>
+        </div>
+
+        <p id="demo"></p>
+    }
+
+</div>

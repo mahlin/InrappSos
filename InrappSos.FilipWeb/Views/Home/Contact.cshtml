@@ -1,0 +1,36 @@
+﻿@model InrappSos.FilipWeb.Models.ViewModels.AboutViewModel
+@using System.Configuration
+@{
+    ViewBag.Title = "Kontakt";
+}
+
+@{
+    if (Model.PortalClosed)
+    {
+        if (ConfigurationManager.AppSettings["Env"] == "Utv")
+        {
+            Layout = "~/Views/Shared/_LayoutClosedUtv.cshtml";
+        }
+        else
+        {
+            Layout = "~/Views/Shared/_LayoutClosed.cshtml";
+        }
+    }
+    else
+    {
+        if (ConfigurationManager.AppSettings["Env"] == "Utv")
+        {
+            Layout = "~/Views/Shared/_LayoutUtv.cshtml";
+        }
+        else
+        {
+            Layout = "~/Views/Shared/_Layout.cshtml";
+        }
+    }
+}
+
+<div class="padding-top-55">
+    <h3>@ViewBag.Message</h3>
+</div>
+
+@Html.Raw(ViewBag.Text)

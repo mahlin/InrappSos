@@ -1,0 +1,72 @@
+﻿@using System.Configuration
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Socialstyrelsens inrapporteringsportal</title>
+    @Scripts.Render("~/bundles/jquery")
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jqueryui")
+
+    <link href="@Url.Content("~/Content/NavBarDev.css")" rel="stylesheet" type="text/css"/>
+
+    @*@Scripts.Render("~/scripts/messages_sv.js")*@
+</head>
+<body>
+
+@*<div class="logga">
+    <img src="~/Content/Images/Logga.PNG" alt="Socialstyrelsen" style="height:100%">
+</div>*@
+
+<div class="navbar navbar-inverse navbar-fixed-top">
+    @*<img src="~/Content/Images/LoggaVit.PNG" alt="Socialstyrelsen" style="float: left">*@
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            @*<img src="~/Content/Images/LoggaVit.PNG" alt="Socialstyrelsen" style="float: left">*@
+            @*<a class="navbar-brand" rel="home" href='@Url.Action("Index", "Home")' title="Socialstyrelsen">
+                <img style="max-width:120px; margin-top: -10px;" src="~/Content/Images/LoggaNew.PNG"></a>*@
+            <a class="navbar-brand" rel="home" href='@Url.Action("Index", "Home")' title="Socialstyrelsen">
+                <img src="~/Content/Images/LoggaNew200px.PNG"></a>
+            
+            @*@Html.ActionLink("Inrapporteringsportal", "Index", "Home", new { area = "" })*@
+            @*<a class="navbar-brand" href="/"><img src="~/Content/Images/LoggaNew.png" alt="Socialstyrelsen" style="height:50px"/></a>*@
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav" style="margin-top: 20px">
+                <li>@Html.ActionLink("Lämna uppgifter", "Index", "FileUpload")</li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Leveransöversikt <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li>@Html.ActionLink("All historik", "Index", "History")</li>
+                        <li>@Html.ActionLink("Leveransstatus", "GetDeliveryStatus", "History")</li>
+                    </ul>
+                </li>
+                <li>@Html.ActionLink("Hjälp", "About", "Home")</li>
+                <li>@Html.ActionLink("Kontakt", "Contact", "Home")</li>
+
+            </ul>
+            @Html.Partial("_LoginPartial")
+        </div>
+    </div>
+</div>
+<div class="container body-content padding-top-55" id="contentBody">
+    @RenderBody()
+    <hr/>
+    <footer>
+        <p>&copy; @DateTime.Now.Year - Socialstyrelsens inrapporteringsportal</p>
+    </footer>
+</div>
+
+
+    @Scripts.Render("~/bundles/bootstrap")
+@RenderSection("scripts", required: false)
+</body>
+</html>

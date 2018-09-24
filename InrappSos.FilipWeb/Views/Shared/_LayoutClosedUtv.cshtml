@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Socialstyrelsens inrapporteringsportal</title>
+    @Scripts.Render("~/bundles/jquery")
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+
+    <link href="@Url.Content("~/Content/NavBarDev.css")" rel="stylesheet" type="text/css" />
+
+</head>
+<body>
+
+@*<div class="logga">
+    <img src="~/Content/Images/Logga.PNG" alt="Socialstyrelsen" style="height:100%">
+</div>*@
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" rel="home" href='@Url.Action("Index", "Home")' title="Socialstyrelsen">
+                <img src="~/Content/Images/LoggaNew200px.PNG"></a></div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav" style="margin-top: 20px">
+                <li>@Html.ActionLink("Inrapporteringsportal", "Index", "Home")</li>
+                <li>@Html.ActionLink("Hjälp", "About", "Home", new {closed = true}, null)</li>
+                <li>@Html.ActionLink("Kontakt", "Contact", "Home", new {closed = true}, null)</li>
+            </ul>        
+        </div>
+    </div>
+</div>
+<div class="container body-content padding-top-55" id="contentBody">
+    @RenderBody()
+    <div class="col-md-8" style="margin-top: 40px;">
+        <hr/>
+        <footer>
+            <p>&copy; @DateTime.Now.Year - Socialstyrelsens inrapporteringsportal</p>
+        </footer>
+    </div>
+</div>
+
+
+    @Scripts.Render("~/bundles/bootstrap")
+@RenderSection("scripts", required: false)
+</body>
+</html>

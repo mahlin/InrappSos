@@ -1,0 +1,14 @@
+﻿@{
+    ViewBag.Title = "Bekräftelsemeddelande har skickats";
+}
+
+<div class="row padding-top-55">
+    <h4>@Html.Raw(ViewBag.Title)</h4>
+</div>
+
+<div>
+    <p>
+        Ett bekräftelsemail har skickats till e-postadressen @Html.Raw(ViewBag.Email).
+        Vänligen kontrollera din e-post och bekräfta din e-postadress.
+    </p>
+</div>

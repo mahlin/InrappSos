@@ -16,6 +16,8 @@ namespace InrappSos.ApplicationService.Interface
         string SpecialdagComingWeek();
         IEnumerable<FilloggDetaljDTO> FiltreraHistorikForAnvandare(string userId, IEnumerable<FilloggDetaljDTO> historikForOrganisation);
 
+        IEnumerable<AdmFAQKategori> HamtaAllaFAQs();
+
         string HamtaAnvandaresNamn(string userId);
 
         string HamtaAnvandaresKontaktnummer(string userId);

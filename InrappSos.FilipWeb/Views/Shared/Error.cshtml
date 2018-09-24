@@ -1,0 +1,18 @@
+﻿@model System.Web.Mvc.HandleErrorInfo
+
+@{
+    ViewBag.Title = "Ett okänt fel inträffade";
+}
+
+<br /><br />
+<div>
+    <H2 class="text-danger">Oväntat fel</H2>
+    <br />
+    För mer information kontakta support.
+    <br />
+    <address>
+        <strong>Support, epost:</strong> <a href="mailto:inrapportering@socialstyrelsen.se">inrapportering@socialstyrelsen.se </a><br />
+    </address>
+    <br/>
+    @ViewData["error"]
+</div>

@@ -1,0 +1,11 @@
+﻿@{
+    ViewBag.Title = "E-postadress bekräftad";
+}
+
+<div class="row padding-top-55">
+    <h4>@Html.Raw(ViewBag.Title)</h4>
+    <p>
+        Tack för att du bekräftat din e-postadress.<br />
+        @Html.ActionLink("Klicka här för att logga in.", "Login", "Account")
+    </p>
+</div>

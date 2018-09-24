@@ -1,0 +1,84 @@
+﻿@using InrappSos.ApplicationService.DTOModel
+@model InrappSos.FilipWeb.Models.ViewModels.FilesViewModel
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        var rows = $(".greenRow").closest('tr');
+        $(rows).css('background-color', 'rgba(130, 224, 170, 0.4)');
+    });
+
+</script>
+
+
+@using (Html.BeginForm("RefreshFilesHistory", "FileUpload", FormMethod.Post, new { @class = "form-horizontal", role = "form", id = "updateHistoryForm" }))
+{
+    @Html.HiddenFor(m => Model.OrganisationsNamn)
+    @Html.HiddenFor(m => Model.StartUrl)
+
+    <H4>Historik för @Html.Raw(Model.OrganisationsNamn) <span style="font-size: 0.7em">(10 senaste)</span></H4>
+    <table class="table table-striped" id="historyTable" >
+        <thead>
+            <tr class="historyHeader" style="background-color: #f9f9f9;">
+                <th>Uppgifter</th>
+                <th>Period</th>
+                <th>Leveranstidpunkt</th>
+                <th>Leveransid</th>
+                <th>Leveransstatus</th>
+                <th>Filnamn</th>
+                <th>Filstatus</th>
+                <th>Återkoppling</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.HistorikLista != null)
+            {
+                if (Model.HistorikLista.Count > 0)
+                { 
+                    int i = 0;
+                    while (i < 10 && i < Model.HistorikLista.Count)
+                    {
+                        <tr>
+                            <td>@Model.HistorikLista[i].RegisterKortnamn</td>
+                            <td>@Model.HistorikLista[i].Period</td>
+                            <td>@Model.HistorikLista[i].Leveranstidpunkt</td>
+                            <td>
+                                @if (!String.IsNullOrWhiteSpace(Model.HistorikLista[i].Enhetskod))
+                                {
+                                    @Model.HistorikLista[i].LeveransId
+                                    @Html.Raw("/")
+                                    @Model.HistorikLista[i].Enhetskod
+                                }
+                                else
+                                {
+                                    @Model.HistorikLista[i].LeveransId
+                                }
+                            </td>
+                            @if (Model.HistorikLista[i].Leveransstatus.Trim() == "Inget att rapportera" || Model.HistorikLista[i].Leveransstatus.Trim() == "Leveransen är godkänd" || Model.HistorikLista[i].Leveransstatus.Trim() == "Leveransen är godkänd med varningar")
+                            {
+                                <td class="greenRow">@Model.HistorikLista[i].Leveransstatus</td>
+                            }
+                            else
+                            {
+                                <td>@Model.HistorikLista[i].Leveransstatus</td>
+                            }
+                            <td>@Model.HistorikLista[i].Filnamn</td>
+                            <td>@Model.HistorikLista[i].Filstatus</td>
+                            @if (Model.HistorikLista[i].Resultatfil == "Ej kontrollerad" || Model.HistorikLista[i].Resultatfil == " - ")
+                            {
+                                <td>@Model.HistorikLista[i].Resultatfil</td>
+                            }
+                            else
+                            {
+                                <td>@Html.ActionLink("Visa återkopplingsfil", "DownloadFile", "FileUpload", new {fileName = Model.HistorikLista[i].Resultatfil}, null)</td>
+                            }
+                        </tr>
+                        i++;
+                    }
+                }
+            }
+        </tbody>
+    </table>
+}
+
+

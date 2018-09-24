@@ -1,0 +1,16 @@
+﻿@{
+    ViewBag.Title = "Du är nu registrerad som användare i Socialstyrelsens inrapporteringsportal";
+}
+
+
+<div class="row padding-top-55">
+    <h4>@Html.Raw(ViewBag.Title)</h4>
+</div>
+<br />
+<div>
+    <p>
+        Tack för att du registrerat dig.<br />
+        @Html.ActionLink("Klicka här för att logga in.", "Login", "Account" )
+
+    </p>
+</div>

@@ -1,0 +1,155 @@
+﻿@model InrappSos.FilipWeb.Models.HistoryViewModels.HistoryViewModel
+
+@using System.Configuration
+@using InrappSos.ApplicationService.DTOModel
+
+@{
+
+    if (ConfigurationManager.AppSettings["Env"] == "Utv")
+    {
+        Layout = "~/Views/Shared/_LayoutUtv.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+
+
+<script>
+    var selecteableYearsList = @Html.Raw(Json.Encode(Model.SelectableYears));
+    $(document).ready(function () {
+        $('.panel-heading').toggleClass('collapsed');
+        $('[id^="ok"]').addClass('panelColorOk');
+        $('[id^="warning"]').addClass('panelColorWarning');
+        $('[id^="error"]').addClass('panelColorError');
+
+        //check SelectedYear and if there should be arrows
+        var x = $("#SelectedYear").val();
+        var y = parseInt(x);
+        var previousYear = parseInt($("#SelectedYear").val()) - 1;
+        var nextYear = parseInt($("#SelectedYear").val()) + 1;
+        var z = jQuery.inArray(previousYear, selecteableYearsList);
+        if (jQuery.inArray(previousYear, selecteableYearsList) >= 0) {
+            $('#previousYear').show();
+        } else {
+            $('#previousYear').hide();
+        }
+        if (jQuery.inArray(nextYear, selecteableYearsList) >= 0) {
+            $('#nextYear').show();
+        } else {
+            $('#nextYear').hide();
+        }
+        
+
+    });
+
+    $('.closeall').click(function () {
+        $('.panel-collapse.in')
+            .collapse('hide');
+    });
+    $('.openall').click(function () {
+        $('.panel-collapse:not(".in")')
+            .collapse('show');
+    });
+
+</script>
+
+@{
+    ViewBag.Title = "Leveransstatus";
+}
+<div class="row padding-top-55">
+    <div class="col-md-4">
+        <H4>Leveransstatus för @Html.Raw(Model.OrganisationsNamn)</H4>
+    </div>
+    @Html.HiddenFor(m => m.SelectedYear)
+    <div class="row col-md-6">
+        @*<H4> &lt; &nbsp;&nbsp;&nbsp;&nbsp;@Html.Raw(Model.SelectedYear)&nbsp;&nbsp;&nbsp;&nbsp; &gt;</H4>*@
+        <div class="col-md-1" id="previousYear"><H4>@Html.ActionLink("<", "GetDeliveryStatus", "History", new { chosenYear = (Model.SelectedYear - 1) }, null)</H4></div> 
+        <div class="col-md-2"><H4>&nbsp;&nbsp;@Html.Raw(Model.SelectedYear)</H4></div>
+        <div class="col-md-2" id="nextYear"><H4> @Html.ActionLink(">", "GetDeliveryStatus", "History", new { chosenYear = (Model.SelectedYear + 1) }, null)</H4></div>
+    </div>
+</div>
+
+@Html.Raw(ViewBag.Text)
+
+<br />
+
+@if (Model.LeveransListaRegister != null)
+{
+    for (var i = 0; i < Model.LeveransListaRegister.Count(); i++)
+    {
+        <div class="faqHeader" style="margin-left: -0px;font-size: 1.2em">@(Model.LeveransListaRegister.ElementAt(i).RegisterKortnamn)</div>
+        <div class="panel-group" id=@(Model.LeveransListaRegister.ElementAt(i).RegisterKortnamn)>
+            @for (var index = 0; index < Model.LeveransListaRegister.ElementAt(i).Leveranser.Count(); index++)
+            {
+                <div class="panel panel-default" id=@(Model.LeveransListaRegister.ElementAt(i).Leveranser.ElementAt(index).Status)>
+                    <div class="panel-heading" id="period" data-toggle="collapse" data-parent=#@(Model.LeveransListaRegister.ElementAt(i).RegisterKortnamn) data-target=#@(Model.LeveransListaRegister.ElementAt(i).Leveranser.ElementAt(index).Id)>
+                        <div class="row panel-title">
+                            <div class="col-md-2" style="font-size: 1em;">@(Model.LeveransListaRegister.ElementAt(i).Leveranser.ElementAt(index).Period)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                            @*@(Model.LeveransListaRegister.ElementAt(i).Leveranser.ElementAt(index).Status)*@
+                            <div class="col-md-8" style="font-size: 0.85em; padding-top: 5px;">Rapportering mellan  @(Model.LeveransListaRegister.ElementAt(i).Leveranser.ElementAt(index).Rapporteringsstart.ToString("yyyy-MM-dd")) och @(Model.LeveransListaRegister.ElementAt(i).Leveranser.ElementAt(index).Rapporteringssenast.ToString("yyyy-MM-dd"))</div>
+                        </div>
+                    </div>
+                    <div id=@(Model.LeveransListaRegister.ElementAt(i).Leveranser.ElementAt(index).Id) class="panel-collapse collapse">
+                        <div class="panel-body">
+                            @if (Model.LeveransListaRegister.ElementAt(i).Leveranser.ElementAt(index).HistorikLista != null)
+                            {
+                                if (Model.LeveransListaRegister.ElementAt(i).Leveranser.ElementAt(index).HistorikLista.Any())
+                                {
+                                    <table class="table table-striped" id="historyTable">
+                                        <thead>
+                                        <tr class="historyHeader" style="background-color: #f9f9f9;">
+                                            <th>Uppgifter</th>
+                                            <th>Leveranstidpunkt</th>
+                                            <th>Leveransid</th>
+                                            <th>Leveransstatus</th>
+                                            <th>Filnamn</th>
+                                            <th>Filstatus</th>
+                                            <th>Återkoppling</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        @foreach (FilloggDetaljDTO loggRad in Model.LeveransListaRegister.ElementAt(i).Leveranser.ElementAt(index).HistorikLista)
+                                        {
+                                            <tr>
+                                                <td>@loggRad.RegisterKortnamn</td>
+                                                <td>@loggRad.Leveranstidpunkt</td>
+                                                <td>
+                                                    @if (!String.IsNullOrWhiteSpace(loggRad.Enhetskod))
+                                                    {
+                                                        @loggRad.LeveransId
+                                                        @Html.Raw("/")
+                                                        @loggRad.Enhetskod
+                                                    }
+                                                    else
+                                                    {
+                                                        @loggRad.LeveransId
+                                                    }
+                                                </td>
+                                                <td>@loggRad.Leveransstatus</td>
+                                                <td>@loggRad.Filnamn</td>
+                                                <td>@loggRad.Filstatus</td>
+                                                @if (loggRad.Resultatfil == "Ej kontrollerad" || loggRad.Resultatfil == " - ")
+                                                {
+                                                    <td>@loggRad.Resultatfil</td>
+                                                }
+                                                else
+                                                {
+                                                    <td>@Html.ActionLink("Visa återkopplingsfil", "DownloadFile", "FileUpload", new {fileName = loggRad.Resultatfil}, null)</td>
+                                                }
+                                            </tr>
+                                        }
+                                        </tbody>
+                                    </table>
+                                }
+                            }
+                        </div> 
+                    </div>
+                </div>
+            }
+        </div>
+        <hr>
+    }
+}
+

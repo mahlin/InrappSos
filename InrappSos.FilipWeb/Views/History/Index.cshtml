@@ -1,0 +1,315 @@
+﻿@model InrappSos.FilipWeb.Models.HistoryViewModels.HistoryViewModel
+@{
+    ViewBag.Title = "Historik";
+}
+
+<script>
+    var registerLista = @Html.Raw(Json.Encode(Model.RegisterList));
+    var historikLista  = @Html.Raw(Json.Encode(Model.HistorikLista));
+</script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        //Sätt fast header och scroll om fler än 10 rader i listan
+        if (historikLista.length > 10) {
+            //Fix webgrid-header
+            $("#GridHeader")
+                .html("<table id='headerTable'>" + $('#historyGridContent table thead').html() + "</table>");
+            $("#GridHeader table tr:first").append("<th style='width:12px;' ></th>");
+            $("#GridBody").html("<table>" + $('#historyGridContent table tbody').html() + "</table>");
+            //$("#GridFooter").html("<table>" + $('#historyGridContent table tfoot').html() + "</table>");
+            $("#historyGridContent").hide();
+            setFixedTableHeaderWidths();
+        } else {
+            $("#GridBody").hide();
+        }
+
+        createRadioButtons();
+        if ($('#SelectedRegisterId').val() > 0) {
+            setRadioBtn($('#SelectedRegisterId').val());
+        }
+        if (historikLista.length > 10) {
+            $("#GridBody table tbody tr").each(function(i, row) {
+                var $actualRow = $(row);
+                var x = $actualRow.find('td:eq(4)').html().trim();
+                if (($actualRow.find('td:eq(4)').html().trim() === 'Inget att rapportera') ||
+                    ($actualRow.find('td:eq(4)').html().trim() === 'Leveransen är godkänd med varningar') ||
+                    ($actualRow.find('td:eq(4)').html().trim() === 'Leveransen är godkänd')) {
+                    $actualRow.css('background-color', 'rgba(130, 224, 170, 0.4)');
+                }
+            });
+        } else {
+            $("#historyGridContent table tbody tr").each(function(i, row) {
+                var $actualRow = $(row);
+                var x = $actualRow.find('td:eq(4)').html().trim();
+                if (($actualRow.find('td:eq(4)').html().trim() === 'Inget att rapportera') ||
+                    ($actualRow.find('td:eq(4)').html().trim() === 'Leveransen är godkänd med varningar') ||
+                    ($actualRow.find('td:eq(4)').html().trim() === 'Leveransen är godkänd')) {
+                    $actualRow.css('background-color', 'rgba(130, 224, 170, 0.4)');
+                }
+            });
+        }
+        //Sätt antal rader
+        $('#header').html("");
+        $('<H4>All historik för @Html.Raw(Model.OrganisationsNamn) <span style="font-size: 0.7em">(totalt antal filer: @Html.Raw(Model.HistorikLista.Count))</span></H4><br><br>').appendTo('#header');
+
+        $("input[type='radio']").on('change', function () {
+            var tmp = $(this).val();
+            var selectedregId = $("input[name='regName']:checked").val();
+            $('#SelectedRegisterId').val(selectedregId);
+            if (selectedregId) {
+                if (historikLista.length > 10) {
+                    showOnlySelectedRegister(selectedregId);
+                } else {
+                    showOnlySelectedRegisterHistoryGridContent(selectedregId);
+                }
+            }
+        });
+    });
+
+    function setFixedTableHeaderWidths() {
+        var x = $('#GridHeader table tbody');
+        //$('#GridHeader table tbody tr').find('th:nth-child(1)').css('background-color', '#E8A2A2');
+
+        var y = $('#GridBody table tbody');
+        //$('#GridBody table tbody tr').find('td:nth-child(1)').css('background-color', '#66E0ED');
+
+        var $body = $('#GridBody table tbody');
+        var $header = $('#GridHeader table tbody');
+
+        $body.find('tr:first-child').children().each(function (i) {
+            var x = $(this).width();
+            var y = $($header.find('tr:first-child'));
+            $($header.find('tr:first-child').children()[i]).css('width', $(this).width() + 18);
+
+            //Fulfix, koden ovan funkar ej pga padding/margin or whatever
+            if (i === 0) {
+                $($header.find('tr:first-child').children()[i]).css('width', $(this).width()  + 12);
+            }
+            else if (i === 1) {
+                $($header.find('tr:first-child').children()[i]).css('width', $(this).width() + 15);
+            }
+            else if (i === 2) {
+                $($header.find('tr:first-child').children()[i]).css('width', $(this).width() + 0);
+                $($header.find('tr:first-child').children()[i]).css('margin-right', 15);
+            }
+            else if (i === 3) {
+                $($header.find('tr:first-child').children()[i]).css('width', $(this).width() + 15);
+                $($header.find('tr:first-child').children()[i]).css('padding-left', 10);
+                $($header.find('tr:first-child').children()[i]).css('margin-right', 10);
+            }
+            else if (i === 4) {
+                $($header.find('tr:first-child').children()[i]).css('width', $(this).width() + 10);
+                //$($header.find('tr:first-child').children()[i]).css('padding-left', 0);
+            }
+            if (i === 5) {
+                //$($header.find('tr:first-child').children()[i]).css('width', $(this).width() + 5);
+                $($header.find('tr:first-child').children()[i]).css('width', 320);
+                $($header.find('tr:first-child').children()[i]).css('padding-right', 0);
+            }
+            else if (i === 6) {
+                $($header.find('tr:first-child').children()[i]).css('width', 200 );
+                $($header.find('tr:first-child').children()[i]).css('padding-left', 0);
+            }
+
+            //var headerCells = $("#GridHeader tr:eq(0) th");
+            //var firstRowCells = $("#GridBody tr:eq(0) td");
+
+            //$.each(firstRowCells, function (index, value) {
+            //    var c = $(this).width();
+            //    var m = $(firstRowCells[index]).attr("class");
+
+            //    $(headerCells[index]).css('width', $(this).width());
+            //    $(headerCells[index]).addClass($(firstRowCells[index]).attr("class"));
+            //});
+        });
+
+    }
+
+    function setRadioBtn(selectedregId) {
+        $("input[name='regName'][value='" + selectedregId + "']").prop("checked", true);
+        if (historikLista.length > 10) {
+            showOnlySelectedRegister(selectedregId);
+        } else {
+            showOnlySelectedRegisterHistoryGridContent(selectedregId);
+        }
+    }
+
+    function showOnlySelectedRegister(registerId) {
+        //Loopa igenom hela historiktabellen. Visa endast de rader som har delreg-kortnamn som är godkänt för valt register
+        var antRader = 0;
+        $("#GridBody table tbody tr").each(function(i, row) {
+            var $actualRow = $(row);
+            var $rowShortname = $actualRow.find('td:eq(0)').html().trim();
+            if (registerId === "0") {
+                $(row).show();
+                antRader++;
+            } else {
+                //Hämta delregisters kortnamn för valt register
+                registerLista.forEach(function(register, index) {
+                    if (registerId === register.Id.toString()) {
+                        var okToShow = false;
+                        register.DelRegister.forEach(function(delreg, ix) {
+                            if ($rowShortname === delreg.Kortnamn) {
+                                okToShow = true;
+                            }
+                        });
+                        if (okToShow) {
+                            $(row).show();
+                            antRader++;
+                        } else {
+                            $(row).hide();
+                        }
+                    }
+                });
+            }
+        });
+        //Sätt antal rader
+        $('#header').html("");
+        $('<H4>All historik för @Html.Raw(Model.OrganisationsNamn) <span style="font-size: 0.7em">(antal filer: ' + antRader + ')</span ></H4><br><br>').appendTo('#header');
+    }
+
+    function showOnlySelectedRegisterHistoryGridContent(registerId) {
+        //Loopa igenom hela historiktabellen. Visa endast de rader som har delreg-kortnamn som är godkänt för valt register
+        var antRader = 0;
+        $("#historyGridContent table tbody tr").each(function(i, row) {
+            var $actualRow = $(row);
+            var $rowShortname = $actualRow.find('td:eq(0)').html().trim();
+            if (registerId === "0") {
+                $(row).show();
+                antRader++;
+            } else {
+                //Hämta delregisters kortnamn för valt register
+                registerLista.forEach(function(register, index) {
+                    if (registerId === register.Id.toString()) {
+                        var okToShow = false;
+                        register.DelRegister.forEach(function(delreg, ix) {
+                            if ($rowShortname === delreg.Kortnamn) {
+                                okToShow = true;
+                            }
+                        });
+                        if (okToShow) {
+                            $(row).show();
+                            antRader++;
+                        } else {
+                            $(row).hide();
+                        }
+                    }
+                });
+            }
+        });
+        //Sätt antal rader
+        $('#header').html("");
+        $('<H4>All historik för @Html.Raw(Model.OrganisationsNamn) <span style="font-size: 0.7em">(antal filer: ' + antRader + ')</span ></H4><br><br>').appendTo('#header');
+    }
+
+
+    //$(document).on('change', '#ddlRegister', function () {
+    //    $("#SelectedRegisterId").val($('#ddlRegister').val());
+    //});
+
+    function createRadioButtons() {
+        $('<label class="radio-inline"><input type="radio" name="regName" value="0" checked="checked">Alla</input></label>').appendTo('#radioBtns');
+        registerLista.forEach(function (register, index) {
+            $('<label class="radio-inline"><input type="radio" name="regName" value="' + register.Id.toString() + '" >' + register.Kortnamn + '</input></label>').appendTo('#radioBtns');
+        });
+    }
+
+    $(function () {
+        $('th a, tfoot a').click(function () {
+            //if querystring already contains selectedRegId, remove it
+            var index = $(this).attr('href').indexOf("&selectedRegId=");
+            if (index >= 0) {
+                var cleanUrl = $(this).attr('href').substring(0, index);
+                $(this).attr('href', cleanUrl);
+            }
+
+            var newUrl = $(this).attr('href') +
+                "&selectedRegId=" +
+                $("#SelectedRegisterId").val();
+            $('form').attr('action', newUrl).submit();
+            return false;
+        });
+    });
+
+
+</script>
+
+<style type="text/css">
+    
+    #GridBody {
+        width: 1285px;
+        height: 400px;
+        overflow-y: scroll;
+        border: solid 1px #e8eef4;
+    }
+
+    #GridHeader table {
+        width: 1287px;
+        text-align: left;
+        margin-top: 0px;
+        /*border: solid 1px #A7C942;*/
+        padding: 0px;
+        border-collapse: collapse;
+    }
+
+</style>
+
+
+
+
+
+<div class="row padding-top-55" id="header">
+</div>
+
+<div id="radioBtns">
+</div>
+<br/>
+
+<div id="pageContainer">
+
+    @if (Model != null)
+    {
+        @Html.HiddenFor(m => m.SelectedRegisterId)
+
+        <div id="historyGridContent" style="font-family: Arial; padding-top: 20px; margin-left: -15px;">
+            @{
+                ViewBag.Title = "Historik";
+                var grid = new WebGrid(source: Model.HistorikLista, canPage: false, ajaxUpdateContainerId: "historyGrid");
+            }
+
+
+            @grid.GetHtml(htmlAttributes: new {id = "historyTable"},
+                tableStyle: "webgrid-table",
+                headerStyle: "webgrid-header",
+                footerStyle: "webgrid-footer",
+                alternatingRowStyle: "webgrid-alternating-row",
+                selectedRowStyle: "webgrid-selected-row",
+                rowStyle: "webgrid-row-style",
+                mode: WebGridPagerModes.All,
+                columns: grid.Columns(
+                    grid.Column("RegisterKortnamn", "Uppgifter", style: "regName"),
+                    grid.Column("Period", "Period", style: "period"),
+                    grid.Column("Leveranstidpunkt", "Leveranstidpunkt", style: "deliveryTime"),
+                    //grid.Column("LeveransId", "Leveransid", style: "col1Width"),
+                    grid.Column("LeveransId", "LeveransId", format: (item) => (item.Enhetskod != "") ?
+                        (item.LeveransId +"/" + item.Enhetskod) : item.LeveransId, style: "col1Width"),
+                              grid.Column("Leveransstatus", " Leveransstatus", style: "col2Width"),
+                              grid.Column("Filnamn", "Filnamn", style: "col4Width"),
+                              grid.Column("Filstatus", "Filstatus", style: "col3Width"),
+                              grid.Column(format: (item) => (item.Resultatfil == "Ej kontrollerad" || item.Resultatfil.Trim() == "-") ?
+                                 item.Resultatfil :
+                                 Html.ActionLink("Visa återkopplingsfil", "DownloadFile", "FileUpload", new { fileName = (string)item.Resultatfil }, null)
+                          )))
+        </div>
+
+        <div id="Outer" >
+            <div id="GridHeader"></div>
+            <div id="GridBody"></div>
+            <div id="GridFooter"></div>
+        </div>
+    }
+</div>
+
+

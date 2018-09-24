@@ -1,0 +1,16 @@
+﻿@model InrappSos.FilipWeb.Models.CustomErrorPageModel
+
+@{
+    ViewBag.Title = "Ett fel inträffade";
+}
+
+<br /><br />
+<div>
+    <H2 class="text-danger">@Model.Information</H2>
+    <br />
+    För mer information kontakta support.
+    <br/>
+    <address>
+        <strong>Support, epost:</strong> <a href="mailto:inrapportering@socialstyrelsen.se">@Model.ContactEmail</a><br />
+    </address>
+</div>

@@ -1,0 +1,27 @@
+﻿@using System.Configuration
+
+@{
+    if (ConfigurationManager.AppSettings["Env"] == "Utv")
+    {
+        Layout = "~/Views/Shared/_LayoutClosedUtv.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_LayoutClosed.cshtml";
+    }
+   
+}
+
+
+<div class="padding-top-55">
+    <div class="col-md-8">
+        @Html.Raw(ViewBag.Text)
+    </div>
+    <div class="padding-top-55 col-md-offset-1 col-md-3" style="white-space: nowrap; margin-top: 10px; color: red;">
+        @Html.Raw(ViewBag.AvvikandeOppettider)
+    </div>
+</div>
+
+
+
+

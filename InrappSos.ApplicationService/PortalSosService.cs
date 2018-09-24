@@ -234,6 +234,11 @@ namespace InrappSos.ApplicationService
             var org = _portalSosRepository.GetOrgForReportObligation(uppgSkId);
             return org;
         }
+        public IEnumerable<AdmFAQKategori> HamtaAllaFAQs()
+        {
+            var faqs = _portalSosRepository.GetAllFAQs();
+            return faqs;
+        }
 
         public IEnumerable<AdmFAQKategori> HamtaFAQkategorier()
         {

@@ -7,8 +7,8 @@
     <ProjectGuid>{D48C58E7-FF52-45E0-8CE2-7D5EBDE99B7F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>InrappAdmin.DomainModel</RootNamespace>
-    <AssemblyName>InrappAdmin.DomainModel</AssemblyName>
+    <RootNamespace>InrappSos.DomainModel</RootNamespace>
+    <AssemblyName>InrappSos.DomainModel</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

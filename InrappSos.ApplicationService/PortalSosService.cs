@@ -13,6 +13,7 @@ using System.Runtime.Remoting.Messaging;
 using InrappSos.ApplicationService.DTOModel;
 using InrappSos.ApplicationService.Interface;
 using InrappSos.ApplicationService.Helpers;
+using InrappSos.AstridDataAccess;
 using InrappSos.DataAccess;
 using InrappSos.DomainModel;
 using Microsoft.AspNet.Identity;
@@ -24,12 +25,21 @@ namespace InrappSos.ApplicationService
     {
 
         private readonly IPortalSosRepository _portalSosRepository;
+        private readonly IPortalSosAstridRepository _portalSosAstridRepository;
+
         System.Globalization.CultureInfo _culture = new System.Globalization.CultureInfo("sv-SE");
 
 
         public PortalSosService(IPortalSosRepository portalSosRepository)
         {
             _portalSosRepository = portalSosRepository;
+
+        }
+
+        public PortalSosService(IPortalSosRepository portalSosRepository, IPortalSosAstridRepository portalSosAstridRepository)
+        {
+            _portalSosRepository = portalSosRepository;
+            _portalSosAstridRepository = portalSosAstridRepository;
 
         }
 
@@ -167,7 +177,7 @@ namespace InrappSos.ApplicationService
 
         public IEnumerable<AppUserAdmin> HamtaAdminUsers()
         {
-            var adminUsers = _portalSosRepository.GetAdminUsers();
+            var adminUsers = _portalSosAstridRepository.GetAdminUsers();
             return adminUsers;
         }
 
@@ -216,6 +226,12 @@ namespace InrappSos.ApplicationService
         {
             var uppgiftsskyldigheter = _portalSosRepository.GetUnitReportObligationInformationForOrgUnit(orgenhetId);
             return uppgiftsskyldigheter;
+        }
+
+        public AdmEnhetsUppgiftsskyldighet HamtaEnhetsUppgiftsskyldighetForUppgiftsskyldighetOchOrgEnhet(int uppgskhId, int orgenhetId)
+        {
+            var enhetsuppgiftsskyldighet = _portalSosRepository.GetUnitReportObligationForReportObligationAndOrg(uppgskhId, orgenhetId);
+            return enhetsuppgiftsskyldighet;
         }
         public Organisation HamtaOrgForAnvandare(string userId)
         {
@@ -1184,7 +1200,7 @@ namespace InrappSos.ApplicationService
         {
             user.AndradDatum = DateTime.Now;
             user.AndradAv = userName;
-            _portalSosRepository.UpdateAdminUser(user);
+            _portalSosAstridRepository.UpdateAdminUser(user);
         }
 
         public void UppdateraKontaktnummerForAnvandare(string userId, string tfnnr)
@@ -1315,7 +1331,7 @@ namespace InrappSos.ApplicationService
         {
             user.AndradAv = userName;
             user.AndradDatum = DateTime.Now;
-            _portalSosRepository.UpdateUserInfo(user);
+            _portalSosAstridRepository.UpdateAdminUserInfo(user);
         }
 
         public void SparaOppettider(OpeningHoursInfoDTO oppetTider, string userName)
@@ -1475,7 +1491,7 @@ namespace InrappSos.ApplicationService
 
         public void TaBortAdminAnvandare(string userId)
         {
-            _portalSosRepository.DeleteAdminUser(userId);
+            _portalSosAstridRepository.DeleteAdminUser(userId);
         }
 
         private IEnumerable<RapporteringsresultatDTO> ConvertRappListDBToVM(IEnumerable<Rapporteringsresultat> rappResList, int regId, int delRegId)

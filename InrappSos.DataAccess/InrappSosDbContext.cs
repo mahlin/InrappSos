@@ -10,7 +10,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace InrappSos.DataAccess
 {
-    public class InrappSosDbContext : IdentityDbContext<AppUserAdmin>
+    public class InrappSosDbContext : IdentityDbContext<ApplicationUser>
     {
         public InrappSosDbContext() : base("name=DefaultConnection")
         {
@@ -443,7 +443,7 @@ namespace InrappSos.DataAccess
         public DbSet<AdmSpecialdag> AdmSpecialdag { get; set; }
         public DbSet<Inloggning> Inloggning { get; set; }
         public DbSet<Roll> Roll { get; set; }
-        public DbSet<ApplicationUser> ApplicationUser { get; set; }
+        //public DbSet<ApplicationUser> ApplicationUser { get; set; }
         public DbSet<Rapporteringsresultat> RapporteringsResultat { get; set; }
 
     }

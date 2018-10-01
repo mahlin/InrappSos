@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Diagnostics;
@@ -8,7 +9,7 @@ using System.Web;
 using InrappSos.DomainModel;
 using Microsoft.AspNet.Identity.EntityFramework;
 
-namespace InrappSos.DataAccess
+namespace InrappSos.AstridDataAccess
 {
     public class InrappSosIdentityDbContext : IdentityDbContext<AppUserAdmin>
     {

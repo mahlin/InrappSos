@@ -42,7 +42,7 @@ namespace InrappSos.DataAccess
         IEnumerable<ApplicationUser> GetContactPersonsForOrg(int orgId);
         IEnumerable<ApplicationUser> GetContactPersonsForOrgAndSubdir(int orgId, int subdirId);
 
-        IEnumerable<AppUserAdmin> GetAdminUsers();
+        //IEnumerable<AppUserAdmin> GetAdminUsers();
 
         IEnumerable<Organisationsenhet> GetOrgUnitsForOrg(int orgId);
         int GetOrganisationsenhetsId(string orgUnitCode, int orgId);
@@ -53,6 +53,8 @@ namespace InrappSos.DataAccess
         AdmUppgiftsskyldighet GetReportObligationInformationForOrgAndSubDir(int orgId, int subdirId);
 
         IEnumerable<AdmEnhetsUppgiftsskyldighet> GetUnitReportObligationInformationForOrgUnit(int orgUnitId);
+        AdmEnhetsUppgiftsskyldighet GetUnitReportObligationForReportObligationAndOrg(int oblId, int orgunitId);
+
 
         IEnumerable<AdmFAQKategori> GetAllFAQs();
 
@@ -164,7 +166,7 @@ namespace InrappSos.DataAccess
 
         Leverans GetLatestDeliveryForOrganisationSubDirectoryPeriodAndOrgUnit(int orgId, int subdirId, int forvlevId, int orgUnitId);
 
-        string GetUserEmail(string userId);
+        //string GetUserEmail(string userId);
 
         string GetUserName(string userId);
         string GetUserPhoneNumber(string userId);
@@ -172,6 +174,8 @@ namespace InrappSos.DataAccess
         string GetUserContactNumber(string userId);
 
         ApplicationUser GetUserByEmail(string email);
+
+        string GetUserEmail(string userId);
         IEnumerable<AdmRegister> GetChosenRegistersForUser(string userId);
 
         string GetClosedDays();
@@ -226,10 +230,10 @@ namespace InrappSos.DataAccess
 
         void UpdateActiveFromForUser(string userId);
 
-        void UpdateUserInfo(ApplicationUser user);
+        //void UpdateUserInfo(ApplicationUser user);
         void UpdateChosenRegistersForUser(string userId, string userName, List<RegisterInfo> registerList);
 
-        void UpdateAdminUser(AppUserAdmin user);
+        //void UpdateAdminUser(AppUserAdmin user);
         void UpdateNameForUser(string userId, string userName);
         void UpdateOrgUnit(Organisationsenhet orgUnit);
 
@@ -259,7 +263,7 @@ namespace InrappSos.DataAccess
 
         void UpdateCollectFrequency(AdmInsamlingsfrekvens insamlingsfrekvens);
 
-        void UpdateUserInfo(AppUserAdmin user);
+        void UpdateUserInfo(ApplicationUser user);
 
         void SaveOpeningHours(AdmKonfiguration admKonf);
         void SaveToFilelogg(string userName, string ursprungligtFilNamn, string nyttFilNamn, int leveransId, int sequenceNumber);
@@ -277,7 +281,7 @@ namespace InrappSos.DataAccess
 
         void DeleteContact(string contactId);
 
-        void DeleteAdminUser(string userId);
+        //void DeleteAdminUser(string userId);
 
         void DeleteChosenSubDirectoriesForUser(string userId);
 

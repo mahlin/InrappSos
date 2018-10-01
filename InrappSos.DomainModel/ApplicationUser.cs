@@ -12,13 +12,12 @@ namespace InrappSos.DomainModel
 {
     public class ApplicationUser :IdentityUser
     {
-        public string Id { get; set; }
         public int OrganisationId { get; set; }
         public string Namn { get; set; }
-        public string Email { get; set; }
+        //public string Email { get; set; }
         public string Kontaktnummer { get; set; }
-        public string PhoneNumber { get; set; }
-        public bool PhoneNumberConfirmed { get; set; }
+        //public string PhoneNumber { get; set; }
+        //public bool PhoneNumberConfirmed { get; set; }
         public DateTime? AktivFrom { get; set; }
         public DateTime? AktivTom { get; set; }
         public int? Status { get; set; }

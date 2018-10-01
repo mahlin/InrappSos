@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Mvc;
 using InrappSos.ApplicationService;
 using InrappSos.ApplicationService.Interface;
+using InrappSos.AstridDataAccess;
 using InrappSos.DataAccess;
 using InrappSos.AstridWeb.Helpers;
 using InrappSos.AstridWeb.Models;
@@ -18,9 +19,7 @@ namespace InrappSos.AstridWeb.Controllers
 
         public HomeController()
         {
-            _portalSosService =
-                new PortalSosService(new PortalSosRepository(new InrappSosDbContext(), new InrappSosIdentityDbContext()));
-
+            _portalSosService = new PortalSosService(new PortalSosRepository(new InrappSosDbContext()), new PortalSosAstridRepository(new InrappSosIdentityDbContext()));
         }
 
         public ActionResult Index(AccountController.AccountMessageId? message)

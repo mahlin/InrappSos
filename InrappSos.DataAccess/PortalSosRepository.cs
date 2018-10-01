@@ -4,7 +4,6 @@ using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using InrappSos.DataAccess;
 using InrappSos.DomainModel;
 using Microsoft.Owin.Security;
 
@@ -15,17 +14,10 @@ namespace InrappSos.DataAccess
 
         private InrappSosDbContext DbContext { get; }
 
-        private InrappSosIdentityDbContext IdentityDbContext { get; }
 
         public PortalSosRepository(InrappSosDbContext dbContext)
         {
             DbContext = dbContext;
-        }
-
-        public PortalSosRepository(InrappSosDbContext dbContext, InrappSosIdentityDbContext identityDbContext)
-        {
-            DbContext = dbContext;
-            IdentityDbContext = identityDbContext;
         }
 
         private IEnumerable<Leverans> AllaLeveranser()
@@ -35,14 +27,14 @@ namespace InrappSos.DataAccess
 
         public void DisableContact(string userId)
         {
-            var contactDb = DbContext.ApplicationUser.SingleOrDefault(x => x.Id == userId);
+            var contactDb = DbContext.Users.SingleOrDefault(x => x.Id == userId);
             contactDb.AktivTom = DateTime.Now;
             DbContext.SaveChanges();
         }
 
         public void EnableContact(string userId)
         {
-            var contactDb = DbContext.ApplicationUser.SingleOrDefault(x => x.Id == userId);
+            var contactDb = DbContext.Users.SingleOrDefault(x => x.Id == userId);
             contactDb.AktivTom = null;
             DbContext.SaveChanges();
         }
@@ -130,7 +122,7 @@ namespace InrappSos.DataAccess
 
         public int GetUserOrganisationId(string userId)
         {
-            var orgId = DbContext.ApplicationUser.Where(u => u.Id == userId).Select(o => o.OrganisationId).SingleOrDefault();
+            var orgId = DbContext.Users.Where(u => u.Id == userId).Select(o => o.OrganisationId).SingleOrDefault();
             return orgId;
         }
 
@@ -154,14 +146,14 @@ namespace InrappSos.DataAccess
 
         public IEnumerable<ApplicationUser> GetContactPersonsForOrg(int orgId)
         {
-            var contacts = DbContext.ApplicationUser.Where(x => x.OrganisationId == orgId).ToList();
+            var contacts = DbContext.Users.Where(x => x.OrganisationId == orgId).ToList();
             return contacts;
         }
 
         public IEnumerable<ApplicationUser> GetContactPersonsForOrgAndSubdir(int orgId, int subdirId)
         {
             var contactList = new List<ApplicationUser>();
-            var contacts = DbContext.ApplicationUser.Where(x => x.OrganisationId == orgId).ToList();
+            var contacts = DbContext.Users.Where(x => x.OrganisationId == orgId).ToList();
             foreach (var contact in contacts)
             {
                 var role = DbContext.Roll.FirstOrDefault(x => x.ApplicationUserId == contact.Id && x.DelregisterId == subdirId);
@@ -173,11 +165,11 @@ namespace InrappSos.DataAccess
             return contactList;
         }
 
-        public IEnumerable<AppUserAdmin> GetAdminUsers()
-        {
-            var adminUsers = IdentityDbContext.Users.ToList();
-            return adminUsers;
-        }
+        //public IEnumerable<AppUserAdmin> GetAdminUsers()
+        //{
+        //    var adminUsers = IdentityDbContext.Users.ToList();
+        //    return adminUsers;
+        //}
 
         public IEnumerable<Organisationsenhet> GetOrgUnitsForOrg(int orgId)
         {
@@ -213,7 +205,12 @@ namespace InrappSos.DataAccess
         {
             var unitReportObligationInfo = DbContext.AdmEnhetsUppgiftsskyldighet.Where(x => x.OrganisationsenhetsId == orgUnitId).ToList();
             return unitReportObligationInfo;
+        }
 
+        public AdmEnhetsUppgiftsskyldighet GetUnitReportObligationForReportObligationAndOrg(int oblId, int orgunitId)
+        {
+            var unitReportObigation = DbContext.AdmEnhetsUppgiftsskyldighet.SingleOrDefault(x => x.UppgiftsskyldighetId == oblId && x.OrganisationsenhetsId == orgunitId);
+            return unitReportObigation;
         }
 
         public string GetKommunkodForOrganisation(int orgId)
@@ -634,21 +631,21 @@ namespace InrappSos.DataAccess
             return latestsDeliveryForOrgAndSubdirectory;
         }
 
-        public string GetUserEmail(string userId)
-        {
-            var email = IdentityDbContext.Users.Where(x => x.Id == userId).Select(x => x.Email).SingleOrDefault();
-            return email;
-        }
+        //public string GetUserEmail(string userId)
+        //{
+        //    var email = IdentityDbContext.Users.Where(x => x.Id == userId).Select(x => x.Email).SingleOrDefault();
+        //    return email;
+        //}
 
         public string GetUserName(string userId)
         {
-            var userName = DbContext.ApplicationUser.Where(u => u.Id == userId).Select(u => u.Namn).SingleOrDefault();
+            var userName = DbContext.Users.Where(u => u.Id == userId).Select(u => u.Namn).SingleOrDefault();
             return userName;
         }
 
         public string GetUserContactNumber(string userId)
         {
-            var userContactNumber = DbContext.ApplicationUser.Where(u => u.Id == userId).Select(u => u.Kontaktnummer).SingleOrDefault();
+            var userContactNumber = DbContext.Users.Where(u => u.Id == userId).Select(u => u.Kontaktnummer).SingleOrDefault();
             return userContactNumber;
         }
         public string GetUserPhoneNumber(string userId)
@@ -659,8 +656,13 @@ namespace InrappSos.DataAccess
 
         public ApplicationUser GetUserByEmail(string email)
         {
-            var user = DbContext.ApplicationUser.SingleOrDefault(x => x.Email == email);
+            var user = DbContext.Users.SingleOrDefault(x => x.Email == email);
             return user;
+        }
+        public string GetUserEmail(string userId)
+        {
+            var email = DbContext.Users.Where(x => x.Id == userId).Select(x => x.Email).SingleOrDefault();
+            return email;
         }
 
         public IEnumerable<Roll> GetChosenDelRegistersForUser(string userId)
@@ -920,19 +922,19 @@ namespace InrappSos.DataAccess
             DbContext.SaveChanges();
         }
 
-        public void UpdateAdminUser(AppUserAdmin user)
-        {
-            var usrDb = IdentityDbContext.Users.Where(u => u.Id == user.Id).Select(u => u).SingleOrDefault();
-            usrDb.PhoneNumber= user.PhoneNumber;
-            usrDb.Email = user.Email;
-            usrDb.AndradDatum = user.AndradDatum;
-            usrDb.AndradAv = user.AndradAv;
-            IdentityDbContext.SaveChanges(); 
-        }
+        //public void UpdateAdminUser(AppUserAdmin user)
+        //{
+        //    var usrDb = IdentityDbContext.Users.Where(u => u.Id == user.Id).Select(u => u).SingleOrDefault();
+        //    usrDb.PhoneNumber= user.PhoneNumber;
+        //    usrDb.Email = user.Email;
+        //    usrDb.AndradDatum = user.AndradDatum;
+        //    usrDb.AndradAv = user.AndradAv;
+        //    IdentityDbContext.SaveChanges(); 
+        //}
 
         public void UpdateContactPerson(ApplicationUser user)
         {
-            var usrDb = DbContext.ApplicationUser.Where(u => u.Id == user.Id).Select(u => u).SingleOrDefault();
+            var usrDb = DbContext.Users.Where(u => u.Id == user.Id).Select(u => u).SingleOrDefault();
             usrDb.PhoneNumber = user.PhoneNumber;
             usrDb.PhoneNumberConfirmed = user.PhoneNumberConfirmed;
             usrDb.AktivFrom = user.AktivFrom;
@@ -970,28 +972,28 @@ namespace InrappSos.DataAccess
 
         public void UpdateNameForUser(string userId, string userName)
         {
-            var user = DbContext.ApplicationUser.Where(u => u.Id == userId).Select(u => u).SingleOrDefault();
+            var user = DbContext.Users.Where(u => u.Id == userId).Select(u => u).SingleOrDefault();
             user.Namn = userName;
             DbContext.SaveChanges();
         }
 
         public void UpdateContactNumberForUser(string userId, string number)
         {
-            var user = DbContext.ApplicationUser.Where(u => u.Id == userId).Select(u => u).SingleOrDefault();
+            var user = DbContext.Users.Where(u => u.Id == userId).Select(u => u).SingleOrDefault();
             user.Kontaktnummer = number;
             DbContext.SaveChanges();
         }
 
         public void UpdateActiveFromForUser(string userId)
         {
-            var user = DbContext.ApplicationUser.Where(u => u.Id == userId).Select(u => u).SingleOrDefault();
+            var user = DbContext.Users.Where(u => u.Id == userId).Select(u => u).SingleOrDefault();
             user.AktivFrom = DateTime.Now;
             DbContext.SaveChanges();
         }
 
         public void UpdateUserInfo(ApplicationUser user)
         {
-            var userDb = DbContext.ApplicationUser.SingleOrDefault(x => x.Id == user.Id);
+            var userDb = DbContext.Users.SingleOrDefault(x => x.Id == user.Id);
             userDb.AndradAv = user.AndradAv;
             userDb.AndradDatum = user.AndradDatum;
             DbContext.SaveChanges();
@@ -1180,13 +1182,13 @@ namespace InrappSos.DataAccess
             DbContext.SaveChanges();
         }
 
-        public void UpdateUserInfo(AppUserAdmin user)
-        {
-            var userDb = IdentityDbContext.Users.SingleOrDefault(x => x.Id == user.Id);
-            userDb.AndradAv = user.AndradAv;
-            userDb.AndradDatum = user.AndradDatum;
-            IdentityDbContext.SaveChanges();
-        }
+        //public void UpdateUserInfo(AppUserAdmin user)
+        //{
+        //    var userDb = IdentityDbContext.Users.SingleOrDefault(x => x.Id == user.Id);
+        //    userDb.AndradAv = user.AndradAv;
+        //    userDb.AndradDatum = user.AndradDatum;
+        //    IdentityDbContext.SaveChanges();
+        //}
 
         public void SaveOpeningHours(AdmKonfiguration admKonf)
         {
@@ -1304,7 +1306,7 @@ namespace InrappSos.DataAccess
 
         public void DeleteContact(string contactId)
         {
-            var contactToDelete = DbContext.ApplicationUser.SingleOrDefault(x => x.Id == contactId);
+            var contactToDelete = DbContext.Users.SingleOrDefault(x => x.Id == contactId);
 
             var contactRoles = DbContext.Roll.Where(x => x.ApplicationUserId == contactId).ToList();
 
@@ -1316,17 +1318,17 @@ namespace InrappSos.DataAccess
                     DbContext.Roll.Remove(role);
                     DbContext.SaveChanges();
                 }
-                DbContext.ApplicationUser.Remove(contactToDelete);
+                DbContext.Users.Remove(contactToDelete);
                 DbContext.SaveChanges();
             }
         }
 
-        public void DeleteAdminUser(string userId)
-        {
-            var cuserToDelete = IdentityDbContext.Users.SingleOrDefault(x => x.Id == userId);
-            IdentityDbContext.Users.Remove(cuserToDelete);
-            IdentityDbContext.SaveChanges();
-        }
+        //public void DeleteAdminUser(string userId)
+        //{
+        //    var cuserToDelete = IdentityDbContext.Users.SingleOrDefault(x => x.Id == userId);
+        //    IdentityDbContext.Users.Remove(cuserToDelete);
+        //    IdentityDbContext.SaveChanges();
+        //}
 
         public void DeleteDelivery(int deliveryId)
         {

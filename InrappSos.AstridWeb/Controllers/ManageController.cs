@@ -8,6 +8,7 @@ using InrappSos.DataAccess;
 using InrappSos.ApplicationService;
 using InrappSos.ApplicationService.Helpers;
 using InrappSos.ApplicationService.Interface;
+using InrappSos.AstridDataAccess;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
@@ -26,20 +27,16 @@ namespace InrappSos.AstridWeb.Controllers
 
         public ManageController()
         {
-            _portalSosService =
-                new PortalSosService(new PortalSosRepository(new InrappSosDbContext(), new InrappSosIdentityDbContext()));
+            _portalSosService = new PortalSosService(new PortalSosRepository(new InrappSosDbContext()), new PortalSosAstridRepository(new InrappSosIdentityDbContext()));
             _errorDecsriber = new CustomIdentityResultErrorDescriber();
-
         }
 
         public ManageController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
         {
             UserManager = userManager;
             SignInManager = signInManager;
-            _portalSosService =
-                new PortalSosService(new PortalSosRepository(new InrappSosDbContext(), new InrappSosIdentityDbContext()));
+            _portalSosService = new PortalSosService(new PortalSosRepository(new InrappSosDbContext()), new PortalSosAstridRepository(new InrappSosIdentityDbContext()));
             _errorDecsriber = new CustomIdentityResultErrorDescriber();
-
         }
 
         public ApplicationSignInManager SignInManager

@@ -1,6 +1,6 @@
 ﻿using System;
 using InrappSos.DomainModel;
-using InrappSos.DataAccess;
+using InrappSos.AstridDataAccess;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;

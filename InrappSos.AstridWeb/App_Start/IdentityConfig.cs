@@ -7,7 +7,7 @@ using System.Net.Mime;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Configuration;
-using InrappSos.DataAccess;
+using InrappSos.AstridDataAccess;
 using InrappSos.DomainModel;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;

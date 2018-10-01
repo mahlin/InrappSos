@@ -6,7 +6,6 @@ using System.Web;
 using System.Web.Mvc;
 using InrappSos.ApplicationService;
 using InrappSos.ApplicationService.Interface;
-using InrappSos.AstridDataAccess;
 using InrappSos.DataAccess;
 using InrappSos.DomainModel;
 using InrappSos.AstridWeb.Helpers;
@@ -24,7 +23,7 @@ namespace InrappSos.AstridWeb.Controllers
 
         public RegisterController()
         {
-            _portalSosService = new PortalSosService(new PortalSosRepository(new InrappSosDbContext()), new PortalSosAstridRepository(new InrappSosIdentityDbContext()));
+            _portalSosService = new PortalSosService(new PortalSosRepository(new InrappSosDbContext(), new InrappSosAstridDbContext()));
         }
 
 
@@ -45,7 +44,7 @@ namespace InrappSos.AstridWeb.Controllers
                     registerView.Beskrivning = register.Beskrivning;
                     registerView.Kortnamn = register.Kortnamn;
                     registerView.Registernamn = register.Registernamn;
-                    registerView.InrappSos = register.InrappSos;
+                    registerView.Inrapporteringsportal = register.Inrapporteringsportal;
 
                     registerViewList.Add(registerView);
                 }
@@ -223,7 +222,7 @@ namespace InrappSos.AstridWeb.Controllers
                         Registernamn = model.Registernamn,
                         Beskrivning = model.Beskrivning,
                         Kortnamn = model.Kortnamn,
-                        InrappSos = model.InrappSos
+                        Inrapporteringsportal = model.Inrapporteringsportal
                     };
                     _portalSosService.SkapaRegister(register, userName);
                 }

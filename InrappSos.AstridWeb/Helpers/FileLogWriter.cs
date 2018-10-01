@@ -8,7 +8,7 @@ namespace InrappSos.AstridWeb.Helpers
 {
     public sealed class FileLogWriter
     {
-        private string errorLogFilePath = "C:\\logs\\InrappSos\\";
+        private string errorLogFilePath = "C:\\logs\\InrappSosAstrid\\";
         private string errorLogFileName = "error.txt";
         private string time = DateTime.Now.ToString("yyyy-MM-dd");
         private string errorLogFile = String.Empty;

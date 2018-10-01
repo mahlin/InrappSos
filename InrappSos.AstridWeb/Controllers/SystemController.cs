@@ -8,7 +8,6 @@ using System.Web.WebPages;
 using InrappSos.ApplicationService;
 using InrappSos.ApplicationService.DTOModel;
 using InrappSos.ApplicationService.Interface;
-using InrappSos.AstridDataAccess;
 using InrappSos.DataAccess;
 using InrappSos.DomainModel;
 using InrappSos.AstridWeb.Helpers;
@@ -24,7 +23,7 @@ namespace InrappSos.AstridWeb.Controllers
 
         public SystemController()
         {
-            _portalSosService = new PortalSosService(new PortalSosRepository(new InrappSosDbContext()), new PortalSosAstridRepository(new InrappSosIdentityDbContext()));
+            _portalSosService = new PortalSosService(new PortalSosRepository(new InrappSosDbContext(), new InrappSosAstridDbContext()));
 
         }
 

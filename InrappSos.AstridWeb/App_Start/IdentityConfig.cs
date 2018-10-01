@@ -7,7 +7,7 @@ using System.Net.Mime;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Configuration;
-using InrappSos.AstridDataAccess;
+using InrappSos.DataAccess;
 using InrappSos.DomainModel;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -114,7 +114,7 @@ namespace InrappSos.AstridWeb
             IOwinContext context)
         {
             var manager =
-                new ApplicationUserManager(new UserStore<AppUserAdmin>(context.Get<InrappSosIdentityDbContext>()));
+                new ApplicationUserManager(new UserStore<AppUserAdmin>(context.Get<InrappSosAstridDbContext>()));
             // Configure validation logic for usernames
             manager.UserValidator = new UserValidator<AppUserAdmin>(manager)
             {
@@ -193,7 +193,7 @@ namespace InrappSos.AstridWeb
         public static ApplicationRoleManager Create(IdentityFactoryOptions<ApplicationRoleManager> options,
             IOwinContext context)
         {
-            var appRoleManager = new ApplicationRoleManager(new RoleStore<IdentityRole>(context.Get<InrappSosIdentityDbContext>()));
+            var appRoleManager = new ApplicationRoleManager(new RoleStore<IdentityRole>(context.Get<InrappSosAstridDbContext>()));
             return appRoleManager;
         }
     }

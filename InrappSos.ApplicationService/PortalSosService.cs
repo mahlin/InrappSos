@@ -13,7 +13,6 @@ using System.Runtime.Remoting.Messaging;
 using InrappSos.ApplicationService.DTOModel;
 using InrappSos.ApplicationService.Interface;
 using InrappSos.ApplicationService.Helpers;
-using InrappSos.AstridDataAccess;
 using InrappSos.DataAccess;
 using InrappSos.DomainModel;
 using Microsoft.AspNet.Identity;
@@ -25,7 +24,6 @@ namespace InrappSos.ApplicationService
     {
 
         private readonly IPortalSosRepository _portalSosRepository;
-        private readonly IPortalSosAstridRepository _portalSosAstridRepository;
 
         System.Globalization.CultureInfo _culture = new System.Globalization.CultureInfo("sv-SE");
 
@@ -33,13 +31,6 @@ namespace InrappSos.ApplicationService
         public PortalSosService(IPortalSosRepository portalSosRepository)
         {
             _portalSosRepository = portalSosRepository;
-
-        }
-
-        public PortalSosService(IPortalSosRepository portalSosRepository, IPortalSosAstridRepository portalSosAstridRepository)
-        {
-            _portalSosRepository = portalSosRepository;
-            _portalSosAstridRepository = portalSosAstridRepository;
 
         }
 
@@ -177,7 +168,7 @@ namespace InrappSos.ApplicationService
 
         public IEnumerable<AppUserAdmin> HamtaAdminUsers()
         {
-            var adminUsers = _portalSosAstridRepository.GetAdminUsers();
+            var adminUsers = _portalSosRepository.GetAdminUsers();
             return adminUsers;
         }
 
@@ -1200,7 +1191,7 @@ namespace InrappSos.ApplicationService
         {
             user.AndradDatum = DateTime.Now;
             user.AndradAv = userName;
-            _portalSosAstridRepository.UpdateAdminUser(user);
+            _portalSosRepository.UpdateAdminUser(user);
         }
 
         public void UppdateraKontaktnummerForAnvandare(string userId, string tfnnr)
@@ -1331,7 +1322,7 @@ namespace InrappSos.ApplicationService
         {
             user.AndradAv = userName;
             user.AndradDatum = DateTime.Now;
-            _portalSosAstridRepository.UpdateAdminUserInfo(user);
+            _portalSosRepository.UpdateAdminUserInfo(user);
         }
 
         public void SparaOppettider(OpeningHoursInfoDTO oppetTider, string userName)
@@ -1491,7 +1482,7 @@ namespace InrappSos.ApplicationService
 
         public void TaBortAdminAnvandare(string userId)
         {
-            _portalSosAstridRepository.DeleteAdminUser(userId);
+            _portalSosRepository.DeleteAdminUser(userId);
         }
 
         private IEnumerable<RapporteringsresultatDTO> ConvertRappListDBToVM(IEnumerable<Rapporteringsresultat> rappResList, int regId, int delRegId)

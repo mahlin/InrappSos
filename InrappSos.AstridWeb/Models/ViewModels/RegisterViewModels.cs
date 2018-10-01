@@ -31,7 +31,7 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public string Registernamn { get; set; }
             public string Beskrivning { get; set; }
             public string Kortnamn { get; set; }
-            public bool InrappSos { get; set; }
+            public bool Inrapporteringsportal { get; set; }
 
         }
 
@@ -45,7 +45,7 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public string Kortnamn { get; set; }
             public string Beskrivning { get; set; }
             public string Slussmapp { get; set; }
-            public bool InrappSos { get; set; }
+            public bool Inrapporteringsportal { get; set; }
 
         }
     }

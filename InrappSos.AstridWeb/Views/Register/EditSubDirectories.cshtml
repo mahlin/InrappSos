@@ -57,7 +57,7 @@
                     "Delregisternamn": subDirName,
                     "Beskrivning": subDirDescription,
                     "Kortnamn": subDirShortName,
-                    "InrappSos": subDirForPortal,
+                    "Inrapporteringsportal": subDirForPortal,
                     "Slussmapp": subDirFolder,
                     "RegisterId": $('#SelectedDirectoryId').val()
                 };
@@ -173,9 +173,9 @@
                                 <input type="text" id="SubDirectoryShortName" value="@item.Kortnamn" class="edit-mode form-control" /></text>, style: "colMinWidth"),
                                      grid.Column("Slussmapp", "Slussmapp", format: @<text><span class="display-mode"><label id="lblFolder">@item.Slussmapp</label></span>
                                     <input type="text" id="SubDirectoryFolder" value="@item.Slussmapp" class="edit-mode form-control" /></text>, style: "colMinWidth"),
-                                         grid.Column("InrappSos", "InrappSos", format: @<text>
-                                            <span class="display-mode"><input id="lblForPortal" class="checkbox" name="select" type="checkbox" disabled @(item.InrappSos ? "checked='checked'" : "") value="@item.InrappSos" /></span>
-                                            <input id="SubDirectoryForPortal" class="edit-mode checkbox" name="select" type="checkbox" @(item.InrappSos ? "checked='checked'" : "") value="@item.InrappSos" /></text>, style: "colMinWidth centered"),
+                                         grid.Column("Inrapporteringsportal", "Inrapporteringsportal", format: @<text>
+                                            <span class="display-mode"><input id="lblForPortal" class="checkbox" name="select" type="checkbox" disabled @(item.Inrapporteringsportal ? "checked='checked'" : "") value="@item.Inrapporteringsportal" /></span>
+                                            <input id="SubDirectoryForPortal" class="edit-mode checkbox" name="select" type="checkbox" @(item.Inrapporteringsportal ? "checked='checked'" : "") value="@item.Inrapporteringsportal" /></text>, style: "colMinWidth centered"),
 
                                               grid.Column(null, format: @<text>
                                                 <button class="edit-user display-mode btn btn-default">Ändra</button>

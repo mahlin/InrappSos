@@ -7,7 +7,6 @@ using System.Web.Mvc;
 using System.Web.WebPages;
 using InrappSos.ApplicationService;
 using InrappSos.ApplicationService.Interface;
-using InrappSos.AstridDataAccess;
 using InrappSos.DataAccess;
 using InrappSos.DomainModel;
 using InrappSos.AstridWeb.Helpers;
@@ -26,14 +25,12 @@ namespace InrappSos.AstridWeb.Controllers
         public AdminController(ApplicationUserManager userManager)
         {
             UserManager = userManager;
-            _portalSosService = new PortalSosService(new PortalSosRepository(new InrappSosDbContext()), new PortalSosAstridRepository(new InrappSosIdentityDbContext()));
+            _portalSosService = new PortalSosService(new PortalSosRepository(new InrappSosDbContext(), new InrappSosAstridDbContext()));
 
         }
-
         public AdminController()
         {
-            _portalSosService = new PortalSosService(new PortalSosRepository(new InrappSosDbContext()), new PortalSosAstridRepository(new InrappSosIdentityDbContext()));
-
+            _portalSosService = new PortalSosService(new PortalSosRepository(new InrappSosDbContext(), new InrappSosAstridDbContext()));
         }
 
         public ApplicationUserManager UserManager

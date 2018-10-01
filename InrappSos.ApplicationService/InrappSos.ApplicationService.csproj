@@ -76,10 +76,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\InrappSos.AstridDataAccess\InrappSos.AstridDataAccess.csproj">
-      <Project>{068ea612-a461-4e44-8929-4b59ce54e5cd}</Project>
-      <Name>InrappSos.AstridDataAccess</Name>
-    </ProjectReference>
     <ProjectReference Include="..\InrappSos.DomainModel\InrappSos.DomainModel.csproj">
       <Project>{D48C58E7-FF52-45E0-8CE2-7D5EBDE99B7F}</Project>
       <Name>InrappSos.DomainModel</Name>

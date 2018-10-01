@@ -9,6 +9,17 @@ namespace InrappSos.DataAccess
 {
     public interface IPortalSosRepository
     {
+        //****************** Metoder för AtridDB *************************//
+        IEnumerable<AppUserAdmin> GetAdminUsers();
+        string GetAdminUserEmail(string userId);
+        void UpdateAdminUser(AppUserAdmin user);
+
+        void UpdateAdminUserInfo(AppUserAdmin user);
+
+        void DeleteAdminUser(string userId);
+
+        //****************************************************************//
+
         void DisableContact(string userId);
         void EnableContact(string userId);
         IEnumerable<Leverans> GetLeveranserForOrganisation(int orgId);

@@ -337,10 +337,6 @@
       <Project>{97874577-75b0-40a7-a195-a25a2f0c16cb}</Project>
       <Name>InrappSos.ApplicationService</Name>
     </ProjectReference>
-    <ProjectReference Include="..\InrappSos.AstridDataAccess\InrappSos.AstridDataAccess.csproj">
-      <Project>{068ea612-a461-4e44-8929-4b59ce54e5cd}</Project>
-      <Name>InrappSos.AstridDataAccess</Name>
-    </ProjectReference>
     <ProjectReference Include="..\InrappSos.DataAccess\InrappSos.DataAccess.csproj">
       <Project>{3f4ed4fa-27a2-4b11-bce8-5cede12297b2}</Project>
       <Name>InrappSos.DataAccess</Name>

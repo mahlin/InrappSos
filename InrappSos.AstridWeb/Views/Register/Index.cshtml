@@ -53,7 +53,7 @@
                     "Registernamn": regName,
                     "Beskrivning": regDescription,
                     "Kortnamn": regShortName,
-                    "InrappSos": regForPortal
+                    "Inrapporteringsportal": regForPortal
                 };
                 //Posting AdmRegister object to controller's Update action method
                 $.ajax({
@@ -126,9 +126,9 @@
 
                             grid.Column("Kortnamn", "Kortnamn", format: @<text><span class="display-mode"><label id="lblShortName">@item.Kortnamn</label></span>
                                 <input type="text" id="RegisterShortName" value="@item.Kortnamn" class="edit-mode form-control" /></text>, style: "colMinWidth"),
-                            grid.Column("InrappSos", "InrappSos", format: @<text>
-                                <span class="display-mode"><input id="lblForPortal" class="checkbox" name="select" type="checkbox" disabled @(item.InrappSos ? "checked='checked'" : "") value="@item.InrappSos"/></span>
-                                <input id="RegisterForPortal" class="edit-mode checkbox" name="select" type="checkbox" @(item.InrappSos ? "checked='checked'" : "") value="@item.InrappSos"/></text>, style: "colMinWidth centered"),
+                            grid.Column("Inrapporteringsportal", "Inrapporteringsportal", format: @<text>
+                                <span class="display-mode"><input id="lblForPortal" class="checkbox" name="select" type="checkbox" disabled @(item.Inrapporteringsportal ? "checked='checked'" : "") value="@item.Inrapporteringsportal"/></span>
+                                <input id="RegisterForPortal" class="edit-mode checkbox" name="select" type="checkbox" @(item.Inrapporteringsportal ? "checked='checked'" : "") value="@item.Inrapporteringsportal"/></text>, style: "colMinWidth centered"),
 
 
 

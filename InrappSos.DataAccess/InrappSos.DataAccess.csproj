@@ -75,6 +75,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="InrappSosDbContext.cs" />
+    <Compile Include="InrappSosAstridDbContext.cs" />
     <Compile Include="IPortalSosRepository.cs" />
     <Compile Include="PortalSosRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

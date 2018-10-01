@@ -13,12 +13,60 @@ namespace InrappSos.DataAccess
     {
 
         private InrappSosDbContext DbContext { get; }
+        private InrappSosAstridDbContext AstridDbContext { get; }
 
 
         public PortalSosRepository(InrappSosDbContext dbContext)
         {
             DbContext = dbContext;
         }
+
+        public PortalSosRepository(InrappSosDbContext dbContext, InrappSosAstridDbContext astridDbContext)
+        {
+            DbContext = dbContext;
+            AstridDbContext = astridDbContext;
+        }
+
+
+        //************************ Metoder för AstridDB *****************************************************************//
+        public IEnumerable<AppUserAdmin> GetAdminUsers()
+        {
+            var adminUsers = AstridDbContext.Users.ToList();
+            return adminUsers;
+        }
+
+        public string GetAdminUserEmail(string userId)
+        {
+            var email = AstridDbContext.Users.Where(x => x.Id == userId).Select(x => x.Email).SingleOrDefault();
+            return email;
+        }
+
+        public void UpdateAdminUser(AppUserAdmin user)
+        {
+            var usrDb = AstridDbContext.Users.Where(u => u.Id == user.Id).Select(u => u).SingleOrDefault();
+            usrDb.PhoneNumber = user.PhoneNumber;
+            usrDb.Email = user.Email;
+            usrDb.AndradDatum = user.AndradDatum;
+            usrDb.AndradAv = user.AndradAv;
+            AstridDbContext.SaveChanges();
+        }
+
+        public void UpdateAdminUserInfo(AppUserAdmin user)
+        {
+            var userDb = AstridDbContext.Users.SingleOrDefault(x => x.Id == user.Id);
+            userDb.AndradAv = user.AndradAv;
+            userDb.AndradDatum = user.AndradDatum;
+            AstridDbContext.SaveChanges();
+        }
+
+        public void DeleteAdminUser(string userId)
+        {
+            var cuserToDelete = AstridDbContext.Users.SingleOrDefault(x => x.Id == userId);
+            AstridDbContext.Users.Remove(cuserToDelete);
+            AstridDbContext.SaveChanges();
+        }
+
+        //*************************************************************************************************************************//
 
         private IEnumerable<Leverans> AllaLeveranser()
         {
@@ -191,6 +239,8 @@ namespace InrappSos.DataAccess
 
         public IEnumerable<AdmUppgiftsskyldighet> GetReportObligationInformationForOrg(int orgId)
         {
+            var tmp = DbContext.AdmUppgiftsskyldighet.Where(x => x.OrganisationId == orgId).ToList();
+            
             var reportObligationInfo = DbContext.AdmUppgiftsskyldighet.Where(x => x.OrganisationId == orgId).Include(x => x.AdmDelregister).ToList();
             return reportObligationInfo;
         }
@@ -500,13 +550,13 @@ namespace InrappSos.DataAccess
 
         public IEnumerable<AdmRegister> GetAllRegistersForPortal()
         {
-            var registersList = DbContext.AdmRegister.Where(x => x.InrappSos).ToList();
+            var registersList = DbContext.AdmRegister.Where(x => x.Inrapporteringsportal).ToList();
             return registersList;
         }
 
         public IEnumerable<AdmDelregister> GetAllSubDirectoriesForPortal()
         {
-            var delregistersList = DbContext.AdmDelregister.Where(x => x.InrappSos).ToList();
+            var delregistersList = DbContext.AdmDelregister.Where(x => x.Inrapporteringsportal).ToList();
             return delregistersList;
         }
 
@@ -758,7 +808,7 @@ namespace InrappSos.DataAccess
 
             var delregister = DbContext.AdmDelregister
                 .Include(f => f.AdmFilkrav.Select(q => q.AdmForvantadfil))
-                .Where(x => x.InrappSos)
+                .Where(x => x.Inrapporteringsportal)
                 .ToList();
 
 
@@ -780,7 +830,7 @@ namespace InrappSos.DataAccess
             var delregister = DbContext.AdmDelregister
                 .Include(z => z.AdmRegister)
                 .Include(f => f.AdmFilkrav.Select(q => q.AdmForvantadfil))
-                .Where(x => x.InrappSos && uppgSkyldighetDelRegIds.Contains(x.Id))
+                .Where(x => x.Inrapporteringsportal && uppgSkyldighetDelRegIds.Contains(x.Id))
                 .Include(f => f.AdmFilkrav.Select(q => q.AdmForvantadleverans))
                 .ToList();
 
@@ -1099,7 +1149,7 @@ namespace InrappSos.DataAccess
             registerToUpdate.Registernamn = directory.Registernamn;
             registerToUpdate.Beskrivning = directory.Beskrivning;
             registerToUpdate.Kortnamn = directory.Kortnamn;
-            registerToUpdate.InrappSos = directory.InrappSos;
+            registerToUpdate.Inrapporteringsportal = directory.Inrapporteringsportal;
             registerToUpdate.AndradAv = directory.AndradAv;
             registerToUpdate.AndradDatum = directory.AndradDatum;
 
@@ -1112,7 +1162,7 @@ namespace InrappSos.DataAccess
             subDirectoryToUpdate.Delregisternamn = subDirectory.Delregisternamn;
             subDirectoryToUpdate.Beskrivning = subDirectory.Beskrivning;
             subDirectoryToUpdate.Kortnamn = subDirectory.Kortnamn;
-            subDirectoryToUpdate.InrappSos = subDirectory.InrappSos;
+            subDirectoryToUpdate.Inrapporteringsportal = subDirectory.Inrapporteringsportal;
             subDirectoryToUpdate.Slussmapp = subDirectory.Slussmapp;
             subDirectoryToUpdate.AndradAv = subDirectory.AndradAv;
             subDirectoryToUpdate.AndradDatum = subDirectory.AndradDatum;

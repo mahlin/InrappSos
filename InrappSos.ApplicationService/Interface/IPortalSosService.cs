@@ -14,7 +14,7 @@ namespace InrappSos.ApplicationService.Interface
         string ClosedComingWeek();
         string HelgdagComingWeek();
         string SpecialdagComingWeek();
-        IEnumerable<FilloggDetaljDTO> FiltreraHistorikForAnvandare(string userId, IEnumerable<FilloggDetaljDTO> historikForOrganisation);
+        IEnumerable<FilloggDetaljDTO> FiltreraHistorikForAnvandare(string userId, List<RegisterInfo> valdaDelregisterList, List<FilloggDetaljDTO> historikForOrganisation);
 
         IEnumerable<AdmFAQKategori> HamtaAllaFAQs();
 
@@ -138,6 +138,12 @@ namespace InrappSos.ApplicationService.Interface
 
         IEnumerable<FilloggDetaljDTO> HamtaHistorikForOrganisation(int orgId);
 
+        IEnumerable<FilloggDetaljDTO> HamtaTop10HistorikForOrganisation(int orgId);
+
+        IEnumerable<FilloggDetaljDTO> HamtaTop10HistorikForOrganisationAndUser(int orgId, string userId);
+
+        IEnumerable<FilloggDetaljDTO> HamtaTop10HistorikForOrganisationAndDelreg(int orgId, List<RegisterInfo> valdaDelregister);
+
         IEnumerable<AppUserAdmin> HamtaAdminUsers();
 
         IEnumerable<RapporteringsresultatDTO> HamtaRapporteringsresultatForDelregOchPeriod(int delRegId, string period);
@@ -160,7 +166,9 @@ namespace InrappSos.ApplicationService.Interface
 
         string HamtaSammanlagdStatusForPeriod(IEnumerable<FilloggDetaljDTO> historikLista);
 
-        IEnumerable<RegisterInfo> HamtaValdaRegistersForAnvandare(string userId, int orgId);
+        //IEnumerable<RegisterInfo> HamtaValdaRegistersForAnvandare(string userId, int orgId);
+
+        IEnumerable<RegisterInfo> HamtaValdaDelregisterForAnvandare(string userId, int orgId);
 
         IEnumerable<RegisterInfo> HamtaRegistersMedAnvandaresVal(string userId, int orgId);
 

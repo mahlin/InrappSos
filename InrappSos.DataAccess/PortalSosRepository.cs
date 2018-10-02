@@ -93,6 +93,24 @@ namespace InrappSos.DataAccess
             return levIdnForOrg;
         }
 
+        public IEnumerable<Leverans> GetTop10LeveranserForOrganisation(int orgId)
+        {
+            var levIdnForOrg = DbContext.Leverans.Where(a => a.OrganisationId == orgId).OrderByDescending(a => a.Leveranstidpunkt).Take(10).ToList();
+            return levIdnForOrg;
+        }
+
+        public IEnumerable<Leverans> GetTop10LeveranserForOrganisationAndUser(int orgId, string userId)
+        {
+            var levIdnForOrg = DbContext.Leverans.Where(a => a.OrganisationId == orgId && a.ApplicationUserId == userId).OrderByDescending(a => a.Leveranstidpunkt).Take(10).ToList();
+            return levIdnForOrg;
+        }
+
+        public IEnumerable<Leverans> GetTop10LeveranserForOrganisationAndDelreg(int orgId, int delregId)
+        {
+            var levIdnForOrg = DbContext.Leverans.Where(a => a.OrganisationId == orgId && a.DelregisterId == delregId).OrderByDescending(a => a.Leveranstidpunkt).Take(10).ToList();
+            return levIdnForOrg;
+        }
+
         public IEnumerable<int> GetLeveransIdnForOrganisation(int orgId)
         {
             var levIdnForOrg = AllaLeveranser().Where(a => a.OrganisationId == orgId).Select(a => a.Id).ToList();

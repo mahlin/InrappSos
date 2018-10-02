@@ -916,7 +916,7 @@ namespace InrappSos.AstridWeb.Controllers
         private string GetContactsChosenSubDirectories(OrganisationViewModels.ApplicationUserViewModel contact)
         {
             var valdaDelregister = String.Empty;
-            var regList = _portalSosService.HamtaValdaRegistersForAnvandare(contact.ID, contact.OrganisationId).ToList();
+            var regList = _portalSosService.HamtaValdaDelregisterForAnvandare(contact.ID, contact.OrganisationId).ToList();
 
             for (int i = 0; i < regList.Count(); i++)
             {

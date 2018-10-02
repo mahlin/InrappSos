@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using InrappSos.DataAccess;
 using InrappSos.ApplicationService;
@@ -11,20 +10,19 @@ using InrappSos.ApplicationService.Helpers;
 using InrappSos.ApplicationService.Interface;
 using InrappSos.DomainModel;
 using InrappSos.FilipWeb.Models;
-using InrappSos.FilipWeb.Models.ViewModels;
-using Microsoft.Ajax.Utilities;
+using InrappSosl.FilipWeb.Models;
 using Microsoft.AspNet.Identity;
 
 namespace InrappSos.FilipWeb.Controllers
 {
     public class HistoryController : Controller
     {
-        private readonly IPortalSosService _portalSosService;
+        private readonly IPortalSosService _portalService;
 
 
         public HistoryController()
         {
-            _portalSosService =
+            _portalService =
                 new PortalSosService(new PortalSosRepository(new InrappSosDbContext()));
 
         }
@@ -34,20 +32,20 @@ namespace InrappSos.FilipWeb.Controllers
         public ActionResult Index(int selectedRegId = 0)
         {
             //Kolla om öppet, annars visa stängt-sida
-            if (!_portalSosService.IsOpen())
+            if (!_portalService.IsOpen())
             {
-                ViewBag.Text = _portalSosService.HamtaInfoText("Stangtsida");
+                ViewBag.Text = _portalService.HamtaInfoText("Stangtsida");
                 return View("Closed");
             }
             var model = new HistoryViewModels.HistoryViewModel();
             try
             {
                 var userId = User.Identity.GetUserId();
-                var userOrg = _portalSosService.HamtaOrgForAnvandare(User.Identity.GetUserId());
-                IEnumerable<FilloggDetaljDTO> historyFileList = _portalSosService.HamtaHistorikForOrganisation(userOrg.Id);
+                var userOrg = _portalService.HamtaOrgForAnvandare(User.Identity.GetUserId());
+                IEnumerable<FilloggDetaljDTO> historyFileList = _portalService.HamtaHistorikForOrganisation(userOrg.Id);
                 model.HistorikLista = historyFileList.ToList();
                 model.OrganisationsNamn = userOrg.Organisationsnamn;
-                IEnumerable<AdmRegister> admRegList = _portalSosService.HamtaRegisterForAnvandare(userId, userOrg.Id);
+                IEnumerable<AdmRegister> admRegList = _portalService.HamtaRegisterForAnvandare(userId, userOrg.Id);
                 model.RegisterList = ConvertAdmRegisterToViewModel(admRegList.ToList());
                 model.SelectedYear = DateTime.Now.Year;
                 model.SelectedRegisterId = selectedRegId;
@@ -85,9 +83,9 @@ namespace InrappSos.FilipWeb.Controllers
                 model.SelectedYear = chosenYear;
 
                 var userId = User.Identity.GetUserId();
-                var userOrg = _portalSosService.HamtaOrgForAnvandare(User.Identity.GetUserId());
+                var userOrg = _portalService.HamtaOrgForAnvandare(User.Identity.GetUserId());
                 model.OrganisationsNamn = userOrg.Organisationsnamn;
-                IEnumerable<AdmRegister> admRegList = _portalSosService.HamtaRegisterForAnvandare(userId, userOrg.Id);
+                IEnumerable<AdmRegister> admRegList = _portalService.HamtaRegisterForAnvandare(userId, userOrg.Id);
 
                 //hämta historik före resp register och period inom valt år
                 foreach (var register in admRegList)
@@ -102,7 +100,7 @@ namespace InrappSos.FilipWeb.Controllers
                     //För att hitta giltiga perioder för valt år måste vi ner på registrets delregister
                     foreach (var delregister in register.AdmDelregister)
                     {
-                        var delregPerioder = _portalSosService.HamtaDelregistersPerioderForAr(delregister.Id, chosenYear);
+                        var delregPerioder = _portalService.HamtaDelregistersPerioderForAr(delregister.Id, chosenYear);
                         //för varje period för delregistret, spara i lista med perioder för registret
                         foreach (var period in delregPerioder)
                         {
@@ -110,7 +108,7 @@ namespace InrappSos.FilipWeb.Controllers
                                 periodsForRegister.Add(period);
                         }
                         //Hämta valbara år för användarens valda register
-                        var yearsForSubDir = _portalSosService.HamtaValbaraAr(delregister.Id);
+                        var yearsForSubDir = _portalService.HamtaValbaraAr(delregister.Id);
                         foreach (var year in yearsForSubDir)
                         {
                             if (!selectableYearsForUser.Contains(year))
@@ -132,18 +130,18 @@ namespace InrappSos.FilipWeb.Controllers
                         //TODO - fulfix. Refactor this. Special för EKB-År
                         if (register.Kortnamn == "EKB" && period.Length == 4)
                         {
-                            leveransStatus.Rapporteringsstart = _portalSosService.HamtaRapporteringsstartForRegisterOchPeriodSpecial(register.Id, period);
-                            leveransStatus.Rapporteringssenast = _portalSosService.HamtaSenasteRapporteringForRegisterOchPeriodSpecial(register.Id, period);
+                            leveransStatus.Rapporteringsstart = _portalService.HamtaRapporteringsstartForRegisterOchPeriodSpecial(register.Id, period);
+                            leveransStatus.Rapporteringssenast = _portalService.HamtaSenasteRapporteringForRegisterOchPeriodSpecial(register.Id, period);
                         }
                         else
                         {
-                            leveransStatus.Rapporteringsstart = _portalSosService.HamtaRapporteringsstartForRegisterOchPeriod(register.Id, period);
-                            leveransStatus.Rapporteringssenast = _portalSosService.HamtaSenasteRapporteringForRegisterOchPeriod(register.Id, period);
+                            leveransStatus.Rapporteringsstart = _portalService.HamtaRapporteringsstartForRegisterOchPeriod(register.Id, period);
+                            leveransStatus.Rapporteringssenast = _portalService.HamtaSenasteRapporteringForRegisterOchPeriod(register.Id, period);
                         }
-                        leveransStatus.HistorikLista = _portalSosService.HamtaHistorikForOrganisationRegisterPeriod(userOrg.Id, register.Id, period).ToList();
+                        leveransStatus.HistorikLista = _portalService.HamtaHistorikForOrganisationRegisterPeriod(userOrg.Id, register.Id, period).ToList();
                         if (leveransStatus.HistorikLista.Any())
                         {
-                            leveransStatus.Status = _portalSosService.HamtaSammanlagdStatusForPeriod(leveransStatus.HistorikLista);
+                            leveransStatus.Status = _portalService.HamtaSammanlagdStatusForPeriod(leveransStatus.HistorikLista);
                         }
                         else
                         {

@@ -10,13 +10,13 @@ using System.Web.Configuration;
 using System.Web.Hosting;
 using System.Web.Mvc;
 using InrappSos.DataAccess;
-using InrappSos.FilipWeb.Models;
-using InrappSos.FilipWeb.Models.ViewModels;
 using InrappSos.ApplicationService;
 using InrappSos.ApplicationService.DTOModel;
 using InrappSos.ApplicationService.Interface;
 using InrappSos.ApplicationService.Helpers;
 using InrappSos.DomainModel;
+using InrappSos.FilipWeb.Models;
+using InrappSos.FilipWeb.Models.ViewModels;
 using Microsoft.AspNet.Identity;
 
 namespace InrappSos.FilipWeb.Controllers
@@ -24,7 +24,7 @@ namespace InrappSos.FilipWeb.Controllers
     [MvcApplication.NoDirectAccessAttribute]
     public class FileUploadController : Controller
     {
-        private readonly IPortalSosService _portalSosService;
+        private readonly IPortalSosService _portalService;
         private FilesViewModel _model = new FilesViewModel();
         FilesHelper filesHelper;
         //String tempPath = "~/somefiles/";
@@ -44,7 +44,7 @@ namespace InrappSos.FilipWeb.Controllers
             filesHelper = new FilesHelper(StorageRoot);
             //filesHelper = new FilesHelper(DeleteURL, DeleteType, StorageRoot, UrlBase, tempPath, serverMapPath);
 
-            _portalSosService =
+            _portalService =
                 new PortalSosService(new PortalSosRepository(new InrappSosDbContext()));
         }
 
@@ -54,26 +54,26 @@ namespace InrappSos.FilipWeb.Controllers
             try
             {
                 //Kolla om öppet, annars visa stängt-sida
-                if (!_portalSosService.IsOpen())
+                if (!_portalService.IsOpen())
                 {
-                    ViewBag.Text = _portalSosService.HamtaInfoText("Stangtsida");
+                    ViewBag.Text = _portalService.HamtaInfoText("Stangtsida");
                     return View("Closed");
                 }
-                var userOrg = _portalSosService.HamtaOrgForAnvandare(User.Identity.GetUserId());
+                var userOrg = _portalService.HamtaOrgForAnvandare(User.Identity.GetUserId());
                 //Hämta info om valbara register
-                var registerInfoList = _portalSosService.HamtaValdaRegistersForAnvandare(User.Identity.GetUserId(), userOrg.Id);
-                _model.RegisterList = registerInfoList.ToList();
+                var valdaDelregisterInfoList = _portalService.HamtaValdaDelregisterForAnvandare(User.Identity.GetUserId(), userOrg.Id).ToList();
+                _model.RegisterList = valdaDelregisterInfoList;
 
                 // Ladda drop down lists.  
-                this.ViewBag.RegisterList = CreateRegisterDropDownList(registerInfoList);
+                this.ViewBag.RegisterList = CreateRegisterDropDownList(valdaDelregisterInfoList);
                 _model.SelectedRegisterId = "0";
                 _model.SelectedPeriod = "0";
 
                 //Hämta historiken för användarens organisation/kommun
                 var userId = User.Identity.GetUserId();
                 
-                //var kommunKodForUser = _portalSosService.HamtaKommunKodForAnvandare(userId);
-                //var orgIdForUser = _portalSosService.HamtaUserOrganisationId(userId);
+                //var kommunKodForUser = _portalService.HamtaKommunKodForAnvandare(userId);
+                //var orgIdForUser = _portalService.HamtaUserOrganisationId(userId);
 
                 var kommunKodForUser = userOrg.Kommunkod;
                 var orgIdForUser = userOrg.Id;
@@ -81,12 +81,15 @@ namespace InrappSos.FilipWeb.Controllers
                 _model.StartUrl = ConfigurationManager.AppSettings["StartUrl"];
                 _model.GiltigKommunKod = kommunKodForUser;
                 _model.OrganisationsNamn = userOrg.Organisationsnamn;
-                IEnumerable<FilloggDetaljDTO> historyFileList = _portalSosService.HamtaHistorikForOrganisation(orgIdForUser);
+                //IEnumerable <FilloggDetaljDTO> historyFileList = _portalService.HamtaHistorikForOrganisation(orgIdForUser);
+                //IEnumerable<FilloggDetaljDTO> historyFileList = _portalService.HamtaTop10HistorikForOrganisationAndUser(orgIdForUser, userId);
+                //var historyFileList = _portalService.HamtaTop10HistorikForOrganisation(orgIdForUser).ToList();
+                var historyFileList = _portalService.HamtaTop10HistorikForOrganisationAndDelreg(orgIdForUser, valdaDelregisterInfoList).ToList();
 
                 //Filtrera historiken utfrån användarens valda register
-                IEnumerable<FilloggDetaljDTO> filteredHistoryFileList = _portalSosService.FiltreraHistorikForAnvandare(userId, historyFileList);
+                IEnumerable<FilloggDetaljDTO> filteredHistoryFileList = _portalService.FiltreraHistorikForAnvandare(userId, valdaDelregisterInfoList, historyFileList);
 
-                _model.HistorikLista = filteredHistoryFileList.ToList();
+                _model.HistorikLista = historyFileList;
             }
             catch (Exception e)
             {
@@ -107,7 +110,6 @@ namespace InrappSos.FilipWeb.Controllers
         {
             JsonFiles ListOfFiles = filesHelper.GetFileList();
 
-            //IEnumerable<FilloggDetaljDTO> historyFileList = _portalSosService.HamtaHistorikForKommun(1);
 
             var model = new FilesViewModel()
             {
@@ -132,7 +134,7 @@ namespace InrappSos.FilipWeb.Controllers
             var userName = "";
             try
             {
-                var kommunKod = _portalSosService.HamtaKommunKodForAnvandare(User.Identity.GetUserId());
+                var kommunKod = _portalService.HamtaKommunKodForAnvandare(User.Identity.GetUserId());
                 userName = User.Identity.GetUserName();
                 var CurrentContext = HttpContext;
 
@@ -187,7 +189,7 @@ namespace InrappSos.FilipWeb.Controllers
                 {
                     try
                     {
-                        _portalSosService.SparaTillDatabasFillogg(userName, itemFile.name, itemFile.sosName, itemFile.leveransId, itemFile.sequenceNumber);
+                        _portalService.SparaTillDatabasFillogg(userName, itemFile.name, itemFile.sosName, itemFile.leveransId, itemFile.sequenceNumber);
                     }
                     catch (Exception e)
                     {
@@ -275,10 +277,10 @@ namespace InrappSos.FilipWeb.Controllers
 
         //public IEnumerable<RegisterInfo> GetRegisterInfo()
         //{
-        //    var allaRegisterList= _portalSosService.HamtaAllRegisterInformation();
+        //    var allaRegisterList= _portalService.HamtaAllRegisterInformation();
 
         //    //Visa bara de register som användaren valt att repportera till
-        //    var chosenRegisters = _portalSosService.HamtaValdaRegistersForAnvandare(User.Identity.GetUserId());
+        //    var chosenRegisters = _portalService.HamtaValdaRegistersForAnvandare(User.Identity.GetUserId());
 
         //    foreach (var register in allaRegisterList)
         //    {
@@ -297,11 +299,11 @@ namespace InrappSos.FilipWeb.Controllers
         /// Create list for register-dropdown  
         /// </summary>  
         /// <returns>Return register for drop down list.</returns>  
-        private IEnumerable<SelectListItem> CreateRegisterDropDownList(IEnumerable<RegisterInfo> registerInfoList)
+        private IEnumerable<SelectListItem> CreateRegisterDropDownList(List<RegisterInfo> valdaDelregisterInfoList)
         {
             SelectList lstobj = null;
 
-            var list = registerInfoList
+            var list = valdaDelregisterInfoList
                 .Select(p =>
                     new SelectListItem
                     {
@@ -314,15 +316,15 @@ namespace InrappSos.FilipWeb.Controllers
 
             return lstobj;
         }
-
+         
         
         //public FilesViewModel UpdateHistory()
         //{
         //    var model = new FilesViewModel();
         //    //TODO - refresh Historiklistan, annan model
         //    var userId = User.Identity.GetUserId();
-        //    var orgIdForUser = _portalSosService.HamtaUserOrganisationId(userId);
-        //    IEnumerable<FilloggDetaljDTO> historyFileList = _portalSosService.HamtaHistorikForOrganisation(orgIdForUser);
+        //    var orgIdForUser = _portalService.HamtaUserOrganisationId(userId);
+        //    IEnumerable<FilloggDetaljDTO> historyFileList = _portalService.HamtaHistorikForOrganisation(orgIdForUser);
         //    model.HistorikLista = historyFileList.ToList();
 
         //    return model;
@@ -331,11 +333,12 @@ namespace InrappSos.FilipWeb.Controllers
         public ActionResult RefreshFilesHistory(FilesViewModel model)
         {
             var userId = User.Identity.GetUserId();
-            var orgIdForUser = _portalSosService.HamtaUserOrganisationId(userId);
-            IEnumerable<FilloggDetaljDTO> historyFileList = _portalSosService.HamtaHistorikForOrganisation(orgIdForUser);
+            var orgIdForUser = _portalService.HamtaUserOrganisationId(userId);
+            List<FilloggDetaljDTO> historyFileList = _portalService.HamtaHistorikForOrganisation(orgIdForUser).ToList();
 
             //Filtrera historiken utfrån användarens valda register
-            IEnumerable<FilloggDetaljDTO> filteredHistoryFileList = _portalSosService.FiltreraHistorikForAnvandare(userId, historyFileList);
+            var valdaDelregisterInfoList = _portalService.HamtaValdaDelregisterForAnvandare(User.Identity.GetUserId(), orgIdForUser).ToList();
+            IEnumerable<FilloggDetaljDTO> filteredHistoryFileList = _portalService.FiltreraHistorikForAnvandare(userId, valdaDelregisterInfoList, historyFileList);
 
             model.HistorikLista = filteredHistoryFileList.ToList();
 
@@ -364,16 +367,16 @@ namespace InrappSos.FilipWeb.Controllers
                 try
                 {
                     //Hämta orgId, skapa leverans för orgId, spara i db
-                    var orgId = _portalSosService.HamtaUserOrganisationId(User.Identity.GetUserId());
+                    var orgId = _portalService.HamtaUserOrganisationId(User.Identity.GetUserId());
                     var orgenhet = new Organisationsenhet();
                     if (!String.IsNullOrEmpty(model.IngetAttRapporteraForSelectedUnitId))
                     {
-                        orgenhet = _portalSosService.HamtaOrganisationsenhetMedEnhetskod(model.IngetAttRapporteraForSelectedUnitId, orgId);
+                        orgenhet = _portalService.HamtaOrganisationsenhetMedEnhetskod(model.IngetAttRapporteraForSelectedUnitId, orgId);
                     }
                     var id = Convert.ToInt32(model.IngetAttRapporteraForRegisterId);
                     
-                    var forvLevId = _portalSosService.HamtaForvantadleveransIdForRegisterOchPeriod(Convert.ToInt32(model.IngetAttRapporteraForRegisterId),model.IngetAttRapporteraForPeriod);
-                    var levId = _portalSosService.HamtaNyttLeveransId(User.Identity.GetUserId(),User.Identity.GetUserName(), orgId, Convert.ToInt32(model.IngetAttRapporteraForRegisterId), orgenhet.Id, forvLevId,
+                    var forvLevId = _portalService.HamtaForvantadleveransIdForRegisterOchPeriod(Convert.ToInt32(model.IngetAttRapporteraForRegisterId),model.IngetAttRapporteraForPeriod);
+                    var levId = _portalService.HamtaNyttLeveransId(User.Identity.GetUserId(),User.Identity.GetUserName(), orgId, Convert.ToInt32(model.IngetAttRapporteraForRegisterId), orgenhet.Id, forvLevId,
                         "Inget att rapportera");
                 }
                 catch (Exception e)

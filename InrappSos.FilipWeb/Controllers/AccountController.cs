@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using InrappSos.FilipWeb.Models;
 using InrappSos.DataAccess;
 using InrappSos.ApplicationService;
 using InrappSos.ApplicationService.Helpers;
@@ -17,7 +18,6 @@ using InrappSos.DomainModel;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
-using InrappSos.FilipWeb.Models;
 
 namespace InrappSos.FilipWeb.Controllers
 {
@@ -27,12 +27,12 @@ namespace InrappSos.FilipWeb.Controllers
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
         private CustomIdentityResultErrorDescriber _errorDecsriber;
-        private readonly IPortalSosService _portalSosService;
+        private readonly IPortalSosService _portalService;
 
         public AccountController()
         {
             _errorDecsriber = new CustomIdentityResultErrorDescriber();
-            _portalSosService =
+            _portalService =
                 new PortalSosService(new PortalSosRepository(new InrappSosDbContext()));
         }
 
@@ -41,7 +41,7 @@ namespace InrappSos.FilipWeb.Controllers
             UserManager = userManager;
             SignInManager = signInManager;
             _errorDecsriber = new CustomIdentityResultErrorDescriber();
-            _portalSosService =
+            _portalService =
                 new PortalSosService(new PortalSosRepository(new InrappSosDbContext()));
         }
 
@@ -63,9 +63,9 @@ namespace InrappSos.FilipWeb.Controllers
         public ActionResult Login(string returnUrl)
         {
             //Kolla om öppet, annars visa stängt-sida
-            if (!_portalSosService.IsOpen())
+            if (!_portalService.IsOpen())
             {
-                ViewBag.Text = _portalSosService.HamtaInfoText("Stangtsida");
+                ViewBag.Text = _portalService.HamtaInfoText("Stangtsida");
                 return View("Closed");
             }
             ViewBag.ReturnUrl = returnUrl;
@@ -86,9 +86,9 @@ namespace InrappSos.FilipWeb.Controllers
             try
             {
                 //Kolla om öppet, annars visa stängt-sida
-                if (!_portalSosService.IsOpen())
+                if (!_portalService.IsOpen())
                 {
-                    ViewBag.Text = _portalSosService.HamtaInfoText("Stangtsida");
+                    ViewBag.Text = _portalService.HamtaInfoText("Stangtsida");
                     return View("Closed");
                 }
                 //Add this to check if the email was confirmed.
@@ -99,7 +99,7 @@ namespace InrappSos.FilipWeb.Controllers
                     return View(model);
                 }
                 //Check if users organisation or user has been disabled
-                var userOrg = _portalSosService.HamtaOrgForAnvandare(user.Id);
+                var userOrg = _portalService.HamtaOrgForAnvandare(user.Id);
                 if (userOrg.AktivTom <= DateTime.Now)
                 {
                     ModelState.AddModelError("", "Organisationen " + userOrg.Organisationsnamn + " är inaktiv, ta kontakt med " + ConfigurationManager.AppSettings["MailSender"]);
@@ -124,7 +124,7 @@ namespace InrappSos.FilipWeb.Controllers
                 {
                     case SignInStatus.Success:
                         //var user = UserManager.FindByEmail(model.Email);
-                        _portalSosService.SaveToLoginLog(user.Id, user.UserName);
+                        _portalService.SaveToLoginLog(user.Id, user.UserName);
                         return RedirectToLocal(returnUrl);
                     case SignInStatus.LockedOut:
                         return View("Lockout");
@@ -188,7 +188,7 @@ namespace InrappSos.FilipWeb.Controllers
             try
             {
                 var user = UserManager.FindByEmail(userEmail);
-                var phoneNumber = _portalSosService.HamtaAnvandaresMobilnummer(user.Id);
+                var phoneNumber = _portalService.HamtaAnvandaresMobilnummer(user.Id);
 
                 if (phoneNumber == null)
                 {
@@ -199,7 +199,7 @@ namespace InrappSos.FilipWeb.Controllers
                 else
                 {
                     var model = new VerifyCodeViewModel();
-                    model.PhoneNumberMasked = _portalSosService.MaskPhoneNumber(phoneNumber);
+                    model.PhoneNumberMasked = _portalService.MaskPhoneNumber(phoneNumber);
                     return View(model);
                 }
             }
@@ -242,7 +242,7 @@ namespace InrappSos.FilipWeb.Controllers
                 {
                     case SignInStatus.Success:
                         var user = UserManager.FindByEmail(model.UserEmail);
-                        _portalSosService.SaveToLoginLog(user.Id, user.UserName);
+                        _portalService.SaveToLoginLog(user.Id, user.UserName);
                         return RedirectToLocal(model.ReturnUrl);
                     case SignInStatus.LockedOut:
                         return View("Lockout");
@@ -272,7 +272,7 @@ namespace InrappSos.FilipWeb.Controllers
         {
             var model = new RegisterViewModel();
             //Hämta info om valbara register
-            var registerInfoList = _portalSosService.HamtaAllRegisterInformation().ToList();
+            var registerInfoList = _portalService.HamtaAllRegisterInformation().ToList();
             model.RegisterList = registerInfoList;
             //model.RegisterChoices = new List<SelectListItem>{ tmpSelItem, tmpSelItem2 };
             this.ViewBag.RegisterList = CreateRegisterDropDownList(registerInfoList);
@@ -319,7 +319,7 @@ namespace InrappSos.FilipWeb.Controllers
                         {
                             await UserManager.SetTwoFactorEnabledAsync(user.Id, true);
                             //Spara valda register
-                            //_portalSosService.SparaValdaRegistersForAnvandare(user.Id, user.UserName, model.RegisterList);
+                            //_portalService.SparaValdaRegistersForAnvandare(user.Id, user.UserName, model.RegisterList);
                             //Verifiera epostadress
                             var code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
                             var callbackUrl = Url.Action("ConfirmEmail", "Account", new {userId = user.Id, code = code},
@@ -366,7 +366,7 @@ namespace InrappSos.FilipWeb.Controllers
             {
                 var model = new RegisterViewModel();
                 var user = UserManager.FindByEmail(email);
-                //var emailText = _portalSosService.HamtaInformationsText()
+                //var emailText = _portalService.HamtaInformationsText()
                 var code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
                 var callbackUrl = Url.Action("EnableAccountConfirmEmail", "Account", new {userId = user.Id, code = code},
                     protocol: Request.Url.Scheme);
@@ -396,7 +396,7 @@ namespace InrappSos.FilipWeb.Controllers
 
         private Organisation GetOrganisationForEmailDomain(string modelEmail)
         {
-                var organisation = _portalSosService.HamtaOrgForEmailDomain(modelEmail);
+                var organisation = _portalService.HamtaOrgForEmailDomain(modelEmail);
                 return organisation;
         }
 
@@ -447,7 +447,7 @@ namespace InrappSos.FilipWeb.Controllers
             if (result.Succeeded)
             {
                 //Enable account
-                _portalSosService.AktiveraKontaktperson(userId);
+                _portalService.AktiveraKontaktperson(userId);
                 return View("EnableAccountConfirmEmail");
             }
             return View("Error");
@@ -575,7 +575,7 @@ namespace InrappSos.FilipWeb.Controllers
                     if (user != null)
                     {
                         //Set users activFrom date
-                        _portalSosService.UppdateraAktivFromForAnvandare(user.Id);
+                        _portalService.UppdateraAktivFromForAnvandare(user.Id);
 
                         return View("ConfirmRegistration");
                     }
@@ -707,7 +707,7 @@ namespace InrappSos.FilipWeb.Controllers
             {
                 user.AndradAv = user.Email;
                 user.AndradDatum = DateTime.Now;
-                _portalSosService.UppdateraAnvandarInfo(user);
+                _portalService.UppdateraAnvandarInfo(user);
 
                 return RedirectToAction("ResetPasswordConfirmation", "Account");
             }

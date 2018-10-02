@@ -23,6 +23,13 @@ namespace InrappSos.DataAccess
         void DisableContact(string userId);
         void EnableContact(string userId);
         IEnumerable<Leverans> GetLeveranserForOrganisation(int orgId);
+
+        IEnumerable<Leverans> GetTop10LeveranserForOrganisation(int orgId);
+
+        IEnumerable<Leverans> GetTop10LeveranserForOrganisationAndUser(int orgId, string userId);
+
+        IEnumerable<Leverans> GetTop10LeveranserForOrganisationAndDelreg(int orgId, int delregId);
+
         IEnumerable<int> GetLeveransIdnForOrganisation(int orgId);
 
         int GetNewLeveransId(string userId, string userName, int orgId, int regId, int orgenhetsId, int forvLevId, string status);

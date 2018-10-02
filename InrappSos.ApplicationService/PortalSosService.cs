@@ -97,27 +97,7 @@ namespace InrappSos.ApplicationService
             return specialdagarInomEnVecka;
         }
 
-        public IEnumerable<FilloggDetaljDTO> FiltreraHistorikForAnvandare(string userId, IEnumerable<FilloggDetaljDTO> historikForOrganisation)
-        {
-            var userOrg = HamtaOrgForAnvandare(userId);
-            var registerInfoList = HamtaValdaRegistersForAnvandare(userId, userOrg.Id);
-
-            var historikForAnvandareList = new List<FilloggDetaljDTO>();
-
-            foreach (var rad in historikForOrganisation)
-            {
-                foreach (var valtRegister in registerInfoList)
-                {
-                    if (rad.RegisterKortnamn == valtRegister.Kortnamn)
-                    {
-                        historikForAnvandareList.Add(rad);
-                    }
-                }
-
-            }
-            return historikForAnvandareList;
-        }
-
+        
         public Organisation HamtaOrganisation(int orgId)
         {
             var org = _portalSosRepository.GetOrganisation(orgId);
@@ -588,8 +568,83 @@ namespace InrappSos.ApplicationService
         {
             var historikLista = new List<FilloggDetaljDTO>();
             //TODO - tidsintervall?
-            //var leveransIdList = _portalSosRepository.GetLeveransIdnForOrganisation(orgId).OrderByDescending(x => x);
+            //var leveransIdList = _portalRepository.GetLeveransIdnForOrganisation(orgId).OrderByDescending(x => x);
             var leveransList = _portalSosRepository.GetLeveranserForOrganisation(orgId);
+
+            //Skapa historikrader/filloggrader
+            historikLista = SkapaHistorikrader(leveransList);
+            
+            var sorteradHistorikLista = historikLista.OrderByDescending(x => x.Leveranstidpunkt).ToList();
+
+            return sorteradHistorikLista;
+        }
+
+        public IEnumerable<FilloggDetaljDTO> HamtaTop10HistorikForOrganisation(int orgId)
+        {
+            var historikLista = new List<FilloggDetaljDTO>();
+            //TODO - tidsintervall?
+            //var leveransIdList = _portalRepository.GetLeveransIdnForOrganisation(orgId).OrderByDescending(x => x);
+            var leveransList = _portalSosRepository.GetTop10LeveranserForOrganisation(orgId);
+
+            //Skapa historikrader/filloggrader
+            historikLista = SkapaHistorikrader(leveransList);
+
+            var sorteradHistorikLista = historikLista.OrderByDescending(x => x.Leveranstidpunkt).ToList();
+
+            return sorteradHistorikLista;
+        }
+
+
+        public IEnumerable<FilloggDetaljDTO> HamtaTop10HistorikForOrganisationAndUser(int orgId, string userId)
+        {
+            var historikLista = new List<FilloggDetaljDTO>();
+            //TODO - tidsintervall?
+            //var leveransIdList = _portalRepository.GetLeveransIdnForOrganisation(orgId).OrderByDescending(x => x);
+            var leveransList = _portalSosRepository.GetTop10LeveranserForOrganisationAndUser(orgId, userId);
+
+            //Skapa historikrader/filloggrader
+            historikLista = SkapaHistorikrader(leveransList);
+
+            var sorteradHistorikLista = historikLista.OrderByDescending(x => x.Leveranstidpunkt).ToList();
+
+            return sorteradHistorikLista;
+        }
+
+        public IEnumerable<FilloggDetaljDTO> HamtaTop10HistorikForOrganisationAndDelreg(int orgId, List<RegisterInfo> valdaDelregister)
+        {
+            var historikLista = new List<FilloggDetaljDTO>();
+            var leveransList = new List<Leverans>();
+            foreach (var delreg in valdaDelregister)
+            {
+                var delregLeveransList = _portalSosRepository.GetTop10LeveranserForOrganisationAndDelreg(orgId, delreg.Id).ToList();
+                leveransList.AddRange(delregLeveransList);
+            }
+            //Skapa historikrader/filloggrader
+            historikLista = SkapaHistorikrader(leveransList.OrderByDescending(x => x.Leveranstidpunkt).Take(10));
+
+            var sorteradHistorikLista = historikLista.OrderByDescending(x => x.Leveranstidpunkt).ToList();
+
+            return sorteradHistorikLista;
+
+        }
+
+        public IEnumerable<FilloggDetaljDTO> FiltreraHistorikForAnvandare(string userId, List<RegisterInfo> valdaDelregisterList, List<FilloggDetaljDTO> historikForOrganisation)
+        {
+            var historikForAnvandareList = new List<FilloggDetaljDTO>();
+            
+
+            foreach (var rad in valdaDelregisterList)
+            {
+                var aktuellaLeveranser = historikForOrganisation.Where(x => x.RegisterKortnamn == rad.Kortnamn).ToList();
+                historikForAnvandareList.AddRange(aktuellaLeveranser);
+            }
+            return historikForAnvandareList;
+        }
+
+        private List<FilloggDetaljDTO> SkapaHistorikrader(IEnumerable<Leverans> leveransList)
+        {
+            var historikLista = new List<FilloggDetaljDTO>();
+
             foreach (var leverans in leveransList)
             {
                 var filloggDetalj = new FilloggDetaljDTO();
@@ -607,22 +662,28 @@ namespace InrappSos.ApplicationService
                 //Hämta period för aktuell leverans
                 var period = _portalSosRepository.GetPeriodForAktuellLeverans(leverans.ForvantadleveransId);
 
-
                 var filer = _portalSosRepository.GetFilerForLeveransId(leverans.Id).ToList();
                 var registerKortnamn = _portalSosRepository.GetSubDirectoryShortName(leverans.DelregisterId);
 
-                //Vid "Inget att rapportera" finns det leveranser som saknar filer. Se till att även dessa visas i historiken (#101)
                 if (!filer.Any())
                 {
+                    filloggDetalj = new FilloggDetaljDTO();
+                    filloggDetalj.Id = 0;
                     filloggDetalj.LeveransId = leverans.Id;
+                    filloggDetalj.Filnamn = " - ";
+                    filloggDetalj.Filstatus = " - ";
                     filloggDetalj.Kontaktperson = leverans.ApplicationUserId;
                     filloggDetalj.Leveransstatus = leverans.Leveransstatus;
                     filloggDetalj.Leveranstidpunkt = leverans.Leveranstidpunkt;
                     filloggDetalj.RegisterKortnamn = registerKortnamn;
-                    filloggDetalj.Resultatfil = "";
-                    filloggDetalj.Filstatus = "";
+                    filloggDetalj.Resultatfil = " - ";
                     filloggDetalj.Enhetskod = enhetskod;
                     filloggDetalj.Period = period;
+                    if (aterkoppling != null)
+                    {
+                        //filloggDetalj.Leveransstatus = aterkoppling.Leveransstatus; //Skriv ej över leveransstatusen från återkopplingen. Beslut 20180912, ärende #128
+                        filloggDetalj.Resultatfil = aterkoppling.Resultatfil;
+                    }
                     historikLista.Add(filloggDetalj);
                 }
                 else
@@ -645,12 +706,9 @@ namespace InrappSos.ApplicationService
                         historikLista.Add(filloggDetalj);
                     }
                 }
-                
             }
-            var sorteradHistorikLista = historikLista.OrderByDescending(x => x.Leveranstidpunkt).ToList();
 
-
-            return sorteradHistorikLista;
+            return historikLista;
         }
 
         public AdmForeskrift HamtaForeskriftByFilkrav(int filkravId)
@@ -885,10 +943,50 @@ namespace InrappSos.ApplicationService
             return status;
         }
 
-        public IEnumerable<RegisterInfo> HamtaValdaRegistersForAnvandare(string userId, int orgId)
+        //public IEnumerable<RegisterInfo> HamtaValdaRegistersForAnvandare(string userId, int orgId)
+        //{
+        //    var registerList = _portalSosRepository.GetChosenDelRegistersForUser(userId);
+        //    //var allaRegisterList = _portalSosRepository.GetAllRegisterInformation();
+        //    var allaRegisterList = _portalSosRepository.GetAllRegisterInformationForOrganisation(orgId);
+        //    var userRegisterList = new List<RegisterInfo>();
+
+        //    foreach (var register in allaRegisterList)
+        //    {
+        //        foreach (var userRegister in registerList)
+        //        {
+        //            if (register.Id == userRegister.DelregisterId)
+        //            {
+        //                register.SelectedFilkrav = "0";
+        //                userRegisterList.Add(register);
+        //            }
+        //        }
+        //    }
+
+        //    //Check if users organisation reports per unit. If thats the case, get list of units
+        //    foreach (var item in userRegisterList)
+        //    {
+        //        var uppgiftsskyldighet = HamtaUppgiftsskyldighetForOrganisationOchRegister(orgId, item.Id);
+        //        if (uppgiftsskyldighet.RapporterarPerEnhet)
+        //        {
+        //            item.RapporterarPerEnhet = true;
+        //            var orgUnits = _portalSosRepository.GetOrganisationUnits(orgId);
+        //            item.Organisationsenheter = new List<KeyValuePair<string, string>>();
+        //            foreach (var orgUnit in orgUnits)
+        //            {
+        //                KeyValuePair<string, string> keyValuePair = new KeyValuePair<string, string>(orgUnit.Enhetskod, orgUnit.Enhetsnamn);
+        //                item.Organisationsenheter.Add(keyValuePair);
+        //            }
+
+        //        }
+        //    }
+
+        //    return userRegisterList;
+        //}
+
+        public IEnumerable<RegisterInfo> HamtaValdaDelregisterForAnvandare(string userId, int orgId)
         {
             var registerList = _portalSosRepository.GetChosenDelRegistersForUser(userId);
-            //var allaRegisterList = _portalSosRepository.GetAllRegisterInformation();
+            //var allaRegisterList = _portalRepository.GetAllRegisterInformation();
             var allaRegisterList = _portalSosRepository.GetAllRegisterInformationForOrganisation(orgId);
             var userRegisterList = new List<RegisterInfo>();
 

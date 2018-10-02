@@ -16,7 +16,7 @@ namespace InrappSos.FilipWeb.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IPortalSosService _portalSosService =
+        private readonly IPortalSosService _portalService =
             new PortalSosService(new PortalSosRepository(new InrappSosDbContext()));
 
         public ActionResult Index()
@@ -24,27 +24,27 @@ namespace InrappSos.FilipWeb.Controllers
             try
             {
                 //Kolla om avvikande öppettider finns inom den kommande veckan
-                var str = _portalSosService.ClosedComingWeek();
+                var str = _portalService.ClosedComingWeek();
                 if (str != String.Empty)
                     ViewBag.AvvikandeOppettider = "Avvikande öppettider<br/>" + str;
-                    //"Avvikande öppettider<br/>Måndag 20 augusti 10 - 16 Underhåll <br/>Måndag 24 december stängt Julafton <br/> ";
+                //"Avvikande öppettider<br/>Måndag 20 augusti 10 - 16 Underhåll <br/>Måndag 24 december stängt Julafton <br/> ";
 
-                    //Kolla om öppet, annars visa stängt-sida
-                if (_portalSosService.IsOpen())
+                //Kolla om öppet, annars visa stängt-sida
+                if (_portalService.IsOpen())
                 {
-                    ViewBag.Text = _portalSosService.HamtaInfoText("Startsida");
+                    ViewBag.Text = _portalService.HamtaInfoText("Startsida");
 
                     return View();
                 }
                 else
                 {
-                    if (_portalSosService.IsHelgdag() || _portalSosService.IsSpecialdag())
+                    if (_portalService.IsHelgdag() || _portalService.IsSpecialdag())
                     {
-                        ViewBag.Text = _portalSosService.HamtaHelgEllerSpecialdagsInfo();
+                        ViewBag.Text = _portalService.HamtaHelgEllerSpecialdagsInfo();
                     }
                     else
                     {
-                        ViewBag.Text = _portalSosService.HamtaInfoText("Stangtsida");
+                        ViewBag.Text = _portalService.HamtaInfoText("Stangtsida");
                     }
                     return View("Closed");
                 }
@@ -63,15 +63,15 @@ namespace InrappSos.FilipWeb.Controllers
             }
         }
 
-        public ActionResult About( bool closed = false)
+        public ActionResult About(bool closed = false)
         {
             try
             {
                 //Hamta FAQs
                 var model = new AboutViewModel();
-                model.FaqCategories = _portalSosService.HamtaAllaFAQs();
+                model.FaqCategories = _portalService.HamtaAllaFAQs();
                 model.PortalClosed = closed;
-                ViewBag.Text = _portalSosService.HamtaInfoText("Hjalpsida");
+                ViewBag.Text = _portalService.HamtaInfoText("Hjalpsida");
                 return View(model);
             }
             catch (Exception e)
@@ -93,7 +93,7 @@ namespace InrappSos.FilipWeb.Controllers
             {
                 var model = new AboutViewModel();
                 model.PortalClosed = closed;
-                ViewBag.Text = _portalSosService.HamtaInfoText("Kontaktsida");
+                ViewBag.Text = _portalService.HamtaInfoText("Kontaktsida");
                 return View(model);
             }
             catch (Exception e)

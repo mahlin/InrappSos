@@ -8,10 +8,10 @@ using InrappSos.DataAccess;
 using InrappSos.ApplicationService;
 using InrappSos.ApplicationService.Helpers;
 using InrappSos.ApplicationService.Interface;
+using InrappSos.FilipWeb.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
-using InrappSos.FilipWeb.Models;
 using InrappSos.FilipWeb.Models.ViewModels;
 
 namespace InrappSos.FilipWeb.Controllers
@@ -21,12 +21,12 @@ namespace InrappSos.FilipWeb.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
-        private readonly IPortalSosService _portalSosService;
+        private readonly IPortalSosService _portalService;
         private CustomIdentityResultErrorDescriber _errorDecsriber;
 
         public ManageController()
         {
-            _portalSosService =
+            _portalService =
                 new PortalSosService(new PortalSosRepository(new InrappSosDbContext()));
             _errorDecsriber = new CustomIdentityResultErrorDescriber();
 
@@ -36,7 +36,7 @@ namespace InrappSos.FilipWeb.Controllers
         {
             UserManager = userManager;
             SignInManager = signInManager;
-            _portalSosService =
+            _portalService =
                 new PortalSosService(new PortalSosRepository(new InrappSosDbContext()));
             _errorDecsriber = new CustomIdentityResultErrorDescriber();
 
@@ -83,18 +83,18 @@ namespace InrappSos.FilipWeb.Controllers
                 : "";
 
             var userId = User.Identity.GetUserId();
-            var orgId = _portalSosService.HamtaUserOrganisationId(userId);
+            var orgId = _portalService.HamtaUserOrganisationId(userId);
 
             var model = new IndexViewModel
             {
                 HasPassword = HasPassword(),
                 PhoneNumber = await UserManager.GetPhoneNumberAsync(userId),
-                Namn = _portalSosService.HamtaAnvandaresNamn(userId),
-                ContactNumber = _portalSosService.HamtaAnvandaresKontaktnummer(userId),
+                Namn = _portalService.HamtaAnvandaresNamn(userId),
+                ContactNumber = _portalService.HamtaAnvandaresKontaktnummer(userId),
                 TwoFactor = await UserManager.GetTwoFactorEnabledAsync(userId),
                 Logins = await UserManager.GetLoginsAsync(userId),
                 BrowserRemembered = await AuthenticationManager.TwoFactorBrowserRememberedAsync(userId),
-                RegisterList = _portalSosService.HamtaRegistersMedAnvandaresVal(userId, orgId).ToList()
+                RegisterList = _portalService.HamtaRegistersMedAnvandaresVal(userId, orgId).ToList()
             };
             return View(model);
         }
@@ -175,12 +175,12 @@ namespace InrappSos.FilipWeb.Controllers
             }
             try
             {
-                _portalSosService.UppdateraKontaktnummerForAnvandare(User.Identity.GetUserId(), model.Number);
+                _portalService.UppdateraKontaktnummerForAnvandare(User.Identity.GetUserId(), model.Number);
                 var userId = User.Identity.GetUserId();
                 var user = UserManager.Users.SingleOrDefault(x => x.Id == userId);
                 user.AndradAv = user.Email;
                 user.AndradDatum = DateTime.Now;
-                _portalSosService.UppdateraAnvandarInfo(user);
+                _portalService.UppdateraAnvandarInfo(user);
                 return RedirectToAction("Index", new { Message = ManageMessageId.AddContactNumberSuccess });
             }
             catch (Exception e)
@@ -244,7 +244,7 @@ namespace InrappSos.FilipWeb.Controllers
             {
                 var model = new VerifyPhoneNumberViewModel();
                 model.PhoneNumber = phoneNumber;
-                model.PhoneNumberMasked = _portalSosService.MaskPhoneNumber(phoneNumber);
+                model.PhoneNumberMasked = _portalService.MaskPhoneNumber(phoneNumber);
                 return View(model);
             }
         }
@@ -270,9 +270,9 @@ namespace InrappSos.FilipWeb.Controllers
                     {
                         user.AndradAv = user.Email;
                         user.AndradDatum = DateTime.Now;
-                        _portalSosService.UppdateraAnvandarInfo(user);
+                        _portalService.UppdateraAnvandarInfo(user);
                         await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-                        _portalSosService.SaveToLoginLog(user.Id, user.UserName);
+                        _portalService.SaveToLoginLog(user.Id, user.UserName);
                     }
                     return RedirectToAction("Index", new {Message = ManageMessageId.AddPhoneSuccess});
                 }
@@ -334,7 +334,7 @@ namespace InrappSos.FilipWeb.Controllers
                 {
                     user.AndradAv = user.Email;
                     user.AndradDatum = DateTime.Now;
-                    _portalSosService.UppdateraAnvandarInfo(user);
+                    _portalService.UppdateraAnvandarInfo(user);
                     await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
                 }
                 return RedirectToAction("Index", new { Message = ManageMessageId.ChangePasswordSuccess });
@@ -395,12 +395,12 @@ namespace InrappSos.FilipWeb.Controllers
             }
             try
             {
-                _portalSosService.UppdateraNamnForAnvandare(User.Identity.GetUserId(), model.Name);
+                _portalService.UppdateraNamnForAnvandare(User.Identity.GetUserId(), model.Name);
                 var userId = User.Identity.GetUserId();
                 var user = UserManager.Users.SingleOrDefault(x => x.Id == userId);
                 user.AndradAv = user.Email;
                 user.AndradDatum = DateTime.Now;
-                _portalSosService.UppdateraAnvandarInfo(user);
+                _portalService.UppdateraAnvandarInfo(user);
                 return RedirectToAction("Index", new { Message = ManageMessageId.ChangeNameSuccess });
             }
             catch (Exception e)
@@ -449,7 +449,7 @@ namespace InrappSos.FilipWeb.Controllers
             try
             {
                 //Uppdatera valda register
-                _portalSosService.UppdateraValdaRegistersForAnvandare(User.Identity.GetUserId(), User.Identity.GetUserName(), model.RegisterList);
+                _portalService.UppdateraValdaRegistersForAnvandare(User.Identity.GetUserId(), User.Identity.GetUserName(), model.RegisterList);
                 return RedirectToAction("Index", new { Message = ManageMessageId.ChangeChosenRegister });
             }
             catch (Exception e)
@@ -495,7 +495,7 @@ namespace InrappSos.FilipWeb.Controllers
             try
             {
                 var userId = User.Identity.GetUserId();
-                _portalSosService.InaktiveraKontaktperson(userId);
+                _portalService.InaktiveraKontaktperson(userId);
                 //AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
             }
             catch (Exception e)
@@ -516,7 +516,7 @@ namespace InrappSos.FilipWeb.Controllers
         // GET
         public ActionResult DisabledAccount()
         {
-            ViewBag.Text = _portalSosService.HamtaInfoText("Inaktiveringssida");
+            ViewBag.Text = _portalService.HamtaInfoText("Inaktiveringssida");
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
             return View("DisabledAccount");
         }
@@ -531,7 +531,7 @@ namespace InrappSos.FilipWeb.Controllers
             try
             {
                 var userId = User.Identity.GetUserId();
-                _portalSosService.InaktiveraKontaktperson(userId);
+                _portalService.InaktiveraKontaktperson(userId);
             }
             catch (Exception e)
             {
@@ -544,7 +544,7 @@ namespace InrappSos.FilipWeb.Controllers
                 };
                 return View("CustomError", errorModel);
             }
-            return RedirectToAction("GetFAQs", new { faqCatId = faqCatId });
+            return RedirectToAction("About","Home");
         }
 
         protected override void Dispose(bool disposing)

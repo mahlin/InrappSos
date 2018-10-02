@@ -13,6 +13,7 @@
 function CheckFileName(selectedRegister, fileName) {
     var result = false;
     var regexMatch = null;
+    var tmp = null;
     //Hämta regexp för valt register
     registerLista.forEach(function(register, index) {
         if (selectedRegister === register.Id.toString()) {
@@ -22,7 +23,10 @@ function CheckFileName(selectedRegister, fileName) {
                     filkrav.RegExper.forEach(function(regexp, idx) {
                         var expression = new RegExp(regexp, "i");
                         //Kolla om filnamn matchar regex
-                        regexMatch = fileName.match(expression);
+                        tmp = fileName.match(expression);
+                        if (tmp != null) {
+                            regexMatch = tmp;
+                        }
                     });
                 }
             });
@@ -32,54 +36,7 @@ function CheckFileName(selectedRegister, fileName) {
 }
 
 
-function CheckFileName2(selectedRegister, fileName) {
-    var re;
-    var result = false;
-    //Hämta regexp för valt register
-    registerLista.forEach(function (register, index) {
-        if (selectedRegister === register.Id.toString()) {
-            var selectedFilkrav = register.SelectedFilkrav;
-            register.Filkrav.forEach(function (filkrav, ix) {
-                if (selectedFilkrav === filkrav.Id) {
-                    filkrav.RegExper.forEach(function (regexp, idx) {
-                        re = new RegExp(regexp, "i");
-                        var expression = new RegExp(regexp, "i");
-                        var res = fileName.match(expression);
-                        if (res !== null) {
-                            result = true; //Filnamn ok utifrån regexp
-                            //Kontrollera kommunkod
-                            var kommunkod = res.groups["kommunkod"];
-                            result = CheckKommunKod(kommunkod);
-                            //Kontrollera period
-                            var periodInFilename = res.groups["period"];
-                            //Hämta giltiga perioder för valt register
-                            var validPeriod = "";
-                            registerLista.forEach(function (register, index) {
-                                if (selectedRegister === register.Id.toString()) {
-                                    var selectedFilkrav = register.SelectedFilkrav;
-
-                                    register.Filkrav.forEach(function (filkrav, ix) {
-                                        if (selectedFilkrav === filkrav.Id) {
-                                            validPeriod = filkrav.Perioder;
-                                        }
-                                    });
-                                }
-                            });
-                            result = CheckPeriod(periodInFilename, validPeriod);
-                        }
-                        //if (re.test(fileName)) {
-                        //    result = true; //Filnamn ok utifrån regexp
-                        //}
-                    });
-                }
-            })
-            //re = new RegExp(register.RegExp, "i");
-        }
-    });
-    return result;
-}
-
-//function CheckFileName(selectedRegister, fileName) {
+//function CheckFileName2(selectedRegister, fileName) {
 //    var re;
 //    var result = false;
 //    //Hämta regexp för valt register
@@ -90,6 +47,62 @@ function CheckFileName2(selectedRegister, fileName) {
 //                if (selectedFilkrav === filkrav.Id) {
 //                    filkrav.RegExper.forEach(function (regexp, idx) {
 //                        re = new RegExp(regexp, "i");
+//                        var expression = new RegExp(regexp, "i");
+//                        var res = fileName.match(expression);
+//                        if (res !== null) {
+//                            result = true; //Filnamn ok utifrån regexp
+//                            //Kontrollera kommunkod
+//                            var kommunkod = res.groups["kommunkod"];
+//                            result = CheckKommunKod(kommunkod);
+//                            //Kontrollera period
+//                            var periodInFilename = res.groups["period"];
+//                            //Hämta giltiga perioder för valt register
+//                            var validPeriod = "";
+//                            registerLista.forEach(function (register, index) {
+//                                if (selectedRegister === register.Id.toString()) {
+//                                    var selectedFilkrav = register.SelectedFilkrav;
+
+//                                    register.Filkrav.forEach(function (filkrav, ix) {
+//                                        if (selectedFilkrav === filkrav.Id) {
+//                                            validPeriod = filkrav.Perioder;
+//                                        }
+//                                    });
+//                                }
+//                            });
+//                            result = CheckPeriod(periodInFilename, validPeriod);
+//                        }
+//                        //if (re.test(fileName)) {
+//                        //    result = true; //Filnamn ok utifrån regexp
+//                        //}
+//                    });
+//                }
+//            })
+//            //re = new RegExp(register.RegExp, "i");
+//        }
+//    });
+//    return result;
+//}
+
+//function CheckFileName(selectedRegister, fileName) {
+//    var re;
+//    var result = false;
+
+//    //var myString = "something format_abc";
+//    //var myRegexp = /(?:^|\s)format_(.*?)(?:\s|$)/g;
+//    //var match = myRegexp.exec(myString);
+//    //var n = (match[1]); // abc
+
+//    //Hämta regexp för valt register
+//    registerLista.forEach(function (register, index) {
+//        if (selectedRegister === register.Id.toString()) {
+//            var selectedFilkrav = register.SelectedFilkrav;
+//            register.Filkrav.forEach(function (filkrav, ix) {
+//                if (selectedFilkrav === filkrav.Id) {
+//                    filkrav.RegExper.forEach(function (regexp, idx) {
+//                        re = new RegExp(regexp,"i");
+//                        var regexMatch = fileName.match(re);
+//                        var kkod = (regexMatch[1]);
+//                        var per = (regexMatch[2]);
 //                        if (re.test(fileName)) {
 //                            result = true;
 //                        }
@@ -126,14 +139,16 @@ function CheckFileName2(selectedRegister, fileName) {
 
 function CheckKommunKodInFileName(regexMatch) {
     var validKommunKod = $('#GiltigKommunKod').val();
-    var kommunKod = regexMatch.groups["kommunkod"];
+    var kommunKod = (regexMatch[1]);
+    //var kommunKod = regexMatch.groups["kommunkod"];
     if (validKommunKod === kommunKod)
         return true;
     return false;
 }
 
 function CheckPeriodInFileName(selectedRegister, regexMatch) {
-    var periodInFilename = regexMatch.groups["period"];
+    //var periodInFilename = regexMatch.groups["period"];
+    var periodInFilename = (regexMatch[2]);
     //Get valid period for selected register
     var validPeriod = "";
     registerLista.forEach(function (register, index) {

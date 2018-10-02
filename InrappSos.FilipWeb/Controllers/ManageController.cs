@@ -516,7 +516,7 @@ namespace InrappSos.FilipWeb.Controllers
         // GET
         public ActionResult DisabledAccount()
         {
-            ViewBag.Text = _portalService.HamtaInfoText("Inaktiveringssida");
+            ViewBag.Text = _portalService.HamtaInfoText("Inaktiveringssida").Text;
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
             return View("DisabledAccount");
         }

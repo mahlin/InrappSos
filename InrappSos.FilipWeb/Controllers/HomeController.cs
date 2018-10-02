@@ -32,7 +32,7 @@ namespace InrappSos.FilipWeb.Controllers
                 //Kolla om öppet, annars visa stängt-sida
                 if (_portalService.IsOpen())
                 {
-                    ViewBag.Text = _portalService.HamtaInfoText("Startsida");
+                    ViewBag.Text = _portalService.HamtaInfoText("Startsida").Text;
 
                     return View();
                 }
@@ -44,7 +44,7 @@ namespace InrappSos.FilipWeb.Controllers
                     }
                     else
                     {
-                        ViewBag.Text = _portalService.HamtaInfoText("Stangtsida");
+                        ViewBag.Text = _portalService.HamtaInfoText("Stangtsida").Text;
                     }
                     return View("Closed");
                 }
@@ -71,7 +71,7 @@ namespace InrappSos.FilipWeb.Controllers
                 var model = new AboutViewModel();
                 model.FaqCategories = _portalService.HamtaAllaFAQs();
                 model.PortalClosed = closed;
-                ViewBag.Text = _portalService.HamtaInfoText("Hjalpsida");
+                ViewBag.Text = _portalService.HamtaInfoText("Hjalpsida").Text;
                 return View(model);
             }
             catch (Exception e)
@@ -93,7 +93,7 @@ namespace InrappSos.FilipWeb.Controllers
             {
                 var model = new AboutViewModel();
                 model.PortalClosed = closed;
-                ViewBag.Text = _portalService.HamtaInfoText("Kontaktsida");
+                ViewBag.Text = _portalService.HamtaInfoText("Kontaktsida").Text;
                 return View(model);
             }
             catch (Exception e)

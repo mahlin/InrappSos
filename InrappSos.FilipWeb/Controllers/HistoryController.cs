@@ -34,7 +34,7 @@ namespace InrappSos.FilipWeb.Controllers
             //Kolla om öppet, annars visa stängt-sida
             if (!_portalService.IsOpen())
             {
-                ViewBag.Text = _portalService.HamtaInfoText("Stangtsida");
+                ViewBag.Text = _portalService.HamtaInfoText("Stangtsida").Text;
                 return View("Closed");
             }
             var model = new HistoryViewModels.HistoryViewModel();

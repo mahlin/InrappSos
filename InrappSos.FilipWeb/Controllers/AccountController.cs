@@ -65,7 +65,7 @@ namespace InrappSos.FilipWeb.Controllers
             //Kolla om öppet, annars visa stängt-sida
             if (!_portalService.IsOpen())
             {
-                ViewBag.Text = _portalService.HamtaInfoText("Stangtsida");
+                ViewBag.Text = _portalService.HamtaInfoText("Stangtsida").Text;
                 return View("Closed");
             }
             ViewBag.ReturnUrl = returnUrl;
@@ -88,7 +88,7 @@ namespace InrappSos.FilipWeb.Controllers
                 //Kolla om öppet, annars visa stängt-sida
                 if (!_portalService.IsOpen())
                 {
-                    ViewBag.Text = _portalService.HamtaInfoText("Stangtsida");
+                    ViewBag.Text = _portalService.HamtaInfoText("Stangtsida").Text;
                     return View("Closed");
                 }
                 //Add this to check if the email was confirmed.

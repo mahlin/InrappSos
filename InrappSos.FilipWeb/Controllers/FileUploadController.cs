@@ -97,7 +97,7 @@ namespace InrappSos.FilipWeb.Controllers
                 ErrorManager.WriteToErrorLog("FileUploadController", "Index", e.ToString(), e.HResult, User.Identity.Name);
                 var errorModel = new CustomErrorPageModel
                 {
-                    Information = "Ett fel inträffade i filuppladdningssidan.",
+                    Information = "Ett fel inträffade på filuppladdningssidan.",
                     ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
                 };
                 return View("CustomError", errorModel);
@@ -334,10 +334,12 @@ namespace InrappSos.FilipWeb.Controllers
         {
             var userId = User.Identity.GetUserId();
             var orgIdForUser = _portalService.HamtaUserOrganisationId(userId);
-            List<FilloggDetaljDTO> historyFileList = _portalService.HamtaHistorikForOrganisation(orgIdForUser).ToList();
+            var valdaDelregisterInfoList = _portalService.HamtaValdaDelregisterForAnvandare(User.Identity.GetUserId(), orgIdForUser).ToList();
+
+            //List<FilloggDetaljDTO> historyFileList = _portalService.HamtaHistorikForOrganisation(orgIdForUser).ToList();
+            var historyFileList = _portalService.HamtaTop10HistorikForOrganisationAndDelreg(orgIdForUser, valdaDelregisterInfoList).ToList();
 
             //Filtrera historiken utfrån användarens valda register
-            var valdaDelregisterInfoList = _portalService.HamtaValdaDelregisterForAnvandare(User.Identity.GetUserId(), orgIdForUser).ToList();
             IEnumerable<FilloggDetaljDTO> filteredHistoryFileList = _portalService.FiltreraHistorikForAnvandare(userId, valdaDelregisterInfoList, historyFileList);
 
             model.HistorikLista = filteredHistoryFileList.ToList();

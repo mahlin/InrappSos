@@ -825,6 +825,8 @@ namespace InrappSos.DataAccess
             var registerInfoList = new List<RegisterInfo>();
 
             var delregister = DbContext.AdmDelregister
+                .Include(z => z.AdmRegister)
+                .Include(b => b.AdmForvantadleverans)
                 .Include(f => f.AdmFilkrav.Select(q => q.AdmForvantadfil))
                 .Where(x => x.Inrapporteringsportal)
                 .ToList();
@@ -1488,7 +1490,9 @@ namespace InrappSos.DataAccess
             var perioder = new List<string>();
 
             //hämta varje förväntad leverans och sätt rätt period utifrån dagens datum
-            foreach (var item in filkrav.AdmForvantadleverans)
+            var forvlevList = DbContext.AdmForvantadleverans.Where(x => x.FilkravId == filkrav.Id).ToList();
+
+            foreach (var item in forvlevList)
             {
                 if (item != null)
                 {

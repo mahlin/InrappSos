@@ -272,10 +272,10 @@ namespace InrappSos.FilipWeb.Controllers
         {
             var model = new RegisterViewModel();
             //Hämta info om valbara register
-            var registerInfoList = _portalService.HamtaAllRegisterInformation().ToList();
-            model.RegisterList = registerInfoList;
-            //model.RegisterChoices = new List<SelectListItem>{ tmpSelItem, tmpSelItem2 };
-            this.ViewBag.RegisterList = CreateRegisterDropDownList(registerInfoList);
+            //var registerInfoList = _portalService.HamtaAllRegisterInformation().ToList();
+            //model.RegisterList = registerInfoList;
+            ////model.RegisterChoices = new List<SelectListItem>{ tmpSelItem, tmpSelItem2 };
+            //this.ViewBag.RegisterList = CreateRegisterDropDownList(registerInfoList);
 
             //Get the culture info of the language code
             CultureInfo culture = CultureInfo.GetCultureInfo("sv");

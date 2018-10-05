@@ -10,7 +10,7 @@ using InrappSos.ApplicationService.Helpers;
 using InrappSos.ApplicationService.Interface;
 using InrappSos.DomainModel;
 using InrappSos.FilipWeb.Models;
-using InrappSosl.FilipWeb.Models;
+using InrappSos.FilipWeb.Models;
 using Microsoft.AspNet.Identity;
 
 namespace InrappSos.FilipWeb.Controllers

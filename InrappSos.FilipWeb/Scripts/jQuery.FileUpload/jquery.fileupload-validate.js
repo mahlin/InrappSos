@@ -365,18 +365,20 @@ function getTableRows() {
                     fileSize < options.minFileSize) {
                     file.error = settings.i18n('minFileSize');
                 }
-                //Regexp-kontroller
-                var regexMatch = CheckFileName(data.selectedRegister, file.name);
-                if (regexMatch === null) {
-                    file.error = settings.i18n('incorrectFileName');
-                } else if (!CheckKommunKodInFileName(regexMatch)) {
-                    file.error = settings.i18n('incorrectKommunKodInFileName');
-                } else if (!CheckPeriodInFileName(data.selectedRegister, regexMatch)) {
-                    file.error = settings.i18n('incorrectPeriodInFileName');
-                } else if (DoubletFiles(data.selectedRegister)) {
-                    file.error = settings.i18n('filetypAlreadySelected');
-                } else {
-                    delete file.error;
+                if (!file.error) {
+                    //Regexp-kontroller
+                    var regexMatch = CheckFileName(data.selectedRegister, file.name);
+                    if (regexMatch === null) {
+                        file.error = settings.i18n('incorrectFileName');
+                    } else if (!CheckKommunKodInFileName(regexMatch)) {
+                        file.error = settings.i18n('incorrectKommunKodInFileName');
+                    } else if (!CheckPeriodInFileName(data.selectedRegister, regexMatch)) {
+                        file.error = settings.i18n('incorrectPeriodInFileName');
+                    } else if (DoubletFiles(data.selectedRegister)) {
+                        file.error = settings.i18n('filetypAlreadySelected');
+                    } else {
+                        delete file.error;
+                    }
                 }
                 if (file.error || data.files.error) {
                     data.files.error = true;

@@ -7,7 +7,7 @@ using InrappSos.ApplicationService.DTOModel;
 using InrappSos.ApplicationService.Helpers;
 using InrappSos.DomainModel;
 
-namespace InrappSosl.FilipWeb.Models
+namespace InrappSos.FilipWeb.Models
 {
     public class HistoryViewModels
     {

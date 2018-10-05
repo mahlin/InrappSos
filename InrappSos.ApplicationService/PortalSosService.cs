@@ -612,7 +612,6 @@ namespace InrappSos.ApplicationService
 
         public IEnumerable<FilloggDetaljDTO> HamtaTop10HistorikForOrganisationAndDelreg(int orgId, List<RegisterInfo> valdaDelregister)
         {
-            var historikLista = new List<FilloggDetaljDTO>();
             var leveransList = new List<Leverans>();
             foreach (var delreg in valdaDelregister)
             {
@@ -620,25 +619,24 @@ namespace InrappSos.ApplicationService
                 leveransList.AddRange(delregLeveransList);
             }
             //Skapa historikrader/filloggrader
-            historikLista = SkapaHistorikrader(leveransList.OrderByDescending(x => x.Leveranstidpunkt).Take(10));
+            var historikLista = SkapaHistorikrader(leveransList.OrderByDescending(x => x.Leveranstidpunkt).Take(10));
 
-            var sorteradHistorikLista = historikLista.OrderByDescending(x => x.Leveranstidpunkt).ToList();
+            //var sorteradHistorikLista = historikLista.OrderByDescending(x => x.Leveranstidpunkt).ToList();
 
-            return sorteradHistorikLista;
+            return historikLista;
 
         }
 
         public IEnumerable<FilloggDetaljDTO> FiltreraHistorikForAnvandare(string userId, List<RegisterInfo> valdaDelregisterList, List<FilloggDetaljDTO> historikForOrganisation)
         {
             var historikForAnvandareList = new List<FilloggDetaljDTO>();
-            
 
             foreach (var rad in valdaDelregisterList)
             {
                 var aktuellaLeveranser = historikForOrganisation.Where(x => x.RegisterKortnamn == rad.Kortnamn).ToList();
                 historikForAnvandareList.AddRange(aktuellaLeveranser);
             }
-            return historikForAnvandareList;
+            return historikForAnvandareList.OrderByDescending(x => x.Leveranstidpunkt).ToList();
         }
 
         private List<FilloggDetaljDTO> SkapaHistorikrader(IEnumerable<Leverans> leveransList)

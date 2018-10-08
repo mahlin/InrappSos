@@ -341,11 +341,12 @@
     <Content Include="Scripts\blueimp-gallery2\js\blueimp-helper.min.js.map" />
     <Content Include="Scripts\blueimp-gallery2\js\jquery.blueimp-gallery.min.js.map" />
     <Content Include="Scripts\bootstrap-multiselect\dist\less\bootstrap-multiselect.less" />
-    <Content Include="PrivateSettings.config" />
-    <Content Include="ConnectionStrings.config" />
+    <None Include="ConnectionStrings.config" />
+    <None Include="PrivateSettings.config" />
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap.min.css.map" />
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\cldr.js" />
     <Content Include="Scripts\cldr\cldr.js" />

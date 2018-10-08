@@ -1334,7 +1334,8 @@ namespace InrappSos.AstridWeb.Controllers
 
             var yearList = new List<int>();
 
-            for (int i = 0; i < 3; i++)
+            //Möjligt att skapa förv.lev för 3 år bakåt och 3 år framåt i tiden
+            for (int i = -3; i < 3; i++)
             {
                 yearList.Add(DateTime.Now.Year + i);
             }

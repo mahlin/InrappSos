@@ -86,10 +86,12 @@ function CheckPeriod(periodInFilename, validPeriods) {
     return result;
 }
 
-function DoubletFiles(selectedRegister) {
+//Kontrollera så att ej fler filer av samma filtyp laddas upp i samma leverans 
+function DoubletFiles(selectedRegister, fileName) {
     var re;
-    var result = false;
     var x = window.filelist;
+    var tmp = null;
+    var antHits = 0;
 
     registerLista.forEach(function (register, index) {
         //alert("index:" + index + ", valt register: " + selectedRegister + ", regsiterId: " + register.Id.toString());
@@ -97,34 +99,68 @@ function DoubletFiles(selectedRegister) {
             var selectedFilkrav = register.SelectedFilkrav;
             register.Filkrav.forEach(function(filkrav, ix) {
                 if (selectedFilkrav === filkrav.Id) {
-                    //Om valt filkrav har fler regularexpressions att uppfylla, kolla att bara en fil för varje regexp laddas upp
-                    if (filkrav.ForvantadeFiler.length > 1) {
-                        var arrUsedRegexp = new Array(filkrav.ForvantadeFiler.length);
-
-                        for (var i = 0; i < arrUsedRegexp.length; ++i) {
-                            arrUsedRegexp[i] = false;
-                        }
-
-                        filkrav.ForvantadeFiler.forEach(function (forvFil, idx) {
-                            var re = new RegExp(forvFil.Regexp, "i");
-
-                            window.filelist.forEach(function(file, i) {
+                    filkrav.ForvantadeFiler.forEach(function (forvFil, idx) {
+                        var expression = new RegExp(forvFil.Regexp, "i");
+                        //Kolla om filnamn matchar regex
+                        tmp = fileName.match(expression);
+                        //Om träff, kolla om nån annan fil i listan matchar samma regex
+                        if (tmp != null) {
+                            window.filelist.forEach(function (file, i) {
                                 //alert("Regexp" + idx + ": " + regexp);
-                                if (re.test(file.name)) {
-                                    if (arrUsedRegexp[idx] === true)
-                                        result = true;
-                                    else
-                                        arrUsedRegexp[idx] = true;
+                                if (expression.test(file.name)) {
+                                    antHits++;
                                 }
                             });
-                        });
-                    }
+                        }
+                    });
                 }
             });
         }
     });
-    return result;
+    if (antHits > 1)
+        return true;
+    return false;
 }
+
+//function DoubletFiles2(selectedRegister) {
+//    var re;
+//    var result = false;
+//    var x = window.filelist;
+
+//    registerLista.forEach(function (register, index) {
+//        //alert("index:" + index + ", valt register: " + selectedRegister + ", regsiterId: " + register.Id.toString());
+//        if (selectedRegister === register.Id.toString()) {
+//            var selectedFilkrav = register.SelectedFilkrav;
+//            register.Filkrav.forEach(function (filkrav, ix) {
+//                if (selectedFilkrav === filkrav.Id) {
+//                    //Om valt filkrav har fler regularexpressions att uppfylla, kolla att bara en fil för varje regexp laddas upp
+//                    if (filkrav.ForvantadeFiler.length > 1) {
+//                        var arrUsedRegexp = new Array(filkrav.ForvantadeFiler.length);
+
+//                        for (var i = 0; i < arrUsedRegexp.length; ++i) {
+//                            arrUsedRegexp[i] = false;
+//                        }
+
+//                        filkrav.ForvantadeFiler.forEach(function (forvFil, idx) {
+//                            var re = new RegExp(forvFil.Regexp, "i");
+
+//                            window.filelist.forEach(function (file, i) {
+//                                //alert("Regexp" + idx + ": " + regexp);
+//                                if (re.test(file.name)) {
+//                                    if (arrUsedRegexp[idx] === true)
+//                                        result = true;
+//                                    else
+//                                        arrUsedRegexp[idx] = true;
+//                                }
+//                            });
+//                        });
+//                    }
+//                }
+//            });
+//        }
+//    });
+//    return result;
+//}
 
 function getTableRows() {
     return $('#filTabell tr');
@@ -242,7 +278,7 @@ function getTableRows() {
                         file.error = settings.i18n('incorrectKommunKodInFileName');
                     } else if (!CheckPeriodInFileName(data.selectedRegister, regexMatch)) {
                         file.error = settings.i18n('incorrectPeriodInFileName');
-                    } else if (DoubletFiles(data.selectedRegister)) {
+                    } else if (DoubletFiles(data.selectedRegister, file.name)) {
                         file.error = settings.i18n('filetypAlreadySelected');
                     } else {
                         delete file.error;
@@ -266,13 +302,13 @@ function getTableRows() {
                             });
                         }
                     });
-                    if (antAddedRequiredFiles === numberOfRequiredFilesForSelectedRegister && filelist.length <= numberOfFilesForSelectedRegister) {
-                        $('#fileinputButton').prop('disabled', true);
-                        $('#fileinputButton').addClass('disabled');
-                        //$('.fileinput-button')
-                        //    .prop('disabled', true)
-                        //    .parent().addClass('disabled');
-                    }
+                    //if (antAddedRequiredFiles === numberOfRequiredFilesForSelectedRegister && filelist.length <= numberOfFilesForSelectedRegister) {
+                    //    $('#fileinputButton').prop('disabled', true);
+                    //    $('#fileinputButton').addClass('disabled');
+                    //    //$('.fileinput-button')
+                    //    //    .prop('disabled', true)
+                    //    //    .parent().addClass('disabled');
+                    //}
                     dfd.rejectWith(this, [data]);
                 } else {
                     dfd.resolveWith(this, [data]);

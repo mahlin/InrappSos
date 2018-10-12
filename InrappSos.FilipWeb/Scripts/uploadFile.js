@@ -5,7 +5,6 @@ $(document).ready(function () {
     $(function () {
         $('#ddlRegister > option').each(function () {
             $(this).attr("title", $(this).text());
-            //alert($(this).text() + ' ' + $(this).val() + ' ' + $(this).attr("title"));
         });
     });
 
@@ -113,7 +112,7 @@ $(document).on('change','#ddlRegister',
                     $('#registerInfo').html(info);
 
                     // No2 - Check if obligatory for this org to report for this register
-                    if (!register.Filkrav[0].Obligatorisk) {
+                    if (!register.Filkrav[0].ForvantadeFiler[0].Obligatorisk) {
                         var periodLista = register.Filkrav[0].Perioder;
                         addSelect("select-container", register.Filkrav[0].Perioder);
                         $('#ingetAttRapporteraBtn').attr("disabled", "disabled");
@@ -230,7 +229,7 @@ $(document).on('change','#ddlRegister',
                                 register.SelectedFilkrav = selectedFilkravId;
                                 $('#registerInfo').html(info);
                                 //Check if obligatory for this org to report for this register
-                                if (!filkrav.Obligatorisk) {
+                                if (!filkrav.ForvantadeFiler[0].Obligatorisk) {
                                     var periodLista = filkrav.Perioder;
                                     addSelect("select-container", filkrav.Perioder);
                                     $('#ingetAttRapportera').show();
@@ -252,11 +251,6 @@ $(document).on('change','#ddlRegister',
                 $('#registerInfo').html("");
             }
         });
-
-        //$(document).on('change','#ddlFileRequirements',function() {
-        //    var selectedFilkrav = $('#ddlFileRequirements').val();
-        //    $("#SelectedFilkrav").val(selectedFilkrav);
-        //});
 
     });
 
@@ -292,24 +286,6 @@ function addSelect(divname, perioder) {
     //document.getElementById(divname).appendChild(newDiv);
 }
 
-//function dateGenerate() {
-//    var date = new Date(), dateArray = new Array(), i;
-//    curYear = date.getFullYear();
-//    for (i = 0; i < 5; i++) {
-//        dateArray[i] = curYear + i;
-//    }
-//    return dateArray;
-//}
-
-//function periodGenerate() {
-//    var date = new Date(), dateArray = new Array(), i;
-//    curYear = date.getFullYear();
-//    for (i = 0; i < 5; i++) {
-//        dateArray[i] = curYear + i;
-//    }
-//    return dateArray;
-//}
-
 function checkIfDisabled(event) {
     //alert('click egen check');
     var x = $('#fileinputButton');
@@ -344,23 +320,46 @@ function checkOkToUpload() {
         selectedFilkravId = parseInt(selectedFilkravIdStr);
     }
     var numberOfFilesForSelectedRegister = 0;
+    var numberOfRequiredFilesForSelectedRegister = 0;
+    var numberOfNorRequiredFilesForSelectedRegister = 0;
     //get number of required files for chosen register
     registerLista.forEach(function (register, index) {
         if (selectedRegister === register.Id.toString()) {
             register.Filkrav.forEach(function(filkrav, index) {
                 if (selectedFilkravId === filkrav.Id) {
                     numberOfFilesForSelectedRegister = filkrav.AntalFiler;
+                    numberOfRequiredFilesForSelectedRegister = filkrav.AntalObligatoriskaFiler;
+                    numberOfNorRequiredFilesForSelectedRegister = filkrav.AntalEjObligatoriskaFiler;
                 }
             });
         }
     });
-    if (filelist.length === numberOfFilesForSelectedRegister && !errorExists) {
-        $('.start').prop('disabled', false);
-        $('.start').show();
-        $('#fileinputButton').prop('disabled', true);
-        $('#fileinputButton').addClass('disabled');
-        $('#filesExplorerOpener').prop('disabled', true);
-        $('#filesExplorerOpener').addClass('disabled');
+    if (!errorExists) {
+        //Check if files to upload all are required
+        antAddedRequiredFiles = 0;
+        antAddedNotRequiredFiles = 0;
+        for (var idx = 0; idx < filelist.length; idx++) {
+            if (IsRequiredFile(selectedRegister, filelist[idx].name)) {
+                antAddedRequiredFiles++;
+            } else {
+                antAddedNotRequiredFiles++;
+            }
+        }
+        if (antAddedRequiredFiles === numberOfRequiredFilesForSelectedRegister && filelist.length <= numberOfFilesForSelectedRegister) {
+            if (antAddedNotRequiredFiles === numberOfNorRequiredFilesForSelectedRegister) {
+                $('#fileinputButton').prop('disabled', true);
+                $('#fileinputButton').addClass('disabled');
+                $('#filesExplorerOpener').prop('disabled', true);
+                $('#filesExplorerOpener').addClass('disabled');
+            } else {
+                $('#fileinputButton').prop('disabled', false);
+                $('#fileinputButton').removeClass('disabled');
+                $('#filesExplorerOpener').prop('disabled', false);
+                $('#filesExplorerOpener').removeClass('disabled');
+            }
+            $('.start').prop('disabled', false);
+            $('.start').show(); 
+        }
     } else {
         $('.start').prop('disabled', true);
         $('.start').hide();
@@ -369,6 +368,30 @@ function checkOkToUpload() {
         $('#filesExplorerOpener').prop('disabled', false);
         $('#filesExplorerOpener').removeClass('disabled');
     }
+}
+
+function IsRequiredFile(selectedRegister, fileName) {
+    var req = false;
+    registerLista.forEach(function (register, index) {
+        if (selectedRegister === register.Id.toString()) {
+            var selectedFilkrav = register.SelectedFilkrav;
+            register.Filkrav.forEach(function (filkrav, ix) {
+                if (selectedFilkrav === filkrav.Id) {
+                    filkrav.ForvantadeFiler.forEach(function (forvFil, idx) {
+                        var expression = new RegExp(forvFil.Regexp, "i");
+                        //Kolla om filnamn matchar regex och är obligatorisk. Refactor this!
+                        tmp = fileName.match(expression);
+                        if (tmp != null) {
+                            if (forvFil.Obligatorisk) {
+                                req = true;
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    });
+    return req;
 }
 
 //function disableFileInputButton() {

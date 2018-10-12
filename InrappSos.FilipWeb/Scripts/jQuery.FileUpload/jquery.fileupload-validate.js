@@ -20,122 +20,28 @@ function CheckFileName(selectedRegister, fileName) {
             var selectedFilkrav = register.SelectedFilkrav;
             register.Filkrav.forEach(function(filkrav, ix) {
                 if (selectedFilkrav === filkrav.Id) {
-                    filkrav.RegExper.forEach(function(regexp, idx) {
-                        var expression = new RegExp(regexp, "i");
+                    filkrav.ForvantadeFiler.forEach(function (forvFil, idx) {
+                        var expression = new RegExp(forvFil.Regexp, "i");
                         //Kolla om filnamn matchar regex
                         tmp = fileName.match(expression);
                         if (tmp != null) {
                             regexMatch = tmp;
                         }
                     });
+                    //filkrav.RegExper.forEach(function(regexp, idx) {
+                    //    var expression = new RegExp(regexp, "i");
+                    //    //Kolla om filnamn matchar regex
+                    //    tmp = fileName.match(expression);
+                    //    if (tmp != null) {
+                    //        regexMatch = tmp;
+                    //    }
+                    //});
                 }
             });
         }
     });
     return regexMatch;
 }
-
-
-//function CheckFileName2(selectedRegister, fileName) {
-//    var re;
-//    var result = false;
-//    //Hämta regexp för valt register
-//    registerLista.forEach(function (register, index) {
-//        if (selectedRegister === register.Id.toString()) {
-//            var selectedFilkrav = register.SelectedFilkrav;
-//            register.Filkrav.forEach(function (filkrav, ix) {
-//                if (selectedFilkrav === filkrav.Id) {
-//                    filkrav.RegExper.forEach(function (regexp, idx) {
-//                        re = new RegExp(regexp, "i");
-//                        var expression = new RegExp(regexp, "i");
-//                        var res = fileName.match(expression);
-//                        if (res !== null) {
-//                            result = true; //Filnamn ok utifrån regexp
-//                            //Kontrollera kommunkod
-//                            var kommunkod = res.groups["kommunkod"];
-//                            result = CheckKommunKod(kommunkod);
-//                            //Kontrollera period
-//                            var periodInFilename = res.groups["period"];
-//                            //Hämta giltiga perioder för valt register
-//                            var validPeriod = "";
-//                            registerLista.forEach(function (register, index) {
-//                                if (selectedRegister === register.Id.toString()) {
-//                                    var selectedFilkrav = register.SelectedFilkrav;
-
-//                                    register.Filkrav.forEach(function (filkrav, ix) {
-//                                        if (selectedFilkrav === filkrav.Id) {
-//                                            validPeriod = filkrav.Perioder;
-//                                        }
-//                                    });
-//                                }
-//                            });
-//                            result = CheckPeriod(periodInFilename, validPeriod);
-//                        }
-//                        //if (re.test(fileName)) {
-//                        //    result = true; //Filnamn ok utifrån regexp
-//                        //}
-//                    });
-//                }
-//            })
-//            //re = new RegExp(register.RegExp, "i");
-//        }
-//    });
-//    return result;
-//}
-
-//function CheckFileName(selectedRegister, fileName) {
-//    var re;
-//    var result = false;
-
-//    //var myString = "something format_abc";
-//    //var myRegexp = /(?:^|\s)format_(.*?)(?:\s|$)/g;
-//    //var match = myRegexp.exec(myString);
-//    //var n = (match[1]); // abc
-
-//    //Hämta regexp för valt register
-//    registerLista.forEach(function (register, index) {
-//        if (selectedRegister === register.Id.toString()) {
-//            var selectedFilkrav = register.SelectedFilkrav;
-//            register.Filkrav.forEach(function (filkrav, ix) {
-//                if (selectedFilkrav === filkrav.Id) {
-//                    filkrav.RegExper.forEach(function (regexp, idx) {
-//                        re = new RegExp(regexp,"i");
-//                        var regexMatch = fileName.match(re);
-//                        var kkod = (regexMatch[1]);
-//                        var per = (regexMatch[2]);
-//                        if (re.test(fileName)) {
-//                            result = true;
-//                        }
-//                    });
-//                }})
-//            //re = new RegExp(register.RegExp, "i");
-//        }
-//    });
-//    return result;
-//}
-
-////TODO - använd SelectedRegisterId/kortnamn istället?
-//function CheckKommunKodInFileName2(fileName) {
-//    var chunkedFileName = fileName.split("_");
-//    var fileTypeA = [ 'SOL1', 'SOL2', 'KHSL','KHSL1','KHSL2','LSS'];
-//    var fileTypeB = ['BU'];
-//    var fileTypeC = ['EKB'];
-
-
-//    if (arrayContains(chunkedFileName[0].toUpperCase(), fileTypeA)) {
-//        return CheckKommunKod(chunkedFileName[1]);
-//    }
-//    else if (arrayContains(chunkedFileName[0].toUpperCase(), fileTypeB)) {
-//        return CheckKommunKod(chunkedFileName[2]);
-//    }
-//    else if (arrayContains(chunkedFileName[0].toUpperCase(), fileTypeC)) {
-//        if (chunkedFileName[1].toUpperCase() === 'AO')
-//                return CheckKommunKod(chunkedFileName[2]);
-//            else
-//                return CheckKommunKod(chunkedFileName[1]);
-//    }
-
-//}
 
 function CheckKommunKodInFileName(regexMatch) {
     var validKommunKod = $('#GiltigKommunKod').val();
@@ -169,40 +75,6 @@ function arrayContains(needle, arrhaystack) {
     return (arrhaystack.indexOf(needle) > -1);
 }
 
-//function CheckPeriodInFileName2(selectedRegister, fileName) {
-//    var chunkedFileName = fileName.split("_");
-//    var fileTypeA = ['SOL1', 'SOL2', 'KHSL','KHSL1','KHSL2','LSS'];
-//    var fileTypeB = ['BU'];
-//    var fileTypeC = ['EKB'];
-
-//    //Get valid period for selected register
-//    var validPeriod = "";
-//    registerLista.forEach(function (register, index) {
-//        if (selectedRegister === register.Id.toString()) {
-//            var selectedFilkrav = register.SelectedFilkrav;
-            
-//            register.Filkrav.forEach(function (filkrav, ix) {
-//                if (selectedFilkrav === filkrav.Id) {
-//                    validPeriod = filkrav.Perioder;
-//                }
-//            });
-//        }
-//    });
-
-//    if (arrayContains(chunkedFileName[0].toUpperCase(), fileTypeA)) {
-//        return CheckPeriod(chunkedFileName[2], validPeriod);
-//    }
-//    else if (arrayContains(chunkedFileName[0].toUpperCase(), fileTypeB)) {
-//        return CheckPeriod(chunkedFileName[3], validPeriod);
-//    }
-//    else if (arrayContains(chunkedFileName[0].toUpperCase(), fileTypeC)) {
-//        if (chunkedFileName[1].toUpperCase() === 'AO')
-//            return CheckPeriod(chunkedFileName[3], validPeriod);
-//        else
-//            return CheckPeriod(chunkedFileName[2], validPeriod);
-//    }
-//}
-
 function CheckPeriod(periodInFilename, validPeriods) {
     result = false;
     validPeriods.forEach(function (validPeriod, index) {
@@ -212,10 +84,6 @@ function CheckPeriod(periodInFilename, validPeriods) {
         }
     });
     return result;
-
-    //if (periodInFilename === validPeriod)
-    //    return true;
-    //return false;
 }
 
 function DoubletFiles(selectedRegister) {
@@ -230,15 +98,15 @@ function DoubletFiles(selectedRegister) {
             register.Filkrav.forEach(function(filkrav, ix) {
                 if (selectedFilkrav === filkrav.Id) {
                     //Om valt filkrav har fler regularexpressions att uppfylla, kolla att bara en fil för varje regexp laddas upp
-                    if (filkrav.RegExper.length > 1) {
-                        var arrUsedRegexp = new Array(filkrav.RegExper.length);
+                    if (filkrav.ForvantadeFiler.length > 1) {
+                        var arrUsedRegexp = new Array(filkrav.ForvantadeFiler.length);
 
                         for (var i = 0; i < arrUsedRegexp.length; ++i) {
                             arrUsedRegexp[i] = false;
                         }
 
-                        filkrav.RegExper.forEach(function(regexp, idx) {
-                            var re = new RegExp(regexp, "i");
+                        filkrav.ForvantadeFiler.forEach(function (forvFil, idx) {
+                            var re = new RegExp(forvFil.Regexp, "i");
 
                             window.filelist.forEach(function(file, i) {
                                 //alert("Regexp" + idx + ": " + regexp);
@@ -385,19 +253,20 @@ function getTableRows() {
                     $('.start').hide();
                     var selectedRegister = $('#ddlRegister').val();
                     var numberOfFilesForSelectedRegister = 0;
+                    var numberOfRequiredFilesForSelectedRegister = 0;
                     //get number of required files for chosen register
                     registerLista.forEach(function (register, index) {
                         if (selectedRegister === register.Id.toString()) {
                             var selectedFilkrav = register.SelectedFilkrav;
                             register.Filkrav.forEach(function(filkrav, ix) {
                                 if (selectedFilkrav === filkrav.Id) {
-                                    numberOfFilesForSelectedRegister =
-                                        filkrav.AntalFiler;
+                                    numberOfFilesForSelectedRegister = filkrav.AntalFiler;
+                                    numberOfRequiredFilesForSelectedRegister = filkrav.AntalObligatoriskaFiler;
                                 }
                             });
                         }
                     });
-                    if (filelist.length === numberOfFilesForSelectedRegister) {
+                    if (antAddedRequiredFiles === numberOfRequiredFilesForSelectedRegister && filelist.length <= numberOfFilesForSelectedRegister) {
                         $('#fileinputButton').prop('disabled', true);
                         $('#fileinputButton').addClass('disabled');
                         //$('.fileinput-button')

@@ -981,22 +981,20 @@ namespace InrappSos.ApplicationService
         //    return userRegisterList;
         //}
 
-        public IEnumerable<RegisterInfo> HamtaValdaDelregisterForAnvandare(string userId, int orgId)
+        public List<RegisterInfo> HamtaValdaDelregisterForAnvandare(string userId, int orgId)
         {
-            var registerList = _portalSosRepository.GetChosenDelRegistersForUser(userId);
+            var registerList = _portalSosRepository.GetChosenDelRegistersForUser(userId).ToList();
             //var allaRegisterList = _portalRepository.GetAllRegisterInformation();
-            var allaRegisterList = _portalSosRepository.GetAllRegisterInformationForOrganisation(orgId);
+            var allaRegisterList = _portalSosRepository.GetAllRegisterInformationForOrganisation(orgId).ToList();
             var userRegisterList = new List<RegisterInfo>();
 
             foreach (var register in allaRegisterList)
             {
-                foreach (var userRegister in registerList)
+                var finns = registerList.Find(r => r.DelregisterId == register.Id);
+                if (finns != null)
                 {
-                    if (register.Id == userRegister.DelregisterId)
-                    {
-                        register.SelectedFilkrav = "0";
-                        userRegisterList.Add(register);
-                    }
+                    register.SelectedFilkrav = "0";
+                    userRegisterList.Add(register);
                 }
             }
 
@@ -1014,7 +1012,6 @@ namespace InrappSos.ApplicationService
                         KeyValuePair<string, string> keyValuePair = new KeyValuePair<string, string>(orgUnit.Enhetskod, orgUnit.Enhetsnamn);
                         item.Organisationsenheter.Add(keyValuePair);
                     }
-
                 }
             }
 

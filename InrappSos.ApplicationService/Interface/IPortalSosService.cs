@@ -168,7 +168,7 @@ namespace InrappSos.ApplicationService.Interface
 
         //IEnumerable<RegisterInfo> HamtaValdaRegistersForAnvandare(string userId, int orgId);
 
-        IEnumerable<RegisterInfo> HamtaValdaDelregisterForAnvandare(string userId, int orgId);
+        List<RegisterInfo> HamtaValdaDelregisterForAnvandare(string userId, int orgId);
 
         IEnumerable<RegisterInfo> HamtaRegistersMedAnvandaresVal(string userId, int orgId);
 

@@ -61,7 +61,7 @@ namespace InrappSos.FilipWeb.Controllers
                 }
                 var userOrg = _portalService.HamtaOrgForAnvandare(User.Identity.GetUserId());
                 //Hämta info om valbara register
-                var valdaDelregisterInfoList = _portalService.HamtaValdaDelregisterForAnvandare(User.Identity.GetUserId(), userOrg.Id).ToList();
+                var valdaDelregisterInfoList = _portalService.HamtaValdaDelregisterForAnvandare(User.Identity.GetUserId(), userOrg.Id);
                 _model.RegisterList = valdaDelregisterInfoList;
 
                 // Ladda drop down lists.  
@@ -71,9 +71,6 @@ namespace InrappSos.FilipWeb.Controllers
 
                 //Hämta historiken för användarens organisation/kommun
                 var userId = User.Identity.GetUserId();
-                
-                //var kommunKodForUser = _portalService.HamtaKommunKodForAnvandare(userId);
-                //var orgIdForUser = _portalService.HamtaUserOrganisationId(userId);
 
                 var kommunKodForUser = userOrg.Kommunkod;
                 var orgIdForUser = userOrg.Id;
@@ -81,9 +78,7 @@ namespace InrappSos.FilipWeb.Controllers
                 _model.StartUrl = ConfigurationManager.AppSettings["StartUrl"];
                 _model.GiltigKommunKod = kommunKodForUser;
                 _model.OrganisationsNamn = userOrg.Organisationsnamn;
-                //IEnumerable <FilloggDetaljDTO> historyFileList = _portalService.HamtaHistorikForOrganisation(orgIdForUser);
-                //IEnumerable<FilloggDetaljDTO> historyFileList = _portalService.HamtaTop10HistorikForOrganisationAndUser(orgIdForUser, userId);
-                //var historyFileList = _portalService.HamtaTop10HistorikForOrganisation(orgIdForUser).ToList();
+
                 var historyFileList = _portalService.HamtaTop10HistorikForOrganisationAndDelreg(orgIdForUser, valdaDelregisterInfoList).ToList();
 
                 //Filtrera historiken utfrån användarens valda register

@@ -12,9 +12,12 @@ namespace InrappSos.DomainModel
         public string Namn { get; set; }
         public string InfoText { get; set; }
         public int AntalFiler { get; set; }
+        public int AntalObligatoriskaFiler { get; set; }
+        public int AntalEjObligatoriskaFiler { get; set; }
         public IEnumerable<string> Perioder { get; set; }
-        public bool Obligatorisk { get; set; } = true;
-        public IEnumerable<string> FilMasker { get; set; }
-        public IEnumerable<string> RegExper { get; set; }
+        public IEnumerable<RegisterForvantadfil> ForvantadeFiler { get; set; }
+        //public bool Obligatorisk { get; set; } = true;
+        //public IEnumerable<string> FilMasker { get; set; }
+        //public IEnumerable<string> RegExper { get; set; }
     }
 }

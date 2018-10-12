@@ -1444,26 +1444,44 @@ namespace InrappSos.DataAccess
                     regFilkrav.Namn = "";
                 }
 
-                //Sök forväntad fil för varje filkrav istället för alla forvantade filer för registret!!
-                //var forvantadFil = delReg.AdmFilkrav.Select(x => x.AdmForvantadfil);
-                var forvantadeFiler = filkrav.AdmForvantadfil.ToList();
-                regFilkrav.AntalFiler = forvantadeFiler.Count();
+                //Sök forväntad fil för varje filkrav 
+                var forvantadeFilerDb = filkrav.AdmForvantadfil.ToList();
+                var antObligatoriskaFiler = 0;
+                var antEjObligatoriskaFiler = 0;
+                var forvantadeFiler = new List<RegisterForvantadfil>();
 
-                foreach (var forvFil in forvantadeFiler)
+                foreach (var forvFilDb in forvantadeFilerDb)
                 {
-                    filmaskList.Add(forvFil.Filmask);
-                    regExpList.Add(forvFil.Regexp);
+                    if (forvFilDb.Obligatorisk)
+                    {
+                        antObligatoriskaFiler++;
+                    }
+                    else
+                    {
+                        antEjObligatoriskaFiler++;
+                    }
+                    var forvFil = new RegisterForvantadfil
+                    {
+                        Id = forvFilDb.Id,
+                        FilkravId = forvFilDb.FilkravId,
+                        ForeskriftsId = forvFilDb.ForeskriftsId,
+                        Filmask = forvFilDb.Filmask,
+                        Regexp = forvFilDb.Regexp,
+                        Obligatorisk = forvFilDb.Obligatorisk,
+                        Tom = forvFilDb.Tom
+                    };
+                    forvantadeFiler.Add(forvFil);
                     regFilkrav.InfoText = regFilkrav.InfoText + "<br> Filformat: " + forvFil.Filmask;
-                    regFilkrav.Obligatorisk = forvFil.Obligatorisk;
                 }
+                regFilkrav.AntalFiler = forvantadeFilerDb.Count;
+                regFilkrav.AntalObligatoriskaFiler = antObligatoriskaFiler;
+                regFilkrav.AntalEjObligatoriskaFiler = antEjObligatoriskaFiler;
+                regFilkrav.ForvantadeFiler = forvantadeFiler;
 
                 //get period och forvantadleveransId
                 GetPeriodsForAktuellLeverans(filkrav, regFilkrav);
                 regFilkrav.InfoText = regFilkrav.InfoText + "<br> Antal filer: " + regFilkrav.AntalFiler;
                 regFilkrav.Id = i;
-                regFilkrav.FilMasker = filmaskList;
-                regFilkrav.RegExper = regExpList;
-
 
                 //Om inga aktuella perioder finns för filkravet ska det inte läggas med i RegInfo
                 if (regFilkrav.Perioder != null)

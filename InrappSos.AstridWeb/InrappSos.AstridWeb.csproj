@@ -208,7 +208,9 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\Images\LoggaNew200px.png" />
+    <Content Include="Content\NavBarPreprod.css" />
     <Content Include="Content\NavBarDev.css" />
+    <Content Include="Content\NavBarProd.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -222,7 +224,7 @@
     </Content>
     <Content Include="Scripts\bootstrap-multiselect\dist\less\bootstrap-multiselect.less" />
     <None Include="ConnectionStrings.config" />
-	<None Include="PrivateSettings.config" />
+    <None Include="PrivateSettings.config" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\custom.js" />
@@ -298,7 +300,6 @@
     <Content Include="Views\Shared\CustomError.cshtml" />
     <Content Include="Views\Shared\FileNotFound.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
-    <Content Include="Views\Shared\_LayoutUtv.cshtml" />
     <Content Include="Views\Shared\_LoginAdmin.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\System\CreateFAQ.cshtml" />

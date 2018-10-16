@@ -10,7 +10,18 @@
     @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/jqueryui")
 
-    <link href="@Url.Content("~/Content/NavBarProd.css")" rel="stylesheet" type="text/css" />
+    @if (ConfigurationManager.AppSettings["Env"] == "Utv")
+    {
+        <link href="@Url.Content("~/Content/NavBarDev.css")" rel="stylesheet" type="text/css"/>
+    }
+    else if (ConfigurationManager.AppSettings["Env"] == "Prod")
+    {
+        <link href="@Url.Content("~/Content/NavBarProd.css")" rel="stylesheet" type="text/css" />
+    }
+    else if (ConfigurationManager.AppSettings["Env"] == "Preprod")
+    {
+        <link href="@Url.Content("~/Content/NavBarPreprod.css")" rel="stylesheet" type="text/css" />
+    }
 
 </head>
 <body>

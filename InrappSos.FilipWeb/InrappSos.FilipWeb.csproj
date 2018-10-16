@@ -271,6 +271,7 @@
     <Content Include="Content\jQuery.FileUpload\img\loading.gif" />
     <Content Include="Content\jQuery.FileUpload\img\progressbar.gif" />
     <Content Include="Content\NavBarDev.css" />
+    <Content Include="Content\NavBarPreprod.css" />
     <Content Include="Content\NavBarProd.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
@@ -444,8 +445,6 @@
     <Content Include="Views\Shared\Maintenance.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Shared\_LayoutClosed.cshtml" />
-    <Content Include="Views\Shared\_LayoutClosedUtv.cshtml" />
-    <Content Include="Views\Shared\_LayoutUtv.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Manage\ChangeChosenRegisters.cshtml" />
   </ItemGroup>

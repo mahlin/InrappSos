@@ -1,15 +1,7 @@
 ﻿@using System.Configuration
 
 @{
-    if (ConfigurationManager.AppSettings["Env"] == "Utv")
-    {
-        Layout = "~/Views/Shared/_LayoutClosedUtv.cshtml";
-    }
-    else
-    {
-        Layout = "~/Views/Shared/_LayoutClosed.cshtml";
-    }
-   
+    Layout = "~/Views/Shared/_LayoutClosed.cshtml";
 }
 
 

@@ -268,6 +268,9 @@
                         return this.allSelectedText;
                     }
                 }
+                else if (this.numberDisplayed === 0 && options.length > this.numberDisplayed) {
+                    return this.filipDefaultText;
+                }
                 else if (this.numberDisplayed != 0 && options.length > this.numberDisplayed) {
                     return options.length + ' ' + this.nSelectedText;
                 }
@@ -427,9 +430,10 @@
             includeFilterClearBtn: true,
             preventInputChangeEvent: false,
             nonSelectedText: 'None selected',
+            filipDefaultText: 'Choose from dropdown',
             nSelectedText: 'selected',
             allSelectedText: 'All selected',
-            numberDisplayed: 3,
+            numberDisplayed: 0,
             disableIfEmpty: false,
             disabledText: '',
             delimiterText: ', ',

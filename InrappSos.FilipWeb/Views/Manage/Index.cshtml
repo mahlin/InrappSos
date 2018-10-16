@@ -1,4 +1,5 @@
-﻿@model InrappSos.FilipWeb.Models.ViewModels.IndexViewModel
+﻿@using InrappSos.DomainModel
+@model InrappSos.FilipWeb.Models.ViewModels.IndexViewModel
 @{
     ViewBag.Title = "Kontohantering";
 }
@@ -7,7 +8,6 @@
 <script src="~/Scripts/bootstrap-multiselect/dist/js/bootstrap-multiselect.js" type="text/javascript"></script>
 
 <script type="text/javascript">
-    var register = @Html.Raw(Json.Encode(Model.RegisterList));
     var startUrl = '@System.Configuration.ConfigurationManager.AppSettings["StartUrl"]';
 
     $(document).ready(function () {
@@ -41,43 +41,6 @@
                 });
             }
         });
-        
-        $('[id*=RegList]').multiselect({
-            onInitialized: function() {
-                $.each(register, function (index, item) {
-                    if (item.Selected) {
-                        $("#RegList > option")[index].selected = true;
-                        $("#RegList > option")[index].checked = true;
-                    }
-                });
-                this.refresh();
-            },
-            onChange: function (option, checked, select) {
-                $.each(register, function(index, item) {
-                    if ($('#RegisterList_' + index + '__Id').val() === $(option).val()) {
-                        if ($('#RegisterList_' + index + '__Selected').val() === 'False')
-                            $('#RegisterList_' + index + '__Selected').val('True');
-                        else
-                            $('#RegisterList_' + index + '__Selected').val('False');
-                    }
-                });
-            },
-            onSelectAll: function() {
-                $.each(register, function (index, item) {
-                    $('#RegisterList_' + index + '__Selected').val('True');
-                });
-            },
-            onDeselectAll: function () {
-                $.each(register, function (index, item) {
-                    $('#RegisterList_' + index + '__Selected').val('False');
-                });
-            },
-            includeSelectAllOption: true,
-            nonSelectedText: 'Inget valt',
-            allSelectedText: 'Alla valda',
-            selectAllText: "Välj alla",
-            nSelectedText: "valda"
-        });
 
     });
 
@@ -86,18 +49,7 @@
         $("#mi-modal").modal("show");
         $('#modal-body').html("Vill du verkligen avaktivera kontot? Efter avaktiveringen blir du utloggad.");
     }
-
-
-    function closeAccountWarning() {
-        var txt;
-        var r = confirm("Press a button!\nEither OK or Cancel.\nThe button you pressed will be displayed in the result window.");
-        if (r === true) {
-            txt = "You pressed OK!";
-        } else {
-            txt = "You pressed Cancel!";
-        }
-        document.getElementById("demo").innerHTML = txt;
-    }
+    
 
 </script>
 
@@ -178,10 +130,25 @@
             @Html.ActionLink("Ändra namn", "ChangeName")
             ]
         </dd>
+        <dt>Valda register:</dt>
+        <dd style="padding-left: 15px">
+            @for (int i = 0; i < Model.RegisterList.Count; i++)
+            {
+                if (Model.RegisterList[i].Selected)
+                {
+                        @Html.Raw(Model.RegisterList[i].Namn)
+                        <br />
+                }
+            }
+            [
+                @Html.ActionLink("Ändra", "ChangeChosenRegisters")
+            ]
+
+        </dd>
     </dl>
 
-    <!-- Ändra valda register att rapportera till -->
-    @using (Html.BeginForm("ChangeChosenRegisters", "Manage", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+<!-- Ändra valda register att rapportera till -->
+        @*@using (Html.BeginForm("ChangeChosenRegisters", "Manage", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
     {
         if (Model.RegisterList != null)
         {
@@ -211,6 +178,6 @@
         </div>
 
         <p id="demo"></p>
-    }
+    }*@
 
 </div>

@@ -447,6 +447,7 @@
     <Content Include="Views\Shared\_LayoutClosedUtv.cshtml" />
     <Content Include="Views\Shared\_LayoutUtv.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\Manage\ChangeChosenRegisters.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

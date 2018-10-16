@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using InrappSos.DataAccess;
 using InrappSos.ApplicationService;
 using InrappSos.ApplicationService.Helpers;
 using InrappSos.ApplicationService.Interface;
+using InrappSos.DomainModel;
 using InrappSos.FilipWeb.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
@@ -437,6 +439,17 @@ namespace InrappSos.FilipWeb.Controllers
                 CurrentLogins = userLogins,
                 OtherLogins = otherLogins
             });
+        }
+
+        //
+        // GET: /Manage/Name
+        public ActionResult ChangeChosenRegisters()
+        {
+            var model = new IndexViewModel();
+            var userId = User.Identity.GetUserId();
+            var orgId = _portalService.HamtaUserOrganisationId(userId);
+            model.RegisterList = _portalService.HamtaRegistersMedAnvandaresVal(userId, orgId).ToList();
+            return View(model);
         }
 
 

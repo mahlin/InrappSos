@@ -22,6 +22,8 @@ namespace InrappSos.DomainModel
         public virtual ICollection<AdmFilkrav> AdmFilkrav { get; set; }
         public virtual ICollection<AdmForvantadleverans> AdmForvantadleverans { get; set; }
         public virtual ICollection<AdmUppgiftsskyldighet> AdmUppgiftsskyldighet { get; set; }
+        public virtual ICollection<UppgiftsskyldighetOrganisationstyp> UppgiftsskyldighetOrganisationstyp { get; set; }
+
 
     }
 }

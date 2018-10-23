@@ -64,6 +64,8 @@
     <Compile Include="AdmInformation.cs" />
     <Compile Include="AdmInsamlingsfrekvens.cs" />
     <Compile Include="AdmKonfiguration.cs" />
+    <Compile Include="AdmKontaktpersonstyp.cs" />
+    <Compile Include="AdmOrganisationstyp.cs" />
     <Compile Include="AdmRegister.cs" />
     <Compile Include="AdmSpecialdag.cs" />
     <Compile Include="AdmEnhetsUppgiftsskyldighet.cs" />
@@ -71,7 +73,14 @@
     <Compile Include="ApplicationUser.cs" />
     <Compile Include="AppRoleAdmin.cs" />
     <Compile Include="AppUserAdmin.cs" />
+    <Compile Include="Arende.cs" />
+    <Compile Include="ArendeKontaktperson.cs" />
+    <Compile Include="ArendeStatus.cs" />
+    <Compile Include="Arendetyp.cs" />
     <Compile Include="Aterkoppling.cs" />
+    <Compile Include="DroppadFil.cs" />
+    <Compile Include="Kontaktpersonstyp.cs" />
+    <Compile Include="Organisationstyp.cs" />
     <Compile Include="Rapporteringsresultat.cs" />
     <Compile Include="Inloggning.cs" />
     <Compile Include="Leverans.cs" />
@@ -84,6 +93,7 @@
     <Compile Include="RegisterForvantadfil.cs" />
     <Compile Include="RegisterInfo.cs" />
     <Compile Include="Roll.cs" />
+    <Compile Include="UppgiftsskyldighetOrganisationstyp.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

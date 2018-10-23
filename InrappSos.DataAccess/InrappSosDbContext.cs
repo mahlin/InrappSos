@@ -48,7 +48,7 @@ namespace InrappSos.DataAccess
             modelBuilder.Entity<Organisation>().Property(e => e.Landstingskod).HasColumnName("landstingskod");
             modelBuilder.Entity<Organisation>().Property(e => e.Kommunkod).HasColumnName("kommunkod");
             modelBuilder.Entity<Organisation>().Property(e => e.Inrapporteringskod).HasColumnName("inrapporteringskod");
-            modelBuilder.Entity<Organisation>().Property(e => e.Organisationstyp).HasColumnName("organisationstyp");
+            //modelBuilder.Entity<Organisation>().Property(e => e.Organisationstyp).HasColumnName("organisationstyp");
             modelBuilder.Entity<Organisation>().Property(e => e.Organisationsnr).HasColumnName("organisationsnr");
             modelBuilder.Entity<Organisation>().Property(e => e.Organisationsnamn).HasColumnName("organisationsnamn");
             modelBuilder.Entity<Organisation>().Property(e => e.Hemsida).HasColumnName("hemsida");
@@ -92,6 +92,27 @@ namespace InrappSos.DataAccess
             modelBuilder.Entity<ApplicationUser>().Property(e => e.SkapadAv).HasColumnName("skapadav");
             modelBuilder.Entity<ApplicationUser>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
             modelBuilder.Entity<ApplicationUser>().Property(e => e.AndradAv).HasColumnName("andradav");
+
+            //Kontaktpersonstyp
+            modelBuilder.Entity<Kontaktpersonstyp>().Property(e => e.Id).HasColumnName("id");
+            modelBuilder.Entity<Kontaktpersonstyp>().Property(e => e.AdmKontaktpersonstypId).HasColumnName("admkontaktpersonstypid");
+            modelBuilder.Entity<Kontaktpersonstyp>().Property(e => e.KontaktpersonId).HasColumnName("kontaktpersonid");
+            modelBuilder.Entity<Kontaktpersonstyp>()
+                .HasRequired(c => c.AdmKontaktpersonstyp)
+                .WithMany(d => d.Kontaktpersonstyp)
+                .HasForeignKey(c => c.AdmKontaktpersonstypId);
+            modelBuilder.Entity<Kontaktpersonstyp>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
+            modelBuilder.Entity<Kontaktpersonstyp>().Property(e => e.SkapadAv).HasColumnName("skapadav");
+            modelBuilder.Entity<Kontaktpersonstyp>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
+            modelBuilder.Entity<Kontaktpersonstyp>().Property(e => e.AndradAv).HasColumnName("andradav");
+
+            //AdmKontaktpersonstyp
+            modelBuilder.Entity<AdmKontaktpersonstyp>().Property(e => e.Id).HasColumnName("admkontaktpersonstypid");
+            modelBuilder.Entity<AdmKontaktpersonstyp>().Property(e => e.KontaktpersonstypStr).HasColumnName("Kontaktpersonstyp");
+            modelBuilder.Entity<Kontaktpersonstyp>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
+            modelBuilder.Entity<Kontaktpersonstyp>().Property(e => e.SkapadAv).HasColumnName("skapadav");
+            modelBuilder.Entity<Kontaktpersonstyp>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
+            modelBuilder.Entity<Kontaktpersonstyp>().Property(e => e.AndradAv).HasColumnName("andradav");
 
             //Inloggning
             modelBuilder.Entity<Inloggning>().Property(e => e.Id).HasColumnName("inloggningsid");
@@ -188,6 +209,47 @@ namespace InrappSos.DataAccess
             modelBuilder.Entity<AdmUppgiftsskyldighet>().Property(e => e.SkapadAv).HasColumnName("skapadav");
             modelBuilder.Entity<AdmUppgiftsskyldighet>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
             modelBuilder.Entity<AdmUppgiftsskyldighet>().Property(e => e.AndradAv).HasColumnName("andradav");
+
+            //UppgiftsskyldighetOrganisationstyp
+            modelBuilder.Entity<UppgiftsskyldighetOrganisationstyp>().Property(e => e.Id).HasColumnName("uppgiftsskyldighetid");
+            modelBuilder.Entity<UppgiftsskyldighetOrganisationstyp>().Property(e => e.DelregisterId).HasColumnName("delregisterid");
+            modelBuilder.Entity<UppgiftsskyldighetOrganisationstyp>().Property(e => e.OrganisationstypId).HasColumnName("organisationstypId");
+            modelBuilder.Entity<UppgiftsskyldighetOrganisationstyp>()
+                .HasRequired(c => c.AdmDelregister)
+                .WithMany(d => d.UppgiftsskyldighetOrganisationstyp)
+                .HasForeignKey(c => c.DelregisterId);
+            modelBuilder.Entity<UppgiftsskyldighetOrganisationstyp>().Property(e => e.SkyldigFrom).HasColumnName("skyldigfrom");
+            modelBuilder.Entity<UppgiftsskyldighetOrganisationstyp>().Property(e => e.SkyldigTom).HasColumnName("skyldigtom");
+            modelBuilder.Entity<UppgiftsskyldighetOrganisationstyp>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
+            modelBuilder.Entity<UppgiftsskyldighetOrganisationstyp>().Property(e => e.SkapadAv).HasColumnName("skapadav");
+            modelBuilder.Entity<UppgiftsskyldighetOrganisationstyp>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
+            modelBuilder.Entity<UppgiftsskyldighetOrganisationstyp>().Property(e => e.AndradAv).HasColumnName("andradav");
+
+            //Organisationstyp
+            modelBuilder.Entity<Organisationstyp>().Property(e => e.Id).HasColumnName("id");
+            modelBuilder.Entity<Organisationstyp>().Property(e => e.OrganisationsId).HasColumnName("organisationsid");
+            modelBuilder.Entity<Organisationstyp>().Property(e => e.OrganisationstypId).HasColumnName("organisationstypid");
+            modelBuilder.Entity<Organisationstyp>()
+                .HasRequired(c => c.Organisation)
+                .WithMany(d => d.Organisationstyp)
+                .HasForeignKey(c => c.OrganisationsId);
+            modelBuilder.Entity<Organisationstyp>()
+                .HasRequired(c => c.AdmOrganisationstyp)
+                .WithMany(d => d.Organisationstyp)
+                .HasForeignKey(c => c.OrganisationstypId);
+            modelBuilder.Entity<Organisationstyp>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
+            modelBuilder.Entity<Organisationstyp>().Property(e => e.SkapadAv).HasColumnName("skapadav");
+            modelBuilder.Entity<Organisationstyp>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
+            modelBuilder.Entity<Organisationstyp>().Property(e => e.AndradAv).HasColumnName("andradav");
+
+            //AdmOrganisationstyp
+            modelBuilder.Entity<AdmOrganisationstyp>().Property(e => e.Id).HasColumnName("organisationstypid");
+            modelBuilder.Entity<AdmOrganisationstyp>().Property(e => e.Typnamn).HasColumnName("typnamn");
+            modelBuilder.Entity<AdmOrganisationstyp>().Property(e => e.Beskrivning).HasColumnName("beskrivning");
+            modelBuilder.Entity<AdmOrganisationstyp>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
+            modelBuilder.Entity<AdmOrganisationstyp>().Property(e => e.SkapadAv).HasColumnName("skapadav");
+            modelBuilder.Entity<AdmOrganisationstyp>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
+            modelBuilder.Entity<AdmOrganisationstyp>().Property(e => e.AndradAv).HasColumnName("andradav");
 
             //AdmEnhetsUppgiftsskyldighet
             modelBuilder.Entity<AdmEnhetsUppgiftsskyldighet>().ToTable("admEnhetsuppgiftsskyldighet");
@@ -416,7 +478,83 @@ namespace InrappSos.DataAccess
             modelBuilder.Entity<Rapporteringsresultat>().Property(e => e.RegisterKortnamn).HasColumnName("kortnamn");
             modelBuilder.Entity<Rapporteringsresultat>().Property(e => e.Enhetskod).HasColumnName("enhetskod");
             modelBuilder.Entity<Rapporteringsresultat>().Property(e => e.AntalLeveranser).HasColumnName("antalleveranser");
-    }
+
+            //Arende
+            modelBuilder.Entity<Arende>().Property(e => e.Id).HasColumnName("arendeid");
+            modelBuilder.Entity<Arende>().Property(e => e.OrganisationsId).HasColumnName("organisationsid");
+            modelBuilder.Entity<Arende>().Property(e => e.Arendenamn).HasColumnName("arendenamn");
+            modelBuilder.Entity<Arende>().Property(e => e.Arendenr).HasColumnName("arendenr");
+            modelBuilder.Entity<Arende>().Property(e => e.ArendetypId).HasColumnName("arendetypid");
+            modelBuilder.Entity<Arende>().Property(e => e.ArendestatusId).HasColumnName("arendestatusid");
+            modelBuilder.Entity<Arende>().Property(e => e.StartDatum).HasColumnName("startdatum");
+            modelBuilder.Entity<Arende>().Property(e => e.SlutDatum).HasColumnName("slutdatum");
+            modelBuilder.Entity<Arende>()
+                .HasRequired(c => c.Organisation)
+                .WithMany(d => d.Arende)
+                .HasForeignKey(c => c.OrganisationsId);
+            modelBuilder.Entity<Arende>()
+                .HasRequired(c => c.ArendeStatus)
+                .WithMany(d => d.Arende)
+                .HasForeignKey(c => c.ArendestatusId);
+            modelBuilder.Entity<Arende>()
+                .HasRequired(c => c.Arendetyp)
+                .WithMany(d => d.Arende)
+                .HasForeignKey(c => c.ArendetypId);
+            modelBuilder.Entity<Arende>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
+            modelBuilder.Entity<Arende>().Property(e => e.SkapadAv).HasColumnName("skapadav");
+            modelBuilder.Entity<Arende>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
+            modelBuilder.Entity<Arende>().Property(e => e.AndradAv).HasColumnName("andradav");
+
+            //ArendeStatus
+            modelBuilder.Entity<ArendeStatus>().Property(e => e.Id).HasColumnName("arendestatusid");
+            modelBuilder.Entity<ArendeStatus>().Property(e => e.ArendeStatusNamn).HasColumnName("arendestatusnamn");
+            modelBuilder.Entity<ArendeStatus>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
+            modelBuilder.Entity<ArendeStatus>().Property(e => e.SkapadAv).HasColumnName("skapadav");
+            modelBuilder.Entity<ArendeStatus>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
+            modelBuilder.Entity<ArendeStatus>().Property(e => e.AndradAv).HasColumnName("andradav");
+
+            //Arendetyp
+            modelBuilder.Entity<Arendetyp>().Property(e => e.Id).HasColumnName("arendetypid");
+            modelBuilder.Entity<Arendetyp>().Property(e => e.ArendetypNamn).HasColumnName("arendetypnamn");
+            modelBuilder.Entity<Arendetyp>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
+            modelBuilder.Entity<Arendetyp>().Property(e => e.SkapadAv).HasColumnName("skapadav");
+            modelBuilder.Entity<Arendetyp>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
+            modelBuilder.Entity<Arendetyp>().Property(e => e.AndradAv).HasColumnName("andradav");
+
+            //ArendeKontaktperson
+            modelBuilder.Entity<ArendeKontaktperson>().Property(e => e.Id).HasColumnName("arendekontaktpersonid");
+            modelBuilder.Entity<ArendeKontaktperson>().Property(e => e.ArendeId).HasColumnName("arendeid");
+            modelBuilder.Entity<ArendeKontaktperson>().Property(e => e.ApplicationUserId).HasColumnName("kontaktpersonid");
+            modelBuilder.Entity<ArendeKontaktperson>()
+                .HasRequired(c => c.ApplicationUser)
+                .WithMany(d => d.ArendeKontaktperson)
+                .HasForeignKey(c => c.ApplicationUserId);
+            modelBuilder.Entity<ArendeKontaktperson>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
+            modelBuilder.Entity<ArendeKontaktperson>().Property(e => e.SkapadAv).HasColumnName("skapadav");
+            modelBuilder.Entity<ArendeKontaktperson>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
+            modelBuilder.Entity<ArendeKontaktperson>().Property(e => e.AndradAv).HasColumnName("andradav");
+
+            //DroppadFil
+            modelBuilder.Entity<DroppadFil>().Property(e => e.Id).HasColumnName("filid");
+            modelBuilder.Entity<DroppadFil>().Property(e => e.ArendeId).HasColumnName("arendeid");
+            modelBuilder.Entity<DroppadFil>().Property(e => e.ApplicationUserId).HasColumnName("kontaktpersonid");
+
+            modelBuilder.Entity<DroppadFil>().Property(e => e.Filnamn).HasColumnName("filnamn");
+            modelBuilder.Entity<DroppadFil>().Property(e => e.NyttFilnamn).HasColumnName("nyttfilnamn");
+            modelBuilder.Entity<DroppadFil>()
+                .HasRequired(c => c.ApplicationUser)
+                .WithMany(d => d.DroppadFil)
+                .HasForeignKey(c => c.ApplicationUserId);
+            modelBuilder.Entity<DroppadFil>()
+                .HasRequired(c => c.Arende)
+                .WithMany(d => d.DroppadFil)
+                .HasForeignKey(c => c.ArendeId);
+            modelBuilder.Entity<DroppadFil>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
+            modelBuilder.Entity<DroppadFil>().Property(e => e.SkapadAv).HasColumnName("skapadav");
+            modelBuilder.Entity<DroppadFil>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
+            modelBuilder.Entity<DroppadFil>().Property(e => e.AndradAv).HasColumnName("andradav");
+
+        }
 
 
         public DbSet<Organisation> Organisation { get; set; }
@@ -443,6 +581,16 @@ namespace InrappSos.DataAccess
         public DbSet<Roll> Roll { get; set; }
         //public DbSet<ApplicationUser> ApplicationUser { get; set; }
         public DbSet<Rapporteringsresultat> RapporteringsResultat { get; set; }
+        public DbSet<UppgiftsskyldighetOrganisationstyp> UppgiftsskyldighetOrganisationstyp { get; set; }
+        public DbSet<Organisationstyp> Organisationstyp { get; set; }
+        public DbSet<AdmOrganisationstyp> AdmOrganisationstyp { get; set; }
+        public DbSet<Kontaktpersonstyp> Kontaktpersonstyp { get; set; }
+        public DbSet<AdmKontaktpersonstyp> AdmKontaktpersonstyp { get; set; }
+        public DbSet<ArendeKontaktperson> ArendeKontaktperson { get; set; }
+        public DbSet<DroppadFil> DroppadFil { get; set; }
+        public DbSet<Arende> Arende { get; set; }
+        public DbSet<ArendeStatus> ArendeStatus { get; set; }
+        public DbSet<Arendetyp> Arendetyp { get; set; }
 
     }
 }

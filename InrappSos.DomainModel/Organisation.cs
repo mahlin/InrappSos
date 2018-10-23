@@ -12,7 +12,7 @@ namespace InrappSos.DomainModel
         public string Landstingskod { get; set; }
         public string Kommunkod { get; set; }
         public string Inrapporteringskod { get; set; }
-        public string Organisationstyp { get; set; }
+        //public string Organisationstyp { get; set; }
         public string Organisationsnr { get; set; }
         public string Organisationsnamn { get; set; }
         public string Hemsida { get; set; }
@@ -36,5 +36,7 @@ namespace InrappSos.DomainModel
         public virtual ICollection<Leverans> Leveranser { get; set; }
         public virtual ICollection<AdmUppgiftsskyldighet> AdmUppgiftsskyldighet { get; set; }
         public virtual ICollection<Organisationsenhet> Organisationsenhet { get; set; }
+        public virtual ICollection<Organisationstyp> Organisationstyp { get; set; }
+        public virtual ICollection<Arende> Arende { get; set; }
     }
 }

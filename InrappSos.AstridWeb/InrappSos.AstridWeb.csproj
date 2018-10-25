@@ -316,6 +316,7 @@
     <Content Include="Views\System\Index.cshtml" />
     <Content Include="Views\System\_EditSelectedFAQ.cshtml" />
     <Content Include="Views\System\_EditText.cshtml" />
+    <Content Include="Views\Organisation\_SearchResult.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -38,8 +38,51 @@ namespace InrappSos.AstridWeb.Controllers
 
         [Authorize]
         // GET: Organisation
-        public ActionResult GetOrganisation(OrganisationViewModels.OrganisationViewModel model, int selectedOrganisationId)
+        public ActionResult SearchOrganisation(string searchText)
         {
+            var model = new OrganisationViewModels.OrganisationViewModel();
+
+            try
+            {
+                var orgList = _portalSosService.SokOrganisation(searchText);
+
+                //Then you just need to see if you want ANY matches or COMPLETE matches.
+                //Throw your results together in a List<AXCustomer> and return it.
+
+                //Om endats en träff, hämta organisationen direkt
+                if (orgList.Count == 1 && orgList[0].Count == 1)
+                {
+                    return RedirectToAction("GetOrganisation", new { selectedOrganisationId  = orgList[0][0].Id});
+                }
+                model.SearchResult = orgList;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("OrganisationController", "SearchOrganisation", e.ToString(), e.HResult, User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade vid sökning av organisation.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                if (e.Message == "Sequence contains no elements")
+                {
+                    errorModel.Information = "Felaktig kommunkod";
+                }
+
+                return View("CustomError", errorModel);
+
+            }
+            return View("Index", model);
+        }
+        
+
+        [Authorize]
+        // GET: Organisation
+        public ActionResult GetOrganisation(int selectedOrganisationId)
+        {
+            var model = new OrganisationViewModels.OrganisationViewModel();
+
             try
             {
                 if (selectedOrganisationId != 0)
@@ -54,6 +97,7 @@ namespace InrappSos.AstridWeb.Controllers
                 model.OrgUnits = _portalSosService.HamtaOrgEnheterForOrg(model.Organisation.Id);
                 var reportObligationsDb = _portalSosService.HamtaUppgiftsskyldighetForOrg(model.Organisation.Id);
                 model.ReportObligations = ConvertAdmUppgiftsskyldighetToViewModel(reportObligationsDb.ToList());
+                model.SearchResult = new List<List<Organisation>>();
                 // Ladda drop down lists. 
                 var orgListDTO = GetOrganisationDTOList();
                 ViewBag.OrganisationList = new SelectList(orgListDTO, "Id", "KommunkodOchOrgnamn");
@@ -65,7 +109,7 @@ namespace InrappSos.AstridWeb.Controllers
                 ErrorManager.WriteToErrorLog("OrganisationController", "GetOrganisation", e.ToString(), e.HResult, User.Identity.Name);
                 var errorModel = new CustomErrorPageModel
                 {
-                    Information = "Ett fel inträffade vid hämtning av organisation",
+                    Information = "Ett fel inträffade vid hämtning av organisation.",
                     ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
                 };
                 if (e.Message == "Sequence contains no elements")

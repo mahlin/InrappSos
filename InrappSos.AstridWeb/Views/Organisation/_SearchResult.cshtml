@@ -1,0 +1,16 @@
+﻿@using System.Collections
+@using InrappSos.DomainModel
+@model InrappSos.AstridWeb.Models.ViewModels.OrganisationViewModels.OrganisationViewModel
+
+<h4>Sökresultat</h4>
+
+@foreach (var item in Model.SearchResult)
+{
+    foreach (Organisation org in item as IEnumerable) //casting to IEnumerable will let you iterate
+    {
+        @Html.ActionLink(org.Organisationsnamn, "GetOrganisation", "Organisation", new { selectedOrganisationId = org.Id}, new {@class = "btn"})<br/>
+    }
+}
+
+
+

@@ -287,6 +287,8 @@ namespace InrappSos.DataAccess
         void SaveToFilelogg(string userName, string ursprungligtFilNamn, string nyttFilNamn, int leveransId, int sequenceNumber);
 
         void SaveToLoginLog(string userid, string userName);
+
+        List<List<Organisation>> SearchOrganisation(string[] searchString);
         void SaveChosenRegistersForUser(string userId, string userName, List<RegisterInfo> registerList);
 
         void DeleteFAQCategory(int faqCategoryId);

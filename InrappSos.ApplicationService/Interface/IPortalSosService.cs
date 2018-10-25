@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using InrappSos.ApplicationService.DTOModel;
@@ -14,6 +15,8 @@ namespace InrappSos.ApplicationService.Interface
         string ClosedComingWeek();
         string HelgdagComingWeek();
         string SpecialdagComingWeek();
+        List<List<Organisation>> SokOrganisation(string sokStr);
+
         IEnumerable<FilloggDetaljDTO> FiltreraHistorikForAnvandare(string userId, List<RegisterInfo> valdaDelregisterList, List<FilloggDetaljDTO> historikForOrganisation);
 
         IEnumerable<AdmFAQKategori> HamtaAllaFAQs();

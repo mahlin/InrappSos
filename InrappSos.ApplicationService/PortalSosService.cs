@@ -2227,5 +2227,11 @@ namespace InrappSos.ApplicationService
 
         }
 
+        public List<List<Organisation>> SokOrganisation(string sokStr)
+        {
+            string[] searchstring = sokStr.Split(' ');
+            var orgList = _portalSosRepository.SearchOrganisation(searchstring);
+            return orgList;
+        }
     }
 }

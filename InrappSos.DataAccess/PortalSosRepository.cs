@@ -1527,6 +1527,15 @@ namespace InrappSos.DataAccess
             }
         }
 
+        public List<List<Organisation>> SearchOrganisation(string[] searchString)
+        {
+            var orgList = new List<List<Organisation>>();
 
+            foreach (string word in searchString)
+            {
+                orgList.Add(DbContext.Organisation.Where(x => x.Organisationsnamn.Contains(word) || x.Kommunkod.Contains(word) || x.Landstingskod.Contains(word)).ToList());
+            }
+            return orgList;
+        }
     }
 }

@@ -26,16 +26,18 @@
 <body>
 @Html.Action("Menu", "Navigation")
 
-    <div class="container body-content">
+<div class="container body-content">
+    <div style="min-height: 700px;">
         @RenderBody()
-        <hr />
-        <div id="footer">
-            <footer>
-                <p>&copy; @DateTime.Now.Year - Administrationsgränssnitt för Socialstyrelsens inrapporteringsportal</p>
-            </footer>            
-        </div>
-
     </div>
+    <hr/>
+    <div id="footer">
+        <footer>
+            <p>&copy; @DateTime.Now.Year - Administrationsgränssnitt för Socialstyrelsens inrapporteringsportal</p>
+        </footer>
+    </div>
+
+</div>
 
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)

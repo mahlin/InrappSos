@@ -26,7 +26,7 @@ namespace InrappSos.AstridWeb.Models.ViewModels
 
             public string SelectedCountyCode { get; set; }
             public int SelectedOrganisationId { get; set; }
-
+            public List<List<Organisation>> SearchResult { get; set; }
 
             public IEnumerable<Organisationsenhet> OrgUnits { get; set; }
 

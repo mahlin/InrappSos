@@ -233,7 +233,7 @@
             if (Model.UnitReportObligations.Any())
             {
                 @Html.HiddenFor(m => m.SelectedOrganisationsenhetsId)
-
+                <div style="font-size: 1em; padding-left: 20px;">@Model.Organisation.Organisationsnamn</div>
                 <div id="gridContent" style="font-family: Arial; padding: 20px;">
                     @{
                         ViewBag.Title = "Administrera enhetsuppgiftsskyldighet";
@@ -243,32 +243,32 @@
 
 
                     @grid.GetHtml(tableStyle: "webgrid-table700",
-                            headerStyle: "webgrid-header",
-                            footerStyle: "webgrid-footer",
-                            alternatingRowStyle: "webgrid-alternating-row",
-                            selectedRowStyle: "webgrid-selected-row",
-                            rowStyle: "webgrid-row-style",
-                            mode: WebGridPagerModes.All,
-                            columns: grid.Columns(
-                                grid.Column(null, null, format: @<input type="hidden" id="UnitRepUppgSkId" value="@item.UppgiftsskyldighetId" class="edit-mode form-control colZeroWidth" />),
-                                grid.Column("Id", format: @<text><span class="display-mode">@item.Id</span><label id="UnitRepId" class="edit-mode colMinWidth">@item.Id</label> </text>, style: "colMinWidth"),
-                                grid.Column("DelregisterKortnamn","Delregister", format: @<text><span class="display-mode col2Width">@item.DelregisterKortnamn</span><label id="UnitRepSubdirName" class="edit-mode col2Width">@item.DelregisterKortnamn</label> </text>, style: "col2Width"),
+                                 headerStyle: "webgrid-header",
+                                 footerStyle: "webgrid-footer",
+                                 alternatingRowStyle: "webgrid-alternating-row",
+                                 selectedRowStyle: "webgrid-selected-row",
+                                 rowStyle: "webgrid-row-style",
+                                 mode: WebGridPagerModes.All,
+                                 columns: grid.Columns(
+                                     grid.Column(null, null, format: @<input type="hidden" id="UnitRepUppgSkId" value="@item.UppgiftsskyldighetId" class="edit-mode form-control colZeroWidth" />),
+                                         grid.Column("Id", format: @<text><span class="display-mode">@item.Id</span><label id="UnitRepId" class="edit-mode colMinWidth">@item.Id</label> </text>, style: "colMinWidth"),
+                                             grid.Column("DelregisterKortnamn", "Delregister", format: @<text><span class="display-mode col2Width">@item.DelregisterKortnamn</span><label id="UnitRepSubdirName" class="edit-mode col2Width">@item.DelregisterKortnamn</label> </text>, style: "col2Width"),
 
-                                grid.Column("SkyldigFrom", "Fr.o.m", format: @<text>
-                                    <span class="display-mode"><label id="lblSkyldigFrom">@( item.SkyldigFrom != null ? item.SkyldigFrom.ToString("yyyy-MM-dd") : item.SkyldigFrom)</label></span>
-                                    <input type="text" id="UnitRepSkyldigFrom" value="@( item.SkyldigFrom != null ? item.SkyldigFrom.ToString("yyyy-MM-dd") : item.SkyldigFrom)" class="edit-mode form-control" /></text>, style: "col2Width"),
-                                grid.Column("SkyldigTom", "T.o.m", format: @<text>
-                                    <span class="display-mode"><label id="lblSkyldigTom">@( item.SkyldigTom != null ? item.SkyldigTom.ToString("yyyy-MM-dd") : item.SkyldigTom)</label></span>
-                                    <input type="text" id="UnitRepSkyldigTom" value="@( item.SkyldigTom != null ? item.SkyldigTom.ToString("yyyy-MM-dd") : item.SkyldigTom)" class="edit-mode form-control" /></text>, style: "col2Width"),
-                                grid.Column(null, format: @<text>
-                                    <button class="edit-user display-mode btn btn-default">Ändra</button>
-                                    <button class="save-user edit-mode btn btn-default">Spara</button>
-                                    <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
-                                </text>, style: "col3Width", canSort: false)))
+                                                 grid.Column("SkyldigFrom", "Fr.o.m", format: @<text>
+                                                    <span class="display-mode"><label id="lblSkyldigFrom">@( item.SkyldigFrom != null ? item.SkyldigFrom.ToString("yyyy-MM-dd") : item.SkyldigFrom)</label></span>
+                                                    <input type="text" id="UnitRepSkyldigFrom" value="@( item.SkyldigFrom != null ? item.SkyldigFrom.ToString("yyyy-MM-dd") : item.SkyldigFrom)" class="edit-mode form-control" /></text>, style: "col2Width"),
+                                                     grid.Column("SkyldigTom", "T.o.m", format: @<text>
+                                                        <span class="display-mode"><label id="lblSkyldigTom">@( item.SkyldigTom != null ? item.SkyldigTom.ToString("yyyy-MM-dd") : item.SkyldigTom)</label></span>
+                                                        <input type="text" id="UnitRepSkyldigTom" value="@( item.SkyldigTom != null ? item.SkyldigTom.ToString("yyyy-MM-dd") : item.SkyldigTom)" class="edit-mode form-control" /></text>, style: "col2Width"),
+                                                         grid.Column(null, format: @<text>
+                                                            <button class="edit-user display-mode btn btn-default">Ändra</button>
+                                                            <button class="save-user edit-mode btn btn-default">Spara</button>
+                                                            <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
+                                                        </text>, style: "col3Width", canSort: false)))
 
                 </div>
             }
-            else 
+            else
             {
                 <div id="raderSaknas">
                     <H5>Enhetsuppgiftsskyldighet för vald kommun saknas</H5>

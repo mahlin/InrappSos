@@ -8,7 +8,23 @@
 {
     foreach (Organisation org in item as IEnumerable) //casting to IEnumerable will let you iterate
     {
-        @Html.ActionLink(org.Organisationsnamn, "GetOrganisation", "Organisation", new { selectedOrganisationId = org.Id}, new {@class = "btn"})<br/>
+        switch (Model.Origin)
+        {
+            case "index":
+                @Html.ActionLink(org.Organisationsnamn, "GetOrganisation", "Organisation", new { selectedOrganisationId = org.Id}, new {@class = "btn"})<br/>
+                break;
+            case "contacts":
+                @Html.ActionLink(org.Organisationsnamn, "GetOrganisationsContacts", "Organisation", new { selectedOrganisationId = org.Id}, new {@class = "btn"})<br/>
+                break;
+            case "orgunits":
+                @Html.ActionLink(org.Organisationsnamn, "GetOrganisationsOrgUnits", "Organisation", new { selectedOrganisationId = org.Id}, new {@class = "btn"})<br/>
+                break;
+            case "reportobligation":
+                @Html.ActionLink(org.Organisationsnamn, "GetOrganisationsReportObligations", "Organisation", new { selectedOrganisationId = org.Id}, new {@class = "btn"})<br/>
+                break;
+            default:
+                break;;
+        }
     }
 }
 

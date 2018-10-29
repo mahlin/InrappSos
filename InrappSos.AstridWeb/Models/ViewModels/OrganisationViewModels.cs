@@ -31,6 +31,7 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public IEnumerable<Organisationsenhet> OrgUnits { get; set; }
 
             public  IEnumerable<ReportObligationsViewModel> ReportObligations { get; set; }
+            public string Origin { get; set; }
 
         }
         

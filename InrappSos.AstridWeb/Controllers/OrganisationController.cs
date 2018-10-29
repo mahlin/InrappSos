@@ -38,21 +38,39 @@ namespace InrappSos.AstridWeb.Controllers
 
         [Authorize]
         // GET: Organisation
-        public ActionResult SearchOrganisation(string searchText)
+        public ActionResult SearchOrganisation(string searchText, string origin)
         {
             var model = new OrganisationViewModels.OrganisationViewModel();
 
             try
             {
                 var orgList = _portalSosService.SokOrganisation(searchText);
+                model.Origin = origin;
 
                 //Then you just need to see if you want ANY matches or COMPLETE matches.
                 //Throw your results together in a List<AXCustomer> and return it.
 
-                //Om endats en träff, hämta organisationen direkt
+                //Om endats en träff, hämta datat direkt
                 if (orgList.Count == 1 && orgList[0].Count == 1)
                 {
-                    return RedirectToAction("GetOrganisation", new { selectedOrganisationId  = orgList[0][0].Id});
+                    switch (origin)
+                    {
+                        case "index":
+                            return RedirectToAction("GetOrganisation", new { selectedOrganisationId = orgList[0][0].Id });
+                        case "contacts":
+                            return RedirectToAction("GetOrganisationsContacts", new { selectedOrganisationId = orgList[0][0].Id });
+                        case "orgunits":
+                            return RedirectToAction("GetOrganisationsOrgUnits", new { selectedOrganisationId = orgList[0][0].Id });
+                        case "reportobligation":
+                            return RedirectToAction("GetOrganisationsReportObligations", new { selectedOrganisationId = orgList[0][0].Id });
+                        default:
+                            var errorModel = new CustomErrorPageModel
+                            {
+                                Information = "Felaktig avsändare till sökfunktionen.",
+                                ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                            };
+                            return View("CustomError", errorModel);
+                    }
                 }
                 model.SearchResult = orgList;
             }
@@ -138,13 +156,15 @@ namespace InrappSos.AstridWeb.Controllers
 
         // GET
         [Authorize]
-        public ActionResult GetOrganisationsContacts(OrganisationViewModels.OrganisationViewModel model, int selectedOrgId = 0)
+        public ActionResult GetOrganisationsContacts(int selectedOrganisationId = 0)
         {
+            var model = new OrganisationViewModels.OrganisationViewModel();
+
             try
             {
-                if (selectedOrgId != 0)
+                if (selectedOrganisationId != 0)
                 {
-                    model.SelectedOrganisationId = selectedOrgId;
+                    model.SelectedOrganisationId = selectedOrganisationId;
                 }
                 model.Organisation = _portalSosService.HamtaOrganisation(model.SelectedOrganisationId);
                 model.Kommunkod = model.Organisation.Kommunkod;
@@ -155,6 +175,7 @@ namespace InrappSos.AstridWeb.Controllers
                     //Hämta användarens valda register
                     contact.ValdaDelregister = GetContactsChosenSubDirectories(contact);
                 }
+                model.SearchResult = new List<List<Organisation>>();
                 // Ladda drop down lists. 
                 var orgListDTO = GetOrganisationDTOList();
                 ViewBag.OrganisationList = new SelectList(orgListDTO, "Id", "KommunkodOchOrgnamn");
@@ -190,18 +211,20 @@ namespace InrappSos.AstridWeb.Controllers
 
         // GET
         [Authorize]
-        public ActionResult GetOrganisationsOrgUnits(OrganisationViewModels.OrganisationViewModel model, int selectedOrgId = 0)
+        public ActionResult GetOrganisationsOrgUnits(int selectedOrganisationId = 0)
         {
+            var model = new OrganisationViewModels.OrganisationViewModel();
             try
             {
-                if (selectedOrgId != 0)
+                if (selectedOrganisationId != 0)
                 {
-                    model.SelectedOrganisationId = selectedOrgId;
+                    model.SelectedOrganisationId = selectedOrganisationId;
                 }
 
                 model.Organisation = _portalSosService.HamtaOrganisation(model.SelectedOrganisationId);
                 model.Kommunkod = model.Organisation.Kommunkod;
                 model.OrgUnits = _portalSosService.HamtaOrgEnheterForOrg(model.Organisation.Id);
+                model.SearchResult = new List<List<Organisation>>();
                 // Ladda drop down lists. 
                 var orgListDTO = GetOrganisationDTOList();
                 ViewBag.OrganisationList = new SelectList(orgListDTO, "Id", "KommunkodOchOrgnamn");
@@ -238,18 +261,21 @@ namespace InrappSos.AstridWeb.Controllers
         }
 
         [Authorize]
-        public ActionResult GetOrganisationsReportObligations(OrganisationViewModels.OrganisationViewModel model, int selectedOrgId = 0)
+        public ActionResult GetOrganisationsReportObligations(int selectedOrganisationId = 0)
         {
+            var model = new OrganisationViewModels.OrganisationViewModel();
             try
             {
-                if (selectedOrgId != 0)
+                if (selectedOrganisationId != 0)
                 {
-                    model.SelectedOrganisationId = selectedOrgId;
+                    model.SelectedOrganisationId = selectedOrganisationId;
                 }
                 model.Organisation = _portalSosService.HamtaOrganisation(model.SelectedOrganisationId);
                 model.Kommunkod = model.Organisation.Kommunkod;
                 var admUppgSkyldighetList = _portalSosService.HamtaUppgiftsskyldighetForOrg(model.Organisation.Id);
                 model.ReportObligations = ConvertAdmUppgiftsskyldighetToViewModel(admUppgSkyldighetList.ToList());
+                model.SearchResult = new List<List<Organisation>>();
+
                 // Ladda drop down lists. 
                 var orgListDTO = GetOrganisationDTOList();
                 ViewBag.OrganisationList = new SelectList(orgListDTO, "Id", "KommunkodOchOrgnamn");

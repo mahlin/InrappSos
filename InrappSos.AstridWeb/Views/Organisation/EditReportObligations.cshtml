@@ -166,7 +166,8 @@
         {
 
             @Html.HiddenFor(m => m.SelectedOrganisationId)
-            @Html.ActionLink("Skapa ny uppgiftsskyldighet", "CreateReportObligation", "Organisation", new {selectedOrgId = Model.SelectedOrganisationId}, null)
+            <div style="font-size: 1em; padding-left: 20px;">@Model.Organisation.Organisationsnamn</div>
+            @Html.ActionLink("Skapa ny uppgiftsskyldighet", "CreateReportObligation", "Organisation", new {selectedOrgId = Model.SelectedOrganisationId}, new { style = "padding-left:20px;" })
 
             <div id="gridContent" style="font-family: Arial; padding: 20px;">
                 @{

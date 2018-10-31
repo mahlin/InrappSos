@@ -63,6 +63,8 @@ namespace InrappSos.AstridWeb.Controllers
                             return RedirectToAction("GetOrganisationsOrgUnits", new { selectedOrganisationId = orgList[0][0].Id });
                         case "reportobligation":
                             return RedirectToAction("GetOrganisationsReportObligations", new { selectedOrganisationId = orgList[0][0].Id });
+                        case "unitreportobligation":
+                            return RedirectToAction("GetOrganisationsUnitReportObligations", new { selectedOrganisationId = orgList[0][0].Id });
                         default:
                             var errorModel = new CustomErrorPageModel
                             {
@@ -307,25 +309,28 @@ namespace InrappSos.AstridWeb.Controllers
             var model = new OrganisationViewModels.UnitReportObligationsViewModel();
             //// Ladda drop down lists. 
             model = GetOrgDropDownLists(model);
+            model.SearchResult = new List<List<Organisation>>();
             return View("EditUnitReportObligations", model);
         }
 
 
         [Authorize]
-        public ActionResult GetOrganisationsUnitReportObligations(OrganisationViewModels.UnitReportObligationsViewModel model, int selectedOrgId = 0, int selectedOrgenhetsId = 0)
+        public ActionResult GetOrganisationsUnitReportObligations(OrganisationViewModels.UnitReportObligationsViewModel model, int selectedOrganisationId = 0, int selectedOrgenhetsId = 0)
         {
             try
             {
-                if (selectedOrgId != 0)
+                if (selectedOrganisationId != 0)
                 {
-                    model.SelectedOrganisationId = selectedOrgId;
+                    model.SelectedOrganisationId = selectedOrganisationId;
                 }
                 if (selectedOrgenhetsId != 0)
                 {
                     model.SelectedOrganisationsenhetsId = selectedOrgenhetsId;
                 }
+                model.Organisation = _portalSosService.HamtaOrganisation(model.SelectedOrganisationId);
                 var admEnhetUppgSkyldighetList = _portalSosService.HamtaEnhetsUppgiftsskyldighetForOrgEnhet(model.SelectedOrganisationsenhetsId).ToList();
                 model.UnitReportObligations = ConvertEnhetsUppgSkyldighetToViewModel(admEnhetUppgSkyldighetList);
+                model.SearchResult = new List<List<Organisation>>();
                 // Ladda drop down lists. 
                 model = GetOrgDropDownLists(model);
             }

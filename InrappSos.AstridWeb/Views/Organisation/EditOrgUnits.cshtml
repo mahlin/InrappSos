@@ -135,9 +135,9 @@
         {
 
             @Html.HiddenFor(m => m.SelectedOrganisationId)
-                    <div style="font-size: 1em; padding-left: 20px;">@Model.Organisation.Organisationsnamn</div>
+            <div style="font-size: 1em; padding-left: 20px;">@Model.Organisation.Organisationsnamn</div>
 
-            @Html.ActionLink("Skapa ny organisationsenhet", "CreateOrganisationUnit", "Organisation", new {selectedOrgId = Model.SelectedOrganisationId}, null)
+            @Html.ActionLink("Skapa ny organisationsenhet", "CreateOrganisationUnit", "Organisation", new {selectedOrgId = Model.SelectedOrganisationId}, new { style = "padding-left:20px;" })
             <div id="gridContent" style="font-family: Arial; padding: 20px;">
                 @{
                     ViewBag.Title = "Administrera organisationsenheter";

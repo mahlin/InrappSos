@@ -6,51 +6,52 @@
     var orgLista = @Html.Raw(Json.Encode(Model.OrganisationList));
 
     $(function () {
-        $("#ddlOrganisation").focus();
+        $("#searchText").focus();
     });
 
-    $(function () {
-        $('th a, tfoot a').click(function () {
-            //if querystring already contains selectedOrgId, remove it
-            var index = $(this).attr('href').indexOf("&selectedOrgId=");
-            if (index >= 0) {
-                var cleanUrl = $(this).attr('href').substring(0, index);
-                $(this).attr('href', cleanUrl);
-            }
-            var newUrl = $(this).attr('href') +
-                "&selectedOrgId=" +
-                $("#SelectedOrganisationId").val();
-            $('form').attr('action', newUrl).submit();
-            return false;
-        });
-    });
+    //$(function () {
+    //    $('th a, tfoot a').click(function () {
+    //        //if querystring already contains selectedOrgId, remove it
+    //        var index = $(this).attr('href').indexOf("&selectedOrgId=");
+    //        if (index >= 0) {
+    //            var cleanUrl = $(this).attr('href').substring(0, index);
+    //            $(this).attr('href', cleanUrl);
+    //        }
+    //        var newUrl = $(this).attr('href') +
+    //            "&selectedOrgId=" +
+    //            $("#SelectedOrganisationId").val();
+    //        $('form').attr('action', newUrl).submit();
+    //        return false;
+    //    });
+    //});
 
     $(document).ready(function () {
         if ($("#SelectedOrganisationId").val() > 0) {
             //set orgenhets-ddl
             setOrgenhetsDrop($("#SelectedOrganisationId").val());
         }
-        if ($("#SelectedOrganisationsenhetsId").val() > 0) {
-            $('#skapaNy').show();
+        if ($("#SelectedOrganisationsenhetsId").val() !== "0") {
             $('#ddlOrgenheter').val($("#SelectedOrganisationsenhetsId").val());
+            $('#skapaNy').show();
         } else {
             $('#skapaNy').hide();
+            $('#raderSaknas').hide();
         }
     });
 
 
-    $(document).on('change', '#ddlOrganisation',
-        function() {
-            //Nollställ dropparna
-            $('#ddlOrgenheter').empty();
-            $("#ddlOrgenheter").append("<option> - Välj organisationsenhet - </option>");
-            var selectedOrg = $('#ddlOrganisation').val();
-            $("#SelectedOrganisationId").val(selectedOrg);
-            $("#SelectedOrganisationsenhetsId").val("");
+    //$(document).on('change', '#ddlOrganisation',
+    //    function() {
+    //        //Nollställ dropparna
+    //        $('#ddlOrgenheter').empty();
+    //        $("#ddlOrgenheter").append("<option> - Välj organisationsenhet - </option>");
+    //        var selectedOrg = $('#ddlOrganisation').val();
+    //        $("#SelectedOrganisationId").val(selectedOrg);
+    //        $("#SelectedOrganisationsenhetsId").val("");
 
-            //Hämta orgenheter för vald kommun
-            setOrgenhetsDrop(selectedOrg);
-        });
+    //        //Hämta orgenheter för vald kommun
+    //        setOrgenhetsDrop(selectedOrg);
+    //    });
 
     $(document).on('change', '#ddlOrgenheter',
         function () {
@@ -94,6 +95,7 @@
                             $ddlOrgenheter.append("<option value=" + index + " >" + value + "</option>");
                         });
                     $ddlOrgenheter.removeAttr('readonly');
+                    $('#searchBtn').removeAttr('disabled');
                 }
             }
         });
@@ -184,6 +186,48 @@
             <h4>Administrera enhetsuppgiftsskyldighet för organisation</h4>
             <br />
             <section id="orgForm">
+                @using (Html.BeginForm("SearchOrganisation", "Organisation", new { origin = "unitreportobligation" }, FormMethod.Post, null))
+                {
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div id="custom-search-input">
+                                    <div class="input-group col-md-12">
+                                        <input type="text" class="form-control" id="searchText" name="searchText" style="max-width: 350px !important;" placeholder="Sök med organisationskod eller organisationsnamn" />
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-info btn-lg" type="submit">
+                                                <i class="glyphicon glyphicon-search"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </section>
+        </div>
+    </div>
+    <br />
+
+    @if (Model != null)
+    {
+        <hr />
+        @* Om sökresultat finns, visa listan *@
+        if (Model.SearchResult.Count > 0 && Model.SearchResult[0].Count > 0)
+        {
+            @Html.Partial("_SearchResult")
+        }
+        @* Om inga sökträffar *@
+        else if (Model.SearchResult.Count == 1 && Model.SearchResult[0].Count == 0 && Model.Organisation == null)
+        {
+            <h2>Din sökning på gav inget resultat. </h2>
+        }
+        @* Om en relevant organisation hittats, visa organisationsinfon och populera dropdown för organisationsenheter *@
+        else if (Model.Organisation != null)
+        {
+            <div style="font-size: 1em; padding-left: 40px;">@Model.Organisation.Organisationsnamn</div>
+            <section id="orgenhetForm">
                 @using (Html.BeginForm("GetOrganisationsUnitReportObligations", "Organisation", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
                 {
                     @Html.HiddenFor(m => m.SelectedOrganisationId)
@@ -193,56 +237,42 @@
                     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
                     <div class="form-group">
-                        @Html.Label("Organisation", new { @class = "col-md-2 control-label" })
-                        <div class="col-md-10">
-                            @Html.DropDownListFor(m => m.SelectedOrganisationId, ViewBag.OrganisationList as SelectList, " - Välj kommunkod -", new { @class = "form-control", id = "ddlOrganisation" })
-                        </div>
-                    </div>
-
-                    <div class="form-group">
                         @Html.Label("Organisationsenhet", new { @class = "control-label col-md-2" })
-                        <div class="col-md-10">
+                        <div class="col-md-10" style="max-width: 400px !important;">
                             @Html.DropDownListFor(m => m.SelectedOrganisationsenhetsId, Enumerable.Empty<SelectListItem>(), " - Välj organisationsenhet -", new { @class = "form-control", id = "ddlOrgenheter", @readonly = "readonly" })
                         </div>
                     </div>
 
                     <div class="form-group">
                         <div class="col-md-offset-2 col-md-10">
-                            <input type="submit" id="searchBtn" value="Sök enhetsuppgiftskyldighet" class="btn btn-default" />
+                            <input type="submit" id="searchBtn" value="Sök enhetsuppgiftskyldighet" class="btn btn-default" disabled />
                         </div>
                     </div>
                 }
             </section>
-        </div>
-    </div>
+            <hr/>
 
+            <div id="skapaNy">
+                @*@Html.ActionLink("Skapa ny enhetsuppgiftsskyldighet", "CreateUnitReportObligation", "Organisation", new { orgId = Model.SelectedOrganisationId, orgenhetsId = Model.SelectedOrganisationsenhetsId }, null)*@
+                @Html.ActionLink("Skapa ny enhetsuppgiftsskyldighet", "CreateUnitReportObligation", new { selectedOrgId = Model.SelectedOrganisationId, selectedOrgenhetsId = Model.SelectedOrganisationsenhetsId }, new { @class = "createNew" })
+            </div>
 
-    @if (Model != null)
-    {
-        <br /><br />
-        <hr />
+            @Html.HiddenFor(m => m.SelectedOrganisationId)
 
-        <div id="skapaNy">
-            @*@Html.ActionLink("Skapa ny enhetsuppgiftsskyldighet", "CreateUnitReportObligation", "Organisation", new { orgId = Model.SelectedOrganisationId, orgenhetsId = Model.SelectedOrganisationsenhetsId }, null)*@
-            @Html.ActionLink("Skapa ny enhetsuppgiftsskyldighet", "CreateUnitReportObligation", new { selectedOrgId = Model.SelectedOrganisationId, selectedOrgenhetsId = Model.SelectedOrganisationsenhetsId }, new { @class = "createNew" })
-        </div>
-        @Html.HiddenFor(m => m.SelectedOrganisationId)
-
-        if (Model.UnitReportObligations != null)
-        {
-            if (Model.UnitReportObligations.Any())
+            if (Model.UnitReportObligations != null)
             {
-                @Html.HiddenFor(m => m.SelectedOrganisationsenhetsId)
-                <div style="font-size: 1em; padding-left: 20px;">@Model.Organisation.Organisationsnamn</div>
-                <div id="gridContent" style="font-family: Arial; padding: 20px;">
-                    @{
-                        ViewBag.Title = "Administrera enhetsuppgiftsskyldighet";
-                        var grid = new WebGrid(source: Model.UnitReportObligations, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "unitReportObligationsGrid");
-                        grid.Pager(WebGridPagerModes.All);
-                    }
+                if (Model.UnitReportObligations.Any())
+                {
+                    @Html.HiddenFor(m => m.SelectedOrganisationsenhetsId)
 
+                    <div id="gridContent" style="font-family: Arial; padding: 20px;">
+                        @{
+                            ViewBag.Title = "Administrera enhetsuppgiftsskyldighet";
+                            var grid = new WebGrid(source: Model.UnitReportObligations, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "unitReportObligationsGrid");
+                            grid.Pager(WebGridPagerModes.All);
+                        }
 
-                    @grid.GetHtml(tableStyle: "webgrid-table700",
+                        @grid.GetHtml(tableStyle: "webgrid-table700",
                                  headerStyle: "webgrid-header",
                                  footerStyle: "webgrid-footer",
                                  alternatingRowStyle: "webgrid-alternating-row",
@@ -266,16 +296,17 @@
                                                             <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
                                                         </text>, style: "col3Width", canSort: false)))
 
-                </div>
+                    </div>
+                }
+                else
+                {
+                    <div id="raderSaknas">
+                        <H5>Enhetsuppgiftsskyldighet för vald kommun saknas</H5>
+                    </div>
+                }
             }
-            else
-            {
-                <div id="raderSaknas">
-                    <H5>Enhetsuppgiftsskyldighet för vald kommun saknas</H5>
-                </div>
-            }
-        }
 
+        }
     }
 </div>
 

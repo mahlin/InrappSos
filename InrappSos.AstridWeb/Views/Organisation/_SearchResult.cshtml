@@ -22,6 +22,9 @@
             case "reportobligation":
                 @Html.ActionLink(org.Organisationsnamn, "GetOrganisationsReportObligations", "Organisation", new { selectedOrganisationId = org.Id}, new {@class = "btn"})<br/>
                 break;
+            case "unitreportobligation":
+                @Html.ActionLink(org.Organisationsnamn, "GetOrganisationsUnitReportObligations", "Organisation", new { selectedOrganisationId = org.Id}, new {@class = "btn"})<br/>
+                break;
             default:
                 break;;
         }

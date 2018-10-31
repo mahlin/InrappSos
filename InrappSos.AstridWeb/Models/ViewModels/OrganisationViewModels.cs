@@ -71,7 +71,9 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public int UppgiftsskyldighetId { get; set; }
             public DateTime? SkyldigFrom { get; set; }
             public DateTime? SkyldigTom { get; set; }
-
+            public List<List<Organisation>> SearchResult { get; set; }
+            public Organisation Organisation { get; set; }
+            public string Origin { get; set; }
         }
 
         public class AdmEnhetsUppgiftsskyldighetViewModel

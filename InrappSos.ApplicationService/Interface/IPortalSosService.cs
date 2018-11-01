@@ -20,6 +20,7 @@ namespace InrappSos.ApplicationService.Interface
         IEnumerable<FilloggDetaljDTO> FiltreraHistorikForAnvandare(string userId, List<RegisterInfo> valdaDelregisterList, List<FilloggDetaljDTO> historikForOrganisation);
 
         IEnumerable<AdmFAQKategori> HamtaAllaFAQs();
+        IEnumerable<AdmOrganisationstyp> HamtaAllaOrganisationstyper();
 
         string HamtaAnvandaresNamn(string userId);
 
@@ -186,6 +187,7 @@ namespace InrappSos.ApplicationService.Interface
         int SkapaOrganisation(Organisation org, string userName);
 
         void SkapaOrganisationsenhet(Organisationsenhet orgUnit, string userName);
+        void SkapaOrganisationstyp(AdmOrganisationstyp orgtyp, string userName);
 
         void SkapaFAQKategori(AdmFAQKategori faqKategori, string userName);
 
@@ -227,6 +229,7 @@ namespace InrappSos.ApplicationService.Interface
         void UppdateraAdminAnvandare(AppUserAdmin user, string userName);
 
         void UppdateraOrganisationsenhet(Organisationsenhet orgUnit, string userName);
+        void UppdateraOrganisationstyp(AdmOrganisationstyp orgtyp, string userName);
 
         void UppdateraUppgiftsskyldighet(AdmUppgiftsskyldighet uppgSkyldighet, string userName);
 
@@ -269,6 +272,7 @@ namespace InrappSos.ApplicationService.Interface
         void TaBortFAQKategori(int faqKategoriId);
 
         void TaBortFAQ(int faqId);
+        void TaBortOrganisationstyp(int orgTypeId);
 
         void TaBortHelgdag(int holidayId);
 

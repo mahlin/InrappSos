@@ -227,6 +227,12 @@ namespace InrappSos.ApplicationService
             return faqs;
         }
 
+        public IEnumerable<AdmOrganisationstyp> HamtaAllaOrganisationstyper()
+        {
+            var orgtyper = _portalSosRepository.GetAllOrgTypes();
+            return orgtyper;
+        }
+
         public IEnumerable<AdmFAQKategori> HamtaFAQkategorier()
         {
             var faqCats = _portalSosRepository.GetFAQCategories();
@@ -1084,6 +1090,17 @@ namespace InrappSos.ApplicationService
             _portalSosRepository.CreateOrgUnit(orgUnit);
         }
 
+        public void SkapaOrganisationstyp(AdmOrganisationstyp orgtyp, string userName)
+        {
+            //Sätt datum och användare
+            orgtyp.SkapadDatum = DateTime.Now;
+            orgtyp.SkapadAv = userName;
+            orgtyp.AndradDatum = DateTime.Now;
+            orgtyp.AndradAv = userName;
+
+            _portalSosRepository.CreateOrgType(orgtyp);
+        }
+
         public void SkapaFAQKategori(AdmFAQKategori faqKategori, string userName)
         {
             //Sätt datum och användare
@@ -1308,6 +1325,14 @@ namespace InrappSos.ApplicationService
             orgUnit.AndradDatum = DateTime.Now;
             orgUnit.AndradAv = userName;
             _portalSosRepository.UpdateOrgUnit(orgUnit);
+        }
+
+        public void UppdateraOrganisationstyp(AdmOrganisationstyp orgtyp, string userName)
+        {
+            //Sätt datum och användare
+            orgtyp.AndradDatum = DateTime.Now;
+            orgtyp.AndradAv = userName;
+            _portalSosRepository.UpdateOrgType(orgtyp);
         }
 
         public void UppdateraUppgiftsskyldighet(AdmUppgiftsskyldighet uppgSkyldighet, string userName)
@@ -1556,6 +1581,11 @@ namespace InrappSos.ApplicationService
         public void TaBortFAQ(int faqId)
         {
             _portalSosRepository.DeleteFAQ(faqId);
+        }
+
+        public void TaBortOrganisationstyp(int orgTypeId)
+        {
+            _portalSosRepository.DeleteOrgType(orgTypeId);
         }
 
         public void TaBortHelgdag(int holidayId)
@@ -2233,5 +2263,7 @@ namespace InrappSos.ApplicationService
             var orgList = _portalSosRepository.SearchOrganisation(searchstring);
             return orgList;
         }
+
+
     }
 }

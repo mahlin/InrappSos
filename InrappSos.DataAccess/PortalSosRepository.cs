@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 using InrappSos.DomainModel;
@@ -318,6 +319,13 @@ namespace InrappSos.DataAccess
 
             DbContext.SaveChanges();
             return leverans.Id;
+        }
+
+        public IEnumerable<AdmOrganisationstyp> GetAllOrgTypes()
+        {
+            var orgTypes = DbContext.AdmOrganisationstyp.OrderBy(x => x.Typnamn).ToList();
+
+            return orgTypes;
         }
 
         public IEnumerable<AdmFAQKategori> GetAllFAQs()
@@ -891,6 +899,12 @@ namespace InrappSos.DataAccess
             DbContext.SaveChanges();
         }
 
+        public void CreateOrgType(AdmOrganisationstyp orgType)
+        {
+            DbContext.AdmOrganisationstyp.Add(orgType);
+            DbContext.SaveChanges();
+        }
+
         public void CreateFAQCategory(AdmFAQKategori faqCategory)
         {
             DbContext.AdmFAQKategori.Add(faqCategory);
@@ -1079,6 +1093,16 @@ namespace InrappSos.DataAccess
             orgU.AndradDatum = orgUnit.AndradDatum;
             orgU.AndradAv = orgUnit.AndradAv;
             DbContext.SaveChanges(); 
+        }
+
+        public void UpdateOrgType(AdmOrganisationstyp orgType)
+        {
+            var orgTypeDb = DbContext.AdmOrganisationstyp.Where(u => u.Id == orgType.Id).Select(u => u).SingleOrDefault();
+            orgTypeDb.Typnamn = orgType.Typnamn;
+            orgTypeDb.Beskrivning = orgType.Beskrivning;
+            orgTypeDb.AndradDatum = orgType.AndradDatum;
+            orgTypeDb.AndradAv = orgType.AndradAv;
+            DbContext.SaveChanges();
         }
 
         public void UpdateReportObligation(AdmUppgiftsskyldighet repObligation)
@@ -1354,6 +1378,16 @@ namespace InrappSos.DataAccess
             }
         }
 
+        public void DeleteOrgType(int orgTypeId)
+        {
+            var orgTypeToDelete = DbContext.AdmOrganisationstyp.SingleOrDefault(x => x.Id == orgTypeId);
+            if (orgTypeToDelete != null)
+            {
+                DbContext.AdmOrganisationstyp.Remove(orgTypeToDelete);
+                DbContext.SaveChanges();
+            }
+        }
+
         public void DeleteHoliday(int holidayId)
         {
             var holidayToDelete = DbContext.AdmHelgdag.SingleOrDefault(x => x.Id == holidayId);
@@ -1537,5 +1571,7 @@ namespace InrappSos.DataAccess
             }
             return orgList;
         }
+
+
     }
 }

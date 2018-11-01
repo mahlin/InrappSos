@@ -1,0 +1,156 @@
+﻿@model InrappSos.AstridWeb.Models.ViewModels.OrganisationViewModels.OrganisationViewModel
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+
+<script type="text/javascript">
+
+    $(document).ready(function ()
+    {
+        var modalConfirm = function test(callback) {
+            $("#modal-btn-si").on("click", function () {
+                callback(true);
+                $("#mi-modal").modal('hide');
+            });
+
+            $("#modal-btn-no").on("click", function () {
+                callback(false);
+                $("#mi-modal").modal('hide');
+            });
+        };
+
+        modalConfirm(function (confirm) {
+            if (confirm) {
+                var data = { 'orgTypeId': $('#SelectedOrgTypId').val() };
+                $.ajax({
+                    url: '/Organisation/DeleteOrgType',
+                    type: 'POST',
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify(data),
+                    success: function (data) {
+                        //On ajax success do this
+                        $("#pageContainer").html(data);
+                        $('#footer').hide();
+                        tr.find('.edit-mode, .display-mode').toggle();
+                    }
+                });
+            }
+        });  
+    });
+
+    $(function () {
+        $("#searchText").focus();
+    });
+
+    function deleteOrgType(id, orgtypNamn) {
+        $('#SelectedOrgTypId').val(id);
+        $("#mi-modal").modal("show");
+        $('#modal-body').html("Vill du verkligen ta bort ta bort organisationstypen " + orgtypNamn + "?");
+    }
+
+    $(function() {
+        $('.edit-mode').hide();
+        $('.edit-user, .cancel-user').on('click',
+            function() {
+                var tr = $(this).parents('tr:first');
+                tr.find('.edit-mode, .display-mode').toggle();
+            });
+        $('.save-user').on('click',
+            function() {
+                var tr = $(this).parents('tr:first');
+                var orgTypeId = tr.find("#OrgTypeId").html();
+                var orgTypeName = tr.find("#OrgTypeName").val();
+                var orgTypeDesc = tr.find("#OrgTypeDesc").val();
+
+                //Creating AdmOrganisationstyp JSON object
+                var orgType =
+                {
+                    "Id": orgTypeId,
+                    "Typnamn": orgTypeName,
+                    "Beskrivning": orgTypeDesc,
+                };
+                //Posting AdmOrganisationstyp object to controller's Update action method
+                $.ajax({
+                    url: '/Organisation/UpdateOrganisationType',
+                    data: JSON.stringify(orgType),
+                    type: 'POST',
+                    contentType: 'application/json; charset=utf-8',
+                    success: function(data) {
+                        //location.reload();
+                        $("#pageContainer").html(data);
+                        tr.find('.edit-mode, .display-mode').toggle();
+                        $('#footer').hide();
+                        //alert('Record updated Successfully!!');
+                    }
+                });
+
+            });
+
+        $('.edit-user').on('click',
+            function() {
+                var tr = $(this).parents('tr:first');
+                var orgTypeId = tr.find("#OrgTypeId").html();
+                var orgTypeName = tr.find("#OrgTypeName").val();
+                var orgTypeDesc = tr.find("#OrgTypeDesc").val();
+                tr.find("#lblName").text(orgTypeName);
+                tr.find("#lblDesc").text(orgTypeDesc);
+            });
+    });
+</script>
+
+<div class="modal fade ui-widget-content" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" id="mi-modal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body" id="modal-body">
+                <p>
+
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" id="modal-btn-si">Ja</button>
+                <button type="button" class="btn btn-default" id="modal-btn-no">Avbryt</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="pageContainer">
+    <br />
+
+    @if (Model != null)
+    {
+        <div class="col-md-12 padding-top-25">
+        <h4>Administrera organisationstyper</h4>
+        <hr />
+
+            @Html.HiddenFor(m => m.SelectedOrgTypId)
+
+            @Html.ActionLink("Skapa ny organisationstyp", "CreateOrganisationType", "Organisation", null, new {style = "padding-left:20px;"})
+            <div id="gridContent" style="font-family: Arial; padding: 20px;">
+                @{
+                    ViewBag.Title = "Administrera organisationstyper";
+                    var grid = new WebGrid(source: Model.OrganisationTypes, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "orgTypesGrid");
+                    grid.Pager(WebGridPagerModes.All);
+                }
+                @grid.GetHtml(tableStyle: "webgrid-table900",
+                    headerStyle: "webgrid-header",
+                    footerStyle: "webgrid-footer",
+                    alternatingRowStyle: "webgrid-alternating-row",
+                    selectedRowStyle: "webgrid-selected-row",
+                    rowStyle: "webgrid-row-style",
+                    mode: WebGridPagerModes.All,
+                    columns: grid.Columns(
+                        grid.Column("ID", format: @<text><span class="display-mode">@item.Id</span><label id="OrgTypeId" class="edit-mode colMinWidth">@item.Id</label></text>, style: "colMinWidth"),
+                        grid.Column("Typnamn", "Typnamn", format: @<text><span class="display-mode"><label id="lblName">@item.Typnamn</label></span>
+                                                                      <input type="text" id="OrgTypeName" value="@item.Typnamn" class="edit-mode form-control"/></text>, style: "col1Width"),
+                        grid.Column("Beskrivning", "Beskrivning", format: @<text><span class="display-mode"><label id="lblDesc" style="width: 450px !important;">@item.Beskrivning</label></span>
+                                                                              <input type="text" id="OrgTypeDesc" value="@item.Beskrivning" class="edit-mode form-control" style="max-width: 450px !important;"/></text>, style: "col500Width"),
+                        grid.Column(null, format: @<text>
+                                                      <button class="edit-user display-mode btn btn-default">Ändra</button>
+                                                      <button class="display-mode btn btn-default" onclick="deleteOrgType(@item.Id, '@item.Typnamn');return false;">Ta bort</button>
+                                                      <button class="save-user edit-mode btn btn-default">Spara</button>
+                                                      <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
+                                                   </text>, style: "col3Width", canSort: false)))
+            </div>
+        </div>
+        }
+    </div>
+

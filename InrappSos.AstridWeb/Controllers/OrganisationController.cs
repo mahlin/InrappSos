@@ -144,6 +144,16 @@ namespace InrappSos.AstridWeb.Controllers
 
         }
 
+
+        //GET
+        [Authorize]
+        public ActionResult GetOrganisationTypes()
+        {
+            var model = new OrganisationViewModels.OrganisationViewModel();
+            model.OrganisationTypes = _portalSosService.HamtaAllaOrganisationstyper();
+            return View("EditOrgTypes", model);
+        }
+
         // GET
         [Authorize]
         public ActionResult GetContacts()
@@ -411,6 +421,37 @@ namespace InrappSos.AstridWeb.Controllers
 
         }
 
+
+        [HttpPost]
+        [Authorize]
+        public ActionResult UpdateOrganisationType(AdmOrganisationstyp orgtype)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var userName = User.Identity.GetUserName();
+                    _portalSosService.UppdateraOrganisationstyp(orgtype, userName);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("OrganisationController", "UpdateOrganisationType", e.ToString(), e.HResult,
+                    User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade vid uppdatering av organisationstyp.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
+            }
+            return RedirectToAction("GetOrganisationtypes");
+
+        }
+
+
+
         [HttpPost]
         [Authorize]
         public ActionResult UpdateOrganisationsOrgUnit(Organisationsenhet orgUnit)
@@ -540,6 +581,45 @@ namespace InrappSos.AstridWeb.Controllers
 
             return View();
         }
+
+        [Authorize]
+        public ActionResult CreateOrganisationType()
+        {
+            var model = new OrganisationViewModels.AdmOrganisationstypViewModel();
+            return View(model);
+        }
+
+        // POST
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public ActionResult CreateOrganisationType(AdmOrganisationstyp orgTyp)
+        {
+            var org = new Organisation();
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var userName = User.Identity.GetUserName();
+                    _portalSosService.SkapaOrganisationstyp(orgTyp, userName);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    ErrorManager.WriteToErrorLog("OrganisationController", "CreateOrganisationType", e.ToString(), e.HResult, User.Identity.Name);
+                    var errorModel = new CustomErrorPageModel
+                    {
+                        Information = "Ett fel inträffade när ny organisationstyp skulle sparas.",
+                        ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                    };
+                    return View("CustomError", errorModel);
+                }
+                return RedirectToAction("GetOrganisationTypes");
+            }
+
+            return View();
+        }
+
 
         [Authorize]
         public ActionResult CreateOrganisationUnit(int selectedOrgId = 0)
@@ -745,6 +825,28 @@ namespace InrappSos.AstridWeb.Controllers
             return RedirectToAction("GetOrganisationsContacts", new { selectedOrgId = selectedOrgId });
         }
 
+        [HttpPost]
+        [Authorize]
+        public ActionResult DeleteOrgType(int orgTypeId)
+        {
+            try
+            {
+                _portalSosService.TaBortOrganisationstyp(orgTypeId);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("OrganisationController", "DeleteOrgType", e.ToString(), e.HResult, User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade när organisationstyp skulle tas bort.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
+            }
+            return RedirectToAction("GetOrganisationTypes");
+        }
+
 
         private OrganisationViewModels.UnitReportObligationsViewModel GetOrgDropDownLists(OrganisationViewModels.UnitReportObligationsViewModel model)
         {
@@ -898,7 +1000,6 @@ namespace InrappSos.AstridWeb.Controllers
 
                 enhUppgSkyldigheter.Add(enhetsUppgSkyldighetView);
             }
-
 
             return enhUppgSkyldigheter;
         }

@@ -26,15 +26,26 @@ namespace InrappSos.AstridWeb.Models.ViewModels
 
             public string SelectedCountyCode { get; set; }
             public int SelectedOrganisationId { get; set; }
+            public int SelectedOrgTypId { get; set; }
+
             public List<List<Organisation>> SearchResult { get; set; }
 
             public IEnumerable<Organisationsenhet> OrgUnits { get; set; }
 
             public  IEnumerable<ReportObligationsViewModel> ReportObligations { get; set; }
+
+            public IEnumerable<AdmOrganisationstyp> OrganisationTypes { get; set; }
             public string Origin { get; set; }
 
         }
-        
+
+        public class AdmOrganisationstypViewModel
+        {
+            public int Organisationstypid { get; set; }
+            public string Typnamn { get; set; }
+            public string Beskrivning { get; set; }
+        }
+
         public class OrganisationsenhetViewModel
         {
             public int Organisationsid { get; set; }

@@ -73,7 +73,7 @@ namespace InrappSos.DataAccess
         IEnumerable<AdmEnhetsUppgiftsskyldighet> GetUnitReportObligationInformationForOrgUnit(int orgUnitId);
         AdmEnhetsUppgiftsskyldighet GetUnitReportObligationForReportObligationAndOrg(int oblId, int orgunitId);
 
-
+        IEnumerable<AdmOrganisationstyp> GetAllOrgTypes();
         IEnumerable<AdmFAQKategori> GetAllFAQs();
 
         IEnumerable<AdmFAQKategori> GetFAQCategories();
@@ -218,6 +218,7 @@ namespace InrappSos.DataAccess
         int CreateOrganisation(Organisation org);
 
         void CreateOrgUnit(Organisationsenhet orgUnit);
+        void CreateOrgType(AdmOrganisationstyp orgType);
 
         void CreateFAQCategory(AdmFAQKategori faqCategory);
 
@@ -254,6 +255,7 @@ namespace InrappSos.DataAccess
         //void UpdateAdminUser(AppUserAdmin user);
         void UpdateNameForUser(string userId, string userName);
         void UpdateOrgUnit(Organisationsenhet orgUnit);
+        void UpdateOrgType(AdmOrganisationstyp orgType);
 
         void UpdateReportObligation(AdmUppgiftsskyldighet repObligation);
 
@@ -294,6 +296,7 @@ namespace InrappSos.DataAccess
         void DeleteFAQCategory(int faqCategoryId);
 
         void DeleteFAQ(int faqId);
+        void DeleteOrgType(int orgTypeId);
 
         void DeleteHoliday(int holidayId);
 

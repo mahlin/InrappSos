@@ -317,6 +317,8 @@
     <Content Include="Views\System\_EditSelectedFAQ.cshtml" />
     <Content Include="Views\System\_EditText.cshtml" />
     <Content Include="Views\Organisation\_SearchResult.cshtml" />
+    <Content Include="Views\Organisation\EditOrgTypes.cshtml" />
+    <Content Include="Views\Organisation\CreateOrganisationType.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

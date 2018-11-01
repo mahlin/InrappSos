@@ -286,8 +286,9 @@
                 <div class="form-group">
                     @Html.LabelFor(model => model.Organisation.Organisationstyp, htmlAttributes: new {@class = "control-label col-md-2"})
                     <div class="col-md-10">
-                        @Html.TextBoxFor(model => model.Organisation.Organisationstyp, new {htmlAttributes = new {@class = "form-control"}})
-                        @Html.ValidationMessageFor(model => model.Organisation.Organisationstyp, "", new {@class = "text-danger"})
+                        @*@Html.DropDownListFor(m => m.SelectedOrgTypId, ViewBag.OrgTypesList as SelectList, " - Välj organisationstyp -", new { @class = "form-control", id = "ddlOrganisationstyp" })*@
+                        @*@Html.TextBoxFor(model => model.Organisation.Organisationstyp, new {htmlAttributes = new {@class = "form-control"}})
+                        @Html.ValidationMessageFor(model => model.Organisation.Organisationstyp, "", new {@class = "text-danger"})*@
                     </div>
                 </div>
 

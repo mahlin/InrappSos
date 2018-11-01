@@ -210,7 +210,7 @@
     <Content Include="Content\Images\LoggaNew200px.png" />
     <Content Include="Content\NavBarPreprod.css" />
     <Content Include="Content\NavBarDev.css" />
-    <Content Include="Content\NavBarProd.css" />
+    <Content Include="Content\NavBarAT.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />

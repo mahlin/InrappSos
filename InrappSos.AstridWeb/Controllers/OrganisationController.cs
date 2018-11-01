@@ -31,8 +31,8 @@ namespace InrappSos.AstridWeb.Controllers
         public ActionResult Index()
         {
             // Ladda drop down lists. 
-            var orgListDTO = GetOrganisationDTOList();
-            ViewBag.OrganisationList = new SelectList(orgListDTO, "Id", "KommunkodOchOrgnamn");
+            //var orgListDTO = GetOrganisationDTOList();
+            //ViewBag.OrganisationList = new SelectList(orgListDTO, "Id", "KommunkodOchOrgnamn");
             return View();
         }
 
@@ -121,7 +121,17 @@ namespace InrappSos.AstridWeb.Controllers
                 // Ladda drop down lists. 
                 var orgListDTO = GetOrganisationDTOList();
                 ViewBag.OrganisationList = new SelectList(orgListDTO, "Id", "KommunkodOchOrgnamn");
-                //model.SelectedOrganisationId = 0;
+                var orgtypesList = _portalSosService.HamtaAllaOrganisationstyper();
+                ViewBag.OrgTypesList = CreateOrgtypeDropDownList(orgtypesList);
+                var orgtyp = model.Organisation.Organisationstyp;
+                //if (orgtyp != null)
+                //{
+                //    model.SelectedOrgTypId = 
+                //}
+                //else
+                //{
+                    
+                //}
             }
             catch (Exception e)
             {
@@ -1108,6 +1118,25 @@ namespace InrappSos.AstridWeb.Controllers
 
             return valdaDelregister;
 
+        }
+
+
+        private IEnumerable<SelectListItem> CreateOrgtypeDropDownList(IEnumerable<AdmOrganisationstyp> orgtypesList)
+        {
+            SelectList lstobj = null;
+
+            var list = orgtypesList
+                .Select(p =>
+                    new SelectListItem
+                    {
+                        Value = p.Id.ToString(),
+                        Text = p.Typnamn
+                    });
+
+            // Setting.  
+            lstobj = new SelectList(list, "Value", "Text");
+
+            return lstobj;
         }
 
 

@@ -153,7 +153,7 @@ namespace InrappSos.DataAccess
 
         public Organisation GetOrganisation(int orgId)
         {
-            var org = DbContext.Organisation.Where(x => x.Id == orgId).Select(x => x).SingleOrDefault();
+            var org = DbContext.Organisation.Where(x => x.Id == orgId).Include(x=> x.Organisationstyp).Select(x => x).SingleOrDefault();
             return org;
         }
 

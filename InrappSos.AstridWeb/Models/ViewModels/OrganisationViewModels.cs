@@ -28,13 +28,16 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public int SelectedOrganisationId { get; set; }
             public int SelectedOrgTypId { get; set; }
 
+            public string ChosenOrganisationTypesNames { get; set; }
+            public List<OrganisationstypDTO> OrgtypesForOrgList { get; set; }
+            
             public List<List<Organisation>> SearchResult { get; set; }
 
             public IEnumerable<Organisationsenhet> OrgUnits { get; set; }
 
             public  IEnumerable<ReportObligationsViewModel> ReportObligations { get; set; }
 
-            public IEnumerable<AdmOrganisationstyp> OrganisationTypes { get; set; }
+            public List<AdmOrganisationstyp> OrganisationTypes { get; set; }
             public string Origin { get; set; }
 
         }
@@ -44,6 +47,7 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public int Organisationstypid { get; set; }
             public string Typnamn { get; set; }
             public string Beskrivning { get; set; }
+            public bool Selected { get; set; } = false;
         }
 
         public class OrganisationsenhetViewModel

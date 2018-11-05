@@ -43,6 +43,8 @@ namespace InrappSos.ApplicationService.Interface
 
         Organisation HamtaOrgForUppgiftsskyldighet(int uppgSkId);
 
+        List<OrganisationstypDTO> HamtaOrgtyperForOrganisation(int orgId, List<AdmOrganisationstyp> orgtyperList);
+
         IEnumerable<ApplicationUser> HamtaKontaktpersonerForOrg(int orgId);
 
         IEnumerable<Organisationsenhet> HamtaOrgEnheterForOrg(int orgId);

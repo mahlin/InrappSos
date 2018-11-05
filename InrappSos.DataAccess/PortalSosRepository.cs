@@ -244,6 +244,12 @@ namespace InrappSos.DataAccess
             return orgUnits;
         }
 
+        public List<int> GetOrgTypesForOrg(int orgId)
+        {
+            var orgTypesForOrg = DbContext.Organisationstyp.Where(x => x.OrganisationsId == orgId).Select(x => x.Id).ToList();
+            return orgTypesForOrg;
+        }
+
         public int GetOrganisationsenhetsId(string orgUnitCode, int orgId)
         {
             var orgenhetsId = DbContext.Organisationsenhet.Where(x => x.Enhetskod == orgUnitCode && x.OrganisationsId == orgId).Select(x => x.Id).FirstOrDefault();

@@ -248,40 +248,43 @@
              * @returns {String}
              */
             buttonText: function(options, select) {
-                if (this.disabledText.length > 0
-                        && (select.prop('disabled') || (options.length == 0 && this.disableIfEmpty)))  {
+                //if (this.disabledText.length > 0
+                //        && (select.prop('disabled') || (options.length == 0 && this.disableIfEmpty)))  {
 
-                    return this.disabledText;
-                }
-                else if (options.length === 0) {
-                    return this.nonSelectedText;
-                }
-                else if (this.allSelectedText
-                        && options.length === $('option', $(select)).length
-                        && $('option', $(select)).length !== 1
-                        && this.multiple) {
+                //    return this.disabledText;
+                //}
+                //else if (options.length === 0) {
+                //    return this.nonSelectedText;
+                //}
+                //else if (this.allSelectedText
+                //        && options.length === $('option', $(select)).length
+                //        && $('option', $(select)).length !== 1
+                //        && this.multiple) {
 
-                    if (this.selectAllNumber) {
-                        return this.allSelectedText + ' (' + options.length + ')';
-                    }
-                    else {
-                        return this.allSelectedText;
-                    }
-                }
-                else if (this.numberDisplayed != 0 && options.length > this.numberDisplayed) {
-                    return options.length + ' ' + this.nSelectedText;
-                }
-                else {
-                    var selected = '';
-                    var delimiter = this.delimiterText;
+                //    if (this.selectAllNumber) {
+                //        return this.allSelectedText + ' (' + options.length + ')';
+                //    }
+                //    else {
+                //        return this.allSelectedText;
+                //    }
+                //}
+                //else {
+                    return this.astridDefaultText;
+                //}
+                //else if (this.numberDisplayed != 0 && options.length > this.numberDisplayed) {
+                //    return options.length + ' ' + this.nSelectedText;
+                //}
+                //else {
+                //    var selected = '';
+                //    var delimiter = this.delimiterText;
 
-                    options.each(function() {
-                        var label = ($(this).attr('label') !== undefined) ? $(this).attr('label') : $(this).text();
-                        selected += label + delimiter;
-                    });
+                //    options.each(function() {
+                //        var label = ($(this).attr('label') !== undefined) ? $(this).attr('label') : $(this).text();
+                //        selected += label + delimiter;
+                //    });
 
-                    return selected.substr(0, selected.length - this.delimiterText.length);
-                }
+                //    return selected.substr(0, selected.length - this.delimiterText.length);
+                //}
             },
             /**
              * Updates the title of the button similar to the buttonText function.
@@ -427,6 +430,7 @@
             includeFilterClearBtn: true,
             preventInputChangeEvent: false,
             nonSelectedText: 'None selected',
+            astridDefaultText: 'Choose from dropdown',
             nSelectedText: 'selected',
             allSelectedText: 'All selected',
             numberDisplayed: 3,

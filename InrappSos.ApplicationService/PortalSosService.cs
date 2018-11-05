@@ -140,6 +140,27 @@ namespace InrappSos.ApplicationService
             return kommunKod;
         }
 
+        public List<OrganisationstypDTO> HamtaOrgtyperForOrganisation(int orgId, List<AdmOrganisationstyp> orgtyperList)
+        {
+            var chosenOrgTypesForOrgList = _portalSosRepository.GetOrgTypesForOrg(orgId);
+            var orgTypeList = new List<OrganisationstypDTO>();
+            foreach (var orgtyp in orgtyperList)
+            {
+                var orgtypDTO = new OrganisationstypDTO()
+                {
+                    Organisationstypid = orgtyp.Id,
+                    Typnamn = orgtyp.Typnamn,
+                    Beskrivning = orgtyp.Beskrivning,
+                };
+                if (chosenOrgTypesForOrgList.Contains(orgtyp.Id))
+                {
+                    orgtypDTO.Selected = true;
+                }
+                orgTypeList.Add(orgtypDTO);
+            }
+            return orgTypeList;
+        }
+
         public IEnumerable<ApplicationUser> HamtaKontaktpersonerForOrg(int orgId)
         {
             var contacts = _portalSosRepository.GetContactPersonsForOrg(orgId);

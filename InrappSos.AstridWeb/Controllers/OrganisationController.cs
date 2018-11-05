@@ -30,10 +30,13 @@ namespace InrappSos.AstridWeb.Controllers
         [Authorize]
         public ActionResult Index()
         {
+            var model = new OrganisationViewModels.OrganisationViewModel();
+            model.OrgtypesForOrgList = new List<OrganisationstypDTO>();
+            model.SearchResult = new List<List<Organisation>>();
             // Ladda drop down lists. 
             //var orgListDTO = GetOrganisationDTOList();
             //ViewBag.OrganisationList = new SelectList(orgListDTO, "Id", "KommunkodOchOrgnamn");
-            return View();
+            return View(model);
         }
 
         [Authorize]
@@ -118,19 +121,24 @@ namespace InrappSos.AstridWeb.Controllers
                 var reportObligationsDb = _portalSosService.HamtaUppgiftsskyldighetForOrg(model.Organisation.Id);
                 model.ReportObligations = ConvertAdmUppgiftsskyldighetToViewModel(reportObligationsDb.ToList());
                 model.SearchResult = new List<List<Organisation>>();
+                model.OrganisationTypes = _portalSosService.HamtaAllaOrganisationstyper().ToList();
+                //Skapa lista över orgtyper och vilka som är valda för aktuell organisation
+                model.OrgtypesForOrgList = _portalSosService.HamtaOrgtyperForOrganisation(model.SelectedOrganisationId,  model.OrganisationTypes);
+                //TODO
+                model.ChosenOrganisationTypesNames = "Kommun"; 
                 // Ladda drop down lists. 
-                var orgListDTO = GetOrganisationDTOList();
-                ViewBag.OrganisationList = new SelectList(orgListDTO, "Id", "KommunkodOchOrgnamn");
-                var orgtypesList = _portalSosService.HamtaAllaOrganisationstyper();
-                ViewBag.OrgTypesList = CreateOrgtypeDropDownList(orgtypesList);
-                var orgtyp = model.Organisation.Organisationstyp;
+                //var orgListDTO = GetOrganisationDTOList();
+                //ViewBag.OrganisationList = new SelectList(orgListDTO, "Id", "KommunkodOchOrgnamn");
+                //var orgtypesList = _portalSosService.HamtaAllaOrganisationstyper();
+                //ViewBag.OrgTypesList = CreateOrgtypeDropDownList(orgtypesList);
+                //var orgtyp = model.Organisation.Organisationstyp;
                 //if (orgtyp != null)
                 //{
                 //    model.SelectedOrgTypId = 
                 //}
                 //else
                 //{
-                    
+
                 //}
             }
             catch (Exception e)
@@ -160,7 +168,7 @@ namespace InrappSos.AstridWeb.Controllers
         public ActionResult GetOrganisationTypes()
         {
             var model = new OrganisationViewModels.OrganisationViewModel();
-            model.OrganisationTypes = _portalSosService.HamtaAllaOrganisationstyper();
+            model.OrganisationTypes = _portalSosService.HamtaAllaOrganisationstyper().ToList();
             return View("EditOrgTypes", model);
         }
 

@@ -244,10 +244,10 @@ namespace InrappSos.DataAccess
             return orgUnits;
         }
 
-        public List<int> GetOrgTypesForOrg(int orgId)
+        public List<int> GetOrgTypesIdsForOrg(int orgId)
         {
-            var orgTypesForOrg = DbContext.Organisationstyp.Where(x => x.OrganisationsId == orgId).Select(x => x.Id).ToList();
-            return orgTypesForOrg;
+            var orgTypesIdsForOrg = DbContext.Organisationstyp.Where(x => x.OrganisationsId == orgId).Select(x => x.OrganisationstypId).ToList();
+            return orgTypesIdsForOrg;
         }
 
         public int GetOrganisationsenhetsId(string orgUnitCode, int orgId)
@@ -994,7 +994,6 @@ namespace InrappSos.DataAccess
             orgDb.Landstingskod = org.Landstingskod;
             orgDb.Kommunkod = org.Kommunkod;
             orgDb.Inrapporteringskod = org.Inrapporteringskod;
-            orgDb.Organisationstyp = org.Organisationstyp;
             orgDb.Organisationsnr = org.Organisationsnr;
             orgDb.Organisationsnamn = org.Organisationsnamn;
             orgDb.Hemsida = org.Hemsida;
@@ -1009,6 +1008,26 @@ namespace InrappSos.DataAccess
             orgDb.AndradDatum = org.AndradDatum;
             orgDb.AndradAv = org.AndradAv;
 
+            //Organisationstype
+            //delete prevoious orgtypes
+            DbContext.Organisationstyp.RemoveRange(DbContext.Organisationstyp.Where(x => x.OrganisationsId == org.Id));
+
+            DbContext.SaveChanges();
+
+            //Insert new orgtypes
+            foreach (var orgtyp in org.Organisationstyp)
+            {
+                var orgtypDB = new Organisationstyp
+                {
+                    OrganisationsId = org.Id,
+                    OrganisationstypId = orgtyp.OrganisationstypId,
+                    SkapadAv = org.AndradAv,
+                    SkapadDatum = org.AndradDatum,
+                    AndradAv = org.AndradAv,
+                    AndradDatum = org.AndradDatum
+                };
+                DbContext.Organisationstyp.Add(orgtypDB);
+            }
             DbContext.SaveChanges();
         }
 

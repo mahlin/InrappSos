@@ -142,7 +142,7 @@ namespace InrappSos.ApplicationService
 
         public List<OrganisationstypDTO> HamtaOrgtyperForOrganisation(int orgId, List<AdmOrganisationstyp> orgtyperList)
         {
-            var chosenOrgTypesForOrgList = _portalSosRepository.GetOrgTypesForOrg(orgId);
+            var chosenOrgTypeIdsForOrgList = _portalSosRepository.GetOrgTypesIdsForOrg(orgId);
             var orgTypeList = new List<OrganisationstypDTO>();
             foreach (var orgtyp in orgtyperList)
             {
@@ -152,7 +152,7 @@ namespace InrappSos.ApplicationService
                     Typnamn = orgtyp.Typnamn,
                     Beskrivning = orgtyp.Beskrivning,
                 };
-                if (chosenOrgTypesForOrgList.Contains(orgtyp.Id))
+                if (chosenOrgTypeIdsForOrgList.Contains(orgtyp.Id))
                 {
                     orgtypDTO.Selected = true;
                 }

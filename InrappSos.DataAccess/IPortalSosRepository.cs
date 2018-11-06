@@ -64,7 +64,7 @@ namespace InrappSos.DataAccess
 
         IEnumerable<Organisationsenhet> GetOrgUnitsForOrg(int orgId);
 
-        List<int> GetOrgTypesForOrg(int orgId);
+        List<int> GetOrgTypesIdsForOrg(int orgId);
 
         int GetOrganisationsenhetsId(string orgUnitCode, int orgId);
         Organisationsenhet GetOrganisationUnitByCode(string code, int orgId);

@@ -158,7 +158,7 @@
 
         @*@Html.HiddenFor(m => m.OrgtypesForOrgList)*@
 
-        <div style="font-size: 1em; padding-left: 20px;">@Model.Organisation.Organisationsnamn</div>
+        <div style="font-size: 1.2em; padding-left: 20px; padding-bottom: 20px;"><b>@Model.Organisation.Organisationsnamn</b></div>
         <div id="readOnlyOrg">
             <dl class="dl-horizontal">
                 <dt>
@@ -190,7 +190,7 @@
                 </dt>
 
                 <dd>
-                    @Html.DisplayFor(model => model.Organisation.Organisationstyp)
+                    @Html.DisplayFor(model => model.ChosenOrganisationTypesNames)
                 </dd>
 
                 <dt>
@@ -373,7 +373,7 @@
                     <select id="OrgtypList" multiple="multiple">
                         @for (var i = 0; i < Model.OrganisationTypes.Count; i++)
                         {
-                            <option value=@Model.OrganisationTypes[i].Id>@Model.OrganisationTypes[i].Typnamn</option>
+                            <option value=@Model.OrgtypesForOrgList[i].Organisationstypid>@Model.OrgtypesForOrgList[i].Typnamn</option>
                         }
                     </select>
                 </div>
@@ -487,7 +487,7 @@
 
         @Html.Partial("_Contactpersons")
         <p>
-            @Html.ActionLink(HttpUtility.HtmlDecode("Administrera kontaktpersoner &raquo;"), "GetOrganisationsContacts", "Organisation", new { selectedOrgId = Model.SelectedOrganisationId }, new { @class = "btn btn-primary" })
+            @Html.ActionLink(HttpUtility.HtmlDecode("Administrera kontaktpersoner &raquo;"), "GetOrganisationsContacts", "Organisation", new { selectedOrganisationId = Model.SelectedOrganisationId }, new { @class = "btn btn-primary" })
         </p>
 
 
@@ -496,7 +496,7 @@
 
         @Html.Partial("_OrgUnits")
         <p>
-            @Html.ActionLink(HttpUtility.HtmlDecode("Administrera organisationsenheter &raquo;"), "GetOrganisationsOrgUnits", "Organisation", new { selectedOrgId = Model.SelectedOrganisationId }, new { @class = "btn btn-primary" })
+            @Html.ActionLink(HttpUtility.HtmlDecode("Administrera organisationsenheter &raquo;"), "GetOrganisationsOrgUnits", "Organisation", new { selectedOrganisationId = Model.SelectedOrganisationId }, new { @class = "btn btn-primary" })
         </p>
 
         <br />
@@ -504,7 +504,7 @@
 
         @Html.Partial("_ReportObligations")
         <p>
-            @Html.ActionLink(HttpUtility.HtmlDecode("Administrera uppgiftsskyldighet &raquo;"), "GetOrganisationsReportObligations", "Organisation", new { selectedOrgId = Model.SelectedOrganisationId }, new { @class = "btn btn-primary" })
+            @Html.ActionLink(HttpUtility.HtmlDecode("Administrera uppgiftsskyldighet &raquo;"), "GetOrganisationsReportObligations", "Organisation", new { selectedOrganisationId = Model.SelectedOrganisationId }, new { @class = "btn btn-primary" })
         </p>
     }
 

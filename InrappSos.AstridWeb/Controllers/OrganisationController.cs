@@ -12,6 +12,7 @@ using InrappSos.DomainModel;
 using InrappSos.AstridWeb.Helpers;
 using InrappSos.AstridWeb.Models;
 using InrappSos.AstridWeb.Models.ViewModels;
+using Microsoft.Ajax.Utilities;
 using Microsoft.AspNet.Identity;
 
 namespace InrappSos.AstridWeb.Controllers
@@ -125,7 +126,7 @@ namespace InrappSos.AstridWeb.Controllers
                 //Skapa lista över orgtyper och vilka som är valda för aktuell organisation
                 model.OrgtypesForOrgList = _portalSosService.HamtaOrgtyperForOrganisation(model.SelectedOrganisationId,  model.OrganisationTypes);
                 //TODO
-                model.ChosenOrganisationTypesNames = "Kommun"; 
+                model.ChosenOrganisationTypesNames = SetOrgtypenames(model.OrgtypesForOrgList);
                 // Ladda drop down lists. 
                 //var orgListDTO = GetOrganisationDTOList();
                 //ViewBag.OrganisationList = new SelectList(orgListDTO, "Id", "KommunkodOchOrgnamn");
@@ -391,6 +392,7 @@ namespace InrappSos.AstridWeb.Controllers
                 if (ModelState.IsValid)
                 {
                     var userName = User.Identity.GetUserName();
+                    model.Organisation.Organisationstyp = ConvertOrgTypesForOrgList(model.Organisation.Id, model.OrgtypesForOrgList);
                     _portalSosService.UppdateraOrganisation(model.Organisation, userName);
                 }
             }
@@ -1147,7 +1149,44 @@ namespace InrappSos.AstridWeb.Controllers
             return lstobj;
         }
 
+        private string SetOrgtypenames(List<OrganisationstypDTO> orgtypListForOrg)
+        {
+            var str = "";
+            foreach (var orgtypDTO in orgtypListForOrg)
+            {
+                if (orgtypDTO.Selected)
+                {
+                    if (str.IsNullOrWhiteSpace())
+                    {
+                        str = str + orgtypDTO.Typnamn;
+                    }
+                    else
+                    {
+                        str = str + ", " + orgtypDTO.Typnamn;
+                    }
+                }
+            }
 
+            return str;
+        }
+
+        private ICollection<Organisationstyp> ConvertOrgTypesForOrgList(int orgId, List<OrganisationstypDTO> orgtypesForOrgList)
+        {
+            var orgtypesList = new List<Organisationstyp>();
+            foreach (var orgtypeForOrg in orgtypesForOrgList)
+            {
+                if (orgtypeForOrg.Selected)
+                {
+                    var orgtype = new Organisationstyp
+                    {
+                        OrganisationsId = orgId,
+                        OrganisationstypId = orgtypeForOrg.Organisationstypid
+                    };
+                    orgtypesList.Add(orgtype);
+                }
+            }
+            return orgtypesList;
+        }
 
 
 

@@ -1439,12 +1439,19 @@ namespace InrappSos.DataAccess
 
             var contactRoles = DbContext.Roll.Where(x => x.ApplicationUserId == contactId).ToList();
 
+            var contactTypes = DbContext.Kontaktpersonstyp.Where(x => x.KontaktpersonId == contactId).ToList();
+
  
             if (contactToDelete != null)
             {
                 foreach (var role in contactRoles)
                 {
                     DbContext.Roll.Remove(role);
+                    DbContext.SaveChanges();
+                }
+                foreach (var type in contactTypes)
+                {
+                    DbContext.Kontaktpersonstyp.Remove(type);
                     DbContext.SaveChanges();
                 }
                 DbContext.Users.Remove(contactToDelete);

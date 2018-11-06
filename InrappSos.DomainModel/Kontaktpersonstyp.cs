@@ -10,7 +10,7 @@ namespace InrappSos.DomainModel
     {
         public int Id { get; set; }
         public int AdmKontaktpersonstypId { get; set; }
-        public int KontaktpersonId { get; set; }
+        public string KontaktpersonId { get; set; }
         public DateTime SkapadDatum { get; set; }
         public string SkapadAv { get; set; }
         public DateTime AndradDatum { get; set; }

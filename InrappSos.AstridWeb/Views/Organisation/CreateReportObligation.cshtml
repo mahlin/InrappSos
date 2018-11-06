@@ -17,7 +17,7 @@
 </script>
 
 
-@using (Html.BeginForm("CreateReportObligation", "Organisation", new { selectedOrgId = Model.OrganisationId }, FormMethod.Post, null))
+@using (Html.BeginForm("CreateReportObligation", "Organisation", new { selectedOrganisationId = Model.OrganisationId }, FormMethod.Post, null))
     {
     @Html.AntiForgeryToken()
 

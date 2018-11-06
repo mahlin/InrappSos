@@ -21,7 +21,7 @@
 
         modalConfirm(function (confirm) {
             if (confirm) {
-                var data = { 'contactId': $('#SelectedContactId').val(), 'selectedOrgId': $('#SelectedOrganisationId').val() };
+                var data = { 'contactId': $('#SelectedContactId').val(), 'selectedOrganisationId': $('#SelectedOrganisationId').val() };
                 $.ajax({
                     url: '/Organisation/DeleteContact',
                     type: 'POST',
@@ -47,14 +47,14 @@
 
     $(function () {
         $('th a, tfoot a').click(function () {
-            //if querystring already contains selectedOrgId, remove it
-            var index = $(this).attr('href').indexOf("&selectedOrgId=");
+            //if querystring already contains selectedOrganisationId, remove it
+            var index = $(this).attr('href').indexOf("&selectedOrganisationId=");
             if (index >= 0) {
                 var cleanUrl = $(this).attr('href').substring(0, index);
                 $(this).attr('href', cleanUrl);
             }
             var newUrl = $(this).attr('href') +
-                "&selectedOrgId=" +
+                "&selectedOrganisationId=" +
                 $("#SelectedOrganisationId").val();
             $('form').attr('action', newUrl).submit();
             return false;
@@ -197,7 +197,7 @@
             @Html.HiddenFor(m => m.Kommunkod)
             @Html.HiddenFor(m => m.SelectedOrganisationId)
 
-            <div style="font-size: 1em; padding-left: 20px;">@Model.Organisation.Organisationsnamn</div>
+            <div style="font-size: 1.2em; padding-left: 20px; padding-bottom: 20px;"><b>@Model.Organisation.Organisationsnamn</b></div>
             <div id="gridContent" style="font-family: Arial; padding: 20px;">
 
                 @{

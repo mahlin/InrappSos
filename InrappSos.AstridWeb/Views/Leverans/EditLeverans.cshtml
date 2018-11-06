@@ -16,7 +16,7 @@
     $(function () {
         $('th a, tfoot a').click(function () {
             var newUrl = $(this).attr('href') +
-                "&selectedOrgId=" +
+                "&selectedOrganisationId=" +
                 $("#SelectedOrganisationId").val();
             $('form').attr('action', newUrl).submit();
             return false;

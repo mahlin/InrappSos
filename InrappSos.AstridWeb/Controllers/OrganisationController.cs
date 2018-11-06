@@ -437,7 +437,7 @@ namespace InrappSos.AstridWeb.Controllers
                 };
                 return View("CustomError", errorModel);
             }
-            return RedirectToAction("GetOrganisationsContacts", new { selectedOrgId = org.Id });
+            return RedirectToAction("GetOrganisationsContacts", new { selectedOrganisationId = org.Id });
 
         }
 
@@ -498,7 +498,7 @@ namespace InrappSos.AstridWeb.Controllers
                 };
                 return View("CustomError", errorModel);
             }
-            return RedirectToAction("GetOrganisationsOrgUnits", new { selectedOrgId = org.Id });
+            return RedirectToAction("GetOrganisationsOrgUnits", new { selectedOrganisationId = org.Id });
 
         }
 
@@ -529,7 +529,7 @@ namespace InrappSos.AstridWeb.Controllers
                 };
                 return View("CustomError", errorModel);
             }
-            return RedirectToAction("GetOrganisationsReportObligations", new { selectedOrgId = org.Id });
+            return RedirectToAction("GetOrganisationsReportObligations", new { selectedOrganisationId = org.Id });
 
         }
 
@@ -559,7 +559,7 @@ namespace InrappSos.AstridWeb.Controllers
                 };
                 return View("CustomError", errorModel);
             }
-            return RedirectToAction("GetOrganisationsUnitReportObligations", new { selectedOrgId = org.Id, selectedOrgenhetsId = admEnhetsUppgSkyldighet.OrganisationsenhetsId});
+            return RedirectToAction("GetOrganisationsUnitReportObligations", new { selectedOrganisationId = org.Id, selectedOrgenhetsId = admEnhetsUppgSkyldighet.OrganisationsenhetsId});
 
         }
 
@@ -642,10 +642,10 @@ namespace InrappSos.AstridWeb.Controllers
 
 
         [Authorize]
-        public ActionResult CreateOrganisationUnit(int selectedOrgId = 0)
+        public ActionResult CreateOrganisationUnit(int selectedOrganisationId = 0)
         {
             var model = new OrganisationViewModels.OrganisationsenhetViewModel();
-            model.Organisationsid = selectedOrgId;
+            model.Organisationsid = selectedOrganisationId;
             return View(model);
         }
 
@@ -674,19 +674,19 @@ namespace InrappSos.AstridWeb.Controllers
                     };
                     return View("CustomError", errorModel);
                 }
-                return RedirectToAction("GetOrganisationsOrgUnits", new { selectedOrgId = orgenhet.OrganisationsId });
+                return RedirectToAction("GetOrganisationsOrgUnits", new { selectedOrganisationId = orgenhet.OrganisationsId });
             }
 
             return View();
         }
 
         [Authorize]
-        public ActionResult CreateReportObligation(int selectedOrgId = 0)
+        public ActionResult CreateReportObligation(int selectedOrganisationId = 0)
         {
             var model = new OrganisationViewModels.ReportObligationsViewModel();
-            model.OrganisationId = selectedOrgId;
+            model.OrganisationId = selectedOrganisationId;
             var delregisterList = _portalSosService.HamtaAllaDelregisterForPortalen().ToList();
-            var uppgiftsskyldighetList = _portalSosService.HamtaUppgiftsskyldighetForOrg(selectedOrgId).ToList();
+            var uppgiftsskyldighetList = _portalSosService.HamtaUppgiftsskyldighetForOrg(selectedOrganisationId).ToList();
             var delregisterUtanUppgiftsskyldighetForOrgList = new List<AdmDelregister>();
             //Endast delregister som saknar uppgiftsskyldighet ska visas i dropdown
             foreach (var delregister in delregisterList)
@@ -707,7 +707,7 @@ namespace InrappSos.AstridWeb.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public ActionResult CreateReportObligation(OrganisationViewModels.ReportObligationsViewModel uppgSk, int selectedOrgId)
+        public ActionResult CreateReportObligation(OrganisationViewModels.ReportObligationsViewModel uppgSk, int selectedOrganisationId)
         {
             if (ModelState.IsValid)
             {
@@ -715,7 +715,7 @@ namespace InrappSos.AstridWeb.Controllers
                 {
                     var userName = User.Identity.GetUserName();
                     var admUppgSkyldighet = ConvertToDbFromVM(uppgSk);
-                    admUppgSkyldighet.OrganisationId = selectedOrgId;
+                    admUppgSkyldighet.OrganisationId = selectedOrganisationId;
                     _portalSosService.SkapaUppgiftsskyldighet(admUppgSkyldighet, userName);
                 }
                 catch (Exception e)
@@ -729,24 +729,24 @@ namespace InrappSos.AstridWeb.Controllers
                     };
                     return View("CustomError", errorModel);
                 }
-                return RedirectToAction("GetOrganisationsReportObligations", new { selectedOrgId = selectedOrgId });
+                return RedirectToAction("GetOrganisationsReportObligations", new { selectedOrganisationId = selectedOrganisationId });
             }
 
             return View();
         }
 
         [Authorize]
-        public ActionResult CreateUnitReportObligation(int selectedOrgId = 0, int selectedOrgenhetsId = 0)
+        public ActionResult CreateUnitReportObligation(int selectedOrganisationId = 0, int selectedOrgenhetsId = 0)
         {
             var model = new OrganisationViewModels.UnitReportObligationsViewModel();
 
             try
             {
-                model.SelectedOrganisationId = selectedOrgId;
+                model.SelectedOrganisationId = selectedOrganisationId;
                 model.SelectedOrganisationsenhetsId = selectedOrgenhetsId;
                 //Skapa dropdown för valbara delregister
                 var delregisterList = _portalSosService.HamtaAllaDelregisterForPortalen();
-                var admUppgSkyldighetList = _portalSosService.HamtaUppgiftsskyldighetForOrg(selectedOrgId).ToList();
+                var admUppgSkyldighetList = _portalSosService.HamtaUppgiftsskyldighetForOrg(selectedOrganisationId).ToList();
                 var delregisterDropDownList = new List<AdmDelregister>();
 
                 //Endast delregister som har uppgiftsskyldighet ska visas i dropdown
@@ -767,12 +767,12 @@ namespace InrappSos.AstridWeb.Controllers
 
                 this.ViewBag.DelregisterList = CreateDelRegisterDropDownList(delregisterDropDownList);
 
-                if (selectedOrgId != 0)
+                if (selectedOrganisationId != 0)
                 {
-                    model.Organisationsnamn = _portalSosService.HamtaOrganisation(selectedOrgId).Organisationsnamn;
+                    model.Organisationsnamn = _portalSosService.HamtaOrganisation(selectedOrganisationId).Organisationsnamn;
                 }
 
-                var orgenhetsList = _portalSosService.HamtaOrgEnheterForOrg(selectedOrgId);
+                var orgenhetsList = _portalSosService.HamtaOrgEnheterForOrg(selectedOrganisationId);
                 this.ViewBag.OrgenhetList = CreateOrgenhetDropDownList(orgenhetsList);
             }
             catch (Exception e)
@@ -817,7 +817,7 @@ namespace InrappSos.AstridWeb.Controllers
                     };
                     return View("CustomError", errorModel);
                 }
-                return RedirectToAction("GetOrganisationsUnitReportObligations", new { selectedOrgId = Convert.ToInt32(enhetsUppgSk.SelectedOrganisationId), selectedOrgenhetsId = Convert.ToInt32(enhetsUppgSk.SelectedOrganisationsenhetsId) });
+                return RedirectToAction("GetOrganisationsUnitReportObligations", new { selectedOrganisationId = Convert.ToInt32(enhetsUppgSk.SelectedOrganisationId), selectedOrgenhetsId = Convert.ToInt32(enhetsUppgSk.SelectedOrganisationsenhetsId) });
             }
 
             return View();
@@ -825,7 +825,7 @@ namespace InrappSos.AstridWeb.Controllers
 
         [HttpPost]
         [Authorize]
-        public ActionResult DeleteContact(string contactId, int selectedOrgId = 0)
+        public ActionResult DeleteContact(string contactId, int selectedOrganisationId = 0)
         {
             try
             {
@@ -842,7 +842,7 @@ namespace InrappSos.AstridWeb.Controllers
                 };
                 return View("CustomError", errorModel);
             }
-            return RedirectToAction("GetOrganisationsContacts", new { selectedOrgId = selectedOrgId });
+            return RedirectToAction("GetOrganisationsContacts", new { selectedOrganisationId = selectedOrganisationId });
         }
 
         [HttpPost]

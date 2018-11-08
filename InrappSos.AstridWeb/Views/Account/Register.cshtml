@@ -8,21 +8,75 @@
 
 <script type="text/javascript">
 
+    var userRoles = @Html.Raw(Json.Encode(Model.UserRoleList));
 
     $(document).ready(function () {
-       
+        $('[id*=RoleList]').multiselect({
+            onInitialized: function () {
+                $.each(userRoles, function (index, item) {
+                    if (item.Selected) {
+                        $("#RoleList > option")[index].selected = true;
+                        $("#RoleList > option")[index].checked = true;
+                    }
+                });
+                this.refresh();
+            },
+            onChange: function (option, checked, select) {
+                //Update string of names, ChosenOrganisationTypesNames
+                $('#ChosenRolesStr').val("");
+                $.each(userRoles, function (index, item) {
+                    if ($('#UserRoleList_' + index + '__Id').val() === $(option).val()) {
+                        if ($('#UserRoleList_' + index + '__Selected').val() === 'False')
+                            $('#UserRoleList_' + index + '__Selected').val('True');
+                        else
+                            $('#UserRoleList_' + index + '__Selected').val('False');
+                    }
+                });
+                setChosenRolesStr();
+            },
+            onSelectAll: function () {
+                $.each(userRoles, function (index, item) {
+                    $('#UserRoleList_' + index + '__Selected').val('True');
+                });
+            },
+            onDeselectAll: function () {
+                $.each(userRoles, function (index, item) {
+                    $('#UserRoleList_' + index + '__Selected').val('False');
+                });
+            },
+            includeSelectAllOption: false,
+            nonSelectedText: 'Ändra roll',
+            allSelectedText: 'Alla valda',
+            selectAllText: "Välj alla",
+            nSelectedText: "valda",
+            astridDefaultText: "Ändra roll"
+        });
     });
+
+    function setChosenRolesStr() {
+        var roleStr = "";
+
+        [].forEach.call(document.querySelectorAll('#RoleList :checked'),
+            function (role) {
+                if (roleStr === "") {
+                    roleStr = roleStr + role.text;
+                } else {
+                    roleStr = roleStr + ", " + role.text;
+                }
+            });
+
+        $('#chosenRoles').val(roleStr);
+    }
 
     $(function () {
         $("#txtEmail").focus();
     });
-    
 
     function checkChosen() {
         alert("Hej");
         //  get all option elements
         $('#example option:selected');
- 
+
         // get all option element values
         $('#example option:selected').map(function(a, item){return item.value;});
     }
@@ -51,6 +105,25 @@
             @Html.TextBoxFor(m => m.Email, new { @class = "form-control", maxlength = 60, id = "txtEmail" })
         </div>
     </div>
+
+    <div class="form-group">
+        @Html.Label("Roll", new { @class = "control-label col-md-2" })
+        <div class="col-md-3">
+            @Html.TextBoxFor(model => model.ChosenRolesStr, new { id = "chosenRoles", @class = "form-control", disabled = "disabled" })
+        </div>
+        @if (Model.UserRoleList != null)
+        {
+            <div class="col-md-7" style="padding-left: 20px; float: left;">
+                <select id="RoleList" multiple="multiple">
+                    @for (var i = 0; i < Model.UserRoleList.Count; i++)
+                    {
+                        <option value=@Model.UserRoleList[i].Id>@Model.UserRoleList[i].Name</option>
+                    }
+                </select>
+            </div>
+        }
+    </div>
+
     <div class="form-group">
         @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">

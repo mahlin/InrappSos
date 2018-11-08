@@ -23,7 +23,7 @@ namespace InrappSos.AstridWeb.Models.ViewModels
 
             public string SelectedSubDirectoryId { get; set; }
 
-}
+        }
 
         public class AdmRegisterViewModel
         {

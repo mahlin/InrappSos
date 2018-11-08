@@ -161,6 +161,12 @@ namespace InrappSos.ApplicationService
             return orgTypeList;
         }
 
+        //public List<UserRolesDTO> HamtaAstridRoller()
+        //{
+        //    var roles = _portalSosRepository.GetAllAstridRoles();
+        //    return roles;
+        //}
+
         public IEnumerable<ApplicationUser> HamtaKontaktpersonerForOrg(int orgId)
         {
             var contacts = _portalSosRepository.GetContactPersonsForOrg(orgId);

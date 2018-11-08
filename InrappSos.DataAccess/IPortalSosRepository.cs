@@ -18,6 +18,8 @@ namespace InrappSos.DataAccess
 
         void DeleteAdminUser(string userId);
 
+        //List<UserRolesDTO>
+
         //****************************************************************//
 
         void DisableContact(string userId);

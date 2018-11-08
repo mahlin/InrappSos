@@ -367,11 +367,11 @@
             <div class="col-md-3">
                 @Html.TextBoxFor(model => model.ChosenOrganisationTypesNames, new { id = "orgTypeNames", @class = "form-control", disabled = "disabled" })
             </div>
-            @if (Model.OrganisationTypes != null)
+            @if (Model.OrgtypesForOrgList != null)
             {
                 <div class="col-md-7" style="padding-left: 20px; float: left;">
                     <select id="OrgtypList" multiple="multiple">
-                        @for (var i = 0; i < Model.OrganisationTypes.Count; i++)
+                        @for (var i = 0; i < Model.OrgtypesForOrgList.Count; i++)
                         {
                             <option value=@Model.OrgtypesForOrgList[i].Organisationstypid>@Model.OrgtypesForOrgList[i].Typnamn</option>
                         }

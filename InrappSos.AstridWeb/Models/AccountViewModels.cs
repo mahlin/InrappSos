@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web.Mvc;
+using InrappSos.ApplicationService.DTOModel;
 using InrappSos.DomainModel;
 
 namespace InrappSos.AstridWeb.Models
@@ -99,6 +100,9 @@ namespace InrappSos.AstridWeb.Models
         [EmailAddress(ErrorMessage = "Fältet E-postadress är inte en giltig e-postadress.")]
         [Display(Name = "E-postadress")]
         public string Email { get; set; }
+
+        public string ChosenRolesStr { get; set; }
+        public List<UserRolesDTO> UserRoleList { get; set; }
 
         [Required (ErrorMessage = "Fältet lösenord är obligatoriskt.")]
         [StringLength(100, ErrorMessage = "{0} måset vara minst {2} tecken långt.", MinimumLength = 6)]

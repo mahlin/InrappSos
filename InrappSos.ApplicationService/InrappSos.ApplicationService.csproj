@@ -63,6 +63,7 @@
     <Compile Include="DTOModel\OpeningHoursInfoDTO.cs" />
     <Compile Include="DTOModel\OrganisationDTO.cs" />
     <Compile Include="DTOModel\OrganisationsenhetDTO.cs" />
+    <Compile Include="DTOModel\UserRolesDTO.cs" />
     <Compile Include="DTOModel\OrganisationstypDTO.cs" />
     <Compile Include="DTOModel\RapporteringsresultatDTO.cs" />
     <Compile Include="DTOModel\RegisterBasicDTO.cs" />

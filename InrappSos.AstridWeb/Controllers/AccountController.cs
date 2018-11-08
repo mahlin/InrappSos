@@ -149,7 +149,26 @@ namespace InrappSos.AstridWeb.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
-            return View();
+            var model = new RegisterViewModel();
+            try
+            {
+                //Skapa lista över astrid-roller 
+                //model.UserRoleList = _portalSosService.HamtaRoller();
+                model.ChosenRolesStr = "";
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("AccountController", "Register", e.ToString(), e.HResult, User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade vid hämtning av registeringsformulär.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
+            }
+
+            return View(model);
         }
 
         //

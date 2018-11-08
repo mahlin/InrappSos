@@ -125,7 +125,6 @@ namespace InrappSos.AstridWeb.Controllers
                 model.OrganisationTypes = _portalSosService.HamtaAllaOrganisationstyper().ToList();
                 //Skapa lista över orgtyper och vilka som är valda för aktuell organisation
                 model.OrgtypesForOrgList = _portalSosService.HamtaOrgtyperForOrganisation(model.SelectedOrganisationId,  model.OrganisationTypes);
-                //TODO
                 model.ChosenOrganisationTypesNames = SetOrgtypenames(model.OrgtypesForOrgList);
                 // Ladda drop down lists. 
                 //var orgListDTO = GetOrganisationDTOList();

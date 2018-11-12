@@ -1803,7 +1803,7 @@ namespace InrappSos.ApplicationService
                     msg.From = new MailAddress(ConfigurationManager.AppSettings["MailSender"]);
                     //TODO
                     //msg.To.Add(new MailAddress("marie.ahlin@socialstyrelsen.se"));
-                    msg.To.Add(new MailAddress(_portalSosRepository.GetUserEmail(userId)));
+                    msg.To.Add(new MailAddress(_portalSosRepository.GetAdminUserEmail(userId)));
                     msg.Subject = "Påminnelse";
                     msg.Body = "'Påminnelsetext här'.<br /> Detta mail innehåller en bifogad fil med epostadresser till användare/organisationer som inte levererat godkända filer för valt register och period.<br />Med vänliga hälsningar Astrid";
 

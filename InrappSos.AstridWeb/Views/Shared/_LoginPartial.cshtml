@@ -87,20 +87,21 @@
 
                     </ul>
                 </li>
-                @*@if (User.IsInRole("Admin") && Request.IsAuthenticated)*@
-                @*@if (Roles.IsUserInRole(Model.UserName, "Administrator"))*@
+
             @if (Request.IsAuthenticated)
-{
-            <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin <span class="caret"></span></a>
-                <ul class="dropdown-menu">
-                    <li>@Html.ActionLink("Användare", "GetAstridUsers", "Admin")</li>
-                    <li>@Html.ActionLink("Reg anv", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
+            {
+                if (User.IsInRole("Admin"))
+                 {
+                     <li class="dropdown">
+                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin <span class="caret"></span></a>
+                         <ul class="dropdown-menu">
+                             <li>@Html.ActionLink("Användare", "GetAstridUsers", "Admin")</li>
+                             <li>@Html.ActionLink("Reg anv", "Register", "Account", routeValues: null, htmlAttributes: new {id = "registerLink"})</li>
 
-                </ul>
-            </li>
-}
-
+                         </ul>
+                     </li>
+                 }
+            }
 
             </ul>
             @if (Request.IsAuthenticated)

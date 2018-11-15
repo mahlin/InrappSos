@@ -1642,7 +1642,6 @@ namespace InrappSos.ApplicationService
             foreach (var resRad in rappResList)
             {
                 i++;
-
                 var rappResRadVM = new RapporteringsresultatDTO
                 {
                     Id = i,
@@ -1673,7 +1672,7 @@ namespace InrappSos.ApplicationService
                     ForvantadLeveransId = resRad.ForvantadLeveransId,
                     OrganisationsenhetsId = resRad.OrganisationsenhetsId,
                     LeveransId = resRad.LeveransId,
-                    Mail= false
+                    Mail = false
                 };
 
                 //If user is inactive, remove emailadress from list
@@ -1750,7 +1749,8 @@ namespace InrappSos.ApplicationService
                 }
                     
             }
-            else
+            //Om ändå ingen epostadress hittats, hämta från organisationen
+            if (email == String.Empty)
             {
                 //Get email from organisation
                 var org = _portalSosRepository.GetOrganisation(rappRes.OrganisationsId);
@@ -1765,12 +1765,18 @@ namespace InrappSos.ApplicationService
         public void SkickaPaminnelse(IEnumerable<RapporteringsresultatDTO> rappResList, string userId)
         {
             var emailList = String.Empty;
+            var i = 0;
             //ta fram lista med epostadresser för valda rader
             foreach (var rappRes in rappResList)
             {
+                i++;
                 if (rappRes.Mail)
                 {
-                    var x = rappRes.Email.IndexOf(",");
+                    if (rappRes.Email == null)
+                    {
+                        throw new ApplicationException("rappRes.Email är null i svc. Tot: " + rappResList.Count() + ", Index: " + i + ", Id:" + rappRes.Id.ToString() + ", Kommunkod: " + rappRes.Kommunkod + ", Orgnamn: " + rappRes.Organisationsnamn);
+                    }
+                    //var x = rappRes.Email.IndexOf(",");
                     if (rappRes.Email.IndexOf(",", StringComparison.Ordinal) > 0)
                     {
                         //Fler epostadresser finns för raden, splitta

@@ -129,7 +129,7 @@ namespace InrappSos.FilipWeb
             // You can write your own provider and plug it in here.
             manager.RegisterTwoFactorProvider("Phone Code", new PhoneNumberTokenProvider<ApplicationUser>
             {
-                MessageFormat = "Välkommen till Socialstyrelsens InrappSos. För att logga in ange följande verifieringskod på webbsidan: {0}"
+                MessageFormat = "Välkommen till Socialstyrelsens Inrapporteringsportal. För att logga in ange följande verifieringskod på webbsidan: {0}"
             });
             manager.RegisterTwoFactorProvider("Email Code", new EmailTokenProvider<ApplicationUser>
             {

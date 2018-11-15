@@ -424,6 +424,17 @@ namespace InrappSos.AstridWeb.Controllers
                 model = GetDropDownLists(model);
 
             }
+            catch (ApplicationException e)
+            {
+                ErrorManager.WriteToErrorLog("LeveransController", "GetReminderInfoForRegAndPeriod", e.ToString(), e.HResult,
+                    User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade när info för påminnelsemail skulle hämtas.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
+            }
             catch (Exception e)
             {
                 Console.WriteLine(e);
@@ -458,6 +469,17 @@ namespace InrappSos.AstridWeb.Controllers
                 }
                 var userId = User.Identity.GetUserId();
                 _portalSosService.SkickaPaminnelse(model.RapportResList, userId);
+            }
+            catch (ApplicationException e)
+            {
+                ErrorManager.WriteToErrorLog("LeveransController", "SendReminder", e.ToString(), e.HResult,
+                    User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade när påminnelsemail skulle skickas.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
             }
             catch (Exception e)
             {

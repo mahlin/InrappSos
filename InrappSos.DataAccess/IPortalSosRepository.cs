@@ -220,7 +220,7 @@ namespace InrappSos.DataAccess
 
         IEnumerable<Organisationsenhet> GetOrganisationUnits(int orgId);
 
-        int CreateOrganisation(Organisation org);
+        int CreateOrganisation(Organisation org, ICollection<Organisationstyp> orgtyperForOrg);
 
         void CreateOrgUnit(Organisationsenhet orgUnit);
         void CreateOrgType(AdmOrganisationstyp orgType);

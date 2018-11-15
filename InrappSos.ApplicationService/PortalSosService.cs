@@ -1094,7 +1094,7 @@ namespace InrappSos.ApplicationService
             _portalSosRepository.DeleteChosenSubDirectoriesForUser(userId);
         }
 
-        public int SkapaOrganisation(Organisation org, string userName)
+        public int SkapaOrganisation(Organisation org, ICollection<Organisationstyp> orgtyperForOrg, string userName)
         {
             //Sätt datum och användare
             org.SkapadDatum = DateTime.Now;
@@ -1102,7 +1102,7 @@ namespace InrappSos.ApplicationService
             org.AndradDatum = DateTime.Now;
             org.AndradAv = userName;
 
-            var orgId = _portalSosRepository.CreateOrganisation(org);
+            var orgId = _portalSosRepository.CreateOrganisation(org, orgtyperForOrg);
             return orgId;
         }
 

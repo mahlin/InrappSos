@@ -893,10 +893,19 @@ namespace InrappSos.DataAccess
         }
 
 
-        public int CreateOrganisation(Organisation org)
+        public int CreateOrganisation(Organisation org, ICollection<Organisationstyp> orgtyperForOrg)
         {
             DbContext.Organisation.Add(org);
             DbContext.SaveChanges();
+
+            //Insert new orgtypes
+            foreach (var orgtyp in orgtyperForOrg)
+            {
+                orgtyp.OrganisationsId = org.Id;
+                DbContext.Organisationstyp.Add(orgtyp);
+            }
+            DbContext.SaveChanges();
+
             return org.Id;
         }
         public void CreateOrgUnit(Organisationsenhet orgUnit)

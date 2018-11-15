@@ -391,7 +391,7 @@ namespace InrappSos.AstridWeb.Controllers
                 if (ModelState.IsValid)
                 {
                     var userName = User.Identity.GetUserName();
-                    model.Organisation.Organisationstyp = ConvertOrgTypesForOrgList(model.Organisation.Id, model.OrgtypesForOrgList);
+                    model.Organisation.Organisationstyp = ConvertOrgTypesForOrgList(model.Organisation.Id, model.OrgtypesForOrgList, userName, false);
                     _portalSosService.UppdateraOrganisation(model.Organisation, userName);
                 }
             }
@@ -565,7 +565,27 @@ namespace InrappSos.AstridWeb.Controllers
         [Authorize]
         public ActionResult CreateOrganisation()
         {
-            return View();
+            var model = new OrganisationViewModels.OrganisationViewModel();
+            try
+            {
+                model.OrganisationTypes = _portalSosService.HamtaAllaOrganisationstyper().ToList();
+                //Skapa lista över orgtyper 
+                model.OrgtypesForOrgList = _portalSosService.HamtaOrgtyperForOrganisation(0, model.OrganisationTypes);
+                model.ChosenOrganisationTypesNames = "";
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("OrganisationController", "CreateOrganisation", e.ToString(), e.HResult, User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade när ny organisation skulle skapas.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
+            }
+
+            return View(model);
         }
 
         // POST
@@ -581,7 +601,8 @@ namespace InrappSos.AstridWeb.Controllers
                 try
                 {
                     var userName = User.Identity.GetUserName();
-                    orgId = _portalSosService.SkapaOrganisation(model.Organisation, userName);
+                    var orgtyperForOrg = ConvertOrgTypesForOrgList(model.Organisation.Id, model.OrgtypesForOrgList, userName, true);
+                    orgId = _portalSosService.SkapaOrganisation(model.Organisation, orgtyperForOrg, userName);
                     //kommunkod = _portalSosService.HamtaKommunkodForOrg(orgId);
                 }
                 catch (Exception e)
@@ -1169,7 +1190,7 @@ namespace InrappSos.AstridWeb.Controllers
             return str;
         }
 
-        private ICollection<Organisationstyp> ConvertOrgTypesForOrgList(int orgId, List<OrganisationstypDTO> orgtypesForOrgList)
+        private ICollection<Organisationstyp> ConvertOrgTypesForOrgList(int orgId, List<OrganisationstypDTO> orgtypesForOrgList, string userName, bool create)
         {
             var orgtypesList = new List<Organisationstyp>();
             foreach (var orgtypeForOrg in orgtypesForOrgList)
@@ -1179,8 +1200,15 @@ namespace InrappSos.AstridWeb.Controllers
                     var orgtype = new Organisationstyp
                     {
                         OrganisationsId = orgId,
-                        OrganisationstypId = orgtypeForOrg.Organisationstypid
+                        OrganisationstypId = orgtypeForOrg.Organisationstypid,
+                        AndradAv = userName,
+                        AndradDatum = DateTime.Now
                     };
+                    if (create)
+                    {
+                        orgtype.SkapadAv = userName;
+                        orgtype.SkapadDatum = DateTime.Now;
+                    }
                     orgtypesList.Add(orgtype);
                 }
             }

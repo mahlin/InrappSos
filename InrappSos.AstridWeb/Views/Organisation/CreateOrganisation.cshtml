@@ -4,11 +4,74 @@
     ViewBag.Title = "Organisation";
 }
 
+<link href="~/Scripts/bootstrap-multiselect/dist/css/bootstrap-multiselect.css" rel="stylesheet" type="text/css" />
+<script src="~/Scripts/bootstrap-multiselect/dist/js/bootstrap-multiselect.js" type="text/javascript"></script>
 
 <script type="text/javascript">
+
+    var orgtyper = @Html.Raw(Json.Encode(Model.OrgtypesForOrgList));
+
     $(function () {
         $("#Landstingskod").focus();
     });
+
+    $(document).ready(function () {
+        $('[id*=OrgtypList]').multiselect({
+            onInitialized: function () {
+                $.each(orgtyper, function (index, item) {
+                    if (item.Selected) {
+                        $("#OrgtypList > option")[index].selected = true;
+                        $("#OrgtypList > option")[index].checked = true;
+                    }
+                });
+                this.refresh();
+            },
+            onChange: function (option, checked, select) {
+                //Update string of names, ChosenOrganisationTypesNames
+                $('#ChosenOrganisationTypesNames').val("");
+                $.each(orgtyper, function (index, item) {
+                    if ($('#OrgtypesForOrgList_' + index + '__Organisationstypid').val() === $(option).val()) {
+                        if ($('#OrgtypesForOrgList_' + index + '__Selected').val() === 'False')
+                            $('#OrgtypesForOrgList_' + index + '__Selected').val('True');
+                        else
+                            $('#OrgtypesForOrgList_' + index + '__Selected').val('False');
+                    }
+                });
+                setChosenOrganisationTypesNames();
+            },
+            onSelectAll: function () {
+                $.each(orgtyper, function (index, item) {
+                    $('#OrgtypesForOrgList_' + index + '__Selected').val('True');
+                });
+            },
+            onDeselectAll: function () {
+                $.each(orgtyper, function (index, item) {
+                    $('#OrgtypesForOrgList_' + index + '__Selected').val('False');
+                });
+            },
+            includeSelectAllOption: false,
+            nonSelectedText: 'Välj organisationstyp',
+            allSelectedText: 'Alla valda',
+            selectAllText: "Välj alla",
+            nSelectedText: "valda",
+            astridDefaultText: "Välj organisationstyp"
+        });
+    });
+
+    function setChosenOrganisationTypesNames() {
+        var orgtypStr = "";
+
+        [].forEach.call(document.querySelectorAll('#OrgtypList :checked'),
+            function (orgtyp) {
+                if (orgtypStr === "") {
+                    orgtypStr = orgtypStr + orgtyp.text;
+                } else {
+                    orgtypStr = orgtypStr + ", " + orgtyp.text;
+                }
+            });
+
+        $('#orgTypeNames').val(orgtypStr);
+    }
 
 
 </script>
@@ -22,10 +85,18 @@
 
     @using (Html.BeginForm("CreateOrganisation", "Organisation", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
     {
-
-
         @Html.AntiForgeryToken()
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })@Html.HiddenFor(m => m.ChosenOrganisationTypesNames)
+
+        if (Model.OrgtypesForOrgList != null)
+        {
+            for (int i = 0; i < Model.OrgtypesForOrgList.Count; i++)
+            {
+                @Html.HiddenFor(x => x.OrgtypesForOrgList[i].Organisationstypid)
+                @Html.HiddenFor(x => x.OrgtypesForOrgList[i].Typnamn)
+                @Html.HiddenFor(x => x.OrgtypesForOrgList[i].Selected)
+            }
+        }
 
         <div class="form-group">
             @Html.LabelFor(model => model.Organisation.Landstingskod, htmlAttributes: new { @class = "control-label col-md-2" })
@@ -51,12 +122,30 @@
             </div>
         </div>
 
-        <div class="form-group">
+        @*<div class="form-group">
             @Html.LabelFor(model => model.Organisation.Organisationstyp, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.EditorFor(model => model.Organisation.Organisationstyp, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.Organisation.Organisationstyp, "", new { @class = "text-danger" })
             </div>
+        </div>*@
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Organisation.Organisationstyp, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-3">
+                @Html.TextBoxFor(model => model.ChosenOrganisationTypesNames, new { id = "orgTypeNames", @class = "form-control", disabled = "disabled" })
+            </div>
+            @if (Model.OrgtypesForOrgList != null)
+            {
+                <div class="col-md-7" style="padding-left: 20px; float: left;">
+                    <select id="OrgtypList" multiple="multiple">
+                        @for (var i = 0; i < Model.OrgtypesForOrgList.Count; i++)
+                        {
+                            <option value=@Model.OrgtypesForOrgList[i].Organisationstypid>@Model.OrgtypesForOrgList[i].Typnamn</option>
+                        }
+                    </select>
+                </div>
+            }
         </div>
 
         <div class="form-group">
@@ -158,8 +247,8 @@
     }
 
 </div>
-<br/>
-<br/>
+<br />
+<br />
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")

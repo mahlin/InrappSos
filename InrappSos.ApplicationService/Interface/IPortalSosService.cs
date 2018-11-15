@@ -188,7 +188,7 @@ namespace InrappSos.ApplicationService.Interface
         bool IsHelgdag();
         bool IsSpecialdag();
 
-        int SkapaOrganisation(Organisation org, string userName);
+        int SkapaOrganisation(Organisation org, ICollection<Organisationstyp> orgtyperForOrg, string userName);
 
         void SkapaOrganisationsenhet(Organisationsenhet orgUnit, string userName);
         void SkapaOrganisationstyp(AdmOrganisationstyp orgtyp, string userName);

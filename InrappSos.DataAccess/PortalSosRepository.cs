@@ -6,6 +6,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 using InrappSos.DomainModel;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
 
 namespace InrappSos.DataAccess
@@ -64,6 +65,43 @@ namespace InrappSos.DataAccess
         {
             var cuserToDelete = AstridDbContext.Users.SingleOrDefault(x => x.Id == userId);
             AstridDbContext.Users.Remove(cuserToDelete);
+            AstridDbContext.SaveChanges();
+        }
+
+        public IEnumerable<IdentityRole> GetAllAstridRoles()
+        {
+            var astridRoles = AstridDbContext.Roles.OrderBy(r => r.Name).ToList();
+            return astridRoles;
+            //AstridDbContext.Roles.OrderBy(r => r.Name).ToList().Select(rr =>
+            //    new SelectListItem { Value = rr.Name.ToString(), Text = rr.Name }).ToList();
+
+        }
+
+        public void CreateAstridRole(string roleName)
+        {
+            AstridDbContext.Roles.Add(new Microsoft.AspNet.Identity.EntityFramework.IdentityRole()
+            {
+                Name = roleName
+            });
+            AstridDbContext.SaveChanges();
+        }
+
+        public IdentityRole GetAstridRole(string roleName)
+        {
+            var thisRole = AstridDbContext.Roles.FirstOrDefault(r => r.Name.Equals(roleName, StringComparison.CurrentCultureIgnoreCase));
+            return thisRole;
+        }
+
+        public void UpdateAstridRole(IdentityRole role)
+        {
+            AstridDbContext.Entry(role).State = System.Data.Entity.EntityState.Modified;
+            AstridDbContext.SaveChanges();
+        }
+
+        public void DeleteAstridRole(string roleName)
+        {
+            var thisRole = AstridDbContext.Roles.FirstOrDefault(r => r.Name.Equals(roleName, StringComparison.CurrentCultureIgnoreCase));
+            AstridDbContext.Roles.Remove(thisRole);
             AstridDbContext.SaveChanges();
         }
 

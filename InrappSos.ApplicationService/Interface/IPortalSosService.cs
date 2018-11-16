@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using InrappSos.ApplicationService.DTOModel;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace InrappSos.ApplicationService.Interface
 {
@@ -18,6 +19,8 @@ namespace InrappSos.ApplicationService.Interface
         List<List<Organisation>> SokOrganisation(string sokStr);
 
         IEnumerable<FilloggDetaljDTO> FiltreraHistorikForAnvandare(string userId, List<RegisterInfo> valdaDelregisterList, List<FilloggDetaljDTO> historikForOrganisation);
+
+        IdentityRole HamtaAstridRoll(string roleName);
 
         IEnumerable<AdmFAQKategori> HamtaAllaFAQs();
         IEnumerable<AdmOrganisationstyp> HamtaAllaOrganisationstyper();
@@ -123,6 +126,8 @@ namespace InrappSos.ApplicationService.Interface
         IEnumerable<AdmRegister> HamtaAllaRegister();
         IEnumerable<AdmRegister> HamtaAllaRegisterForPortalen();
 
+        IEnumerable<IdentityRole> HamtaAllaAstridRoller();
+
         IEnumerable<AdmDelregister> HamtaAllaDelregisterForPortalen();
 
         IEnumerable<RegisterInfo> HamtaAllRegisterInformation();
@@ -188,6 +193,8 @@ namespace InrappSos.ApplicationService.Interface
         bool IsHelgdag();
         bool IsSpecialdag();
 
+        void SkapaAstridRoll(string rollNamn);
+
         int SkapaOrganisation(Organisation org, ICollection<Organisationstyp> orgtyperForOrg, string userName);
 
         void SkapaOrganisationsenhet(Organisationsenhet orgUnit, string userName);
@@ -220,6 +227,8 @@ namespace InrappSos.ApplicationService.Interface
         void SkapaFilkrav(AdmFilkrav filkrav, string userName);
 
         void SkapaInsamlingsfrekvens(AdmInsamlingsfrekvens insamlingsfrekvens, string userName);
+
+        void UppdateraAstridRoll(IdentityRole role);
 
         void UppdateraOrganisation(Organisation org, string userName);
 
@@ -272,6 +281,7 @@ namespace InrappSos.ApplicationService.Interface
         void SparaValdaRegistersForAnvandare(string userId, string userName, List<RegisterInfo> registerList);
         void SaveToLoginLog(string userid, string userName);
 
+        void TaBortAstridRoll(string roleName);
 
         void TaBortFAQKategori(int faqKategoriId);
 

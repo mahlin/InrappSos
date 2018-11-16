@@ -1,0 +1,31 @@
+﻿@model Microsoft.AspNet.Identity.EntityFramework.IdentityRole
+@{
+    ViewBag.Title = "View";
+}
+
+<div class="col-md-8 padding-top-25">
+    <h4>Ändra Astridroll</h4>
+    <br/>
+    @Html.ActionLink("Tillbaka", "CRUDRoles")
+    <hr />
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+        @Html.HiddenFor(model => model.Id)
+        @*<div>
+            Rollnamn
+        </div>
+        <p>
+            @Html.TextBoxFor(model => model.Name)
+        </p>*@
+        <div class="form-group">
+            @Html.Label("Rollnamn", new { @class = "control-label col-md-2" })
+            <div class="col-md-6">
+                @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <input type="submit" value="Spara" class="btn btn-default" style="margin-right: 15px; margin-left: -15px;" />
+    }
+</div>

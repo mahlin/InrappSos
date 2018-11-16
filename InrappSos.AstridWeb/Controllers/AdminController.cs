@@ -13,6 +13,7 @@ using InrappSos.AstridWeb.Helpers;
 using InrappSos.AstridWeb.Models;
 using InrappSos.AstridWeb.Models.ViewModels;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 
 namespace InrappSos.AstridWeb.Controllers
@@ -123,6 +124,98 @@ namespace InrappSos.AstridWeb.Controllers
             return RedirectToAction("GetAstridUsers");
         }
 
+        [Authorize(Roles = "Admin")]
+        // GET: /Roles/Create/Read/Update/Delete
+        public ActionResult CRUDRoles()
+        {
+            //Hämta info för Create/Read/Update/Delete Roles
+            var roles = _portalSosService.HamtaAllaAstridRoller();
+                
+            var rolelist = CreateRolesDropDownList(roles);
+            ViewBag.Roles = rolelist;
+            ViewBag.Message = "";
+            return View("CRUDRoles");
+        }
+
+        [Authorize(Roles = "Admin")]
+        // POST: /Roles/Create
+        [HttpPost]
+        public ActionResult CreateRole(FormCollection collection)
+        {
+            try
+            {
+                _portalSosService.SkapaAstridRoll(collection["RoleName"]);
+                ViewBag.Message = "Rollen skapad!";
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("AdminController", "CreateRole", e.ToString(), e.HResult, User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade när Astrid-roll skulle skapas.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
+            }
+            return RedirectToAction("CRUDRoles");
+        }
+
+        [Authorize(Roles = "Admin")]
+        // GET: /Roles/Edit/5
+        public ActionResult EditRole(string roleName)
+        {
+            var thisRole = _portalSosService.HamtaAstridRoll(roleName);
+            return View(thisRole);
+            //return RedirectToAction("CRUDRoles");
+        }
+
+        [Authorize(Roles = "Admin")]
+        // POST: /Roles/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditRole(Microsoft.AspNet.Identity.EntityFramework.IdentityRole role)
+        {
+            try
+            {
+                _portalSosService.UppdateraAstridRoll(role);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("AdminController", "EditRole", e.ToString(), e.HResult, User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade när Astrid-roll skulle uppdateras.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
+            }
+            return RedirectToAction("CRUDRoles");
+        }
+
+        [Authorize(Roles = "Admin")]
+
+        public ActionResult DeleteRole(string roleName)
+        {
+            try
+            {
+                _portalSosService.TaBortAstridRoll(roleName);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("AdminController", "DeleteRole", e.ToString(), e.HResult, User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade när Astrid-roll skulle tas bort.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
+            }
+            return RedirectToAction("CRUDRoles");
+        }
+
         private IEnumerable<AdminViewModels.AppUserAdminViewModel> ConvertAdminUsersToViewModel(IEnumerable<AppUserAdmin> adminUsers)
         {
             var adminUserViewList = new List<AdminViewModels.AppUserAdminViewModel>();
@@ -189,6 +282,28 @@ namespace InrappSos.AstridWeb.Controllers
             };
 
             return user;
+        }
+
+        /// <summary>  
+        /// Create list for register-dropdown  
+        /// </summary>  
+        /// <returns>Return register for drop down list.</returns>  
+        private IEnumerable<SelectListItem> CreateRolesDropDownList(IEnumerable<IdentityRole> roles)
+        {
+            SelectList lstobj = null;
+
+            var list = roles
+                .Select(p =>
+                    new SelectListItem
+                    {
+                        Value = p.Id.ToString(),
+                        Text = p.Name
+                    });
+
+            // Setting.  
+            lstobj = new SelectList(list, "Value", "Text");
+
+            return lstobj;
         }
     }
 }

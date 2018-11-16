@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using InrappSos.DomainModel;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace InrappSos.DataAccess
 {
@@ -17,6 +18,16 @@ namespace InrappSos.DataAccess
         void UpdateAdminUserInfo(AppUserAdmin user);
 
         void DeleteAdminUser(string userId);
+
+        IEnumerable<IdentityRole> GetAllAstridRoles();
+
+        void CreateAstridRole(string roleName);
+
+        IdentityRole GetAstridRole(string roleName);
+
+        void UpdateAstridRole(IdentityRole role);
+
+        void DeleteAstridRole(string roleName);
 
         //List<UserRolesDTO>
 

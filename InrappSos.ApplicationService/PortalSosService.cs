@@ -248,6 +248,13 @@ namespace InrappSos.ApplicationService
             var org = _portalSosRepository.GetOrgForReportObligation(uppgSkId);
             return org;
         }
+
+        public IdentityRole HamtaAstridRoll(string roleName)
+        {
+            var astridRoll = _portalSosRepository.GetAstridRole(roleName);
+            return astridRoll;
+        }
+
         public IEnumerable<AdmFAQKategori> HamtaAllaFAQs()
         {
             var faqs = _portalSosRepository.GetAllFAQs();
@@ -519,6 +526,12 @@ namespace InrappSos.ApplicationService
         {
             var registersList = _portalSosRepository.GetAllRegistersForPortal();
             return registersList;
+        }
+
+        public IEnumerable<IdentityRole> HamtaAllaAstridRoller()
+        {
+            var roller = _portalSosRepository.GetAllAstridRoles();
+            return roller;
         }
 
         public IEnumerable<AdmDelregister> HamtaAllaDelregisterForPortalen()
@@ -1094,6 +1107,11 @@ namespace InrappSos.ApplicationService
             _portalSosRepository.DeleteChosenSubDirectoriesForUser(userId);
         }
 
+        public void SkapaAstridRoll(string rollNamn)
+        {
+            _portalSosRepository.CreateAstridRole(rollNamn);
+        }
+
         public int SkapaOrganisation(Organisation org, ICollection<Organisationstyp> orgtyperForOrg, string userName)
         {
             //Sätt datum och användare
@@ -1297,6 +1315,11 @@ namespace InrappSos.ApplicationService
             insamlingsfrekvens.AndradDatum = DateTime.Now;
             insamlingsfrekvens.AndradAv = userName;
             _portalSosRepository.CreateCollectFrequence(insamlingsfrekvens);
+        }
+
+        public void UppdateraAstridRoll(IdentityRole role)
+        {
+            _portalSosRepository.UpdateAstridRole(role);
         }
 
         public void UppdateraOrganisation(Organisation org, string userName)
@@ -1566,6 +1589,11 @@ namespace InrappSos.ApplicationService
         public void SaveToLoginLog(string userid, string userName)
         {
             _portalSosRepository.SaveToLoginLog(userid, userName);
+        }
+
+        public void TaBortAstridRoll(string roleName)
+        {
+            _portalSosRepository.DeleteAstridRole(roleName);
         }
 
         public List<OpeningDay> MarkeraStangdaDagar(List<string> closedDays)

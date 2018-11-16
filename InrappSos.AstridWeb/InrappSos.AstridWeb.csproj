@@ -320,6 +320,8 @@
     <Content Include="Views\Organisation\EditOrgTypes.cshtml" />
     <Content Include="Views\Organisation\CreateOrganisationType.cshtml" />
     <Content Include="Views\Leverans\_SearchResult.cshtml" />
+    <Content Include="Views\Admin\CRUDRoles.cshtml" />
+    <Content Include="Views\Admin\EditRole.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

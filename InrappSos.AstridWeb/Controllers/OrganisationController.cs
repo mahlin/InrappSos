@@ -1193,25 +1193,29 @@ namespace InrappSos.AstridWeb.Controllers
         private ICollection<Organisationstyp> ConvertOrgTypesForOrgList(int orgId, List<OrganisationstypDTO> orgtypesForOrgList, string userName, bool create)
         {
             var orgtypesList = new List<Organisationstyp>();
-            foreach (var orgtypeForOrg in orgtypesForOrgList)
+            if (orgtypesForOrgList != null)
             {
-                if (orgtypeForOrg.Selected)
+                foreach (var orgtypeForOrg in orgtypesForOrgList)
                 {
-                    var orgtype = new Organisationstyp
+                    if (orgtypeForOrg.Selected)
                     {
-                        OrganisationsId = orgId,
-                        OrganisationstypId = orgtypeForOrg.Organisationstypid,
-                        AndradAv = userName,
-                        AndradDatum = DateTime.Now
-                    };
-                    if (create)
-                    {
-                        orgtype.SkapadAv = userName;
-                        orgtype.SkapadDatum = DateTime.Now;
+                        var orgtype = new Organisationstyp
+                        {
+                            OrganisationsId = orgId,
+                            OrganisationstypId = orgtypeForOrg.Organisationstypid,
+                            AndradAv = userName,
+                            AndradDatum = DateTime.Now
+                        };
+                        if (create)
+                        {
+                            orgtype.SkapadAv = userName;
+                            orgtype.SkapadDatum = DateTime.Now;
+                        }
+                        orgtypesList.Add(orgtype);
                     }
-                    orgtypesList.Add(orgtype);
                 }
             }
+            
             return orgtypesList;
         }
 

@@ -12,7 +12,7 @@
 <script>
 
     $(function () {
-        $("#ddlOrganisation").focus();
+        $("#searchText").focus();
     });
 
     var selecteableYearsList = @Html.Raw(Json.Encode(Model.SelectableYears));
@@ -51,11 +51,11 @@
             .collapse('show');
     });
 
-    $(document).on('change', '#ddlOrganisation',
-        function() {
-            var selectedOrg = $('#ddlOrganisation').val();
-            $("#SelectedOrganisationId").val(selectedOrg);
-        });
+    //$(document).on('change', '#ddlOrganisation',
+    //    function() {
+    //        var selectedOrg = $('#ddlOrganisation').val();
+    //        $("#SelectedOrganisationId").val(selectedOrg);
+    //    });
 
 </script>
 
@@ -63,97 +63,109 @@
     ViewBag.Title = "Leveransstatus";
 }
 
-@Html.HiddenFor(m => m.SelectedOrganisationId)
-
+<div id="pageContainer">
 <div class="row">
-    <div class="col-md-8 padding-top-25">
+    <div class="col-md-8 padding-top-55">
+        <h4>Leveransstatus</h4>
         <section id="orgForm">
-            @using (Html.BeginForm("GetDeliveryStatusForOrg", "Leverans", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+            @Html.AntiForgeryToken()
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            @using (Html.BeginForm("SearchOrganisation", "Leverans", new { origin = "deliveryStatus" }, FormMethod.Post, null))
             {
-                @Html.AntiForgeryToken()
-                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                <h4>Välj organisation</h4>
-                <hr />
-                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                @*<div class="form-group">
-                        @Html.LabelFor(m => m.Kommunkod, new { @class = "col-md-2 control-label" })
-                        <div class="col-md-10">
-                            @Html.TextBoxFor(m => m.Kommunkod, new { maxlength = 4, placeholder = "4 siffror", @class = "form-control", id = "txtKommunkod" })
-                            @Html.ValidationMessageFor(m => m.Kommunkod, "", new { @class = "text-danger" })
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div id="custom-search-input">
+                                <div class="input-group col-md-12">
+                                    <input type="text" class="form-control" id="searchText" name="searchText" style="max-width: 350px !important;" placeholder="Sök med organisationskod eller organisationsnamn" />
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-info btn-lg" type="submit">
+                                            <i class="glyphicon glyphicon-search"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
-                    </div>*@
-                <div class="form-group">
-                    @Html.Label("Kommun", new { @class = "col-md-2 control-label" })
-                    <div class="col-md-10">
-                        @Html.DropDownListFor(m => m.SelectedOrganisationId, ViewBag.OrganisationList as SelectList, " - Välj kommunkod -", new { @class = "form-control", id = "ddlOrganisation" })
                     </div>
                 </div>
-                <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
-                        <input type="submit" id="searchBtn" value="Sök" class="btn btn-default" />
-                    </div>
-                </div>
-                <hr />
             }
         </section>
+        <br />
+
     </div>
 </div>
 
 @if (Model != null)
 {
-    if (Model.OrganisationsNamn != null)
+    @* Om sökresultat finns, visa listan *@
+    if (Model.SearchResult.Count > 0 && Model.SearchResult[0].Count > 0)
     {
-        <div>
-            <div class="col-md-4">
-                <H4>Leveransstatus för @Html.Raw(Model.OrganisationsNamn)</H4>
-            </div>
-            @Html.HiddenFor(m => m.SelectedYear)
-            @Html.HiddenFor(m => m.Kommunkod)
-            <div class="row col-md-6">
-                @*<H4> &lt; &nbsp;&nbsp;&nbsp;&nbsp;@Html.Raw(Model.SelectedYear)&nbsp;&nbsp;&nbsp;&nbsp; &gt;</H4>*@
-                <div class="col-md-1" id="previousYear">
-                    <H4>@Html.ActionLink("<", "GetDeliveryStatusForOrg", "Leverans", new { chosenYear = (Model.SelectedYear - 1), selectedOrganisationId = Model.SelectedOrganisationId }, null)</H4>
-                </div>
-                <div class="col-md-2">
-                    <H4>&nbsp;&nbsp;@Html.Raw(Model.SelectedYear)</H4>
-                </div>
-                <div class="col-md-2" id="nextYear">
-                    <H4> @Html.ActionLink(">", "GetDeliveryStatusForOrg", "Leverans", new { chosenYear = (Model.SelectedYear + 1), selectedOrganisationId = Model.SelectedOrganisationId }, null)</H4>
-                </div>
-            </div>
-        </div>
-
-        @Html.Raw(ViewBag.Text)
-        <br />
-        <br />
-        <hr>
-        <br />
-
-
-        if (Model.LeveransListaRegister != null)
+        @Html.Partial("_SearchResult")
+    }
+    @* Om inga sökträffar *@
+    else if (Model.SearchResult.Count == 1 && Model.SearchResult[0].Count == 0 && Model.Organisation == null)
+    {
+        <h2>Din sökning på gav inget resultat. </h2>
+    }
+    @* Om en relevant organisation hittats, visa organisationsinfon *@
+    else if (Model.Organisation != null)
+    {
+        if (Model.OrganisationsNamn != null)
         {
-            for (var i = 0; i < Model.LeveransListaRegister.Count(); i++)
+            <div>
+                <div class="col-md-4">
+                    <H4>Leveransstatus för @Html.Raw(Model.OrganisationsNamn)</H4>
+                </div>
+                @Html.HiddenFor(m => m.SelectedOrganisationId)
+                @Html.HiddenFor(m => m.SelectedYear)
+                @Html.HiddenFor(m => m.Kommunkod)
+                <div class="row col-md-6">
+                    @*<H4> &lt; &nbsp;&nbsp;&nbsp;&nbsp;@Html.Raw(Model.SelectedYear)&nbsp;&nbsp;&nbsp;&nbsp; &gt;</H4>*@
+                    <div class="col-md-1" id="previousYear">
+                        <H4>@Html.ActionLink("<", "GetDeliveryStatusForOrg", "Leverans", new {chosenYear = (Model.SelectedYear - 1), selectedOrganisationId = Model.SelectedOrganisationId}, null)</H4>
+                    </div>
+                    <div class="col-md-2">
+                        <H4>&nbsp;&nbsp;@Html.Raw(Model.SelectedYear)</H4>
+                    </div>
+                    <div class="col-md-2" id="nextYear">
+                        <H4> @Html.ActionLink(">", "GetDeliveryStatusForOrg", "Leverans", new {chosenYear = (Model.SelectedYear + 1), selectedOrganisationId = Model.SelectedOrganisationId}, null)</H4>
+                    </div>
+                </div>
+            </div>
+
+            @Html.Raw(ViewBag.Text)
+            <br/>
+            <br/>
+            <hr>
+            <br/>
+
+
+            if (Model.LeveransListaRegister != null)
             {
-                <div class="faqHeader" style="margin-left: -0px; font-size: 1.2em">@(Model.LeveransListaRegister.ElementAt(i).RegisterKortnamn)</div>
-                <div class="panel-group" id=@(Model.LeveransListaRegister.ElementAt(i).RegisterKortnamn)>
-                    @for (var index = 0; index < Model.LeveransListaRegister.ElementAt(i).Leveranser.Count(); index++)
-                    {
-                        <div class="panel panel-default" id=@(Model.LeveransListaRegister.ElementAt(i).Leveranser.ElementAt(index).Status)>
-                            <div class="panel-heading" id="period" data-toggle="collapse" data-parent=#@(Model.LeveransListaRegister.ElementAt(i).RegisterKortnamn) data-target=#@(Model.LeveransListaRegister.ElementAt(i).Leveranser.ElementAt(index).Id)>
-                                <div class="row panel-title">
-                                    <div class="col-md-2" style="font-size: 1em;">@(Model.LeveransListaRegister.ElementAt(i).Leveranser.ElementAt(index).Period)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
-                                    @*@(Model.LeveransListaRegister.ElementAt(i).Leveranser.ElementAt(index).Status)*@
-                                    <div class="col-md-8" style="font-size: 0.85em; padding-top: 5px;">Rapportering mellan @(Model.LeveransListaRegister.ElementAt(i).Leveranser.ElementAt(index).Rapporteringsstart.ToString("yyyy-MM-dd")) och @(Model.LeveransListaRegister.ElementAt(i).Leveranser.ElementAt(index).Rapporteringssenast.ToString("yyyy-MM-dd"))</div>
+                for (var i = 0; i < Model.LeveransListaRegister.Count(); i++)
+                {
+                    <div class="faqHeader" style="margin-left: -0px; font-size: 1.2em">@(Model.LeveransListaRegister.ElementAt(i).RegisterKortnamn)</div>
+                    <div class="panel-group" id=@(Model.LeveransListaRegister.ElementAt(i).RegisterKortnamn)>
+                        @for (var index = 0; index < Model.LeveransListaRegister.ElementAt(i).Leveranser.Count(); index++)
+                        {
+                            <div class="panel panel-default" id=@(Model.LeveransListaRegister.ElementAt(i).Leveranser.ElementAt(index).Status)>
+                                <div class="panel-heading" id="period" data-toggle="collapse" data-parent=#@(Model.LeveransListaRegister.ElementAt(i).RegisterKortnamn) data-target=#@(Model.LeveransListaRegister.ElementAt(i).Leveranser.ElementAt(index).Id)>
+                                    <div class="row panel-title">
+                                        <div class="col-md-2" style="font-size: 1em;">@(Model.LeveransListaRegister.ElementAt(i).Leveranser.ElementAt(index).Period)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                                        @*@(Model.LeveransListaRegister.ElementAt(i).Leveranser.ElementAt(index).Status)*@
+                                        <div class="col-md-8" style="font-size: 0.85em; padding-top: 5px;">Rapportering mellan @(Model.LeveransListaRegister.ElementAt(i).Leveranser.ElementAt(index).Rapporteringsstart.ToString("yyyy-MM-dd")) och @(Model.LeveransListaRegister.ElementAt(i).Leveranser.ElementAt(index).Rapporteringssenast.ToString("yyyy-MM-dd"))</div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div id=@(Model.LeveransListaRegister.ElementAt(i).Leveranser.ElementAt(index).Id) class="panel-collapse collapse">
-                                <div class="panel-body">
-                                    @if (Model.LeveransListaRegister.ElementAt(i).Leveranser.ElementAt(index).HistorikLista != null)
-                                    {
-                                        if (Model.LeveransListaRegister.ElementAt(i).Leveranser.ElementAt(index).HistorikLista.Any())
+                                <div id=@(Model.LeveransListaRegister.ElementAt(i).Leveranser.ElementAt(index).Id) class="panel-collapse collapse">
+                                    <div class="panel-body">
+                                        @if (Model.LeveransListaRegister.ElementAt(i).Leveranser.ElementAt(index).HistorikLista != null)
                                         {
-                                            <table class="table table-striped" id="historyTable">
-                                                <thead>
+                                            if (Model.LeveransListaRegister.ElementAt(i).Leveranser.ElementAt(index).HistorikLista.Any())
+                                            {
+                                                <table class="table table-striped" id="historyTable">
+                                                    <thead>
                                                     <tr class="historyHeader" style="background-color: #f9f9f9;">
                                                         <th>Uppgifter</th>
                                                         <th>Leveranstidpunkt</th>
@@ -163,8 +175,8 @@
                                                         <th>Filstatus</th>
                                                         <th>Återkoppling</th>
                                                     </tr>
-                                                </thead>
-                                                <tbody>
+                                                    </thead>
+                                                    <tbody>
                                                     @foreach (FilloggDetaljDTO loggRad in Model.LeveransListaRegister.ElementAt(i).Leveranser.ElementAt(index).HistorikLista)
                                                     {
                                                         <tr>
@@ -190,18 +202,20 @@
                                                             <td></td>
                                                         </tr>
                                                     }
-                                                </tbody>
-                                            </table>
+                                                    </tbody>
+                                                </table>
+                                            }
                                         }
-                                    }
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    }
-                </div>
-                <hr>
+                        }
+                    </div>
+                    <hr>
+                }
             }
         }
     }
 }
+</div>
 

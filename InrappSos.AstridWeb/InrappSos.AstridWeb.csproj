@@ -319,6 +319,7 @@
     <Content Include="Views\Organisation\_SearchResult.cshtml" />
     <Content Include="Views\Organisation\EditOrgTypes.cshtml" />
     <Content Include="Views\Organisation\CreateOrganisationType.cshtml" />
+    <Content Include="Views\Leverans\_SearchResult.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

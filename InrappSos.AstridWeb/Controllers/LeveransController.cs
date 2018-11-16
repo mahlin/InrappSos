@@ -76,6 +76,62 @@ namespace InrappSos.AstridWeb.Controllers
             return View("Index", model);
         }
 
+        [Authorize]
+        // GET: Organisation
+        public ActionResult SearchOrganisation(string searchText, string origin)
+        {
+            var model = new LeveransViewModels.LeveransViewModel();
+
+            try
+            {
+                var orgList = _portalSosService.SokOrganisation(searchText);
+                model.Origin = origin;
+
+                //Then you just need to see if you want ANY matches or COMPLETE matches.
+                //Throw your results together in a List<AXCustomer> and return it.
+
+                //Om endats en träff, hämta datat direkt
+                if (orgList.Count == 1 && orgList[0].Count == 1)
+                {
+                    switch (origin)
+                    {
+                        case "deliveries":
+                            return RedirectToAction("GetOrganisationsDeliveries", new { selectedOrganisationId = orgList[0][0].Id });
+                        case "deliveryStatus":
+                            return RedirectToAction("GetDeliveryStatusForOrg", new { selectedOrganisationId = orgList[0][0].Id });
+
+                        default:
+                            var errorModel = new CustomErrorPageModel
+                            {
+                                Information = "Felaktig avsändare till sökfunktionen.",
+                                ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                            };
+                            return View("CustomError", errorModel);
+                    }
+                }
+                model.SearchResult = orgList;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("LeveransController", "SearchOrganisation", e.ToString(), e.HResult, User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade vid sökning av organisation.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                if (e.Message == "Sequence contains no elements")
+                {
+                    errorModel.Information = "Felaktig kommunkod";
+                }
+
+                return View("CustomError", errorModel);
+
+            }
+            return View("_SearchResult", model);
+        }
+
+
         // GET
         [Authorize]
         public ActionResult GetDirectorysExpectedDeliveries(LeveransViewModels.LeveransViewModel model, bool filterPgnde = false, int regId = 0)
@@ -357,6 +413,8 @@ namespace InrappSos.AstridWeb.Controllers
                 
                 model.Leveranser = historyFileList;
                 model.Kommunkod = org.Kommunkod;
+                model.SearchResult = new List<List<Organisation>>();
+                model.Organisation = org;
                 // Ladda drop down lists. 
                 var orgListDTO = GetOrganisationDTOList();
                 ViewBag.OrganisationList = new SelectList(orgListDTO, "Id", "KommunkodOchOrgnamn");
@@ -501,6 +559,7 @@ namespace InrappSos.AstridWeb.Controllers
         {
             var model = new LeveransViewModels.HistoryViewModel();
             model.SelectableYears = new List<int>();
+            model.SearchResult = new List<List<Organisation>>();
             // Ladda drop down lists. 
             var orgListDTO = GetOrganisationDTOList();
             ViewBag.OrganisationList = new SelectList(orgListDTO, "Id", "KommunkodOchOrgnamn");
@@ -604,8 +663,10 @@ namespace InrappSos.AstridWeb.Controllers
                     regLev.Leveranser = regLev.Leveranser.OrderBy(x => x.RegisterKortnamn).ThenBy(x => x.Period).ToList();
                     model.LeveransListaRegister.Add(regLev);
                     model.SelectableYears = selectableYearsForUser;
-                }
 
+                }
+                model.SearchResult = new List<List<Organisation>>();
+                model.Organisation = org;
                 // Ladda drop down lists. 
                 var orgListDTO = GetOrganisationDTOList();
                 ViewBag.OrganisationList = new SelectList(orgListDTO, "Id", "KommunkodOchOrgnamn");

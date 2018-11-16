@@ -36,6 +36,9 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public string Kommunkod { get; set; }
 
             public AdmInsamlingsfrekvens Insamlingsfrekvens { get; set; }
+            public List<List<Organisation>> SearchResult { get; set; }
+            public string Origin { get; set; }
+            public Organisation Organisation { get; set; }
 
         }
 
@@ -145,6 +148,8 @@ namespace InrappSos.AstridWeb.Models.ViewModels
 
             public int SelectedYear { get; set; }
             public List<int> SelectableYears { get; set; }
+            public List<List<Organisation>> SearchResult { get; set; }
+            public Organisation Organisation { get; set; }
 
         }
 

@@ -1,0 +1,27 @@
+﻿@using System.Collections
+@using InrappSos.DomainModel
+@model InrappSos.AstridWeb.Models.ViewModels.LeveransViewModels.LeveransViewModel
+
+<div class="padding-top-25">
+    <h4>Sökresultat</h4>
+
+    @foreach (var item in Model.SearchResult)
+    {
+        foreach (Organisation org in item as IEnumerable) //casting to IEnumerable will let you iterate
+        {
+            switch (Model.Origin)
+            {
+                case "deliveries":
+                    @Html.ActionLink(org.Organisationsnamn, "GetOrganisationsDeliveries", "Leverans", new { selectedOrganisationId = org.Id }, new { @class = "btn" })<br />
+                    break;
+                case "deliveryStatus":
+                    @Html.ActionLink(org.Organisationsnamn, "GetDeliveryStatusForOrg", "Leverans", new { selectedOrganisationId = org.Id }, new { @class = "btn" })<br />
+                    break;
+                default:
+                    break; ;
+            }
+        }
+    }
+
+</div>
+

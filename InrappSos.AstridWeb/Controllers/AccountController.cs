@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
 using System.Linq;
@@ -15,6 +16,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using InrappSos.AstridWeb.Models;
+using InrappSos.AstridWeb.Models.ViewModels;
 using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace InrappSos.AstridWeb.Controllers
@@ -153,8 +155,14 @@ namespace InrappSos.AstridWeb.Controllers
             try
             {
                 //Skapa lista över astrid-roller 
-                //model.UserRoleList = _portalSosService.HamtaRoller();
+                 var roller = _portalSosService.HamtaAllaAstridRoller().ToList();
+                model.Roller = ConvertRolesToVM(roller);
+                //var roles = _portalSosService.HamtaAllaAstridRoller();
+
+                //var rolelist = CreateRolesDropDownList(roles);
+                //ViewBag.Roles = rolelist;
                 model.ChosenRolesStr = "";
+                //model.UserRoleList
             }
             catch (Exception e)
             {
@@ -189,20 +197,38 @@ namespace InrappSos.AstridWeb.Controllers
                     user.AndradDatum = DateTime.Now;
                     user.EmailConfirmed = true;
                     var result = await UserManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
-                {
-                    //var _roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(new IdentityDbContext()));
-
-                    //    var role = new IdentityRole();
-                    //role.Name = "Admin";
-                    //await _roleManager.CreateAsync(role);
-                    //    UserManager.AddToRole(user.Id, "Admin");
-                    //await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-
-                     //return RedirectToAction("Index", "Home");
-                    return RedirectToAction("Index", "Home", new { Message = AccountMessageId.AddUserSuccess });
+                    if (result.Succeeded)
+                    {
+                        //Lägg till användarens roller
+                        try
+                        {
+                            foreach (var roll in model.Roller)
+                            {
+                                if (roll.Selected)
+                                {
+                                    UserManager.AddToRole(user.Id, roll.Name);
+                                }
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            throw new ArgumentException(e.Message);
+                        }
+                        ViewBag.Message = "Role created successfully !";
+                        return RedirectToAction("Index", "Home", new { Message = AccountMessageId.AddUserSuccess });
                     }
                   AddErrors(result);
+               }
+               catch (ApplicationException e)
+               {
+                   ErrorManager.WriteToErrorLog("AccountController", "Register", e.ToString(), e.HResult,
+                       User.Identity.Name);
+                   var errorModel = new CustomErrorPageModel
+                   {
+                       Information = "Ett fel inträffade när användarens roller skulle sparas. " + e.Message,
+                       ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                   };
+                   return View("CustomError", errorModel);
                }
                 catch (Exception e)
                 {
@@ -445,6 +471,47 @@ namespace InrappSos.AstridWeb.Controllers
            AddUserSuccess,
            Error
        }
+
+
+       /// <summary>  
+       /// Create list for roles-dropdown  
+       /// </summary>  
+       /// <returns>Return roles for drop down list.</returns>  
+        private IEnumerable<SelectListItem> CreateRolesDropDownList(IEnumerable<IdentityRole> roles)
+       {
+           SelectList lstobj = null;
+
+           var list = roles
+               .Select(p =>
+                   new SelectListItem
+                   {
+                       Value = p.Id.ToString(),
+                       Text = p.Name
+                   });
+
+           // Setting.  
+           lstobj = new SelectList(list, "Value", "Text");
+
+           return lstobj;
+       }
+
+        private List<IdentityRoleViewModel> ConvertRolesToVM(List<IdentityRole> roller)
+        {
+            var rollerList = new List<IdentityRoleViewModel>();
+
+            foreach (var roll in roller)
+            {
+                var roleVM = new IdentityRoleViewModel()
+                {
+                    Id = roll.Id,
+                    Name = roll.Name,
+                    Selected = false
+                };
+                rollerList.Add(roleVM);
+            }
+
+            return rollerList;
+        }
 
         //private async Task<string> SendEmailConfirmationTokenAsync(string userID, string subject)
         //{

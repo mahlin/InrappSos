@@ -285,9 +285,9 @@ namespace InrappSos.AstridWeb.Controllers
         }
 
         /// <summary>  
-        /// Create list for register-dropdown  
+        /// Create list for roles-dropdown  
         /// </summary>  
-        /// <returns>Return register for drop down list.</returns>  
+        /// <returns>Return roles for drop down list.</returns>  
         private IEnumerable<SelectListItem> CreateRolesDropDownList(IEnumerable<IdentityRole> roles)
         {
             SelectList lstobj = null;

@@ -8,7 +8,7 @@
 
 <script type="text/javascript">
 
-    var userRoles = @Html.Raw(Json.Encode(Model.UserRoleList));
+    var userRoles = @Html.Raw(Json.Encode(Model.Roller));
 
     $(document).ready(function () {
         $('[id*=RoleList]').multiselect({
@@ -24,32 +24,35 @@
             onChange: function (option, checked, select) {
                 //Update string of names, ChosenOrganisationTypesNames
                 $('#ChosenRolesStr').val("");
+                //var x = $(option).val();
+                //var y = $('#Roller' + index + '__Id').val();
+                //var z = $('#Roller' + index + '__Selected').val();
                 $.each(userRoles, function (index, item) {
-                    if ($('#UserRoleList_' + index + '__Id').val() === $(option).val()) {
-                        if ($('#UserRoleList_' + index + '__Selected').val() === 'False')
-                            $('#UserRoleList_' + index + '__Selected').val('True');
+                    if ($('#Roller_' + index + '__Id').val() === $(option).val()) {
+                        if ($('#Roller_' + index + '__Selected').val() === 'False')
+                            $('#Roller_' + index + '__Selected').val('True');
                         else
-                            $('#UserRoleList_' + index + '__Selected').val('False');
+                            $('#Roller_' + index + '__Selected').val('False');
                     }
                 });
                 setChosenRolesStr();
             },
             onSelectAll: function () {
                 $.each(userRoles, function (index, item) {
-                    $('#UserRoleList_' + index + '__Selected').val('True');
+                    $('#Roller_' + index + '__Selected').val('True');
                 });
             },
             onDeselectAll: function () {
                 $.each(userRoles, function (index, item) {
-                    $('#UserRoleList_' + index + '__Selected').val('False');
+                    $('#Roller_' + index + '__Selected').val('False');
                 });
             },
             includeSelectAllOption: false,
-            nonSelectedText: 'Ändra roll',
+            nonSelectedText: 'Välj roll',
             allSelectedText: 'Alla valda',
             selectAllText: "Välj alla",
             nSelectedText: "valda",
-            astridDefaultText: "Ändra roll"
+            astridDefaultText: "Välj roll"
         });
     });
 
@@ -66,6 +69,7 @@
             });
 
         $('#chosenRoles').val(roleStr);
+        $('#ChosenRolesStr').val(roleStr);
     }
 
     $(function () {
@@ -88,6 +92,19 @@
 {
    
     @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.ChosenRolesStr)
+
+    if (Model.Roller != null)
+    {
+        for (int i = 0; i < Model.Roller.Count; i++)
+        {
+            @Html.HiddenFor(x => x.Roller[i].Id)
+            @Html.HiddenFor(x => x.Roller[i].Name)
+            @Html.HiddenFor(x => x.Roller[i].Selected)
+        }
+    }
+
+
     <div class="row padding-top-55">
         <h4>Välkommen att registrera en ny användare till ASTRID</h4>
     </div>
@@ -111,13 +128,14 @@
         <div class="col-md-3">
             @Html.TextBoxFor(model => model.ChosenRolesStr, new { id = "chosenRoles", @class = "form-control", disabled = "disabled" })
         </div>
-        @if (Model.UserRoleList != null)
+        @if (Model.Roller != null)
         {
             <div class="col-md-7" style="padding-left: 20px; float: left;">
                 <select id="RoleList" multiple="multiple">
-                    @for (var i = 0; i < Model.UserRoleList.Count; i++)
+                    @*<p>Role Name: @Html.DropDownList("RoleName", (IEnumerable<SelectListItem>)ViewBag.Roles, "Select ...")</p>*@
+                    @for (var i = 0; i < Model.Roller.Count; i++)
                     {
-                        <option value=@Model.UserRoleList[i].Id>@Model.UserRoleList[i].Name</option>
+                        <option value=@Model.Roller[i].Id>@Model.Roller[i].Name</option>
                     }
                 </select>
             </div>

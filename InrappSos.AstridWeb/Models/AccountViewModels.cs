@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Mvc;
 using InrappSos.ApplicationService.DTOModel;
 using InrappSos.DomainModel;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace InrappSos.AstridWeb.Models
 {
@@ -100,7 +101,7 @@ namespace InrappSos.AstridWeb.Models
         [EmailAddress(ErrorMessage = "Fältet E-postadress är inte en giltig e-postadress.")]
         [Display(Name = "E-postadress")]
         public string Email { get; set; }
-
+        [Required(ErrorMessage = "Minst en roll måste sättas.", AllowEmptyStrings = false)]
         public string ChosenRolesStr { get; set; }
         public List<UserRolesDTO> UserRoleList { get; set; }
 
@@ -114,7 +115,16 @@ namespace InrappSos.AstridWeb.Models
         [Display(Name = "Bekräfta lösenord")]
         [System.ComponentModel.DataAnnotations.Compare("Password", ErrorMessage = "Lösenordet och verifieringen av lösenordet stämmer inte.")]
         public string ConfirmPassword { get; set; }
+        
         public List<RegisterInfo> RegisterList { get; set; }
+        public List<IdentityRoleViewModel> Roller { get; set; }
+    }
+
+    public class IdentityRoleViewModel
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public bool Selected { get; set; } = false;
     }
 
 

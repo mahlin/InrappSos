@@ -90,6 +90,22 @@ namespace InrappSos.AstridWeb.Controllers
                     var userName = User.Identity.GetUserName();
                     var userToUpdate = ConvertViewModelToAppUserAdmin(user);
                     _portalSosService.UppdateraAdminAnvandare(userToUpdate, userName);
+                    //Lägg till användarens roller
+                    try
+                    {
+                        var roles = user.StringOfRoles.Split(',');
+                        foreach (var role in roles)
+                        {
+                            if (!String.IsNullOrEmpty(role))
+                            {
+                                UserManager.AddToRole(user.Id, role.Trim());
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        throw new ArgumentException(e.Message);
+                    }
                 }
             }
             catch (Exception e)
@@ -269,7 +285,7 @@ namespace InrappSos.AstridWeb.Controllers
                     }
                     else
                     {
-                        rolesStr = rolesStr + ","  + role;
+                        rolesStr = rolesStr + ", "  + role;
                     }
                 }
 
@@ -286,7 +302,7 @@ namespace InrappSos.AstridWeb.Controllers
             {
                 Id = adminUserVM.Id,
                 Email = adminUserVM.Email,
-                PhoneNumber = adminUserVM.PhoneNumber
+                PhoneNumber = adminUserVM.PhoneNumber,
             };
 
             return user;

@@ -56,7 +56,13 @@ namespace InrappSos.AstridWeb.Controllers
             try
             {
                 var adminUsers = _portalSosService.HamtaAdminUsers();
-                model.AdminUsers = ConvertAdminUsersToViewModel(adminUsers);
+                var roller = _portalSosService.HamtaAllaAstridRoller().ToList();
+                model.AdminUsers = ConvertAdminUsersToViewModel(adminUsers, roller).ToList();
+                //Skapa lista över astrid-roller 
+                
+                model.Roller = ConvertRolesToVM(roller);
+                ViewBag.RolesList = CreateRolesDropDownList(roller);
+
             }
             catch (Exception e)
             {
@@ -216,12 +222,15 @@ namespace InrappSos.AstridWeb.Controllers
             return RedirectToAction("CRUDRoles");
         }
 
-        private IEnumerable<AdminViewModels.AppUserAdminViewModel> ConvertAdminUsersToViewModel(IEnumerable<AppUserAdmin> adminUsers)
+        private IEnumerable<AdminViewModels.AppUserAdminViewModel> ConvertAdminUsersToViewModel(IEnumerable<AppUserAdmin> adminUsers, List<IdentityRole> roller)
         {
             var adminUserViewList = new List<AdminViewModels.AppUserAdminViewModel>();
+           
 
             foreach (var user in adminUsers)
             {
+                var roleVMList = new List<IdentityRoleViewModel>();
+
                 var adminUserView = new AdminViewModels.AppUserAdminViewModel
                 {
                     Id = user.Id,
@@ -233,24 +242,25 @@ namespace InrappSos.AstridWeb.Controllers
                     AndradAv = user.AndradAv,
                     Roles = UserManager.GetRoles(user.Id)
                 };
+
+                //Skapa lista över roller och markera valda roller för aktuell användare
+                foreach (var roll in roller)
+                {
+                    var roleVm = new IdentityRoleViewModel
+                    {
+                        Id = roll.Id,
+                        Name = roll.Name
+                    };
+
+                    if (adminUserView.Roles.Contains(roll.Name))
+                    {
+                        roleVm.Selected = true;
+                    }
+                    roleVMList.Add(roleVm);
+                }
+
+                //Skapa kommaseparerad textsträngöver användarens roller 
                 var rolesStr = String.Empty;
-
-
-                //TODO - Gör lista av roller till sträng tills vidare
-                //for (int i = 0; i < adminUserView.Roles.Count; i++)
-                //{
-                //    //Om första eller sista i listan
-                //    if (rolesStr.IsEmpty() || (i++ == adminUserView.Roles.Count))
-                //    {
-                //        rolesStr = rolesStr + adminUserView.Roles[i];
-                //    }
-                //    else
-                //    {
-                //        rolesStr = rolesStr + "," + adminUserView.Roles[i];
-                //    }
-                //}
-
-
                 foreach (var role in adminUserView.Roles)
                 {
                     if (rolesStr.IsEmpty())
@@ -261,15 +271,13 @@ namespace InrappSos.AstridWeb.Controllers
                     {
                         rolesStr = rolesStr + ","  + role;
                     }
-                    
                 }
 
                 adminUserView.StringOfRoles = rolesStr;
+                adminUserView.ListOfRoles = roleVMList;
                 adminUserViewList.Add(adminUserView);
             }
             return adminUserViewList;
-
-
         }
 
         private AppUserAdmin ConvertViewModelToAppUserAdmin(AdminViewModels.AppUserAdminViewModel adminUserVM)
@@ -282,6 +290,24 @@ namespace InrappSos.AstridWeb.Controllers
             };
 
             return user;
+        }
+
+        private List<IdentityRoleViewModel> ConvertRolesToVM(List<IdentityRole> roller)
+        {
+            var rollerList = new List<IdentityRoleViewModel>();
+
+            foreach (var roll in roller)
+            {
+                var roleVM = new IdentityRoleViewModel()
+                {
+                    Id = roll.Id,
+                    Name = roll.Name,
+                    Selected = false
+                };
+                rollerList.Add(roleVM);
+            }
+
+            return rollerList;
         }
 
         /// <summary>  

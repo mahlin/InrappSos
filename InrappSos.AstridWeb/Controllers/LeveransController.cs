@@ -128,6 +128,15 @@ namespace InrappSos.AstridWeb.Controllers
                 return View("CustomError", errorModel);
 
             }
+            if (origin == "deliveries")
+            {
+                return View("Editleverans", model);
+            }
+            if (origin == "deliveryStatus")
+            {
+                return View("LatestDeliveries", model);
+            }
+
             return View("_SearchResult", model);
         }
 
@@ -557,7 +566,7 @@ namespace InrappSos.AstridWeb.Controllers
         // GET
         public ActionResult GetDeliveryStatus()
         {
-            var model = new LeveransViewModels.HistoryViewModel();
+            var model = new LeveransViewModels.LeveransViewModel();
             model.SelectableYears = new List<int>();
             model.SearchResult = new List<List<Organisation>>();
             // Ladda drop down lists. 
@@ -570,7 +579,7 @@ namespace InrappSos.AstridWeb.Controllers
         public ActionResult GetDeliveryStatusForOrg( int selectedOrganisationId,int chosenYear = 0)
         {
             var org = _portalSosService.HamtaOrganisation(selectedOrganisationId);
-            var model = new LeveransViewModels.HistoryViewModel();
+            var model = new LeveransViewModels.LeveransViewModel();
             model.LeveransListaRegister = new List<RegisterLeveransDTO>();
             var selectableYearsForUser = new List<int>();
 
@@ -584,7 +593,7 @@ namespace InrappSos.AstridWeb.Controllers
                 model.SelectedYear = chosenYear;
                 model.Kommunkod = org.Kommunkod;
                 model.SelectedOrganisationId = selectedOrganisationId;
-                model.OrganisationsNamn = org.Organisationsnamn;
+                model.Organisation = org;
                 IEnumerable<AdmRegister> admRegList = _portalSosService.HamtaRegisterForOrg(org.Id);
 
                 //hämta historik före resp register och period inom valt år

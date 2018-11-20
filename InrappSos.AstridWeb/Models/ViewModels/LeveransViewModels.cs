@@ -16,7 +16,6 @@ namespace InrappSos.AstridWeb.Models.ViewModels
         {
             public IEnumerable<RegisterInfo> RegisterList { get; set; }
             public IEnumerable<AdmForvantadleveransViewModel> ForvantadeLeveranser { get; set; }
-
             public List<AdmForvantadleveransViewModel> BlivandeForvantadeLeveranser { get; set; }
             public IEnumerable<AdmForvantadfilViewModel> ForvantadeFiler { get; set; }
             public List<AdmFilkravViewModel> Filkrav { get; set; }
@@ -34,12 +33,22 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public string SelectedCountyCode { get; set; }
             [Display(Name = "Kommunkod")]
             public string Kommunkod { get; set; }
-
             public AdmInsamlingsfrekvens Insamlingsfrekvens { get; set; }
             public List<List<Organisation>> SearchResult { get; set; }
             public string Origin { get; set; }
             public Organisation Organisation { get; set; }
 
+
+            public List<FilloggDetaljDTO> HistorikLista { get; set; }
+            public List<RegisterLeveransDTO> LeveransListaRegister { get; set; }
+
+            public List<int> SelectableYears { get; set; }
+        }
+
+        public class SearchResultViewModel
+        {
+            public List<List<Organisation>> SearchResult { get; set; }
+            public string Origin { get; set; }
         }
 
         public class AdmForvantadleveransViewModel
@@ -150,6 +159,7 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public List<int> SelectableYears { get; set; }
             public List<List<Organisation>> SearchResult { get; set; }
             public Organisation Organisation { get; set; }
+            public string Origin { get; set; }
 
         }
 

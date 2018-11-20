@@ -2,7 +2,8 @@
 @using InrappSos.DomainModel
 @model InrappSos.AstridWeb.Models.ViewModels.LeveransViewModels.LeveransViewModel
 
-<div class="padding-top-25">
+<div class="padding-top-55">
+    
     <h4>Sökresultat</h4>
 
     @foreach (var item in Model.SearchResult)
@@ -12,13 +13,14 @@
             switch (Model.Origin)
             {
                 case "deliveries":
-                    @Html.ActionLink(org.Organisationsnamn, "GetOrganisationsDeliveries", "Leverans", new { selectedOrganisationId = org.Id }, new { @class = "btn" })<br />
+                    @Html.ActionLink(org.Organisationsnamn, "GetOrganisationsDeliveries", "Leverans", new {selectedOrganisationId = org.Id}, new {@class = "btn"})<br/>
                     break;
                 case "deliveryStatus":
-                    @Html.ActionLink(org.Organisationsnamn, "GetDeliveryStatusForOrg", "Leverans", new { selectedOrganisationId = org.Id }, new { @class = "btn" })<br />
+                    @Html.ActionLink(org.Organisationsnamn, "GetDeliveryStatusForOrg", "Leverans", new {selectedOrganisationId = org.Id}, new {@class = "btn"})<br/>
                     break;
                 default:
-                    break; ;
+                    break;
+                    ;
             }
         }
     }

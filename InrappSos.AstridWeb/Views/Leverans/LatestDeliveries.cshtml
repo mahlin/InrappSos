@@ -1,4 +1,4 @@
-﻿@model InrappSos.AstridWeb.Models.ViewModels.LeveransViewModels.HistoryViewModel
+﻿@model InrappSos.AstridWeb.Models.ViewModels.LeveransViewModels.LeveransViewModel
 
 @using System.Configuration
 @using InrappSos.ApplicationService.DTOModel
@@ -112,11 +112,11 @@
     @* Om en relevant organisation hittats, visa organisationsinfon *@
     else if (Model.Organisation != null)
     {
-        if (Model.OrganisationsNamn != null)
+        if (Model.Organisation.Organisationsnamn != null)
         {
             <div>
                 <div class="col-md-4">
-                    <H4>Leveransstatus för @Html.Raw(Model.OrganisationsNamn)</H4>
+                    <H4>Leveransstatus för @Html.Raw(Model.Organisation.Organisationsnamn)</H4>
                 </div>
                 @Html.HiddenFor(m => m.SelectedOrganisationId)
                 @Html.HiddenFor(m => m.SelectedYear)

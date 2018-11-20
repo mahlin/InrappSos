@@ -145,7 +145,7 @@
                                                                               <input type="text" id="OrgTypeDesc" value="@item.Beskrivning" class="edit-mode form-control" style="max-width: 450px !important;"/></text>, style: "col500Width"),
                         grid.Column(null, format: @<text>
                                                       <button class="edit-user display-mode btn btn-default">Ändra</button>
-                                                      <button class="display-mode btn btn-default" onclick="deleteOrgType(@item.Id, '@item.Typnamn');return false;">Ta bort</button>
+                                                      @*<button class="display-mode btn btn-default" onclick="deleteOrgType(@item.Id, '@item.Typnamn');return false;">Ta bort</button>*@
                                                       <button class="save-user edit-mode btn btn-default">Spara</button>
                                                       <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
                                                    </text>, style: "col3Width", canSort: false)))

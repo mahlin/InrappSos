@@ -18,6 +18,7 @@ using Microsoft.AspNet.Identity.Owin;
 
 namespace InrappSos.AstridWeb.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
         private readonly IPortalSosService _portalSosService;
@@ -90,18 +91,36 @@ namespace InrappSos.AstridWeb.Controllers
                     var userName = User.Identity.GetUserName();
                     var userToUpdate = ConvertViewModelToAppUserAdmin(user);
                     _portalSosService.UppdateraAdminAnvandare(userToUpdate, userName);
-                    //Lägg till användarens roller
+                    //Lägg till användarens roller med multiselect/ListOfRoles
                     try
                     {
-                        var roles = user.StringOfRoles.Split(',');
-                        foreach (var role in roles)
+                        foreach (var role in user.ListOfRoles)
                         {
-                            if (!String.IsNullOrEmpty(role))
+                            if (role.Selected)
                             {
-                                UserManager.AddToRole(user.Id, role.Trim());
+                                UserManager.AddToRole(user.Id, role.Name);
+                            }
+                            else
+                            {
+                                if (UserManager.IsInRole(user.Id, role.Name))
+                                {
+                                    UserManager.RemoveFromRole(user.Id, role.Name);
+                                }
                             }
                         }
                     }
+                    ////Lägg till användarens roller från StringOfRoles
+                    //try
+                    //{
+                    //    var roles = user.StringOfRoles.Split(',');
+                    //    foreach (var role in roles)
+                    //    {
+                    //        if (!String.IsNullOrEmpty(role))
+                    //        {
+                    //            UserManager.AddToRole(user.Id, role.Trim());
+                    //        }
+                    //    }
+                    //}
                     catch (Exception e)
                     {
                         throw new ArgumentException(e.Message);
@@ -217,7 +236,6 @@ namespace InrappSos.AstridWeb.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-
         public ActionResult DeleteRole(string roleName)
         {
             try

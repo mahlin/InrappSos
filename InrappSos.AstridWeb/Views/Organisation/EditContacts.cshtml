@@ -78,6 +78,7 @@
             var tr = $(this).parents('tr:first');
             var contactId = tr.find("#ContactId").val();
             var contactPhoneNumber = tr.find("#ContactPhoneNumber").val();
+            var contactNumber = tr.find("#ContactNumber").val();
             var contactPhoneNumberConfirmed;
             if (tr.find("#ContactPhoneNumberConfirmed").is(':checked')) {
                 contactPhoneNumberConfirmed = true;
@@ -93,6 +94,7 @@
                     "Id": contactId,
                     "PhoneNumber": contactPhoneNumber,
                     "PhoneNumberConfirmed": contactPhoneNumberConfirmed,
+                    "Kontaktnummer": contactNumber,
                     "AktivFrom": contactAktivFrom,
                     "AktivTom": contactAktivTom
                 };
@@ -116,10 +118,12 @@
         $('.edit-user').on('click', function () {
             var tr = $(this).parents('tr:first');
             var contactPhoneNumber = tr.find("#ContactPhoneNumber").val();
+            var contactNumber = tr.find("#ContactNumber").val();
             var contactAktivFrom = tr.find("#ContactAktivFrom").val();
             var contactAktivTom = tr.find("#ContactAktivTom").val();
 
             tr.find("#lblPhoneNumber").text(contactPhoneNumber);
+            tr.find("#lblContactNumber").text(contactNumber);
             tr.find("#lblAktivFrom").text(contactAktivFrom);
             tr.find("#lblAktivTom").text(contactAktivTom);
         });
@@ -223,6 +227,9 @@
                                 grid.Column("PhoneNumberConfirmed", "Telefonnr verifierat", format: @<text>
                                                                                     <span class="display-mode"><input id="lblContactPhoneNumberVerified" class="checkbox" name="select" type="checkbox" disabled @( item.PhoneNumberConfirmed ? "checked='checked'" : "") value="@item.PhoneNumberConfirmed" /></span>
                                                                                     <input id="ContactPhoneNumberConfirmed" class="edit-mode checkbox" name="select" type="checkbox" @( item.PhoneNumberConfirmed ? "checked='checked'" : "") value="@item.PhoneNumberConfirmed" /></text>, style: "colMinWidth centered"),
+                                grid.Column("Kontaktnummer", "Kontaktnummer", format: @<text><span class="display-mode col2Width"><label id="lblContactNumber">@item.Kontaktnummer</label></span>
+                                                                                            <input type="text" id="ContactNumber" value="@item.Kontaktnummer" class="edit-mode form-control" /></text>, style: "col2Width"),
+
                                 grid.Column("AktivFrom", "Aktiv fr.o.m", format: @<text><span class="display-mode"><label id="lblAktivFrom">@( item.AktivFrom != null ? item.AktivFrom.ToString("yyyy-MM-dd") : item.AktivFrom)</label></span>
                                                                                             <input type="text" id="ContactAktivFrom" value="@( item.AktivFrom != null ? item.AktivFrom.ToString("yyyy-MM-dd") : item.AktivFrom)" class="edit-mode form-control" /></text>, style: "col2Width"),
                                 grid.Column("AktivTom", "Aktiv t.o.m", format: @<text><span class="display-mode"><label id="lblAktivTom">@( item.AktivTom != null ? item.AktivTom.ToString("yyyy-MM-dd") : item.AktivTom)</label></span>

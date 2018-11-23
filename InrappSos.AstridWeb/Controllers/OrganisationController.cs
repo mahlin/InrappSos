@@ -971,6 +971,7 @@ namespace InrappSos.AstridWeb.Controllers
                     Email = contact.Email,
                     PhoneNumber = contact.PhoneNumber,
                     PhoneNumberConfirmed = contact.PhoneNumberConfirmed,
+                    Kontaktnummer = contact.Kontaktnummer,
                     SkapadDatum = contact.SkapadDatum,
                     SkapadAv = contact.SkapadAv,
                     AndradDatum = contact.AndradDatum,
@@ -981,8 +982,6 @@ namespace InrappSos.AstridWeb.Controllers
                 contactPersonsView.Add(contactView);
             }
             return contactPersonsView;
-
-
         }
 
         private AdmUppgiftsskyldighet ConvertViewModelToAdmUppgiftsskyldighet(OrganisationViewModels.ReportObligationsViewModel admUppgskylldighetView)

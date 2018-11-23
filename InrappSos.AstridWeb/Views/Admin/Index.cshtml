@@ -60,18 +60,26 @@
 
         $(document).ready(function() {
             $('[id*=ddlRoleList]').multiselect({
-                //onInitialized: function () {
-                //    var x = this;
-                //    var y = this.originalOptions;
-                //    //users.forEach(function(user, index) {
-                //    //    $.each(user.ListOfRoles, function (index, item) {
-                //    //        //hitta rätt rad/rätt drop
-                //    //            $("#ddlRoleList > option")[index].selected = true;
-                //    //            $("#ddlRoleList > option")[index].checked = true;
-                //    //    });
-                //    //});
-                //    //this.refresh();
-                //},
+                onInitialized: function () {
+                    var x = this;
+                    var y = this.originalOptions;
+                    var ddls = getTableRowsDDLs();
+
+                    users.forEach(function(user, idx) {
+                        $.each(user.ListOfRoles, function (index, item) {
+                            if (item.Selected) {
+                                //hitta rätt rad/rätt drop
+                                var ddl = ddls[idx];
+                                var options = ddl.options;
+                                options[index].selected = true;
+                                options[index].checked = true;
+                                }
+                                //$("#ddlRoleList > option")[index].selected = true;
+                                //$("#ddlRoleList > option")[index].checked = true;
+                        });
+                    });
+                    this.refresh();
+                },
                 onChange: function (option, checked, select) {
                     //Update string of ChosenRoles
                     //var roleId = $(option).val();
@@ -123,6 +131,12 @@
             });
         });
     });
+
+
+
+    function getTableRowsDDLs() {
+        return $(".ddl");
+    }
 
     //function SetChosenRolesObjectList(listOfRoles, drop) {
     //    drop.val(1);
@@ -207,39 +221,39 @@
                 tr.find('td:eq(4)').show();
                 tr.find('td:eq(3)').hide();
                 tr.find('.edit-mode, .display-mode').toggle();
-                //Sätt i dropdown vilka roller som redan är satta för vald användare
-                users.forEach(function(user, idx) {
-                    if (user.Id === userId) {
-                        var usersDrop = tr.find("#ddlRoleList");
-                        var options = usersDrop[0].options;
-                        $.each(user.ListOfRoles, function (index, item) {
-                            if (item.Selected) {
-                                options[index].checked = true;
-                                options[index].selected = true;
-                            } else {
-                                options[index].checked = false;
-                                options[index].selected = false;
-                            }
-                            //tr.find("#ddlRoleList > option")[index].selected = true;
-                            //tr.find("#ddlRoleList > option")[index].checked = true;
-                            //if (item.Selected) {
-                            ////    
-                            ////    $("#ddlRoleList > option")[index].selected = true;
-                            ////    //drop[1].selected = true;
-                            ////    //drop[index].selected = true;
-                            ////    tr.find("#ddlRoleList > option")[index].selected = true;
-                            ////    tr.find("#ddlRoleList > option")[index].checked = true;
-                            //}
-                        });
-                        //refresh();
-                        //SetChosenRolesObjectList(user.ListOfRoles, drop);
-                    }
-                });
-                var x = tr.find("#ddlRoleList");
-                var tmp = x[0];
-                tmp.refresh();
-                //$('[id*=ddlRoleList]').multiselect.refresh();
-                var y = 1;
+                ////Sätt i dropdown vilka roller som redan är satta för vald användare
+                //users.forEach(function(user, idx) {
+                //    if (user.Id === userId) {
+                //        var usersDrop = tr.find("#ddlRoleList");
+                //        var options = usersDrop[0].options;
+                //        $.each(user.ListOfRoles, function (index, item) {
+                //            if (item.Selected) {
+                //                options[index].checked = true;
+                //                options[index].selected = true;
+                //            } else {
+                //                options[index].checked = false;
+                //                options[index].selected = false;
+                //            }
+                //            //tr.find("#ddlRoleList > option")[index].selected = true;
+                //            //tr.find("#ddlRoleList > option")[index].checked = true;
+                //            //if (item.Selected) {
+                //            ////    
+                //            ////    $("#ddlRoleList > option")[index].selected = true;
+                //            ////    //drop[1].selected = true;
+                //            ////    //drop[index].selected = true;
+                //            ////    tr.find("#ddlRoleList > option")[index].selected = true;
+                //            ////    tr.find("#ddlRoleList > option")[index].checked = true;
+                //            //}
+                //        });
+                //        //refresh();
+                //        //SetChosenRolesObjectList(user.ListOfRoles, drop);
+                //    }
+                //});
+                //var x = tr.find("#ddlRoleList");
+                //var tmp = x[0];
+                //tmp.refresh();
+                ////$('[id*=ddlRoleList]').multiselect.refresh();
+                //var y = 1;
             });
         $('.save-user').on('click',
             function () {
@@ -364,7 +378,7 @@ grid.Column("PhoneNumber", "Telefonnummer", format: @<text><span class="display-
 <input type="text" id="PhoneNumber" value="@item.PhoneNumber" class="edit-mode form-control" /></text>, style: "colMinWidth"),
 grid.Column("Roller", "Roller", format: @<text><label id="lblRoller" class="longColumnText" style="width: 200px;">@item.StringOfRoles</label></text>, style: "col3Width"),
 //grid.Column("Roller", format: @item => Html.DropDownListFor(m => m.Roller, new SelectList(@item.ListOfRoles, "Id", "Name"), " - Välj roll -", new { id = "ddlRoleList", @class = "form-control edit-mode", style = "min-width:100px !important" })),
-grid.Column("Roller", format: @item => Html.DropDownListFor(m => m.Roller, new SelectList(@item.ListOfRoles, "Id", "Name"), new { id = "ddlRoleList", @class = "form-control edit-mode", multiple = "multiple", style = "min-width:100px !important" })),
+grid.Column("Roller", format: @item => Html.DropDownListFor(m => m.Roller, new SelectList(@item.ListOfRoles, "Id", "Name"), new { id = "ddlRoleList", @class = "form-control edit-mode ddl", multiple = "multiple", style = "min-width:100px !important" })),
 
 grid.Column(null, format: @<text>
     <button class="edit-user display-mode btn btn-default">Ändra</button>

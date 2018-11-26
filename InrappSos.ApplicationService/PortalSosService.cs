@@ -1556,7 +1556,7 @@ namespace InrappSos.ApplicationService
             //Closed to minute
             AdmKonfiguration admKonfClosedToMin = new AdmKonfiguration
             {
-                Typ = "ClosedFromMin",
+                Typ = "ClosedToMin",
                 Varde = oppetTider.ClosedToMin.ToString()
             };
             admKonfClosedToMin.AndradAv = userName;

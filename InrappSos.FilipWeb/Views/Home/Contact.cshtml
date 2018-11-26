@@ -17,6 +17,13 @@
 
 <div class="padding-top-55">
     <h3>@ViewBag.Message</h3>
+    <div class="col-md-8">
+        @Html.Raw(ViewBag.Text)
+    </div>
+    <div class="padding-top-55 col-md-offset-1 col-md-3" style="white-space: nowrap;margin-top: 10px; color: red;">
+        @*Avvikande öppettider<br />
+            Måndag 20 augusti 10 - 16 Underhåll<br />
+            Måndag 24 december stängt Julafton<br />*@
+        @Html.Raw(ViewBag.AvvikandeOppettider)
+    </div>
 </div>
-
-@Html.Raw(ViewBag.Text)

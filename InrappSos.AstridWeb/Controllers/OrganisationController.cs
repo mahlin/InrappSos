@@ -69,6 +69,9 @@ namespace InrappSos.AstridWeb.Controllers
                             return RedirectToAction("GetOrganisationsReportObligations", new { selectedOrganisationId = orgList[0][0].Id });
                         case "unitreportobligation":
                             return RedirectToAction("GetOrganisationsUnitReportObligations", new { selectedOrganisationId = orgList[0][0].Id });
+                        case "privateEmailAdresses":
+                            return RedirectToAction("GetOrganisationsPrivateEmailAdresses", new { selectedOrganisationId = orgList[0][0].Id });
+
                         default:
                             var errorModel = new CustomErrorPageModel
                             {
@@ -229,14 +232,50 @@ namespace InrappSos.AstridWeb.Controllers
             return View("EditContacts", model);
         }
 
+
         // GET
         [Authorize]
-        public ActionResult GetPrivateEpostDomains()
+        public ActionResult GetPrivateEmailAdresses()
+        {
+            //var model = new OrganisationViewModels.OrganisationViewModel();
+            //model.SearchResult = new List<List<Organisation>>();
+            return View("EditPrivateEmailAdresses");
+        }
+
+
+        // GET
+        [Authorize]
+        public ActionResult GetOrganisationsPrivateEmailAdresses(int selectedOrganisationId = 0)
         {
             var model = new OrganisationViewModels.OrganisationViewModel();
-            model.SearchResult = new List<List<Organisation>>();
-            return View("EditPrivateEmailDomains", model);
+
+            try
+            {
+                if (selectedOrganisationId != 0)
+                {
+                    model.SelectedOrganisationId = selectedOrganisationId;
+                }
+                model.Organisation = _portalSosService.HamtaOrganisation(model.SelectedOrganisationId);
+                var privEmails = _portalSosService.HamtaPrivataEpostadresserForOrg(model.Organisation.Id);
+                model.UndantagEpostDomaner = ConvertPrivateEmailAdressesToVM(privEmails.ToList());
+                model.SearchResult = new List<List<Organisation>>();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("OrganisationController", "GetOrganisationsPrivateEmailAdresses", e.ToString(), e.HResult,
+                    User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade vid hämtning av privata epostadresser för vald organisation.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
+            }
+            return View("EditPrivateEmailAdresses", model);
         }
+
+
 
         //GET
         [Authorize]
@@ -451,22 +490,21 @@ namespace InrappSos.AstridWeb.Controllers
 
         [HttpPost]
         [Authorize]
-        public ActionResult UpdatePrivateEmailDomain(OrganisationViewModels.UndantagEpostDomanViewModel privEmailDomainVM)
+        public ActionResult UpdateOrganisationPrivateEmailAdress(OrganisationViewModels.UndantagEpostDomanViewModel privEmailAdressVM)
         {
-            var org = new Organisation();
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var privEmailDomain = ConvertPrivEmailDomainVMToDb(privEmailDomainVM);
+                    var privEmailAdress = ConvertPrivEmailAdressVMToDb(privEmailAdressVM);
                     var userName = User.Identity.GetUserName();
-                    _portalSosService.UppdateraPrivatEpostDoman(privEmailDomain, userName);
+                    _portalSosService.UppdateraPrivatEpostAdress(privEmailAdress, userName);
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                ErrorManager.WriteToErrorLog("OrganisationController", "UpdatePrivateEmailDomain", e.ToString(), e.HResult,
+                ErrorManager.WriteToErrorLog("OrganisationController", "UpdateOrganisationPrivateEmailAdress", e.ToString(), e.HResult,
                     User.Identity.Name);
                 var errorModel = new CustomErrorPageModel
                 {
@@ -475,7 +513,7 @@ namespace InrappSos.AstridWeb.Controllers
                 };
                 return View("CustomError", errorModel);
             }
-            return RedirectToAction("GetPrivateEpostDomains", new { selectedOrganisationId = org.Id });
+            return RedirectToAction("GetOrganisationsPrivateEmailAdresses", new { selectedOrganisationId = privEmailAdressVM.OrganisationsId });
         }
 
 
@@ -693,6 +731,47 @@ namespace InrappSos.AstridWeb.Controllers
                     return View("CustomError", errorModel);
                 }
                 return RedirectToAction("GetOrganisationTypes");
+            }
+
+            return View();
+        }
+
+        [Authorize]
+        public ActionResult CreatePrivateEmailAdress(int selectedOrganisationId = 0)
+        {
+            var model = new OrganisationViewModels.UndantagEpostDomanViewModel();
+            model.OrganisationsId = selectedOrganisationId;
+            model.Organisationsnamn = _portalSosService.HamtaOrganisation(selectedOrganisationId).Organisationsnamn;
+            return View(model);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public ActionResult CreatePrivateEmailAdress(OrganisationViewModels.UndantagEpostDomanViewModel privEmail)
+        {
+            var org = new Organisation();
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var userName = User.Identity.GetUserName();
+                    var privEmailDb = ConvertPrivEmailAdressVMToDb(privEmail);
+                    _portalSosService.SkapaPrivatEpostadress(privEmailDb, userName);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    ErrorManager.WriteToErrorLog("OrganisationController", "CreateOrganisationUnit", e.ToString(), e.HResult, User.Identity.Name);
+                    var errorModel = new CustomErrorPageModel
+                    {
+                        Information = "Ett fel inträffade när ny privat epostadress skulle sparas.",
+                        ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                    };
+                    return View("CustomError", errorModel);
+                }
+                return RedirectToAction("GetOrganisationsPrivateEmailAdresses", new { selectedOrganisationId = privEmail.OrganisationsId });
             }
 
             return View();
@@ -1256,26 +1335,62 @@ namespace InrappSos.AstridWeb.Controllers
             return orgtypesList;
         }
 
-        private UndantagEpostDoman ConvertPrivEmailDomainVMToDb(OrganisationViewModels.UndantagEpostDomanViewModel privEmailDomainVM)
+        private UndantagEpostDoman ConvertPrivEmailAdressVMToDb(OrganisationViewModels.UndantagEpostDomanViewModel privEmailAdressVM)
         {
             var privEmail = new UndantagEpostDoman
             {
-                Id = privEmailDomainVM.Id,
-                PrivatEpostDoman = privEmailDomainVM.PrivatEpostDoman,
-                Status = privEmailDomainVM.Status,
-                AktivFrom = privEmailDomainVM.AktivFrom,
-                AktivTom = privEmailDomainVM.AktivTom
+                Id = privEmailAdressVM.Id,
+                OrganisationsId = privEmailAdressVM.OrganisationsId,
+                PrivatEpostAdress = privEmailAdressVM.PrivatEpostAdress,
+                Status = privEmailAdressVM.Status,
+                AktivFrom = privEmailAdressVM.AktivFrom,
+                AktivTom = privEmailAdressVM.AktivTom
             };
 
             //Hämta ärendeId om ärendenr satt
-            if (privEmailDomainVM.ArendeNr != null)
+            if (privEmailAdressVM.ArendeNr != null)
             {
-                privEmail.ArendeId = _portalSosService.HamtaArende(privEmailDomainVM.ArendeNr).Id;
+                var arende = _portalSosService.HamtaArende(privEmailAdressVM.ArendeNr);
+                if (arende != null)
+                {
+                    privEmail.ArendeId = arende.Id;
+                }
             }
             return privEmail;
         }
 
-        
+        private List<OrganisationViewModels.UndantagEpostDomanViewModel> ConvertPrivateEmailAdressesToVM(List<UndantagEpostDoman> privEmailAdressVM)
+        {
+            var privEmailList = new List<OrganisationViewModels.UndantagEpostDomanViewModel>();
+
+            foreach (var privEmailDb in privEmailAdressVM)
+            {
+                var privEmailVM = new OrganisationViewModels.UndantagEpostDomanViewModel
+                {
+                    Id = privEmailDb.Id,
+                    OrganisationsId = privEmailDb.OrganisationsId,
+                    PrivatEpostAdress = privEmailDb.PrivatEpostAdress,
+                    Status = privEmailDb.Status,
+                    AktivFrom = privEmailDb.AktivFrom,
+                    AktivTom = privEmailDb.AktivTom
+                };
+
+                //Hämta ärendenr om ärendeid satt
+                if (privEmailDb.ArendeId != null)
+                {
+                    privEmailVM.ArendeId = privEmailDb.ArendeId.Value;
+                    privEmailVM.ArendeNr = _portalSosService.HamtaArendeById(privEmailVM.ArendeId).Arendenr;
+                }
+               
+                privEmailList.Add(privEmailVM);
+            }
+            
+
+            
+            return privEmailList;
+        }
+
+
 
 
     }

@@ -128,17 +128,18 @@ namespace InrappSos.AstridWeb.Models.ViewModels
         {
             public int Id { get; set; }
             public int ArendeId { get; set; }
+            [Display(Name = "Ärendenr")]
             public string ArendeNr { get; set; }
-            public int OrganisationId { get; set; }
+            public int OrganisationsId { get; set; }
             public string Organisationsnamn { get; set; }
-            public string PrivatEpostDoman { get; set; }
+            [Required(ErrorMessage = "Fältet E-postadress är obligatoriskt.")]
+            [Display(Name = "E-postadress")]
+            public string PrivatEpostAdress { get; set; }
             public int Status { get; set; }
+            [Display(Name = "Aktiv fr.o.m.")]
             public DateTime? AktivFrom { get; set; }
+            [Display(Name = "Aktiv t.o.m.")]
             public DateTime? AktivTom { get; set; }
-            public DateTime SkapadDatum { get; set; }
-            public string SkapadAv { get; set; }
-            public DateTime AndradDatum { get; set; }
-            public string AndradAv { get; set; }
 
         }
 

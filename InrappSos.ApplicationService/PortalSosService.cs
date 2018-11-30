@@ -128,6 +128,12 @@ namespace InrappSos.ApplicationService
             return arende;
         }
 
+        public Arende HamtaArendeById(int arendeId)
+        {
+            var arende = _portalSosRepository.GetArendeById(arendeId);
+            return arende;
+        }
+
         public int HamtaUserOrganisationId(string userId)
         {
             var orgId = _portalSosRepository.GetUserOrganisationId(userId);
@@ -178,6 +184,12 @@ namespace InrappSos.ApplicationService
         {
             var contacts = _portalSosRepository.GetContactPersonsForOrg(orgId);
             return contacts;
+        }
+
+        public IEnumerable<UndantagEpostDoman> HamtaPrivataEpostadresserForOrg(int orgId)
+        {
+            var privEmails = _portalSosRepository.GetPrivateEmailAdressesForOrg(orgId);
+            return privEmails;
         }
 
         public IEnumerable<AppUserAdmin> HamtaAdminUsers()
@@ -1142,6 +1154,17 @@ namespace InrappSos.ApplicationService
             _portalSosRepository.CreateOrgUnit(orgUnit);
         }
 
+        public void SkapaPrivatEpostadress(UndantagEpostDoman privEmail, string userName)
+        {
+            //Sätt datum och användare
+            privEmail.SkapadDatum = DateTime.Now;
+            privEmail.SkapadAv = userName;
+            privEmail.AndradDatum = DateTime.Now;
+            privEmail.AndradAv = userName;
+
+            _portalSosRepository.CreatePrivateEmail(privEmail);
+        }
+
         public void SkapaOrganisationstyp(AdmOrganisationstyp orgtyp, string userName)
         {
             //Sätt datum och användare
@@ -1500,7 +1523,7 @@ namespace InrappSos.ApplicationService
             _portalSosRepository.UpdateAdminUserInfo(user);
         }
 
-        public void UppdateraPrivatEpostDoman(UndantagEpostDoman privEpostDoman, string userName)
+        public void UppdateraPrivatEpostAdress(UndantagEpostDoman privEpostDoman, string userName)
         {
             privEpostDoman.AndradAv = userName;
             privEpostDoman.AndradDatum = DateTime.Now;

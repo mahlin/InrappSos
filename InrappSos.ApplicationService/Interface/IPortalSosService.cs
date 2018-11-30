@@ -33,6 +33,8 @@ namespace InrappSos.ApplicationService.Interface
 
         Arende HamtaArende(string arendeNr);
 
+        Arende HamtaArendeById(int arendeId);
+
         int HamtaUserOrganisationId(string userId);
 
         Organisation HamtaOrganisation(int orgId);
@@ -53,6 +55,8 @@ namespace InrappSos.ApplicationService.Interface
         //List<UserRolesDTO> HamtaAstridRoller();
 
         IEnumerable<ApplicationUser> HamtaKontaktpersonerForOrg(int orgId);
+
+        IEnumerable<UndantagEpostDoman> HamtaPrivataEpostadresserForOrg(int orgId);
 
         IEnumerable<Organisationsenhet> HamtaOrgEnheterForOrg(int orgId);
         Organisationsenhet HamtaOrganisationsenhetMedEnhetskod(string kod, int orgId);
@@ -200,6 +204,8 @@ namespace InrappSos.ApplicationService.Interface
         int SkapaOrganisation(Organisation org, ICollection<Organisationstyp> orgtyperForOrg, string userName);
 
         void SkapaOrganisationsenhet(Organisationsenhet orgUnit, string userName);
+
+        void SkapaPrivatEpostadress(UndantagEpostDoman privEmail, string userName);
         void SkapaOrganisationstyp(AdmOrganisationstyp orgtyp, string userName);
 
         void SkapaFAQKategori(AdmFAQKategori faqKategori, string userName);
@@ -278,7 +284,7 @@ namespace InrappSos.ApplicationService.Interface
 
         void UppdateraAnvandarInfo(AppUserAdmin user, string userName);
 
-        void UppdateraPrivatEpostDoman(UndantagEpostDoman privEpostDoman, string userName);
+        void UppdateraPrivatEpostAdress(UndantagEpostDoman privEpostDoman, string userName);
 
         void SparaOppettider(OpeningHoursInfoDTO oppetTider, string userName);
         void SparaTillDatabasFillogg(string userName, string ursprungligtFilNamn, string nyttFilNamn, int leveransId, int sequenceNumber);

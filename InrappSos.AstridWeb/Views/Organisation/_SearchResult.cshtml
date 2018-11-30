@@ -25,6 +25,9 @@
             case "unitreportobligation":
                 @Html.ActionLink(org.Organisationsnamn, "GetOrganisationsUnitReportObligations", "Organisation", new { selectedOrganisationId = org.Id}, new {@class = "btn"})<br/>
                 break;
+            case "privateEmailAdresses":
+                @Html.ActionLink(org.Organisationsnamn, "GetOrganisationsPrivateEmailAdresses", "Organisation", new { selectedOrganisationId = org.Id}, new {@class = "btn"})<br/>
+                break;
             default:
                 break;;
         }

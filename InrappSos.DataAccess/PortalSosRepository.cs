@@ -111,6 +111,12 @@ namespace InrappSos.DataAccess
             return arende;
         }
 
+        public Arende GetArendeById(int arendeId)
+        {
+            var arende = DbContext.Arende.SingleOrDefault(x => x.Id == arendeId);
+            return arende;
+        }
+
         //*************************************************************************************************************************//
 
         private IEnumerable<Leverans> AllaLeveranser()
@@ -247,6 +253,12 @@ namespace InrappSos.DataAccess
         {
             var orgId = DbContext.AdmUppgiftsskyldighet.Where(u => u.Id == repObligationId).Select(o => o.OrganisationId).SingleOrDefault();
             return orgId;
+        }
+
+        public IEnumerable<UndantagEpostDoman> GetPrivateEmailAdressesForOrg(int orgId)
+        {
+            var privEmails = DbContext.UndantagEpostDoman.Where(x => x.OrganisationsId == orgId).ToList();
+            return privEmails;
         }
 
         public AdmUppgiftsskyldighet GetReportObligationById(int repOblId)
@@ -958,6 +970,12 @@ namespace InrappSos.DataAccess
             DbContext.SaveChanges();
         }
 
+        public void CreatePrivateEmail(UndantagEpostDoman privEmail)
+        {
+            DbContext.UndantagEpostDoman.Add(privEmail);
+            DbContext.SaveChanges();
+        }
+
         public void CreateOrgType(AdmOrganisationstyp orgType)
         {
             DbContext.AdmOrganisationstyp.Add(orgType);
@@ -1166,8 +1184,8 @@ namespace InrappSos.DataAccess
         {
             var privEmailDb = DbContext.UndantagEpostDoman.SingleOrDefault(x => x.Id == privEmail.Id);
             privEmailDb.ArendeId = privEmail.ArendeId;
-            privEmailDb.OrganisationId = privEmail.OrganisationId;
-            privEmailDb.PrivatEpostDoman = privEmail.PrivatEpostDoman;
+            privEmailDb.OrganisationsId = privEmail.OrganisationsId;
+            privEmailDb.PrivatEpostAdress = privEmail.PrivatEpostAdress;
             privEmailDb.Status = privEmail.Status;
             privEmailDb.AktivFrom = privEmail.AktivFrom;
             privEmailDb.AktivTom = privEmail.AktivTom;

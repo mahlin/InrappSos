@@ -34,6 +34,8 @@ namespace InrappSos.DataAccess
         //****************************************************************//
 
         Arende GetArende(string arendeNr);
+
+        Arende GetArendeById(int arendeId);
         void DisableContact(string userId);
         void EnableContact(string userId);
         IEnumerable<Leverans> GetLeveranserForOrganisation(int orgId);
@@ -70,6 +72,7 @@ namespace InrappSos.DataAccess
 
         int GetReportObligationOrganisationId(int repObligationId);
 
+        IEnumerable<UndantagEpostDoman> GetPrivateEmailAdressesForOrg(int orgId);
 
         IEnumerable<ApplicationUser> GetContactPersonsForOrg(int orgId);
         IEnumerable<ApplicationUser> GetContactPersonsForOrgAndSubdir(int orgId, int subdirId);
@@ -235,6 +238,8 @@ namespace InrappSos.DataAccess
         int CreateOrganisation(Organisation org, ICollection<Organisationstyp> orgtyperForOrg);
 
         void CreateOrgUnit(Organisationsenhet orgUnit);
+
+        void CreatePrivateEmail(UndantagEpostDoman privEmail);
         void CreateOrgType(AdmOrganisationstyp orgType);
 
         void CreateFAQCategory(AdmFAQKategori faqCategory);

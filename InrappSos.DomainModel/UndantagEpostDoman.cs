@@ -9,9 +9,9 @@ namespace InrappSos.DomainModel
     public class UndantagEpostDoman
     {
         public int Id { get; set; }
-        public int ArendeId { get; set; }
-        public int OrganisationId { get; set; }
-        public string PrivatEpostDoman { get; set; }
+        public int? ArendeId { get; set; }
+        public int OrganisationsId { get; set; }
+        public string PrivatEpostAdress { get; set; }
         public int Status { get; set; }
         public DateTime? AktivFrom { get; set; }
         public DateTime? AktivTom { get; set; }

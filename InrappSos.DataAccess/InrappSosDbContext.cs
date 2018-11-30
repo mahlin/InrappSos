@@ -556,16 +556,16 @@ namespace InrappSos.DataAccess
 
             //UndantagEpostDoman
             modelBuilder.Entity<UndantagEpostDoman>().Property(e => e.Id).HasColumnName("undantagsid");
-            modelBuilder.Entity<UndantagEpostDoman>().Property(e => e.OrganisationId).HasColumnName("organisationsid");
+            modelBuilder.Entity<UndantagEpostDoman>().Property(e => e.OrganisationsId).HasColumnName("organisationsid");
             modelBuilder.Entity<UndantagEpostDoman>().Property(e => e.ArendeId).HasColumnName("arendeid");
-            modelBuilder.Entity<UndantagEpostDoman>().Property(e => e.PrivatEpostDoman).HasColumnName("privatepostdoman");
+            modelBuilder.Entity<UndantagEpostDoman>().Property(e => e.PrivatEpostAdress).HasColumnName("epostadress");
             modelBuilder.Entity<UndantagEpostDoman>().Property(e => e.Status).HasColumnName("status");
             modelBuilder.Entity<UndantagEpostDoman>().Property(e => e.AktivFrom).HasColumnName("aktivfrom");
             modelBuilder.Entity<UndantagEpostDoman>().Property(e => e.AktivTom).HasColumnName("aktivtom");
             modelBuilder.Entity<UndantagEpostDoman>()
                 .HasRequired(c => c.Organisation)
                 .WithMany(d => d.UndantagEpostDoman)
-                .HasForeignKey(c => c.OrganisationId);
+                .HasForeignKey(c => c.OrganisationsId);
             modelBuilder.Entity<UndantagEpostDoman>()
                 .HasRequired(c => c.Arende)
                 .WithMany(d => d.UndantagEpostDoman)

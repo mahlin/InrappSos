@@ -25,5 +25,6 @@ namespace InrappSos.DomainModel
         public virtual Arendetyp Arendetyp { get; set; }
         public virtual ICollection<ArendeKontaktperson> ArendeKontaktperson { get; set; }
         public virtual ICollection<DroppadFil> DroppadFil { get; set; }
+        public virtual ICollection<UndantagEpostDoman> UndantagEpostDoman { get; set; }
     }
 }

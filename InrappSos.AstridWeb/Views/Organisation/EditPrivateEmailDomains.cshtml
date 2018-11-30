@@ -1,0 +1,239 @@
+﻿@model InrappSos.AstridWeb.Models.ViewModels.OrganisationViewModels.OrganisationViewModel
+@*<script src="~/Scripts/jquery-1.10.2.min.js"></script>*@
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        //var modalConfirm = function test(callback) {
+        //    $("#modal-btn-si").on("click", function () {
+        //        callback(true);
+        //        $("#mi-modal").modal('hide');
+        //    });
+
+        //    $("#modal-btn-no").on("click", function () {
+        //        callback(false);
+        //        $("#mi-modal").modal('hide');
+        //    });
+        //};
+
+        //modalConfirm(function (confirm) {
+        //    if (confirm) {
+        //        var data = { 'contactId': $('#SelectedContactId').val(), 'selectedOrganisationId': $('#SelectedOrganisationId').val() };
+        //        $.ajax({
+        //            url: '/Organisation/DeleteContact',
+        //            type: 'POST',
+        //            contentType: 'application/json; charset=utf-8',
+        //            data: JSON.stringify(data),
+        //            success: function (data) {
+        //                //On ajax success do this
+        //                $("#pageContainer").html(data);
+        //                tr.find('.edit-mode, .display-mode').toggle();
+        //                $('#footer').hide();
+        //            }
+        //        });
+        //    } else {
+        //        //Do nothing
+        //        //$("#result").html("NO CONFIRMADO");
+        //    }
+        //});
+    });
+
+    //$(function () {
+    //    $("#searchText").focus();
+    //});
+
+    //$(function () {
+    //    $('th a, tfoot a').click(function () {
+    //        //if querystring already contains selectedOrganisationId, remove it
+    //        var index = $(this).attr('href').indexOf("&selectedOrganisationId=");
+    //        if (index >= 0) {
+    //            var cleanUrl = $(this).attr('href').substring(0, index);
+    //            $(this).attr('href', cleanUrl);
+    //        }
+    //        var newUrl = $(this).attr('href') +
+    //            "&selectedOrganisationId=" +
+    //            $("#SelectedOrganisationId").val();
+    //        $('form').attr('action', newUrl).submit();
+    //        return false;
+    //    });
+    //});
+
+    //function deleteContact(id, name) {
+    //    $('#SelectedContactId').val(id);
+    //    $('#SelectedCountyCode').val($('#Kommunkod').val());
+    //    $("#mi-modal").modal("show");
+    //    $('#modal-body').html("Vill du verkligen ta bort ta bort " + name + " ?");
+    //}
+
+    $(function () {
+        $('.edit-mode').hide();
+        $('.edit-user, .cancel-user').on('click', function () {
+            var tr = $(this).parents('tr:first');
+            tr.find('.edit-mode, .display-mode').toggle();
+        });
+        $('.save-user').on('click', function () {
+            var tr = $(this).parents('tr:first');
+            var id = tr.find("#Id").val();
+            var orgId = tr.find("#OrganisationId").val();
+            var privEpostDoman = tr.find("#PrivatEpostDoman").val();
+            var orgNamn = tr.find("#Organisationsnamn").val();
+            var arendeNr = tr.find("#ArendeNr").val();
+            var aktivFrom = tr.find("#AktivFrom").val();
+            var aktivTom = tr.find("#AktivTom").val();
+
+            //Creating UndantagEpostDoman JSON object
+            var undantagEpostDoman =
+                {
+                    "Id": id,
+                    "OrganisationId": orgId,
+                    "Organisationsnamn": orgNamn,
+                    "ArendeNr": arendeNr,
+                    "PrivatEpostDoman": privEpostDoman,
+                    "AktivFrom": aktivFrom,
+                    "AktivTom": aktivTom
+                };
+            //Posting ApplicationUser object to controller's Update action method
+            $.ajax({
+                url: '/Organisation/UpdatePrivateEmailDomain',
+                data: JSON.stringify(undantagEpostDoman),
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    //location.reload();
+                    $("#pageContainer").html(data);
+                    tr.find('.edit-mode, .display-mode').toggle();
+                    $('#footer').hide();
+                    //alert('Record updated Successfully!!');
+                }
+            });
+
+        });
+
+        $('.edit-user').on('click', function () {
+            var tr = $(this).parents('tr:first');
+            var contactPhoneNumber = tr.find("#ContactPhoneNumber").val();
+            var contactNumber = tr.find("#ContactNumber").val();
+            var contactAktivFrom = tr.find("#ContactAktivFrom").val();
+            var contactAktivTom = tr.find("#ContactAktivTom").val();
+
+            tr.find("#lblPhoneNumber").text(contactPhoneNumber);
+            tr.find("#lblContactNumber").text(contactNumber);
+            tr.find("#lblAktivFrom").text(contactAktivFrom);
+            tr.find("#lblAktivTom").text(contactAktivTom);
+        });
+    });
+</script>
+<div id="pageContainer">
+
+    @*<div class="modal fade ui-widget-content" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" id="mi-modal">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-body" id="modal-body">
+                    <p>
+
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" id="modal-btn-si">Ja</button>
+                    <button type="button" class="btn btn-default" id="modal-btn-no">Avbryt</button>
+                </div>
+            </div>
+        </div>
+    </div>*@
+    <br />
+
+    <div class="row">
+        <div class="col-md-8 padding-top-25">
+            <h4>Administrera privata epostdomäner</h4>
+            <section id="orgForm">
+                @Html.AntiForgeryToken()
+                <hr/>
+                @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+
+                @*@using (Html.BeginForm("SearchOrganisation", "Organisation", new { origin = "contacts" }, FormMethod.Post, null))
+                {
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div id="custom-search-input">
+                                    <div class="input-group col-md-12">
+                                        <input type="text" class="form-control" id="searchText" name="searchText" style="max-width: 350px !important;" placeholder="Sök med organisationskod eller organisationsnamn" />
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-info btn-lg" type="submit">
+                                                <i class="glyphicon glyphicon-search"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }*@
+            </section>
+        </div>
+    </div>
+    <br />
+
+
+    @if (Model != null)
+    {
+        @* Om sökresultat finns, visa listan *@
+        if (Model.SearchResult.Count > 0 && Model.SearchResult[0].Count > 0)
+        {
+            @Html.Partial("_SearchResult")
+        }
+        @* Om inga sökträffar *@
+        else if (Model.SearchResult.Count == 1 && Model.SearchResult[0].Count == 0 && Model.Organisation == null)
+        {
+            <h2>Din sökning på gav inget resultat. </h2>
+        }
+        @* Om en relevant organisation hittats, visa organisationsinfon *@
+        //else if (Model.Organisation != null)
+        //{
+        else if (Model.UndantagEpostDomaner != null)
+        { 
+
+            <div style="font-size: 1.2em; padding-left: 20px; padding-bottom: 20px;"><b>@Model.Organisation.Organisationsnamn</b></div>
+            <div id="gridContent" style="font-family: Arial; padding: 20px;">
+
+                @{
+                    ViewBag.Title = "Administrera kontaktpersoner";
+                    var grid = new WebGrid(source: Model.UndantagEpostDomaner, canPage: false, rowsPerPage: 10, ajaxUpdateContainerId: "privateEmailDomainsGrid");
+                }
+
+                @grid.GetHtml(tableStyle: "webgrid-table1500",
+                              headerStyle: "webgrid-header",
+                              footerStyle: "webgrid-footer",
+                              alternatingRowStyle: "webgrid-alternating-row",
+                              selectedRowStyle: "webgrid-selected-row",
+                              rowStyle: "webgrid-row-style",
+                              mode: WebGridPagerModes.All,
+                              columns: grid.Columns(
+                                grid.Column(null, null, format: @<input type="hidden" id="Id" name="IDHidden" value="@item.Id" />),
+                                grid.Column(null, null, format: @<input type="hidden" id="orgId" name="IDHidden" value="@item.OrganisationId" />),
+                                grid.Column("PrivatEpostDoman", "E-post", format: @<text><span class="display-mode col3Width">@item.PrivatEpostDoman</span><label id="Epost" class="edit-mode col3Width">@item.PrivatEpostDoman</label></text>, style: "col3Width"),
+                                grid.Column("Organisationsnamn", "Organisationsnamn", format: @<text><span class="display-mode col3Width">@item.Organisationsnamn</span><label id="Epost" class="edit-mode col3Width">@item.Organisationsnamn</label></text>, style: "col3Width"),
+                                grid.Column("ArendeNr", "Arendenr", format: @<text><span class="display-mode col3Width">@item.ArendeNr</span><label id="Epost" class="edit-mode col3Width">@item.ArendeNr</label></text>, style: "col3Width"),
+
+                                grid.Column("AktivFrom", "Aktiv fr.o.m", format: @<text><span class="display-mode"><label id="lblAktivFrom">@( item.AktivFrom != null ? item.AktivFrom.ToString("yyyy-MM-dd") : item.AktivFrom)</label></span>
+                                                                                            <input type="text" id="AktivFrom" value="@( item.AktivFrom != null ? item.AktivFrom.ToString("yyyy-MM-dd") : item.AktivFrom)" class="edit-mode form-control" /></text>, style: "col2Width"),
+                                grid.Column("AktivTom", "Aktiv t.o.m", format: @<text><span class="display-mode"><label id="lblAktivTom">@( item.AktivTom != null ? item.AktivTom.ToString("yyyy-MM-dd") : item.AktivTom)</label></span>
+                                                                                                        <input type="text" id="AktivTom" value="@( item.AktivTom != null ? item.AktivTom.ToString("yyyy-MM-dd") : item.AktivTom)" class="edit-mode form-control" /></text>, style: "col2Width"),
+                                grid.Column("Status", "Status", format: @<text><span class="display-mode col1Width"><label id="lblStatus">@item.Status</label></span>
+                                                                                                                    <input type="text" id="Status" value="@item.Status" class="edit-mode form-control" /></text>, style: "col1Width"),
+                                grid.Column(null, format: @<text>
+                                        <button class="edit-user display-mode btn btn-default">Ändra</button>
+                                        @*@if (item.OkToDelete)
+                                        {
+                                        <button class="display-mode btn btn-default" onclick="deleteContact('@item.Id', '@item.Namn');return false;">Ta bort</button>
+                                        }*@
+                                        <button class="save-user edit-mode btn btn-default">Spara</button>
+                                        <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
+                                        </text>, style: "col3Width", canSort: false)))
+
+            </div>
+        }
+    }
+
+</div>

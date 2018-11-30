@@ -31,6 +31,8 @@ namespace InrappSos.ApplicationService.Interface
 
         string HamtaAnvandaresMobilnummer(string userId);
 
+        Arende HamtaArende(string arendeNr);
+
         int HamtaUserOrganisationId(string userId);
 
         Organisation HamtaOrganisation(int orgId);
@@ -275,6 +277,8 @@ namespace InrappSos.ApplicationService.Interface
         void UppdateraInsamlingsfrekvens(AdmInsamlingsfrekvens insamlingsfrekvens, string userName);
 
         void UppdateraAnvandarInfo(AppUserAdmin user, string userName);
+
+        void UppdateraPrivatEpostDoman(UndantagEpostDoman privEpostDoman, string userName);
 
         void SparaOppettider(OpeningHoursInfoDTO oppetTider, string userName);
         void SparaTillDatabasFillogg(string userName, string ursprungligtFilNamn, string nyttFilNamn, int leveransId, int sequenceNumber);

@@ -2,10 +2,12 @@
 
 <script>
     (function($){
-        $(document).ready(function(){
-            $('ul.dropdown-menu [data-toggle=dropdown]').on('click', function(event) {
+        $(document).ready(function () {
+            //$('.dropown-toggle').dropdown();
+            $('ul.dropdown-menu [data-toggle=dropdown]').on('click', function (event) {
                 event.preventDefault(); 
                 event.stopPropagation(); 
+                //$(event.target).find('.dropdown-menu').toggle();
                 $(this).parent().siblings().removeClass('open');
                 $(this).parent().toggleClass('open');
             });
@@ -59,14 +61,15 @@
                         <li>@Html.ActionLink("Skapa ny organisation", "CreateOrganisation", "Organisation")</li>
                         <li>@Html.ActionLink("Organisationstyp", "GetOrganisationTypes", "Organisation")</li>
                         <li>@Html.ActionLink("Kontaktpersoner", "GetContacts", "Organisation")</li>
+                        <li>@Html.ActionLink("Privata epostdomäner", "GetPrivateEpostDomains", "Organisation")</li>
                         <li>@Html.ActionLink("Organisationsenheter", "GetOrgUnits", "Organisation")</li>
                         <li>@Html.ActionLink("Uppgiftsskyldighet", "GetReportObligations", "Organisation")</li>
                         <li>@Html.ActionLink("Enhetsuppgiftsskyldighet", "GetUnitReportObligations", "Organisation")</li>
                         @*<li><a href="#">Something else here</a></li>
-                <li role="separator" class="divider"></li>
-                <li><a href="#">Separated link</a></li>
-                <li role="separator" class="divider"></li>
-                <li><a href="#">One more separated link</a></li>*@
+        <li role="separator" class="divider"></li>
+        <li><a href="#">Separated link</a></li>
+        <li role="separator" class="divider"></li>
+        <li><a href="#">One more separated link</a></li>*@
                     </ul>
                 </li>
                 <li class="dropdown">

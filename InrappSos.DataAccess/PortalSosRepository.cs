@@ -105,6 +105,12 @@ namespace InrappSos.DataAccess
             AstridDbContext.SaveChanges();
         }
 
+        public Arende GetArende(string arendeNr)
+        {
+            var arende = DbContext.Arende.SingleOrDefault(x => x.Arendenr == arendeNr);
+            return arende;
+        }
+
         //*************************************************************************************************************************//
 
         private IEnumerable<Leverans> AllaLeveranser()
@@ -1153,6 +1159,20 @@ namespace InrappSos.DataAccess
             var userDb = DbContext.Users.SingleOrDefault(x => x.Id == user.Id);
             userDb.AndradAv = user.AndradAv;
             userDb.AndradDatum = user.AndradDatum;
+            DbContext.SaveChanges();
+        }
+
+        public void UpdatePrivateEmail(UndantagEpostDoman privEmail)
+        {
+            var privEmailDb = DbContext.UndantagEpostDoman.SingleOrDefault(x => x.Id == privEmail.Id);
+            privEmailDb.ArendeId = privEmail.ArendeId;
+            privEmailDb.OrganisationId = privEmail.OrganisationId;
+            privEmailDb.PrivatEpostDoman = privEmail.PrivatEpostDoman;
+            privEmailDb.Status = privEmail.Status;
+            privEmailDb.AktivFrom = privEmail.AktivFrom;
+            privEmailDb.AktivTom = privEmail.AktivTom;
+            privEmailDb.AndradAv = privEmail.AndradAv;
+            privEmailDb.AndradDatum = privEmail.AndradDatum;
             DbContext.SaveChanges();
         }
 

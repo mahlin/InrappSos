@@ -554,6 +554,27 @@ namespace InrappSos.DataAccess
             modelBuilder.Entity<DroppadFil>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
             modelBuilder.Entity<DroppadFil>().Property(e => e.AndradAv).HasColumnName("andradav");
 
+            //UndantagEpostDoman
+            modelBuilder.Entity<UndantagEpostDoman>().Property(e => e.Id).HasColumnName("undantagsid");
+            modelBuilder.Entity<UndantagEpostDoman>().Property(e => e.OrganisationId).HasColumnName("organisationsid");
+            modelBuilder.Entity<UndantagEpostDoman>().Property(e => e.ArendeId).HasColumnName("arendeid");
+            modelBuilder.Entity<UndantagEpostDoman>().Property(e => e.PrivatEpostDoman).HasColumnName("privatepostdoman");
+            modelBuilder.Entity<UndantagEpostDoman>().Property(e => e.Status).HasColumnName("status");
+            modelBuilder.Entity<UndantagEpostDoman>().Property(e => e.AktivFrom).HasColumnName("aktivfrom");
+            modelBuilder.Entity<UndantagEpostDoman>().Property(e => e.AktivTom).HasColumnName("aktivtom");
+            modelBuilder.Entity<UndantagEpostDoman>()
+                .HasRequired(c => c.Organisation)
+                .WithMany(d => d.UndantagEpostDoman)
+                .HasForeignKey(c => c.OrganisationId);
+            modelBuilder.Entity<UndantagEpostDoman>()
+                .HasRequired(c => c.Arende)
+                .WithMany(d => d.UndantagEpostDoman)
+                .HasForeignKey(c => c.ArendeId);
+            modelBuilder.Entity<DroppadFil>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
+            modelBuilder.Entity<DroppadFil>().Property(e => e.SkapadAv).HasColumnName("skapadav");
+            modelBuilder.Entity<DroppadFil>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
+            modelBuilder.Entity<DroppadFil>().Property(e => e.AndradAv).HasColumnName("andradav");
+
         }
 
 
@@ -591,6 +612,7 @@ namespace InrappSos.DataAccess
         public DbSet<Arende> Arende { get; set; }
         public DbSet<ArendeStatus> ArendeStatus { get; set; }
         public DbSet<Arendetyp> Arendetyp { get; set; }
+        public DbSet<UndantagEpostDoman> UndantagEpostDoman { get; set; }
 
     }
 }

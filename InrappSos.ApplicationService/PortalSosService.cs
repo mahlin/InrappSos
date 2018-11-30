@@ -121,6 +121,13 @@ namespace InrappSos.ApplicationService
             var phoneNumber = _portalSosRepository.GetUserPhoneNumber(userId);
             return phoneNumber;
         }
+
+        public Arende HamtaArende(string arendeNr)
+        {
+            var arende = _portalSosRepository.GetArende(arendeNr);
+            return arende;
+        }
+
         public int HamtaUserOrganisationId(string userId)
         {
             var orgId = _portalSosRepository.GetUserOrganisationId(userId);
@@ -1491,6 +1498,13 @@ namespace InrappSos.ApplicationService
             user.AndradAv = userName;
             user.AndradDatum = DateTime.Now;
             _portalSosRepository.UpdateAdminUserInfo(user);
+        }
+
+        public void UppdateraPrivatEpostDoman(UndantagEpostDoman privEpostDoman, string userName)
+        {
+            privEpostDoman.AndradAv = userName;
+            privEpostDoman.AndradDatum = DateTime.Now;
+            _portalSosRepository.UpdatePrivateEmail(privEpostDoman);
         }
 
         public void SparaOppettider(OpeningHoursInfoDTO oppetTider, string userName)

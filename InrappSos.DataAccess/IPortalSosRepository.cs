@@ -33,6 +33,7 @@ namespace InrappSos.DataAccess
 
         //****************************************************************//
 
+        Arende GetArende(string arendeNr);
         void DisableContact(string userId);
         void EnableContact(string userId);
         IEnumerable<Leverans> GetLeveranserForOrganisation(int orgId);
@@ -300,6 +301,8 @@ namespace InrappSos.DataAccess
         void UpdateCollectFrequency(AdmInsamlingsfrekvens insamlingsfrekvens);
 
         void UpdateUserInfo(ApplicationUser user);
+
+        void UpdatePrivateEmail(UndantagEpostDoman privEmail);
 
         void SaveOpeningHours(AdmKonfiguration admKonf);
         void SaveToFilelogg(string userName, string ursprungligtFilNamn, string nyttFilNamn, int leveransId, int sequenceNumber);

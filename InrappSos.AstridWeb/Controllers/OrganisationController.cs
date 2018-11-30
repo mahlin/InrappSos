@@ -229,6 +229,15 @@ namespace InrappSos.AstridWeb.Controllers
             return View("EditContacts", model);
         }
 
+        // GET
+        [Authorize]
+        public ActionResult GetPrivateEpostDomains()
+        {
+            var model = new OrganisationViewModels.OrganisationViewModel();
+            model.SearchResult = new List<List<Organisation>>();
+            return View("EditPrivateEmailDomains", model);
+        }
+
         //GET
         [Authorize]
         public ActionResult GetOrgUnits()
@@ -438,6 +447,35 @@ namespace InrappSos.AstridWeb.Controllers
             }
             return RedirectToAction("GetOrganisationsContacts", new { selectedOrganisationId = org.Id });
 
+        }
+
+        [HttpPost]
+        [Authorize]
+        public ActionResult UpdatePrivateEmailDomain(OrganisationViewModels.UndantagEpostDomanViewModel privEmailDomainVM)
+        {
+            var org = new Organisation();
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var privEmailDomain = ConvertPrivEmailDomainVMToDb(privEmailDomainVM);
+                    var userName = User.Identity.GetUserName();
+                    _portalSosService.UppdateraPrivatEpostDoman(privEmailDomain, userName);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("OrganisationController", "UpdatePrivateEmailDomain", e.ToString(), e.HResult,
+                    User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade vid uppdatering av information kopplad till privat epostdomän.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
+            }
+            return RedirectToAction("GetPrivateEpostDomains", new { selectedOrganisationId = org.Id });
         }
 
 
@@ -1218,7 +1256,26 @@ namespace InrappSos.AstridWeb.Controllers
             return orgtypesList;
         }
 
+        private UndantagEpostDoman ConvertPrivEmailDomainVMToDb(OrganisationViewModels.UndantagEpostDomanViewModel privEmailDomainVM)
+        {
+            var privEmail = new UndantagEpostDoman
+            {
+                Id = privEmailDomainVM.Id,
+                PrivatEpostDoman = privEmailDomainVM.PrivatEpostDoman,
+                Status = privEmailDomainVM.Status,
+                AktivFrom = privEmailDomainVM.AktivFrom,
+                AktivTom = privEmailDomainVM.AktivTom
+            };
 
+            //Hämta ärendeId om ärendenr satt
+            if (privEmailDomainVM.ArendeNr != null)
+            {
+                privEmail.ArendeId = _portalSosService.HamtaArende(privEmailDomainVM.ArendeNr).Id;
+            }
+            return privEmail;
+        }
+
+        
 
 
     }

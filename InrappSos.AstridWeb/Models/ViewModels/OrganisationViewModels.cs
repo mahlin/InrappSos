@@ -38,6 +38,7 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public  IEnumerable<ReportObligationsViewModel> ReportObligations { get; set; }
 
             public List<AdmOrganisationstyp> OrganisationTypes { get; set; }
+            public List<UndantagEpostDomanViewModel> UndantagEpostDomaner { get; set; }
             public string Origin { get; set; }
 
         }
@@ -120,6 +121,24 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public DateTime AndradDatum { get; set; }
             public string AndradAv { get; set; }
             public bool OkToDelete { get; set; }
+
+        }
+
+        public class UndantagEpostDomanViewModel
+        {
+            public int Id { get; set; }
+            public int ArendeId { get; set; }
+            public string ArendeNr { get; set; }
+            public int OrganisationId { get; set; }
+            public string Organisationsnamn { get; set; }
+            public string PrivatEpostDoman { get; set; }
+            public int Status { get; set; }
+            public DateTime? AktivFrom { get; set; }
+            public DateTime? AktivTom { get; set; }
+            public DateTime SkapadDatum { get; set; }
+            public string SkapadAv { get; set; }
+            public DateTime AndradDatum { get; set; }
+            public string AndradAv { get; set; }
 
         }
 

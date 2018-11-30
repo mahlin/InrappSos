@@ -62,13 +62,14 @@ namespace InrappSos.FilipWeb.Controllers
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
+            //Om planerade avvikelser i öppettiderna kommande vecka
+            var str = _portalService.ClosedComingWeek();
+            if (str != String.Empty)
+                ViewBag.AvvikandeOppettider = "Avvikande öppettider<br/>" + str;
             //Kolla om öppet, annars visa stängt-sida
             if (!_portalService.IsOpen())
             {
                 ViewBag.Text = _portalService.HamtaInfoText("Stangtsida").Text;
-                var str = _portalService.ClosedComingWeek();
-                if (str != String.Empty)
-                    ViewBag.AvvikandeOppettider = "Avvikande öppettider<br/>" + str;
                 return View("Closed");
             }
             ViewBag.ReturnUrl = returnUrl;

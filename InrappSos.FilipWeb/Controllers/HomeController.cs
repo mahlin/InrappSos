@@ -93,12 +93,13 @@ namespace InrappSos.FilipWeb.Controllers
             {
                 var model = new AboutViewModel();
                 model.PortalClosed = closed;
-                if (closed)
+
+                var str = _portalService.ClosedComingWeek();
+                if (str != String.Empty)
                 {
-                    var str = _portalService.ClosedComingWeek();
-                    if (str != String.Empty)
-                        ViewBag.AvvikandeOppettider = "Avvikande öppettider<br/>" + str;
+                    ViewBag.AvvikandeOppettider = "Avvikande öppettider<br/>" + str;
                 }
+                    
                 ViewBag.Text = _portalService.HamtaInfoText("Kontaktsida").Text;
                 return View(model);
             }

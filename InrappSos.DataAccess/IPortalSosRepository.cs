@@ -74,6 +74,12 @@ namespace InrappSos.DataAccess
 
         IEnumerable<UndantagEpostDoman> GetPrivateEmailAdressesForOrg(int orgId);
 
+        IEnumerable<Arende> GetCasesForOrg(int orgId);
+
+        Arendetyp GetCaseType(int casetypeId);
+
+        ArendeStatus GetCaseStatus(int casestatusId);
+
         IEnumerable<ApplicationUser> GetContactPersonsForOrg(int orgId);
         IEnumerable<ApplicationUser> GetContactPersonsForOrgAndSubdir(int orgId, int subdirId);
 
@@ -140,6 +146,10 @@ namespace InrappSos.DataAccess
         IEnumerable<AdmFilkrav> GetAllFileRequirements();
 
         IEnumerable<AdmInsamlingsfrekvens> GetAllCollectionFrequencies();
+
+        IEnumerable<Arendetyp> GetAllCaseTypes();
+
+        IEnumerable<ArendeStatus> GetAllCaseStatuses();
 
         IEnumerable<AdmForvantadleverans> GetExpectedDeliveriesForDirectory(int dirId);
         IEnumerable<AdmForvantadleverans> GetExpectedDeliveriesForSubDirectory(int subdirId);
@@ -240,6 +250,8 @@ namespace InrappSos.DataAccess
         void CreateOrgUnit(Organisationsenhet orgUnit);
 
         void CreatePrivateEmail(UndantagEpostDoman privEmail);
+
+        void CreateCase(Arende arende);
         void CreateOrgType(AdmOrganisationstyp orgType);
 
         void CreateFAQCategory(AdmFAQKategori faqCategory);
@@ -308,6 +320,8 @@ namespace InrappSos.DataAccess
         void UpdateUserInfo(ApplicationUser user);
 
         void UpdatePrivateEmail(UndantagEpostDoman privEmail);
+
+        void UpdateCase(Arende arende);
 
         void SaveOpeningHours(AdmKonfiguration admKonf);
         void SaveToFilelogg(string userName, string ursprungligtFilNamn, string nyttFilNamn, int leveransId, int sequenceNumber);

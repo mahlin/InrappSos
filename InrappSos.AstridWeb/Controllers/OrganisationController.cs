@@ -34,9 +34,6 @@ namespace InrappSos.AstridWeb.Controllers
             var model = new OrganisationViewModels.OrganisationViewModel();
             model.OrgtypesForOrgList = new List<OrganisationstypDTO>();
             model.SearchResult = new List<List<Organisation>>();
-            // Ladda drop down lists. 
-            //var orgListDTO = GetOrganisationDTOList();
-            //ViewBag.OrganisationList = new SelectList(orgListDTO, "Id", "KommunkodOchOrgnamn");
             return View(model);
         }
 
@@ -71,6 +68,9 @@ namespace InrappSos.AstridWeb.Controllers
                             return RedirectToAction("GetOrganisationsUnitReportObligations", new { selectedOrganisationId = orgList[0][0].Id });
                         case "privateEmailAdresses":
                             return RedirectToAction("GetOrganisationsPrivateEmailAdresses", new { selectedOrganisationId = orgList[0][0].Id });
+                        case "cases":
+                            return RedirectToAction("GetOrganisationsCases", new { selectedOrganisationId = orgList[0][0].Id });
+
 
                         default:
                             var errorModel = new CustomErrorPageModel
@@ -129,20 +129,7 @@ namespace InrappSos.AstridWeb.Controllers
                 //Skapa lista över orgtyper och vilka som är valda för aktuell organisation
                 model.OrgtypesForOrgList = _portalSosService.HamtaOrgtyperForOrganisation(model.SelectedOrganisationId,  model.OrganisationTypes);
                 model.ChosenOrganisationTypesNames = SetOrgtypenames(model.OrgtypesForOrgList);
-                // Ladda drop down lists. 
-                //var orgListDTO = GetOrganisationDTOList();
-                //ViewBag.OrganisationList = new SelectList(orgListDTO, "Id", "KommunkodOchOrgnamn");
-                //var orgtypesList = _portalSosService.HamtaAllaOrganisationstyper();
-                //ViewBag.OrgTypesList = CreateOrgtypeDropDownList(orgtypesList);
-                //var orgtyp = model.Organisation.Organisationstyp;
-                //if (orgtyp != null)
-                //{
-                //    model.SelectedOrgTypId = 
-                //}
-                //else
-                //{
-
-                //}
+                
             }
             catch (Exception e)
             {
@@ -179,10 +166,6 @@ namespace InrappSos.AstridWeb.Controllers
         [Authorize]
         public ActionResult GetContacts()
         {
-            // Ladda drop down lists. 
-            var orgListDTO = GetOrganisationDTOList();
-            ViewBag.OrganisationList = new SelectList(orgListDTO, "Id", "KommunkodOchOrgnamn");
-
             return View("EditContacts");
         }
 
@@ -209,9 +192,6 @@ namespace InrappSos.AstridWeb.Controllers
                     contact.ValdaDelregister = GetContactsChosenSubDirectories(contact);
                 }
                 model.SearchResult = new List<List<Organisation>>();
-                // Ladda drop down lists. 
-                var orgListDTO = GetOrganisationDTOList();
-                ViewBag.OrganisationList = new SelectList(orgListDTO, "Id", "KommunkodOchOrgnamn");
             }
             catch (Exception e)
             {
@@ -237,8 +217,6 @@ namespace InrappSos.AstridWeb.Controllers
         [Authorize]
         public ActionResult GetPrivateEmailAdresses()
         {
-            //var model = new OrganisationViewModels.OrganisationViewModel();
-            //model.SearchResult = new List<List<Organisation>>();
             return View("EditPrivateEmailAdresses");
         }
 
@@ -275,15 +253,57 @@ namespace InrappSos.AstridWeb.Controllers
             return View("EditPrivateEmailAdresses", model);
         }
 
+        // GET
+        [Authorize]
+        public ActionResult GetCases()
+        {
+            return View("EditCases");
+        }
 
+
+        // GET
+        [Authorize]
+        public ActionResult GetOrganisationsCases(int selectedOrganisationId = 0)
+        {
+            var model = new OrganisationViewModels.OrganisationViewModel();
+
+            try
+            {
+                if (selectedOrganisationId != 0)
+                {
+                    model.SelectedOrganisationId = selectedOrganisationId;
+                }
+                model.Organisation = _portalSosService.HamtaOrganisation(model.SelectedOrganisationId);
+                var cases = _portalSosService.HamtaArendenForOrg(model.Organisation.Id);
+                model.Arenden = ConvertArendeToVM(cases.ToList());
+                model.SearchResult = new List<List<Organisation>>();
+                // Ladda drop down lists. 
+                var arendetypList = _portalSosService.HamtaAllaArendetyper();
+                ViewBag.ArendetypDDL = CreateArendetypDropDownList(arendetypList);
+                model.SelectedArendetypId = 0;
+                var arendestatusList = _portalSosService.HamtaAllaArendestatusar();
+                ViewBag.ArendestatusDDL = CreateArendestatusDropDownList(arendestatusList);
+                model.SelectedArendestatusId = 0;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("OrganisationController", "GetOrganisationsPrivateEmailAdresses", e.ToString(), e.HResult,
+                    User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade vid hämtning av ärenden för vald organisation.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
+            }
+            return View("EditCases", model);
+        }
 
         //GET
         [Authorize]
         public ActionResult GetOrgUnits()
         {
-            // Ladda drop down lists. 
-            var orgListDTO = GetOrganisationDTOList();
-            ViewBag.OrganisationList = new SelectList(orgListDTO, "Id", "KommunkodOchOrgnamn");
             return View("EditOrgUnits");
         }
 
@@ -303,10 +323,6 @@ namespace InrappSos.AstridWeb.Controllers
                 model.Kommunkod = model.Organisation.Kommunkod;
                 model.OrgUnits = _portalSosService.HamtaOrgEnheterForOrg(model.Organisation.Id);
                 model.SearchResult = new List<List<Organisation>>();
-                // Ladda drop down lists. 
-                var orgListDTO = GetOrganisationDTOList();
-                ViewBag.OrganisationList = new SelectList(orgListDTO, "Id", "KommunkodOchOrgnamn");
-
             }
             catch (Exception e)
             {
@@ -332,9 +348,6 @@ namespace InrappSos.AstridWeb.Controllers
         [Authorize]
         public ActionResult GetReportObligations()
         {
-            // Ladda drop down lists. 
-            var orgListDTO = GetOrganisationDTOList();
-            ViewBag.OrganisationList = new SelectList(orgListDTO, "Id", "KommunkodOchOrgnamn");
             return View("EditReportObligations");
         }
 
@@ -353,10 +366,6 @@ namespace InrappSos.AstridWeb.Controllers
                 var admUppgSkyldighetList = _portalSosService.HamtaUppgiftsskyldighetForOrg(model.Organisation.Id);
                 model.ReportObligations = ConvertAdmUppgiftsskyldighetToViewModel(admUppgSkyldighetList.ToList());
                 model.SearchResult = new List<List<Organisation>>();
-
-                // Ladda drop down lists. 
-                var orgListDTO = GetOrganisationDTOList();
-                ViewBag.OrganisationList = new SelectList(orgListDTO, "Id", "KommunkodOchOrgnamn");
             }
             catch (Exception e)
             {
@@ -368,10 +377,6 @@ namespace InrappSos.AstridWeb.Controllers
                     Information = "Ett fel inträffade vid hämtning av uppgiftsskyldighet för organisation.",
                     ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
                 };
-                if (e.Message == "Sequence contains no elements")
-                {
-                    errorModel.Information = "Felaktig kommunkod";
-                }
                 return View("CustomError", errorModel);
             }
 
@@ -383,8 +388,6 @@ namespace InrappSos.AstridWeb.Controllers
         public ActionResult GetUnitReportObligations()
         {
             var model = new OrganisationViewModels.UnitReportObligationsViewModel();
-            //// Ladda drop down lists. 
-            model = GetOrgDropDownLists(model);
             model.SearchResult = new List<List<Organisation>>();
             return View("EditUnitReportObligations", model);
         }
@@ -407,8 +410,6 @@ namespace InrappSos.AstridWeb.Controllers
                 var admEnhetUppgSkyldighetList = _portalSosService.HamtaEnhetsUppgiftsskyldighetForOrgEnhet(model.SelectedOrganisationsenhetsId).ToList();
                 model.UnitReportObligations = ConvertEnhetsUppgSkyldighetToViewModel(admEnhetUppgSkyldighetList);
                 model.SearchResult = new List<List<Organisation>>();
-                // Ladda drop down lists. 
-                model = GetOrgDropDownLists(model);
             }
             catch (Exception e)
             {
@@ -514,6 +515,34 @@ namespace InrappSos.AstridWeb.Controllers
                 return View("CustomError", errorModel);
             }
             return RedirectToAction("GetOrganisationsPrivateEmailAdresses", new { selectedOrganisationId = privEmailAdressVM.OrganisationsId });
+        }
+
+        [HttpPost]
+        [Authorize]
+        public ActionResult UpdateOrganisationCase(OrganisationViewModels.ArendeViewModel arendeVM)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var arende = ConvertArendeVMToDb(arendeVM);
+                    var userName = User.Identity.GetUserName();
+                    _portalSosService.UppdateraArende(arende, userName);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("OrganisationController", "UpdateOrganisationPrivateEmailAdress", e.ToString(), e.HResult,
+                    User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade när ärendet skulle uppdateras.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
+            }
+            return RedirectToAction("GetOrganisationsCases", new { selectedOrganisationId = arendeVM.OrganisationsId });
         }
 
 
@@ -772,6 +801,53 @@ namespace InrappSos.AstridWeb.Controllers
                     return View("CustomError", errorModel);
                 }
                 return RedirectToAction("GetOrganisationsPrivateEmailAdresses", new { selectedOrganisationId = privEmail.OrganisationsId });
+            }
+
+            return View();
+        }
+
+        [Authorize]
+        public ActionResult CreateCase(int selectedOrganisationId = 0)
+        {
+            var model = new OrganisationViewModels.ArendeViewModel();
+            model.OrganisationsId = selectedOrganisationId;
+            model.Organisationsnamn = _portalSosService.HamtaOrganisation(selectedOrganisationId).Organisationsnamn;
+            var arendetypList = _portalSosService.HamtaAllaArendetyper();
+            ViewBag.ArendetypList = CreateArendetypDropDownList(arendetypList);
+            model.ArendetypId = 0;
+            var arendestatusList = _portalSosService.HamtaAllaArendestatusar();
+            ViewBag.ArendestatusList = CreateArendestatusDropDownList(arendestatusList);
+            model.ArendetypId = 0;
+            return View(model);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public ActionResult CreateCase(OrganisationViewModels.ArendeViewModel arendeVM)
+        {
+            var org = new Organisation();
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var userName = User.Identity.GetUserName();
+                    var arendeDb = ConvertArendeVMToDb(arendeVM);
+                    _portalSosService.SkapaArende(arendeDb, userName);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    ErrorManager.WriteToErrorLog("OrganisationController", "CreateCase", e.ToString(), e.HResult, User.Identity.Name);
+                    var errorModel = new CustomErrorPageModel
+                    {
+                        Information = "Ett fel inträffade när ärende skulle sparas.",
+                        ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                    };
+                    return View("CustomError", errorModel);
+                }
+                return RedirectToAction("GetOrganisationsCases", new { selectedOrganisationId = arendeVM.OrganisationsId });
             }
 
             return View();
@@ -1384,13 +1460,84 @@ namespace InrappSos.AstridWeb.Controllers
                
                 privEmailList.Add(privEmailVM);
             }
-            
-
-            
             return privEmailList;
         }
 
+        private Arende ConvertArendeVMToDb(OrganisationViewModels.ArendeViewModel arendeVM)
+        {
+            var arende = new Arende
+            {
+                Id = arendeVM.Id,
+                OrganisationsId = arendeVM.OrganisationsId,
+                Arendenamn = arendeVM.Arendenamn,
+                Arendenr = arendeVM.Arendenr,
+                ArendetypId = arendeVM.ArendetypId,
+                ArendestatusId = arendeVM.ArendestatusId,
+                StartDatum = arendeVM.StartDatum,
+                SlutDatum = arendeVM.SlutDatum
+            };
+            return arende;
+        }
 
+        private List<OrganisationViewModels.ArendeViewModel> ConvertArendeToVM(List<Arende> arendeDbList)
+        {
+            var arendeList = new List<OrganisationViewModels.ArendeViewModel>();
+
+            foreach (var arendeDb in arendeDbList)
+            {
+                var arendeVM = new OrganisationViewModels.ArendeViewModel()
+                {
+                    Id = arendeDb.Id,
+                    OrganisationsId = arendeDb.OrganisationsId,
+                    Arendenamn = arendeDb.Arendenamn,
+                    Arendenr = arendeDb.Arendenr,
+                    ArendetypId = arendeDb.ArendetypId,
+                    ArendestatusId = arendeDb.ArendestatusId,
+                    StartDatum = arendeDb.StartDatum,
+                    SlutDatum = arendeDb.SlutDatum
+                };
+
+                //Hämta ärentyp, klartext 
+                arendeVM.Arendetyp = _portalSosService.HamtaArendetyp(arendeDb.ArendetypId).ArendetypNamn;
+                arendeVM.SelectedArendetypId = arendeDb.ArendetypId;
+                //Hämta ärendestatus, klartext
+                arendeVM.Arendestatus = _portalSosService.HamtaArendestatus(arendeDb.ArendestatusId).ArendeStatusNamn;
+                arendeVM.SelectedArendestatusId = arendeDb.ArendestatusId;
+
+                arendeList.Add(arendeVM);
+            }
+            return arendeList;
+        }
+
+        private IEnumerable<SelectListItem> CreateArendetypDropDownList(IEnumerable<Arendetyp> arendetypList)
+        {
+            SelectList lstobj = null;
+            var list = arendetypList
+                .Select(p =>
+                    new SelectListItem
+                    {
+                        Value = p.Id.ToString(),
+                        Text = p.ArendetypNamn
+                    });
+            // Setting.  
+            lstobj = new SelectList(list, "Value", "Text");
+            return lstobj;
+        }
+
+        private IEnumerable<SelectListItem> CreateArendestatusDropDownList(IEnumerable<ArendeStatus> arendestatusList)
+        {
+            SelectList lstobj = null;
+            var list = arendestatusList
+                .Select(p =>
+                    new SelectListItem
+                    {
+                        Value = p.Id.ToString(),
+                        Text = p.ArendeStatusNamn
+                    });
+            // Setting.  
+            lstobj = new SelectList(list, "Value", "Text");
+            return lstobj;
+        }
 
 
     }

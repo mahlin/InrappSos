@@ -57,7 +57,7 @@ namespace InrappSos.ApplicationService.Interface
         IEnumerable<ApplicationUser> HamtaKontaktpersonerForOrg(int orgId);
 
         IEnumerable<UndantagEpostDoman> HamtaPrivataEpostadresserForOrg(int orgId);
-
+        IEnumerable<Arende> HamtaArendenForOrg(int orgId);
         IEnumerable<Organisationsenhet> HamtaOrgEnheterForOrg(int orgId);
         Organisationsenhet HamtaOrganisationsenhetMedEnhetskod(string kod, int orgId);
 
@@ -139,6 +139,10 @@ namespace InrappSos.ApplicationService.Interface
         IEnumerable<RegisterInfo> HamtaAllRegisterInformation();
         IEnumerable<AdmInsamlingsfrekvens> HamtaAllaInsamlingsfrekvenser();
 
+        IEnumerable<Arendetyp> HamtaAllaArendetyper();
+
+        IEnumerable<ArendeStatus> HamtaAllaArendestatusar();
+
         IEnumerable<Organisation> HamtaAllaOrganisationer();
 
         string HamtaKortnamnForDelregisterMedFilkravsId(int filkravsId);
@@ -193,6 +197,10 @@ namespace InrappSos.ApplicationService.Interface
 
         IEnumerable<AdmRegister> HamtaRegisterForAnvandare(string userId, int orgId);
 
+        Arendetyp HamtaArendetyp(int arendetypId);
+
+        ArendeStatus HamtaArendestatus(int arendestatusId);
+
         void InaktiveraKontaktperson(string userId);
 
         bool IsOpen();
@@ -206,6 +214,8 @@ namespace InrappSos.ApplicationService.Interface
         void SkapaOrganisationsenhet(Organisationsenhet orgUnit, string userName);
 
         void SkapaPrivatEpostadress(UndantagEpostDoman privEmail, string userName);
+
+        void SkapaArende(Arende arende, string userName);
         void SkapaOrganisationstyp(AdmOrganisationstyp orgtyp, string userName);
 
         void SkapaFAQKategori(AdmFAQKategori faqKategori, string userName);
@@ -285,6 +295,8 @@ namespace InrappSos.ApplicationService.Interface
         void UppdateraAnvandarInfo(AppUserAdmin user, string userName);
 
         void UppdateraPrivatEpostAdress(UndantagEpostDoman privEpostDoman, string userName);
+
+        void UppdateraArende(Arende arende, string userName);
 
         void SparaOppettider(OpeningHoursInfoDTO oppetTider, string userName);
         void SparaTillDatabasFillogg(string userName, string ursprungligtFilNamn, string nyttFilNamn, int leveransId, int sequenceNumber);

@@ -261,6 +261,24 @@ namespace InrappSos.DataAccess
             return privEmails;
         }
 
+        public IEnumerable<Arende> GetCasesForOrg(int orgId)
+        {
+            var cases = DbContext.Arende.Where(x => x.OrganisationsId == orgId).ToList();
+            return cases;
+        }
+
+        public Arendetyp GetCaseType(int casetypeId)
+        {
+            var caseType = DbContext.Arendetyp.SingleOrDefault(x => x.Id == casetypeId);
+            return caseType;
+        }
+
+        public ArendeStatus GetCaseStatus(int casestatusId)
+        {
+            var caseStatus = DbContext.ArendeStatus.SingleOrDefault(x => x.Id == casestatusId);
+            return caseStatus;
+        }
+
         public AdmUppgiftsskyldighet GetReportObligationById(int repOblId)
         {
             var repObl = DbContext.AdmUppgiftsskyldighet.SingleOrDefault(x => x.Id == repOblId);
@@ -536,6 +554,18 @@ namespace InrappSos.DataAccess
         {
             var collFreq = DbContext.AdmInsamlingsfrekvens.ToList();
             return collFreq;
+        }
+
+        public IEnumerable<Arendetyp> GetAllCaseTypes()
+        {
+            var caseTypes = DbContext.Arendetyp.ToList();
+            return caseTypes;
+        }
+
+        public IEnumerable<ArendeStatus> GetAllCaseStatuses()
+        {
+            var caseStatuses = DbContext.ArendeStatus.ToList();
+            return caseStatuses;
         }
 
         public string GetSubDirectoryShortNameForExpectedFile(int filkravId)
@@ -976,6 +1006,12 @@ namespace InrappSos.DataAccess
             DbContext.SaveChanges();
         }
 
+        public void CreateCase(Arende arende)
+        {
+            DbContext.Arende.Add(arende);
+            DbContext.SaveChanges();
+        }
+
         public void CreateOrgType(AdmOrganisationstyp orgType)
         {
             DbContext.AdmOrganisationstyp.Add(orgType);
@@ -1191,6 +1227,18 @@ namespace InrappSos.DataAccess
             privEmailDb.AktivTom = privEmail.AktivTom;
             privEmailDb.AndradAv = privEmail.AndradAv;
             privEmailDb.AndradDatum = privEmail.AndradDatum;
+            DbContext.SaveChanges();
+        }
+
+        public void UpdateCase(Arende arende)
+        {
+            var arendeDb = DbContext.Arende.SingleOrDefault(x => x.Id == arende.Id);
+            arendeDb.Arendenamn = arende.Arendenamn;
+            arendeDb.Arendenr = arende.Arendenr;
+            arendeDb.ArendetypId = arende.ArendetypId;
+            arendeDb.ArendestatusId = arende.ArendestatusId;
+            arendeDb.StartDatum = arende.StartDatum;
+            arendeDb.SlutDatum = arende.SlutDatum;
             DbContext.SaveChanges();
         }
 

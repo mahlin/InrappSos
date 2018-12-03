@@ -28,6 +28,9 @@
             case "privateEmailAdresses":
                 @Html.ActionLink(org.Organisationsnamn, "GetOrganisationsPrivateEmailAdresses", "Organisation", new { selectedOrganisationId = org.Id}, new {@class = "btn"})<br/>
                 break;
+            case "cases":
+                @Html.ActionLink(org.Organisationsnamn, "GetOrganisationsCases", "Organisation", new { selectedOrganisationId = org.Id}, new {@class = "btn"})<br/>
+                break;
             default:
                 break;;
         }

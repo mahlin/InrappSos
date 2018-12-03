@@ -224,6 +224,7 @@
     </Content>
     <Content Include="Scripts\bootstrap-multiselect\dist\less\bootstrap-multiselect.less" />
     <None Include="ConnectionStrings.config" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff2" />
     <None Include="PrivateSettings.config" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
@@ -324,6 +325,8 @@
     <Content Include="Views\Admin\EditRole.cshtml" />
     <Content Include="Views\Organisation\EditPrivateEmailAdresses.cshtml" />
     <Content Include="Views\Organisation\CreatePrivateEmailAdress.cshtml" />
+    <Content Include="Views\Organisation\EditCases.cshtml" />
+    <Content Include="Views\Organisation\CreateCase.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

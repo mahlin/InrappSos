@@ -1,0 +1,239 @@
+﻿@model InrappSos.AstridWeb.Models.ViewModels.OrganisationViewModels.OrganisationViewModel
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        //Göm kolumner med id resp dropdowner/ärendetyp/ärendestatus om ej edit-mode
+        $('#caseTable tr th:eq(0)').hide();
+        $('#caseTable tr th:eq(1)').hide();
+        $('#caseTable tr th:eq(2)').hide();
+        $('#caseTable tr th:eq(6)').hide();
+        $('#caseTable tr th:eq(8)').hide();
+        $("#caseTable tbody tr").each(function (i, row) {
+            $(row).find('td:eq(0)').hide();
+            $(row).find('td:eq(1)').hide();
+            $(row).find('td:eq(2)').hide();
+            $(row).find('td:eq(6)').hide();
+            $(row).find('td:eq(8)').hide();
+        });
+    });
+
+    $(function () {
+        $("#searchText").focus();
+    });
+
+    $(document).on('change','#ddlArendetyp',function() {
+        $("#SelectedArendetypId").val($('#ddlArendetyp').val());
+    });
+
+    $(document).on('change', '#ddlArendestatus', function () {
+        $("#SelectedArendestatusId").val($('#ddlArendestatus').val());
+    });
+
+
+    $(function () {
+        $('.edit-mode').hide();
+        $('.cancel-user').on('click', function () {
+                var tr = $(this).parents('tr:first');
+                //Göm kolumnen med dropdowner/Ärendetyp och ärendestatus om ej edit-mode
+                tr.find('td:eq(6)').hide();
+                tr.find('td:eq(8)').hide();
+                tr.find('td:eq(5)').show();
+                tr.find('td:eq(7)').show();
+                tr.find('.edit-mode, .display-mode').toggle();
+            });
+        $('.edit-user').on('click', function () {
+            var tr = $(this).parents('tr:first');
+            //Visa kolumnen med dropdowner/Ärendetyp och ärendestatus om edit-mode
+            tr.find('td:eq(6)').show();
+            tr.find('td:eq(5)').hide();
+           
+            var arendetypId = tr.find("#ArendetypId").val();
+            if (arendetypId !== "0") {
+                tr.find("#ddlArendetyp").val(arendetypId);
+            } else {
+                tr.find("#ddlArendetyp").val("");
+            }
+            tr.find('td:eq(8)').show();
+            tr.find('td:eq(7)').hide();
+            var arendestatusId = tr.find("#ArendestatusId").val();
+            if (arendestatusId !== "0") {
+                tr.find("#ddlArendestatus").val(arendestatusId);
+            } else {
+                tr.find("#ddlArendestatus").val("");
+            }
+            tr.find('.edit-mode, .display-mode').toggle();
+        });
+        $('.save-user').on('click', function () {
+            var tr = $(this).parents('tr:first');
+            var id = tr.find("#Id").val();
+            var arendetypId = tr.find('#ArendetypId').val();
+            var arendestatusId = tr.find('#ArendestatusId').val();
+            var arendeNamn = tr.find("#Arendenamn").val();
+            var arendeNr = tr.find("#ArendeNr").val();
+            var arendetyp = tr.find("#Arendetyp").val();
+            var arendestatus = tr.find("#Arendestatus").val();
+            var startDatum = tr.find("#StartDatum").val();
+            var slutDatum = tr.find("#SlutDatum").val();
+
+            //Creating Arende JSON object
+            var arende =
+                {
+                    "Id": id,
+                    "OrganisationsId": $('#SelectedOrganisationId').val(),
+                    "ArendetypId": arendetypId,
+                    "ArendestatusId": arendestatusId, 
+                    "Arendenamn": arendeNamn,
+                    "Arendenr": arendeNr,
+                    "Arendetyp": arendetyp,
+                    "Arendetatus": arendestatus,
+                    "StartDatum": startDatum,
+                    "SlutDatum": slutDatum
+                };
+            //Posting Arende object to controller's Update action method
+            $.ajax({
+                url: '/Organisation/UpdateOrganisationCase',
+                data: JSON.stringify(arende),
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    //location.reload();
+                    $("#pageContainer").html(data);
+                    tr.find('.edit-mode, .display-mode').toggle();
+                    $('#footer').hide();
+                    //alert('Record updated Successfully!!');
+                }
+            });
+
+        });
+
+        $('.edit-user').on('click', function () {
+            var tr = $(this).parents('tr:first');
+            var arendeNamn = tr.find("#Arendenamn").val();
+            var arendeNr = tr.find("#ArendeNr").val();
+            var arendetyp = tr.find("#Arendetyp").val();
+            var arendestatus = tr.find("#Arendestatus").val();
+            var startDatum = tr.find("#StartDatum").val();
+            var slutDatum = tr.find("#SlutDatum").val();
+
+            tr.find("#lblArendenamn").text(arendeNamn);
+            tr.find("#lblArendeNr").text(arendeNr);
+            tr.find("#lblArendetyp").text(arendetyp);
+            tr.find("#lblArendestatus").text(arendestatus);
+            tr.find("#lblStartDatum").text(startDatum);
+            tr.find("#lblSlutDatum").text(slutDatum);
+        });
+    });
+</script>
+<div id="pageContainer">
+    <br />
+
+    <div class="row">
+        <div class="col-md-8 padding-top-25">
+            <h4>Administrera ärenden</h4>
+            <section id="orgForm">
+                @Html.AntiForgeryToken()
+                <hr/>
+                @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+
+                @using (Html.BeginForm("SearchOrganisation", "Organisation", new { origin = "cases" }, FormMethod.Post, null))
+                {
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div id="custom-search-input">
+                                    <div class="input-group col-md-12">
+                                        <input type="text" class="form-control" id="searchText" name="searchText" style="max-width: 350px !important;" placeholder="Sök med organisationskod eller organisationsnamn" />
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-info btn-lg" type="submit">
+                                                <i class="glyphicon glyphicon-search"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </section>
+        </div>
+    </div>
+    <br />
+
+
+    @if (Model != null)
+    {
+        @* Om sökresultat finns, visa listan *@
+        if (Model.SearchResult.Count > 0 && Model.SearchResult[0].Count > 0)
+        {
+            @Html.Partial("_SearchResult")
+        }
+        @* Om inga sökträffar *@
+        else if (Model.SearchResult.Count == 1 && Model.SearchResult[0].Count == 0 && Model.Organisation == null)
+        {
+            <h2>Din sökning på gav inget resultat. </h2>
+        }
+        @* Om en relevant organisation hittats, visa organisationsinfon *@
+        else if (Model.Organisation != null)
+        {
+
+            @Html.HiddenFor(m => m.SelectedOrganisationId)
+
+            <div style="font-size: 1.2em; padding-left: 20px; padding-bottom: 20px;"><b>@Model.Organisation.Organisationsnamn</b></div>
+
+            @Html.ActionLink("Lägg till nytt ärende", "CreateCase", "Organisation", new { selectedOrganisationId = Model.SelectedOrganisationId}, new { style = "padding-left:20px;" })
+
+
+            if (Model.Arenden != null)
+            {
+                <div id="gridContent" style="font-family: Arial; padding: 20px;">
+
+                    @{
+                        ViewBag.Title = "Administrera ärenden";
+                        var grid = new WebGrid(source: Model.Arenden, canPage: false, rowsPerPage: 10, ajaxUpdateContainerId: "casesGrid");
+                    }
+
+                    @grid.GetHtml(htmlAttributes: new {id = "caseTable"},
+                        tableStyle: "webgrid-table",
+                        headerStyle: "webgrid-header",
+                        footerStyle: "webgrid-footer",
+                        alternatingRowStyle: "webgrid-alternating-row",
+                        selectedRowStyle: "webgrid-selected-row",
+                        rowStyle: "webgrid-row-style",
+                        mode: WebGridPagerModes.All,
+                        columns: grid.Columns(
+                            grid.Column(null, null, format: @<input type="hidden" id="Id" name="IDHidden" value="@item.Id"/>),
+                            grid.Column(null, null, format: @<text><input type="hidden" id="ArendetypId" value="@item.ArendetypId" class="edit-mode form-control hide" /></text>, style: "colZeroWidth"),
+                            grid.Column(null, null, format: @<text><input type="hidden" id="ArendestatusId" value="@item.ArendestatusId" class="edit-mode form-control hide" /></text>, style: "colZeroWidth"),
+                            grid.Column("Arendenamn", "Ärendenamn", format: @<text><span class="display-mode col2Width"><label id="lblArendenamn" style="width: 200px;">@item.Arendenamn</label></span>
+                                        <input type="text" id="Arendenamn" value="@item.Arendenamn" class="edit-mode form-control"/> </text>, style: "col3Width"),
+                            grid.Column("ArendeNr", "Ärendenr", format: @<text><span class="display-mode col150Width"><label id="lblArendeNr" class="col150Width">@item.ArendeNr</label></span>
+                                        <input type="text" id="ArendeNr" value="@item.ArendeNr" class="edit-mode form-control"/></text>, style: "col150Width"),
+
+                            grid.Column("Arendetyp", "Ärendetyp", format: @<text><span class="display-mode"><label id="lblArendetyp">@item.Arendetyp</label></span></text>, style: "col1Width"),
+                            grid.Column("Ärendetyp", format: @item => Html.DropDownListFor(m => m.SelectedArendetypId, ViewBag.ArendetypDDL as SelectList, " - Välj -", new {id = "ddlArendetyp", @class = "form-control edit-mode", style = "min-width:100px !important"})),
+
+                            grid.Column("Arendestatus", "Ärendestatus", format: @<text><span class="display-mode"><label id="lblArendestatus">@item.Arendestatus</label></span></text>, style: "col1Width"),
+                            grid.Column("Ärendestatus", format: @item => Html.DropDownListFor(m => m.SelectedArendestatusId, ViewBag.ArendestatusDDL as SelectList, " - Välj -", new {id = "ddlArendestatus", @class = "form-control edit-mode", style = "min-width:100px !important"})),
+
+                            grid.Column("StartDatum", "Startdatum", format: @<text><span class="display-mode"><label id="lblStartDatum">@( item.StartDatum != null ? item.StartDatum.ToString("yyyy-MM-dd") : item.StartDatum)</label></span>
+                                        <input type="text" id="StartDatum" value="@( item.StartDatum != null ? item.StartDatum.ToString("yyyy-MM-dd") : item.StartDatum)" class="edit-mode form-control"/></text>, style: "col2Width"),
+                            grid.Column("SlutDatum", "Slutdatum", format: @<text><span class="display-mode"><label id="lblSlutDatum">@( item.SlutDatum != null ? item.SlutDatum.ToString("yyyy-MM-dd") : item.SlutDatum)</label></span>
+                                        <input type="text" id="SlutDatum" value="@( item.SlutDatum != null ? item.SlutDatum.ToString("yyyy-MM-dd") : item.SlutDatum)" class="edit-mode form-control"/></text>, style: "col2Width"),
+                            grid.Column(null, format: @<text>
+                                                          <button class="edit-user display-mode btn btn-default">Ändra</button>
+                                                          <button class="save-user edit-mode btn btn-default">Spara</button>
+                                                          <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
+                                                       </text>, style: "col3Width", canSort: false)))
+
+                </div>
+            }
+            else
+            {
+                <br /><br/>
+                <div style="font-size: 1.2em;padding-left: 20px;">Inga ärenden hittades för vald organisation</div>
+            }
+        }
+    }
+
+</div>

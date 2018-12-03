@@ -1,0 +1,94 @@
+﻿@model InrappSos.AstridWeb.Models.ViewModels.OrganisationViewModels.ArendeViewModel
+
+@{
+    ViewBag.Title = "Skapa nytt ärende";
+}
+
+<script>
+
+    //$(document).ready(function () {
+    //    alert("Orgid: " + $('#Organisationsid').val());
+    //});
+
+    $(document).on('change', '#ddlArendetyp', function () {
+        $("#SelectedArendetypId").val($('#ddlArendetyp').val());
+    });
+
+    $(document).on('change', '#ddlArendestatus', function () {
+        $("#SelectedArendestatusId").val($('#ddlArendestatus').val());
+    });
+
+    
+</script>
+
+@using (Html.BeginForm("CreateCase", "Organisation", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.OrganisationsId)
+
+        <div class="form-horizontal padding-top-55">
+            <h4>Lägg till nytt ärende för @Model.Organisationsnamn</h4>
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="form-group">
+                @Html.LabelFor(model => model.Arendenamn, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.Arendenamn, htmlAttributes: new { @class = "form-control"})
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Arendenr, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Arendenr, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Arendenr, "", new { @class = "text-danger" })
+                </div>
+            </div>
+           
+            <div class="form-group">
+                @Html.Label("Ärendetyp", new { @class = "control-label col-md-2" })
+                <div class="col-md-10" style="width: 255px !important;">
+                    @Html.DropDownListFor(m => m.ArendetypId, ViewBag.ArendetypList as SelectList, " - Välj ärendetyp -", new {id = "ddlArendetyp", @class = "form-control", style = "max-width:250px !important"})
+                </div>
+            </div>
+            
+            <div class="form-group">
+                @Html.Label("Ärendestatus", new { @class = "control-label col-md-2" })
+                <div class="col-md-10" style="width: 255px !important;">
+                    @Html.DropDownListFor(m => m.ArendestatusId, ViewBag.ArendestatusList as SelectList, " - Välj ärendestatus -", new {id = "ddlArendestatus", @class = "form-control", style = "max-width:250px !important"})
+                </div>
+            </div>
+            
+            <div class="form-group">
+                @Html.LabelFor(model => model.StartDatum, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.StartDatum, new { htmlAttributes = new { @class = "form-control", @placeholder = "ÅÅÅÅ-MM-dd" } })
+                    @Html.ValidationMessageFor(model => model.StartDatum, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            
+            <div class="form-group">
+                @Html.LabelFor(model => model.SlutDatum, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.SlutDatum, new { htmlAttributes = new { @class = "form-control", @placeholder = "ÅÅÅÅ-MM-dd" } })
+                    @Html.ValidationMessageFor(model => model.SlutDatum, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Spara" class="btn btn-default" />
+                </div>
+            </div>
+        </div>
+        <div>
+            @Html.ActionLink("Tillbaka", "GetOrganisationsCases", "Organisation", new { selectedOrganisationId = Model.OrganisationsId }, null)
+
+        </div>
+    }
+
+
+
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }

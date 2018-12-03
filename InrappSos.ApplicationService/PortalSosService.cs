@@ -192,6 +192,12 @@ namespace InrappSos.ApplicationService
             return privEmails;
         }
 
+        public IEnumerable<Arende> HamtaArendenForOrg(int orgId)
+        {
+            var cases = _portalSosRepository.GetCasesForOrg(orgId);
+            return cases;
+        }
+
         public IEnumerable<AppUserAdmin> HamtaAdminUsers()
         {
             var adminUsers = _portalSosRepository.GetAdminUsers();
@@ -492,6 +498,18 @@ namespace InrappSos.ApplicationService
         {
             var insamlingsfrekvensList = _portalSosRepository.GetAllCollectionFrequencies();
             return insamlingsfrekvensList;
+        }
+
+        public IEnumerable<Arendetyp> HamtaAllaArendetyper()
+        {
+            var arendetypList = _portalSosRepository.GetAllCaseTypes();
+            return arendetypList;
+        }
+
+        public IEnumerable<ArendeStatus> HamtaAllaArendestatusar()
+        {
+            var arendestatusList = _portalSosRepository.GetAllCaseStatuses();
+            return arendestatusList;
         }
 
         public string HamtaKortnamnForDelregisterMedFilkravsId(int filkravId)
@@ -1112,6 +1130,18 @@ namespace InrappSos.ApplicationService
             return registerList;
         }
 
+        public Arendetyp HamtaArendetyp(int arendetypId)
+        {
+            var arendetyp = _portalSosRepository.GetCaseType(arendetypId);
+            return arendetyp;
+        }
+
+        public ArendeStatus HamtaArendestatus(int arendestatusId)
+        {
+            var arendestatus = _portalSosRepository.GetCaseStatus(arendestatusId);
+            return arendestatus;
+        }
+
         public AdmUppgiftsskyldighet HamtaUppgiftsskyldighetForOrganisationOchRegister(int orgId, int delregid)
         {
             var uppgiftsskyldighet = _portalSosRepository.GetUppgiftsskyldighetForOrganisationAndRegister(orgId, delregid);
@@ -1163,6 +1193,17 @@ namespace InrappSos.ApplicationService
             privEmail.AndradAv = userName;
 
             _portalSosRepository.CreatePrivateEmail(privEmail);
+        }
+
+        public void SkapaArende(Arende arende, string userName)
+        {
+            //Sätt datum och användare
+            arende.SkapadDatum = DateTime.Now;
+            arende.SkapadAv = userName;
+            arende.AndradDatum = DateTime.Now;
+            arende.AndradAv = userName;
+
+            _portalSosRepository.CreateCase(arende);
         }
 
         public void SkapaOrganisationstyp(AdmOrganisationstyp orgtyp, string userName)
@@ -1528,6 +1569,13 @@ namespace InrappSos.ApplicationService
             privEpostDoman.AndradAv = userName;
             privEpostDoman.AndradDatum = DateTime.Now;
             _portalSosRepository.UpdatePrivateEmail(privEpostDoman);
+        }
+
+        public void UppdateraArende(Arende arende, string userName)
+        {
+            arende.AndradAv = userName;
+            arende.AndradDatum = DateTime.Now;
+            _portalSosRepository.UpdateCase(arende);
         }
 
         public void SparaOppettider(OpeningHoursInfoDTO oppetTider, string userName)

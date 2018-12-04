@@ -28,10 +28,11 @@
                     contentType: 'application/json; charset=utf-8',
                     data: JSON.stringify(data),
                     success: function (data) {
+                        location.reload();
                         //On ajax success do this
-                        $("#pageContainer").html(data);
-                        tr.find('.edit-mode, .display-mode').toggle();
-                        $('#footer').hide();
+                        //$("#pageContainer").html(data);
+                        //tr.find('.edit-mode, .display-mode').toggle();
+                        //$('#footer').hide();
                     }
                 });
             } else {
@@ -105,10 +106,10 @@
                 type: 'POST',
                 contentType: 'application/json; charset=utf-8',
                 success: function (data) {
-                    //location.reload();
-                    $("#pageContainer").html(data);
-                    tr.find('.edit-mode, .display-mode').toggle();
-                    $('#footer').hide();
+                    location.reload();
+                    //$("#pageContainer").html(data);
+                    //tr.find('.edit-mode, .display-mode').toggle();
+                    //$('#footer').hide();
                     //alert('Record updated Successfully!!');
                 }
             });

@@ -27,9 +27,10 @@
                     data: JSON.stringify(data),
                     success: function (data) {
                         //On ajax success do this
-                        $("#pageContainer").html(data);
-                        $('#footer').hide();
-                        tr.find('.edit-mode, .display-mode').toggle();
+                        location.reload();
+                        //$("#pageContainer").html(data);
+                        //$('#footer').hide();
+                        //tr.find('.edit-mode, .display-mode').toggle();
                     }
                 });
             }
@@ -74,10 +75,10 @@
                     type: 'POST',
                     contentType: 'application/json; charset=utf-8',
                     success: function(data) {
-                        //location.reload();
-                        $("#pageContainer").html(data);
-                        tr.find('.edit-mode, .display-mode').toggle();
-                        $('#footer').hide();
+                        location.reload();
+                        //$("#pageContainer").html(data);
+                        //tr.find('.edit-mode, .display-mode').toggle();
+                        //$('#footer').hide();
                         //alert('Record updated Successfully!!');
                     }
                 });

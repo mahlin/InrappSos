@@ -3,14 +3,33 @@
 <script>
     (function($){
         $(document).ready(function () {
+
+            $('.dropdown').on('hide.bs.dropdown',
+                function(ev) {
+                    console.log(this);
+                    $('.dropdown.open', $(this)).toggle();
+                });
+
+            $('.dropdown-submenu-toggle').on('click',
+                function (ev) {
+
+                    $(this).parent().toggleClass('open');
+                    //$(this).next('ul.dropdown-menu').toggleClass('open');
+                    ev.stopPropagation();
+                    ev.preventDefault();
+
+                    //$('ul.dropdown-menu', $(this).parent()).toggle();
+
+                });
+
             //$('.dropown-toggle').dropdown();
-            $('ul.dropdown-menu [data-toggle=dropdown]').on('click', function (event) {
-                event.preventDefault(); 
-                event.stopPropagation(); 
-                //$(event.target).find('.dropdown-menu').toggle();
-                $(this).parent().siblings().removeClass('open');
-                $(this).parent().toggleClass('open');
-            });
+            //$('ul.dropdown-menu [data-toggle=dropdown]').on('click', function (event) {
+            //    event.preventDefault(); 
+            //    event.stopPropagation(); 
+            //    //$(event.target).find('.dropdown-menu').toggle();
+            //    $(this).parent().siblings().removeClass('open');
+            //    $(this).parent().toggleClass('open');
+            //});
         });
     })(jQuery);
 </script>
@@ -37,7 +56,7 @@
                         <li>@Html.ActionLink("FAQ", "GetFAQCategories", "System")</li>
                         <li>@Html.ActionLink("Informationssidor", "GetInformationTexts", "System")</li>
                         <li class="dropdown dropdown-submenu">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Öppettider</a>
+                            <a href="#" class="dropdown-submenu-toggle" data-toggle="dropdown">Öppettider</a>
                             <ul class="dropdown-menu">
                                 <li>@Html.ActionLink("Ordinarie öppettider", "GetOpeningHours", "System")</li>
                                 <li>@Html.ActionLink("Helgdagar", "GetHolidays", "System")</li>
@@ -81,7 +100,7 @@
                         <li>@Html.ActionLink("Förväntad leverans", "Index", "Leverans")</li>
                         <li>@Html.ActionLink("Förväntad fil", "GetForvantadeFiler", "Leverans")</li>
                         <li class="dropdown dropdown-submenu">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Leveranser</a>
+                            <a href="#" class="dropdown-submenu-toggle" data-toggle="dropdown">Leveranser</a>
                             <ul class="dropdown-menu">
                                 <li>@Html.ActionLink("Leveranshistorik", "GetDeliveries", "Leverans")</li>
                                 <li>@Html.ActionLink("Leveransstatus per organisation", "GetDeliveryStatus", "Leverans")</li>

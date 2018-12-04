@@ -3,32 +3,15 @@
 
 <script src="@Url.Content("~/Scripts/custom.js")" type="text/javascript"></script>
 <script type="text/javascript">
-    var orgLista = @Html.Raw(Json.Encode(Model.OrganisationList));
 
     $(function () {
         $("#searchText").focus();
     });
 
-    //$(function () {
-    //    $('th a, tfoot a').click(function () {
-    //        //if querystring already contains selectedOrgId, remove it
-    //        var index = $(this).attr('href').indexOf("&selectedOrgId=");
-    //        if (index >= 0) {
-    //            var cleanUrl = $(this).attr('href').substring(0, index);
-    //            $(this).attr('href', cleanUrl);
-    //        }
-    //        var newUrl = $(this).attr('href') +
-    //            "&selectedOrgId=" +
-    //            $("#SelectedOrganisationId").val();
-    //        $('form').attr('action', newUrl).submit();
-    //        return false;
-    //    });
-    //});
-
     $(document).ready(function () {
         if ($("#SelectedOrganisationId").val() > 0) {
             //set orgenhets-ddl
-            setOrgenhetsDrop($("#SelectedOrganisationId").val());
+            //setOrgenhetsDrop($("#SelectedOrganisationId").val());
         }
         if ($("#SelectedOrganisationsenhetsId").val() !== "0") {
             $('#ddlOrgenheter').val($("#SelectedOrganisationsenhetsId").val());
@@ -38,20 +21,6 @@
             $('#raderSaknas').hide();
         }
     });
-
-
-    //$(document).on('change', '#ddlOrganisation',
-    //    function() {
-    //        //Nollställ dropparna
-    //        $('#ddlOrgenheter').empty();
-    //        $("#ddlOrgenheter").append("<option> - Välj organisationsenhet - </option>");
-    //        var selectedOrg = $('#ddlOrganisation').val();
-    //        $("#SelectedOrganisationId").val(selectedOrg);
-    //        $("#SelectedOrganisationsenhetsId").val("");
-
-    //        //Hämta orgenheter för vald kommun
-    //        setOrgenhetsDrop(selectedOrg);
-    //    });
 
     $(document).on('change', '#ddlOrgenheter',
         function () {
@@ -74,32 +43,33 @@
         }
     });
 
-    function setOrgenhetsDrop(orgId) {
-        //Hämta orgenheter för vald organisation
-        orgLista.forEach(function(org, index) {
-            if (orgId === org.Id.toString()) {
-                if (org.Organisationsenheter.length !== 0) {
-                    //Populera orgenhets-dropdown
-                    var vals = {};
-                    org.Organisationsenheter.forEach(function(unit, index) {
-                        vals[unit.Id] = unit.Enhetsnamn;
-                        var x = unit.Id;
-                    });
+    //function setOrgenhetsDrop(orgId) {
+    //    //Hämta orgenheter för vald organisation
+    //    var org = $('#Organisation').val();
+    //    //orgLista.forEach(function(org, index) {
+    //    //    if (orgId === org.Id.toString()) {
+    //            if (org.Organisationsenheter.length !== 0) {
+    //                //Populera orgenhets-dropdown
+    //                var vals = {};
+    //                org.Organisationsenheter.forEach(function(unit, index) {
+    //                    vals[unit.Id] = unit.Enhetsnamn;
+    //                    var x = unit.Id;
+    //                });
 
-                    var $ddlOrgenheter = $("#ddlOrgenheter");
-                    $ddlOrgenheter.empty();
-                    $ddlOrgenheter.append("<option> - Välj organisationsenhet - </option>");
-                    $.each(vals,
-                        function (index, value) {
-                            var x = index;
-                            $ddlOrgenheter.append("<option value=" + index + " >" + value + "</option>");
-                        });
-                    $ddlOrgenheter.removeAttr('readonly');
-                    $('#searchBtn').removeAttr('disabled');
-                }
-            }
-        });
-    }
+    //                var $ddlOrgenheter = $("#ddlOrgenheter");
+    //                $ddlOrgenheter.empty();
+    //                $ddlOrgenheter.append("<option> - Välj organisationsenhet - </option>");
+    //                $.each(vals,
+    //                    function (index, value) {
+    //                        var x = index;
+    //                        $ddlOrgenheter.append("<option value=" + index + " >" + value + "</option>");
+    //                    });
+    //                $ddlOrgenheter.removeAttr('readonly');
+    //                $('#searchBtn').removeAttr('disabled');
+    //        //    }
+    //        //}
+    //    }
+    //}
 
     $(function() {
         $('.edit-mode').hide();
@@ -133,10 +103,10 @@
                     type: 'POST',
                     contentType: 'application/json; charset=utf-8',
                     success: function(data) {
-                        //location.reload();
-                        $("#pageContainer").html(data);
-                        tr.find('.edit-mode, .display-mode').toggle();
-                        $('#footer').hide();
+                        location.reload();
+                        //$("#pageContainer").html(data);
+                        //tr.find('.edit-mode, .display-mode').toggle();
+                        //$('#footer').hide();
                         //alert('Record updated Successfully!!');
                     }
                 });
@@ -239,13 +209,13 @@
                     <div class="form-group">
                         @Html.Label("Organisationsenhet", new { @class = "control-label col-md-2" })
                         <div class="col-md-10" style="max-width: 400px !important;">
-                            @Html.DropDownListFor(m => m.SelectedOrganisationsenhetsId, Enumerable.Empty<SelectListItem>(), " - Välj organisationsenhet -", new { @class = "form-control", id = "ddlOrgenheter", @readonly = "readonly" })
+                            @Html.DropDownListFor(m => m.SelectedOrganisationsenhetsId, ViewBag.OrgenhetDDL as SelectList, " - Välj organisationsenhet -", new { @class = "form-control", id = "ddlOrgenheter" })
                         </div>
                     </div>
 
                     <div class="form-group">
                         <div class="col-md-offset-2 col-md-10">
-                            <input type="submit" id="searchBtn" value="Sök enhetsuppgiftskyldighet" class="btn btn-default" disabled />
+                            <input type="submit" id="searchBtn" value="Sök enhetsuppgiftskyldighet" class="btn btn-default" />
                         </div>
                     </div>
                 }

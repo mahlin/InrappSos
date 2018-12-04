@@ -407,8 +407,14 @@ namespace InrappSos.AstridWeb.Controllers
                     model.SelectedOrganisationsenhetsId = selectedOrgenhetsId;
                 }
                 model.Organisation = _portalSosService.HamtaOrganisation(model.SelectedOrganisationId);
-                var admEnhetUppgSkyldighetList = _portalSosService.HamtaEnhetsUppgiftsskyldighetForOrgEnhet(model.SelectedOrganisationsenhetsId).ToList();
-                model.UnitReportObligations = ConvertEnhetsUppgSkyldighetToViewModel(admEnhetUppgSkyldighetList);
+                // Ladda drop down list. 
+                var orgenhetList = _portalSosService.HamtaOrgEnheterForOrg(model.Organisation.Id).ToList();
+                ViewBag.OrgenhetDDL = CreateOrgenhetDropDownList(orgenhetList);
+                if (model.SelectedOrganisationsenhetsId != 0)
+                {
+                    var admEnhetUppgSkyldighetList = _portalSosService.HamtaEnhetsUppgiftsskyldighetForOrgEnhet(model.SelectedOrganisationsenhetsId).ToList();
+                    model.UnitReportObligations = ConvertEnhetsUppgSkyldighetToViewModel(admEnhetUppgSkyldighetList);
+                }
                 model.SearchResult = new List<List<Organisation>>();
             }
             catch (Exception e)
@@ -1533,6 +1539,21 @@ namespace InrappSos.AstridWeb.Controllers
                     {
                         Value = p.Id.ToString(),
                         Text = p.ArendeStatusNamn
+                    });
+            // Setting.  
+            lstobj = new SelectList(list, "Value", "Text");
+            return lstobj;
+        }
+
+        private IEnumerable<SelectListItem> CreateOrgUnitDropDownList(IEnumerable<Organisationsenhet> orgenhetList)
+        {
+            SelectList lstobj = null;
+            var list = orgenhetList
+                .Select(p =>
+                    new SelectListItem
+                    {
+                        Value = p.Id.ToString(),
+                        Text = p.Enhetsnamn
                     });
             // Setting.  
             lstobj = new SelectList(list, "Value", "Text");

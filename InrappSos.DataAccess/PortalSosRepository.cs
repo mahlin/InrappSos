@@ -674,7 +674,7 @@ namespace InrappSos.DataAccess
 
         public IEnumerable<AdmDelregister> GetAllSubDirectoriesForPortal()
         {
-            var delregistersList = DbContext.AdmDelregister.Where(x => x.Inrapporteringsportal).ToList();
+            var delregistersList = DbContext.AdmDelregister.Where(x => x.Inrapporteringsportal).Include(x => x.AdmFilkrav).ToList();
             return delregistersList;
         }
 

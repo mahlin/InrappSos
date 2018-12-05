@@ -865,8 +865,9 @@ namespace InrappSos.AstridWeb.Controllers
             // Ladda drop down lists
             var model = new LeveransViewModels.LeveransViewModel();
             model.RegisterList = _portalSosService.HamtaDelregisterOchFilkrav();
-            var delregisterList = _portalSosService.HamtaAllaDelregisterForPortalen();
-            ViewBag.DelregisterList = CreateDelRegisterDropDownList(delregisterList);
+            //Visa bara delregister med insamlingsfrekven "Månad" (insamlingsfrekvensId= 1) #184
+            var delregisterManadList = _portalSosService.HamtaDelregisterMedInsamlingsfrekvens(1);
+            ViewBag.DelregisterList = CreateDelRegisterDropDownList(delregisterManadList);
             ViewBag.FilkravList = CreateDummyFilkravDropDownList();
             ViewBag.YearList = CreateYearDropDownList();
             model.SelectedDelregisterId = 0;

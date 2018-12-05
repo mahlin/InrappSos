@@ -577,6 +577,30 @@ namespace InrappSos.ApplicationService
             return delregistersList;
         }
 
+        public IEnumerable<AdmDelregister> HamtaDelregisterMedInsamlingsfrekvens(int insamlingsfrekvensId)
+        {
+            var delregisterManadList = new List<AdmDelregister>();
+           
+            var delregisterList = _portalSosRepository.GetAllSubDirectoriesForPortal();
+            foreach (var delreg in delregisterList)
+            {
+                var manadsinsamling = false;
+                var filkravList = delreg.AdmFilkrav;
+                foreach (var filkrav in filkravList)
+                {
+                    if (filkrav.InsamlingsfrekvensId == 1) //Månadsinsamling
+                    {
+                        manadsinsamling = true;
+                    }
+                }
+                if (manadsinsamling)
+                {
+                    delregisterManadList.Add(delreg);
+                }
+            }
+            return delregisterManadList;
+        }
+
         public IEnumerable<RegisterInfo> HamtaAllRegisterInformation()
         {
             var registerList = _portalSosRepository.GetAllRegisterInformation();

@@ -3,6 +3,11 @@
 @*<link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />*@
 
 <script type="text/javascript">
+    var latestYear = (new Date()).getFullYear();
+    var latestMonth =  (new Date()).getMonth() + 1;
+    var latestPeriodYear = latestYear.toString();
+    var latestPeriodMonth = latestYear + latestMonth.toString();
+        
     $(document).ready(function () {
         //Fix webgrid-header
         $("#GridHeader").html("<table id='headerTable'>" + $('#gridContent table thead').html() + "</table>");
@@ -48,6 +53,8 @@
                     $('#RapportResList_' + index + '__Mail').val('False');
             });
         });
+
+
     });
 
     function setFixedTableHeaderWidths() {
@@ -64,7 +71,7 @@
             //if (i === 0) {
             //    $($header.find('tr:first-child').children()[i]).css('width', 1);
             //} else {
-                $($header.find('tr:first-child').children()[i]).css('width', $(this).width() + 15 );
+            $($header.find('tr:first-child').children()[i]).css('width', $(this).width() + 15 );
 
             //}
 
@@ -81,7 +88,18 @@
                     register.DelregisterList.forEach(function (delregister, index) {
                         if (delregister.ForvantadeLeveranserList.length !== 0) {
                             delregister.ForvantadeLeveranserList.forEach(function (unit, index) {
-                                vals[unit.Period] = unit.Period;
+                                //Ta bara med senaste period och bakåt i tiden
+                                if (unit.Period.length === 4) {
+                                    //Årsperiod
+                                    if (parseInt(unit.Period) <= parseInt(latestPeriodYear)) {
+                                        vals[unit.Period] = unit.Period;
+                                    }
+                                } else if (unit.Period.length === 6) {
+                                    //Månadsperiod 
+                                    if (parseInt(unit.Period) <= parseInt(latestPeriodMonth)) {
+                                        vals[unit.Period] = unit.Period;
+                                    }
+                                }
                             });
                         }
                         //Populera period-dropdown
@@ -111,7 +129,18 @@
                                 //Populera period-dropdown
                                 var vals = {};
                                 delregister.ForvantadeLeveranserList.forEach(function (unit, index) {
-                                    vals[unit.Period] = unit.Period;
+                                    //Ta bara med senaste period och bakåt i tiden
+                                    if (unit.Period.length === 4) {
+                                        //Årsperiod
+                                        if (parseInt(unit.Period) <= parseInt(latestPeriodYear)) {
+                                            vals[unit.Period] = unit.Period;
+                                        }
+                                    } else if (unit.Period.length === 6) {
+                                        //Månadsperiod 
+                                        if (parseInt(unit.Period) <= parseInt(latestPeriodMonth)) {
+                                            vals[unit.Period] = unit.Period;
+                                        }
+                                    }
                                 });
                                 var $ddlPeriod = $("#ddlPeriod");
                                 $ddlPeriod.empty();
@@ -172,23 +201,23 @@
     }
 
     $(document).on('change','#ddlRegister',function () {
-            //Nollställ dropparna
-            $('#ddlPeriod').empty();
-            $("#ddlPeriod").append("<option value=0> - Välj period - </option>");
-            $('#ddlPeriod').attr('readonly', 'readonly');
-            $('#btnSearch').attr('disabled', 'disabled');
-            var selectedRegister = $('#ddlRegister').val();
-            $("#SelectedRegisterId").val(selectedRegister);
-            //Hämta delregister för valt register
-            if (selectedRegister !== "") {
-                setDelregDrop(selectedRegister);
-                setPeriodDropForReg();
-            } else {
-                $('#ddlDelregister').empty(); 
-                $("#ddlDelregister").append("<option value=0> - Välj delregister - </option>");
-                $('#ddlDelregister').attr('readonly', 'readonly');
-            }
-        });
+        //Nollställ dropparna
+        $('#ddlPeriod').empty();
+        $("#ddlPeriod").append("<option value=0> - Välj period - </option>");
+        $('#ddlPeriod').attr('readonly', 'readonly');
+        $('#btnSearch').attr('disabled', 'disabled');
+        var selectedRegister = $('#ddlRegister').val();
+        $("#SelectedRegisterId").val(selectedRegister);
+        //Hämta delregister för valt register
+        if (selectedRegister !== "") {
+            setDelregDrop(selectedRegister);
+            setPeriodDropForReg();
+        } else {
+            $('#ddlDelregister').empty(); 
+            $("#ddlDelregister").append("<option value=0> - Välj delregister - </option>");
+            $('#ddlDelregister').attr('readonly', 'readonly');
+        }
+    });
 
     $(document).on('change',
         '#ddlDelregister',

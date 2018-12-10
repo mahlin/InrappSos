@@ -532,8 +532,9 @@ namespace InrappSos.AstridWeb.Controllers
                 if (ModelState.IsValid)
                 {
                     var arende = ConvertArendeVMToDb(arendeVM);
+                    var rapportorer = arendeVM.Rapportorer;
                     var userName = User.Identity.GetUserName();
-                    _portalSosService.UppdateraArende(arende, userName);
+                    _portalSosService.UppdateraArende(arende, userName, rapportorer);
                 }
             }
             catch (Exception e)
@@ -818,6 +819,7 @@ namespace InrappSos.AstridWeb.Controllers
             var model = new OrganisationViewModels.ArendeViewModel();
             model.OrganisationsId = selectedOrganisationId;
             model.Organisationsnamn = _portalSosService.HamtaOrganisation(selectedOrganisationId).Organisationsnamn;
+            model.StartDatum = DateTime.Now;
             var arendetypList = _portalSosService.HamtaAllaArendetyper();
             ViewBag.ArendetypList = CreateArendetypDropDownList(arendetypList);
             model.ArendetypId = 0;
@@ -839,8 +841,8 @@ namespace InrappSos.AstridWeb.Controllers
                 try
                 {
                     var userName = User.Identity.GetUserName();
-                    var arendeDb = ConvertArendeVMToDb(arendeVM);
-                    _portalSosService.SkapaArende(arendeDb, userName);
+                    var arendeDTO = ConvertArendeVMToDb(arendeVM);
+                    _portalSosService.SkapaArende(arendeDTO, userName);
                 }
                 catch (Exception e)
                 {
@@ -1469,9 +1471,9 @@ namespace InrappSos.AstridWeb.Controllers
             return privEmailList;
         }
 
-        private Arende ConvertArendeVMToDb(OrganisationViewModels.ArendeViewModel arendeVM)
+        private ArendeDTO ConvertArendeVMToDb(OrganisationViewModels.ArendeViewModel arendeVM)
         {
-            var arende = new Arende
+            var arende = new ArendeDTO
             {
                 Id = arendeVM.Id,
                 OrganisationsId = arendeVM.OrganisationsId,
@@ -1479,6 +1481,7 @@ namespace InrappSos.AstridWeb.Controllers
                 Arendenr = arendeVM.Arendenr,
                 ArendetypId = arendeVM.ArendetypId,
                 ArendestatusId = arendeVM.ArendestatusId,
+                Rapportorer = arendeVM.Rapportorer,
                 StartDatum = arendeVM.StartDatum,
                 SlutDatum = arendeVM.SlutDatum
             };
@@ -1509,6 +1512,8 @@ namespace InrappSos.AstridWeb.Controllers
                 //Hämta ärendestatus, klartext
                 arendeVM.Arendestatus = _portalSosService.HamtaArendestatus(arendeDb.ArendestatusId).ArendeStatusNamn;
                 arendeVM.SelectedArendestatusId = arendeDb.ArendestatusId;
+                //Hämta rapportörers epostadress
+                arendeVM.Rapportorer = _portalSosService.HamtaArendesRapportorer(arendeVM.OrganisationsId, arendeDb.Id);
 
                 arendeList.Add(arendeVM);
             }

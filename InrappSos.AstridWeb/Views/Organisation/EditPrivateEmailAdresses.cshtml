@@ -174,7 +174,7 @@
                                 grid.Column(null, null, format: @<input type="hidden" id="orgId" name="IDHidden" value="@item.OrganisationsId" />),
                                 grid.Column("PrivatEpostAdress", "E-post", format: @<text><span class="display-mode col2Width"><label id="lblEpost" style="width: 300px;">@item.PrivatEpostAdress</label></span>
                                             <input type="text" id="Epost" value="@item.PrivatEpostAdress" class="edit-mode form-control" /> </text>, style: "col4Width"),
-                                  grid.Column("ArendeNr", "Arendenr", format: @<text><span class="display-mode col2Width"><label id="lblArendeNr" class="edit-mode col2Width">@item.ArendeNr</label></span>
+                                  grid.Column("ArendeNr", "Arendenr", format: @<text><span class="display-mode"><label id="lblArendeNr">@item.ArendeNr</label></span>
                                             <input type="text" id="ArendeNr" value="@item.ArendeNr" class="edit-mode form-control" /></text>, style: "col2Width"),
                                 grid.Column("AktivFrom", "Aktiv fr.o.m", format: @<text><span class="display-mode"><label id="lblAktivFrom">@( item.AktivFrom != null ? item.AktivFrom.ToString("yyyy-MM-dd") : item.AktivFrom)</label></span>
                                             <input type="text" id="AktivFrom" value="@( item.AktivFrom != null ? item.AktivFrom.ToString("yyyy-MM-dd") : item.AktivFrom)" class="edit-mode form-control" /></text>, style: "col2Width"),

@@ -73,6 +73,7 @@
             var arendeNr = tr.find("#ArendeNr").val();
             var arendetyp = tr.find("#Arendetyp").val();
             var arendestatus = tr.find("#Arendestatus").val();
+            var rapportorer = tr.find("#Rapportorer").val();
             var startDatum = tr.find("#StartDatum").val();
             var slutDatum = tr.find("#SlutDatum").val();
 
@@ -87,6 +88,7 @@
                     "Arendenr": arendeNr,
                     "Arendetyp": arendetyp,
                     "Arendetatus": arendestatus,
+                    "Rapportorer": rapportorer,
                     "StartDatum": startDatum,
                     "SlutDatum": slutDatum
                 };
@@ -113,13 +115,15 @@
             var arendeNr = tr.find("#ArendeNr").val();
             var arendetyp = tr.find("#Arendetyp").val();
             var arendestatus = tr.find("#Arendestatus").val();
+            var rapportorer = tr.find("#Rapportorer").val();
             var startDatum = tr.find("#StartDatum").val();
             var slutDatum = tr.find("#SlutDatum").val();
 
             tr.find("#lblArendenamn").text(arendeNamn);
             tr.find("#lblArendeNr").text(arendeNr);
             tr.find("#lblArendetyp").text(arendetyp);
-            tr.find("#lblArendestatus").text(arendestatus);
+            tr.find("#lblArendestatus").text(arendestatus); 
+            tr.find("#lblRapportorer").val(rapportorer);
             tr.find("#lblStartDatum").text(startDatum);
             tr.find("#lblSlutDatum").text(slutDatum);
         });
@@ -215,6 +219,9 @@
 
                             grid.Column("Arendestatus", "Ärendestatus", format: @<text><span class="display-mode"><label id="lblArendestatus">@item.Arendestatus</label></span></text>, style: "col1Width"),
                             grid.Column("Ärendestatus", format: @item => Html.DropDownListFor(m => m.SelectedArendestatusId, ViewBag.ArendestatusDDL as SelectList, " - Välj -", new {id = "ddlArendestatus", @class = "form-control edit-mode", style = "min-width:100px !important"})),
+
+                            grid.Column("Rapportorer", "Rapportörer", format: @<text><span class="display-mode col2Width"><label id="lblRapportorer" style="width: 200px;">@item.Rapportorer</label></span>
+                                 <textarea id="Rapportorer" value ="" class="edit-mode form-control" style="height: 100px; width: 300px;">@item.Rapportorer</textarea></text>, style: "col4Width"),
 
                             grid.Column("StartDatum", "Startdatum", format: @<text><span class="display-mode"><label id="lblStartDatum">@( item.StartDatum != null ? item.StartDatum.ToString("yyyy-MM-dd") : item.StartDatum)</label></span>
                                         <input type="text" id="StartDatum" value="@( item.StartDatum != null ? item.StartDatum.ToString("yyyy-MM-dd") : item.StartDatum)" class="edit-mode form-control"/></text>, style: "col2Width"),

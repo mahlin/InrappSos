@@ -203,6 +203,8 @@ namespace InrappSos.ApplicationService.Interface
 
         ArendeStatus HamtaArendestatus(int arendestatusId);
 
+        string HamtaArendesRapportorer(int orgId, int arendeId);
+
         void InaktiveraKontaktperson(string userId);
 
         bool IsOpen();
@@ -217,7 +219,7 @@ namespace InrappSos.ApplicationService.Interface
 
         void SkapaPrivatEpostadress(UndantagEpostDoman privEmail, string userName);
 
-        void SkapaArende(Arende arende, string userName);
+        void SkapaArende(ArendeDTO arende, string userName);
         void SkapaOrganisationstyp(AdmOrganisationstyp orgtyp, string userName);
 
         void SkapaFAQKategori(AdmFAQKategori faqKategori, string userName);
@@ -298,7 +300,7 @@ namespace InrappSos.ApplicationService.Interface
 
         void UppdateraPrivatEpostAdress(UndantagEpostDoman privEpostDoman, string userName);
 
-        void UppdateraArende(Arende arende, string userName);
+        void UppdateraArende(ArendeDTO arende, string userName, string rapportorer);
 
         void SparaOppettider(OpeningHoursInfoDTO oppetTider, string userName);
         void SparaTillDatabasFillogg(string userName, string ursprungligtFilNamn, string nyttFilNamn, int leveransId, int sequenceNumber);

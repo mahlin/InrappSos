@@ -74,7 +74,12 @@ namespace InrappSos.DataAccess
 
         IEnumerable<UndantagEpostDoman> GetPrivateEmailAdressesForOrg(int orgId);
 
+        IEnumerable<UndantagEpostDoman> GetPrivateEmailAdressesForOrgAndCase(int orgId, int caseId);
+
         IEnumerable<Arende> GetCasesForOrg(int orgId);
+
+        IEnumerable<string> GetCaseReporterIds(int caseId);
+        
 
         Arendetyp GetCaseType(int casetypeId);
 
@@ -322,6 +327,10 @@ namespace InrappSos.DataAccess
         void UpdatePrivateEmail(UndantagEpostDoman privEmail);
 
         void UpdateCase(Arende arende);
+
+        void UpdateCaseReporters(int caseId, List<string> userIdList, string userName);
+
+        void UpdateCaseUnregisteredReporters(int caseId, List<UndantagEpostDoman> userList, string userName);
 
         void SaveOpeningHours(AdmKonfiguration admKonf);
         void SaveToFilelogg(string userName, string ursprungligtFilNamn, string nyttFilNamn, int leveransId, int sequenceNumber);

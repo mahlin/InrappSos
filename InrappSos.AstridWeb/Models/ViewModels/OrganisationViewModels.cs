@@ -165,12 +165,15 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public string Arendestatus { get; set; }
             [Display(Name = "Startdatum")]
             [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+            [Required(ErrorMessage = "Fältet Startdatum är obligatoriskt.")]
             public DateTime StartDatum { get; set; }
             [Display(Name = "Slutdatum")]
             [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
             public DateTime? SlutDatum { get; set; }
             public int SelectedArendetypId { get; set; }
             public int SelectedArendestatusId { get; set; }
+            [Display(Name = "Rapportörer")]
+            public string Rapportorer { get; set; }
 
         }
     }

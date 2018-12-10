@@ -8,6 +8,7 @@ using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
 using System.Configuration;
+using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.Remoting.Messaging;
 using InrappSos.ApplicationService.DTOModel;
@@ -1166,6 +1167,37 @@ namespace InrappSos.ApplicationService
             return arendestatus;
         }
 
+        public string HamtaArendesRapportorer(int orgId, int arendeId)
+        {
+            string rapportorsLista = "";
+            var arendeRapportorerIdList = _portalSosRepository.GetCaseReporterIds(arendeId);
+            var arendeRappotorerIdUndantagList = _portalSosRepository.GetPrivateEmailAdressesForOrgAndCase(orgId, arendeId);
+            foreach (var rapportorId in arendeRapportorerIdList)
+            {
+                var epostadress = _portalSosRepository.GetUserEmail(rapportorId);
+                if (String.IsNullOrEmpty(rapportorsLista))
+                {
+                    rapportorsLista = epostadress;
+                }
+                else
+                {
+                    rapportorsLista = rapportorsLista + ", " + epostadress;
+                }
+            }
+            foreach (var item in arendeRappotorerIdUndantagList)
+            {
+                if (String.IsNullOrEmpty(rapportorsLista))
+                {
+                    rapportorsLista = item.PrivatEpostAdress;
+                }
+                else
+                {
+                    rapportorsLista = rapportorsLista + ", " + item.PrivatEpostAdress;
+                }
+            }
+            return rapportorsLista;
+        }
+
         public AdmUppgiftsskyldighet HamtaUppgiftsskyldighetForOrganisationOchRegister(int orgId, int delregid)
         {
             var uppgiftsskyldighet = _portalSosRepository.GetUppgiftsskyldighetForOrganisationAndRegister(orgId, delregid);
@@ -1219,15 +1251,57 @@ namespace InrappSos.ApplicationService
             _portalSosRepository.CreatePrivateEmail(privEmail);
         }
 
-        public void SkapaArende(Arende arende, string userName)
+        public void SkapaArende(ArendeDTO arende, string userName)
         {
-            //Sätt datum och användare
-            arende.SkapadDatum = DateTime.Now;
-            arende.SkapadAv = userName;
-            arende.AndradDatum = DateTime.Now;
-            arende.AndradAv = userName;
+            var registeredReportersList = new List<string>();
+            var unregisteredReportersList = new List<UndantagEpostDoman>();
 
-            _portalSosRepository.CreateCase(arende);
+            var arendeDb = ConvertArendeDTOToDb(arende);
+            //Sätt datum och användare
+            arendeDb.SkapadDatum = DateTime.Now;
+            arendeDb.SkapadAv = userName;
+            arendeDb.AndradDatum = DateTime.Now;
+            arendeDb.AndradAv = userName;
+
+            _portalSosRepository.CreateCase(arendeDb);
+            //Hantera rapportörer för ärendet
+            //Kontrollera om rapportör redan är registrerad i Filip, annars spara i undantagstabell
+            var newEmailStr = arende.Rapportorer.Split(',');
+            foreach (var email in newEmailStr)
+            {
+                var redanReggadAnv = _portalSosRepository.GetUserByEmail(email.Trim());
+                if (redanReggadAnv != null)
+                {
+                    registeredReportersList.Add(redanReggadAnv.Id);
+                }
+                else
+                {
+                    //Spara i undantagstabell
+                    var undantag = new UndantagEpostDoman
+                    {
+                        OrganisationsId = arende.OrganisationsId,
+                        ArendeId = arendeDb.Id,
+                        PrivatEpostAdress = email.Trim(),
+                        AktivFrom = DateTime.Now,
+                        SkapadAv = userName,
+                        SkapadDatum = DateTime.Now,
+                        AndradAv = userName,
+                        AndradDatum = DateTime.Now
+                    };
+                    unregisteredReportersList.Add(undantag);
+                }
+            }
+
+            _portalSosRepository.UpdateCaseReporters(arendeDb.Id, registeredReportersList, userName);
+            //Lägg till rollen RegSvcRapp för redan reggad användare (om den inte redan är satt)
+            //TODO
+
+            //Oreggade användare läggs i undantagstabellen tills användaren registrerat sig
+            foreach (var unregistered in unregisteredReportersList)
+            {
+                _portalSosRepository.CreatePrivateEmail(unregistered);
+            }
+
         }
 
         public void SkapaOrganisationstyp(AdmOrganisationstyp orgtyp, string userName)
@@ -1595,11 +1669,49 @@ namespace InrappSos.ApplicationService
             _portalSosRepository.UpdatePrivateEmail(privEpostDoman);
         }
 
-        public void UppdateraArende(Arende arende, string userName)
+        public void UppdateraArende(ArendeDTO arende,  string userName, string rapportorer)
         {
-            arende.AndradAv = userName;
-            arende.AndradDatum = DateTime.Now;
-            _portalSosRepository.UpdateCase(arende);
+            var registeredReportersList = new List<string>();
+            var unregisteredReportersList = new List<UndantagEpostDoman>();
+            var arendeDb = ConvertArendeDTOToDb(arende);
+            arendeDb.AndradAv = userName;
+            arendeDb.AndradDatum = DateTime.Now;
+            _portalSosRepository.UpdateCase(arendeDb);
+
+            //Hantera rapportörer för ärendet
+            //Kontrollera om rapportör redan är registrerad i Filip, annars spara i undantagstabell
+            var newEmailStr = rapportorer.Split(',');
+            foreach (var email in newEmailStr)
+            {
+                var redanReggadAnv = _portalSosRepository.GetUserByEmail(email.Trim());
+                if (redanReggadAnv != null)
+                {
+                    registeredReportersList.Add(redanReggadAnv.Id);
+                }
+                else
+                {
+                    //Spara i undantagstabell
+                    var undantag = new UndantagEpostDoman
+                    {
+                        OrganisationsId = arende.OrganisationsId,
+                        ArendeId = arende.Id,
+                        PrivatEpostAdress = email.Trim(),
+                        AktivFrom = DateTime.Now,
+                        SkapadAv = userName,
+                        SkapadDatum = DateTime.Now,
+                        AndradAv = userName,
+                        AndradDatum = DateTime.Now
+                    };
+                    unregisteredReportersList.Add(undantag);
+                }
+            }
+
+            //Användare som redan är registrerade
+            _portalSosRepository.UpdateCaseReporters(arendeDb.Id,registeredReportersList, userName);
+
+            //Användare som ej är registrerade
+            _portalSosRepository.UpdateCaseUnregisteredReporters(arendeDb.Id, unregisteredReportersList, userName);
+
         }
 
         public void SparaOppettider(OpeningHoursInfoDTO oppetTider, string userName)
@@ -1828,6 +1940,22 @@ namespace InrappSos.ApplicationService
             }
                 
             return rappListDTO;
+        }
+
+        private Arende ConvertArendeDTOToDb(ArendeDTO arendeDto)
+        {
+            var arende = new Arende
+            {
+                Id = arendeDto.Id,
+                OrganisationsId = arendeDto.OrganisationsId,
+                Arendenamn = arendeDto.Arendenamn,
+                Arendenr = arendeDto.Arendenr,
+                ArendetypId = arendeDto.ArendetypId,
+                ArendestatusId = arendeDto.ArendestatusId,
+                StartDatum = arendeDto.StartDatum,
+                SlutDatum = arendeDto.SlutDatum
+            };
+            return arende;
         }
 
         private string GetEmail(RapporteringsresultatDTO rappRes, int regId, int delRegId)

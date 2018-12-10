@@ -261,10 +261,22 @@ namespace InrappSos.DataAccess
             return privEmails;
         }
 
+        public IEnumerable<UndantagEpostDoman> GetPrivateEmailAdressesForOrgAndCase(int orgId, int caseId)
+        {
+            var privEmails = DbContext.UndantagEpostDoman.Where(x => x.OrganisationsId == orgId && x.ArendeId == caseId).ToList();
+            return privEmails;
+        }
+
         public IEnumerable<Arende> GetCasesForOrg(int orgId)
         {
             var cases = DbContext.Arende.Where(x => x.OrganisationsId == orgId).ToList();
             return cases;
+        }
+
+        public IEnumerable<string> GetCaseReporterIds(int caseId)
+        {
+            var caseRepIds = DbContext.ArendeKontaktperson.Where(x => x.ArendeId == caseId).Select(x => x.ApplicationUserId).ToList();
+            return caseRepIds;
         }
 
         public Arendetyp GetCaseType(int casetypeId)
@@ -1239,6 +1251,43 @@ namespace InrappSos.DataAccess
             arendeDb.ArendestatusId = arende.ArendestatusId;
             arendeDb.StartDatum = arende.StartDatum;
             arendeDb.SlutDatum = arende.SlutDatum;
+            DbContext.SaveChanges();
+        }
+
+        public void UpdateCaseReporters(int caseId, List<string> userIdList, string userName)
+        {
+            //delete prevoious reporters for current case
+            var currentUsersList = DbContext.ArendeKontaktperson.RemoveRange(DbContext.ArendeKontaktperson.Where(x => x.ArendeId == caseId));
+            DbContext.SaveChanges();
+
+            //Insert new reporters
+            foreach (var userId in userIdList)
+            {
+                var caseContact = new ArendeKontaktperson
+                {
+                    ArendeId = caseId,
+                    ApplicationUserId = userId,
+                    SkapadAv = userName,
+                    SkapadDatum = DateTime.Now,
+                    AndradAv = userName,
+                    AndradDatum = DateTime.Now
+                };
+                DbContext.ArendeKontaktperson.Add(caseContact);
+            }
+            DbContext.SaveChanges();
+        }
+
+        public void UpdateCaseUnregisteredReporters(int caseId, List<UndantagEpostDoman> userList, string userName)
+        {
+            //delete prevoious unregistered reporters for current case
+            var currentUsersList = DbContext.UndantagEpostDoman.RemoveRange(DbContext.UndantagEpostDoman.Where(x => x.ArendeId == caseId));
+            DbContext.SaveChanges();
+
+            //Insert new unregistered reporters
+            foreach (var user in userList)
+            {
+                DbContext.UndantagEpostDoman.Add(user);
+            }
             DbContext.SaveChanges();
         }
 

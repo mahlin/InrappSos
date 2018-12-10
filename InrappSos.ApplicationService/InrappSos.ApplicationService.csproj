@@ -55,6 +55,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DTOModel\ArendeDTO.cs" />
     <Compile Include="DTOModel\DelregisterBasicDTO.cs" />
     <Compile Include="DTOModel\FilloggDetaljDTO.cs" />
     <Compile Include="DTOModel\ForvantadLeveransBasicDTO.cs" />

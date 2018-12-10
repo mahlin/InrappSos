@@ -22,6 +22,8 @@ namespace InrappSos.ApplicationService.Interface
 
         IdentityRole HamtaAstridRoll(string roleName);
 
+        IdentityRole HamtaFilipRoll(string roleName);
+
         IEnumerable<AdmFAQKategori> HamtaAllaFAQs();
         IEnumerable<AdmOrganisationstyp> HamtaAllaOrganisationstyper();
 
@@ -133,6 +135,7 @@ namespace InrappSos.ApplicationService.Interface
         IEnumerable<AdmRegister> HamtaAllaRegisterForPortalen();
 
         IEnumerable<IdentityRole> HamtaAllaAstridRoller();
+        IEnumerable<IdentityRole> HamtaAllaFilipRoller();
 
         IEnumerable<AdmDelregister> HamtaAllaDelregisterForPortalen();
 
@@ -213,6 +216,8 @@ namespace InrappSos.ApplicationService.Interface
 
         void SkapaAstridRoll(string rollNamn);
 
+        void SkapaFilipRoll(string rollNamn);
+
         int SkapaOrganisation(Organisation org, ICollection<Organisationstyp> orgtyperForOrg, string userName);
 
         void SkapaOrganisationsenhet(Organisationsenhet orgUnit, string userName);
@@ -251,6 +256,7 @@ namespace InrappSos.ApplicationService.Interface
         void SkapaInsamlingsfrekvens(AdmInsamlingsfrekvens insamlingsfrekvens, string userName);
 
         void UppdateraAstridRoll(IdentityRole role);
+        void UppdateraFilipRoll(IdentityRole role);
 
         void UppdateraOrganisation(Organisation org, string userName);
 
@@ -308,6 +314,8 @@ namespace InrappSos.ApplicationService.Interface
         void SaveToLoginLog(string userid, string userName);
 
         void TaBortAstridRoll(string roleName);
+
+        void TaBortFilipRoll(string roleName);
 
         void TaBortFAQKategori(int faqKategoriId);
 

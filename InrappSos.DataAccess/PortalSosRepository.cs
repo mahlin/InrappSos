@@ -77,6 +77,12 @@ namespace InrappSos.DataAccess
 
         }
 
+        public IEnumerable<IdentityRole> GetAllFilipRoles()
+        {
+            var filipRoles = DbContext.Roles.OrderBy(r => r.Name).ToList();
+            return filipRoles;
+        }
+
         public void CreateAstridRole(string roleName)
         {
             AstridDbContext.Roles.Add(new Microsoft.AspNet.Identity.EntityFramework.IdentityRole()
@@ -84,6 +90,15 @@ namespace InrappSos.DataAccess
                 Name = roleName
             });
             AstridDbContext.SaveChanges();
+        }
+
+        public void CreateFilipRole(string roleName)
+        {
+            DbContext.Roles.Add(new Microsoft.AspNet.Identity.EntityFramework.IdentityRole()
+            {
+                Name = roleName
+            });
+            DbContext.SaveChanges();
         }
 
         public IdentityRole GetAstridRole(string roleName)
@@ -103,6 +118,25 @@ namespace InrappSos.DataAccess
             var thisRole = AstridDbContext.Roles.FirstOrDefault(r => r.Name.Equals(roleName, StringComparison.CurrentCultureIgnoreCase));
             AstridDbContext.Roles.Remove(thisRole);
             AstridDbContext.SaveChanges();
+        }
+
+        public IdentityRole GetFilipRole(string roleName)
+        {
+            var thisRole = DbContext.Roles.FirstOrDefault(r => r.Name.Equals(roleName, StringComparison.CurrentCultureIgnoreCase));
+            return thisRole;
+        }
+
+        public void UpdateFilipRole(IdentityRole role)
+        {
+            DbContext.Entry(role).State = System.Data.Entity.EntityState.Modified;
+            DbContext.SaveChanges();
+        }
+
+        public void DeleteFilipRole(string roleName)
+        {
+            var thisRole = DbContext.Roles.FirstOrDefault(r => r.Name.Equals(roleName, StringComparison.CurrentCultureIgnoreCase));
+            DbContext.Roles.Remove(thisRole);
+            DbContext.SaveChanges();
         }
 
         public Arende GetArende(string arendeNr)

@@ -170,10 +170,14 @@ namespace InrappSos.AstridWeb.Controllers
         public ActionResult CRUDRoles()
         {
             //Hämta info för Create/Read/Update/Delete Roles
-            var roles = _portalSosService.HamtaAllaAstridRoller();
-                
-            var rolelist = CreateRolesDropDownList(roles);
-            ViewBag.Roles = rolelist;
+            var AstridRoles = _portalSosService.HamtaAllaAstridRoller();
+            var astridRolelist = CreateRolesDropDownList(AstridRoles);
+            ViewBag.AstridRoles = astridRolelist;
+
+            var FilipRoles = _portalSosService.HamtaAllaFilipRoller();
+            var filipRolelist = CreateRolesDropDownList(FilipRoles);
+            ViewBag.FilipRoles = filipRolelist;
+
             ViewBag.Message = "";
             return View("CRUDRoles");
         }
@@ -181,7 +185,7 @@ namespace InrappSos.AstridWeb.Controllers
         [Authorize(Roles = "Admin")]
         // POST: /Roles/Create
         [HttpPost]
-        public ActionResult CreateRole(FormCollection collection)
+        public ActionResult CreateAstridRole(FormCollection collection)
         {
             try
             {
@@ -191,7 +195,7 @@ namespace InrappSos.AstridWeb.Controllers
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                ErrorManager.WriteToErrorLog("AdminController", "CreateRole", e.ToString(), e.HResult, User.Identity.Name);
+                ErrorManager.WriteToErrorLog("AdminController", "CreateAstridRole", e.ToString(), e.HResult, User.Identity.Name);
                 var errorModel = new CustomErrorPageModel
                 {
                     Information = "Ett fel inträffade när Astrid-roll skulle skapas.",
@@ -204,10 +208,10 @@ namespace InrappSos.AstridWeb.Controllers
 
         [Authorize(Roles = "Admin")]
         // GET: /Roles/Edit/5
-        public ActionResult EditRole(string roleName)
+        public ActionResult EditAstridRole(string roleName)
         {
             var thisRole = _portalSosService.HamtaAstridRoll(roleName);
-            return View(thisRole);
+            return View("EditRole",thisRole);
             //return RedirectToAction("CRUDRoles");
         }
 
@@ -215,7 +219,7 @@ namespace InrappSos.AstridWeb.Controllers
         // POST: /Roles/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult EditRole(Microsoft.AspNet.Identity.EntityFramework.IdentityRole role)
+        public ActionResult EditAstridRole(Microsoft.AspNet.Identity.EntityFramework.IdentityRole role)
         {
             try
             {
@@ -224,7 +228,7 @@ namespace InrappSos.AstridWeb.Controllers
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                ErrorManager.WriteToErrorLog("AdminController", "EditRole", e.ToString(), e.HResult, User.Identity.Name);
+                ErrorManager.WriteToErrorLog("AdminController", "EditAstridRole", e.ToString(), e.HResult, User.Identity.Name);
                 var errorModel = new CustomErrorPageModel
                 {
                     Information = "Ett fel inträffade när Astrid-roll skulle uppdateras.",
@@ -236,7 +240,7 @@ namespace InrappSos.AstridWeb.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        public ActionResult DeleteRole(string roleName)
+        public ActionResult DeleteAstridRole(string roleName)
         {
             try
             {
@@ -245,7 +249,7 @@ namespace InrappSos.AstridWeb.Controllers
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                ErrorManager.WriteToErrorLog("AdminController", "DeleteRole", e.ToString(), e.HResult, User.Identity.Name);
+                ErrorManager.WriteToErrorLog("AdminController", "DeleteAstridRole", e.ToString(), e.HResult, User.Identity.Name);
                 var errorModel = new CustomErrorPageModel
                 {
                     Information = "Ett fel inträffade när Astrid-roll skulle tas bort.",
@@ -255,6 +259,86 @@ namespace InrappSos.AstridWeb.Controllers
             }
             return RedirectToAction("CRUDRoles");
         }
+
+
+        [Authorize(Roles = "Admin")]
+        // POST: /Roles/Create
+        [HttpPost]
+        public ActionResult CreateFilipRole(FormCollection collection)
+        {
+            try
+            {
+                _portalSosService.SkapaFilipRoll(collection["RoleName"]);
+                ViewBag.Message = "Rollen skapad!";
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("AdminController", "CreateFilipRole", e.ToString(), e.HResult, User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade när Filip-roll skulle skapas.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
+            }
+            return RedirectToAction("CRUDRoles");
+        }
+
+        [Authorize(Roles = "Admin")]
+        // GET: /Roles/Edit/5
+        public ActionResult EditFilipRole(string roleName)
+        {
+            var thisRole = _portalSosService.HamtaFilipRoll(roleName);
+            return View("EditRole", thisRole);
+            //return RedirectToAction("CRUDRoles");
+        }
+
+        [Authorize(Roles = "Admin")]
+        // POST: /Roles/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditFilipRole(Microsoft.AspNet.Identity.EntityFramework.IdentityRole role)
+        {
+            try
+            {
+                _portalSosService.UppdateraFilipRoll(role);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("AdminController", "EditFilipRole", e.ToString(), e.HResult, User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade när Filip-roll skulle uppdateras.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
+            }
+            return RedirectToAction("CRUDRoles");
+        }
+
+        [Authorize(Roles = "Admin")]
+        public ActionResult DeleteFilipRole(string roleName)
+        {
+            try
+            {
+                _portalSosService.TaBortFilipRoll(roleName);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("AdminController", "DeleteFilipRole", e.ToString(), e.HResult, User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade när Filip-roll skulle tas bort.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
+            }
+            return RedirectToAction("CRUDRoles");
+        }
+
 
         private IEnumerable<AdminViewModels.AppUserAdminViewModel> ConvertAdminUsersToViewModel(IEnumerable<AppUserAdmin> adminUsers, List<IdentityRole> roller)
         {

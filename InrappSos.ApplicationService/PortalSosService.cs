@@ -281,6 +281,12 @@ namespace InrappSos.ApplicationService
             return astridRoll;
         }
 
+        public IdentityRole HamtaFilipRoll(string roleName)
+        {
+            var filipRoll = _portalSosRepository.GetFilipRole(roleName);
+            return filipRoll;
+        }
+
         public IEnumerable<AdmFAQKategori> HamtaAllaFAQs()
         {
             var faqs = _portalSosRepository.GetAllFAQs();
@@ -569,6 +575,12 @@ namespace InrappSos.ApplicationService
         public IEnumerable<IdentityRole> HamtaAllaAstridRoller()
         {
             var roller = _portalSosRepository.GetAllAstridRoles();
+            return roller;
+        }
+
+        public IEnumerable<IdentityRole> HamtaAllaFilipRoller()
+        {
+            var roller = _portalSosRepository.GetAllFilipRoles();
             return roller;
         }
 
@@ -1217,6 +1229,11 @@ namespace InrappSos.ApplicationService
             _portalSosRepository.CreateAstridRole(rollNamn);
         }
 
+        public void SkapaFilipRoll(string rollNamn)
+        {
+            _portalSosRepository.CreateFilipRole(rollNamn);
+        }
+
         public int SkapaOrganisation(Organisation org, ICollection<Organisationstyp> orgtyperForOrg, string userName)
         {
             //Sätt datum och användare
@@ -1489,6 +1506,11 @@ namespace InrappSos.ApplicationService
         public void UppdateraAstridRoll(IdentityRole role)
         {
             _portalSosRepository.UpdateAstridRole(role);
+        }
+
+        public void UppdateraFilipRoll(IdentityRole role)
+        {
+            _portalSosRepository.UpdateFilipRole(role);
         }
 
         public void UppdateraOrganisation(Organisation org, string userName)
@@ -1815,6 +1837,11 @@ namespace InrappSos.ApplicationService
         public void TaBortAstridRoll(string roleName)
         {
             _portalSosRepository.DeleteAstridRole(roleName);
+        }
+
+        public void TaBortFilipRoll(string roleName)
+        {
+            _portalSosRepository.DeleteFilipRole(roleName);
         }
 
         public List<OpeningDay> MarkeraStangdaDagar(List<string> closedDays)

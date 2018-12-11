@@ -337,6 +337,8 @@ namespace InrappSos.DataAccess
 
         void UpdateCaseReporters(int caseId, List<string> userIdList, string userName);
 
+        void AddRoleToFilipUser(string userId, string roleName);
+
         void UpdateCaseUnregisteredReporters(int caseId, List<UndantagEpostDoman> userList, string userName);
 
         void SaveOpeningHours(AdmKonfiguration admKonf);

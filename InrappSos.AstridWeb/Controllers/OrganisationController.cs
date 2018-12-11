@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using InrappSos.ApplicationService;
@@ -14,12 +15,15 @@ using InrappSos.AstridWeb.Models;
 using InrappSos.AstridWeb.Models.ViewModels;
 using Microsoft.Ajax.Utilities;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
 
 namespace InrappSos.AstridWeb.Controllers
 {
     public class OrganisationController : Controller
     {
         private readonly IPortalSosService _portalSosService;
+        private FilipApplicationRoleManager _filipRoleManager;
+        private FilipApplicationUserManager _filipUserManager;
 
 
         public OrganisationController()
@@ -27,6 +31,35 @@ namespace InrappSos.AstridWeb.Controllers
             _portalSosService = new PortalSosService(new PortalSosRepository(new InrappSosDbContext(), new InrappSosAstridDbContext()));
 
         }
+
+        public OrganisationController(FilipApplicationRoleManager filipRoleManager, FilipApplicationUserManager filipUserManager)
+        {
+            _portalSosService = new PortalSosService(new PortalSosRepository(new InrappSosDbContext(), new InrappSosAstridDbContext()));
+            FilipRoleManager = filipRoleManager;
+            FilipUserManager = filipUserManager;
+        }
+
+        public FilipApplicationRoleManager FilipRoleManager
+        {
+            get
+            {
+                return _filipRoleManager ?? Request.GetOwinContext().GetUserManager<FilipApplicationRoleManager>();
+            }
+            private set { _filipRoleManager = value; }
+        }
+
+        public FilipApplicationUserManager FilipUserManager
+        {
+            get
+            {
+                return _filipUserManager ?? HttpContext.GetOwinContext().GetUserManager<FilipApplicationUserManager>();
+            }
+            private set
+            {
+                _filipUserManager = value;
+            }
+        }
+
 
         [Authorize]
         public ActionResult Index()
@@ -525,7 +558,7 @@ namespace InrappSos.AstridWeb.Controllers
 
         [HttpPost]
         [Authorize]
-        public ActionResult UpdateOrganisationCase(OrganisationViewModels.ArendeViewModel arendeVM)
+        public async Task<ActionResult> UpdateOrganisationCase(OrganisationViewModels.ArendeViewModel arendeVM)
         {
             try
             {
@@ -535,6 +568,20 @@ namespace InrappSos.AstridWeb.Controllers
                     var rapportorer = arendeVM.Rapportorer;
                     var userName = User.Identity.GetUserName();
                     _portalSosService.UppdateraArende(arende, userName, rapportorer);
+                    //Lägg till roll för de rapportörer som är reggade
+                    //TODO - Flytta detta till svc-lagret eller repo-lagret?
+                    var newEmailStr = arendeVM.Rapportorer.Split(',');
+                    foreach (var email in newEmailStr)
+                    {
+                        var user = await FilipUserManager.FindByNameAsync(email.Trim());
+                        if (user != null)
+                        {
+                            if (!FilipUserManager.IsInRole(user.Id, "RegSvcRapp"))
+                            {
+                                FilipUserManager.AddToRole(user.Id, "RegSvcRapp");
+                            }
+                        }
+                    }
                 }
             }
             catch (Exception e)
@@ -833,7 +880,7 @@ namespace InrappSos.AstridWeb.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public ActionResult CreateCase(OrganisationViewModels.ArendeViewModel arendeVM)
+        public async Task<ActionResult> CreateCase(OrganisationViewModels.ArendeViewModel arendeVM)
         {
             var org = new Organisation();
             if (ModelState.IsValid)
@@ -843,6 +890,20 @@ namespace InrappSos.AstridWeb.Controllers
                     var userName = User.Identity.GetUserName();
                     var arendeDTO = ConvertArendeVMToDb(arendeVM);
                     _portalSosService.SkapaArende(arendeDTO, userName);
+                    //Lägg till roll för de rapportörer som är reggade
+                    //TODO - Flytta detta till svc-lagret eller repo-lagret?
+                    var newEmailStr = arendeVM.Rapportorer.Split(',');
+                    foreach (var email in newEmailStr)
+                    {
+                        var user = await FilipUserManager.FindByNameAsync(email.Trim());
+                        if (user != null)
+                        {
+                            if (!FilipUserManager.IsInRole(user.Id, "RegSvcRapp"))
+                            {
+                                FilipUserManager.AddToRole(user.Id, "RegSvcRapp");
+                            }
+                        }
+                    }
                 }
                 catch (Exception e)
                 {

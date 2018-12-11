@@ -162,6 +162,37 @@ namespace InrappSos.AstridWeb
         }
     }
 
+    // Configure the Filip application user manager used in this application. UserManager is defined in ASP.NET Identity and is used by the application.
+    public class FilipApplicationUserManager : UserManager<ApplicationUser>
+    {
+        public FilipApplicationUserManager(IUserStore<ApplicationUser> store)
+            : base(store)
+        {
+        }
+
+        public static FilipApplicationUserManager Create(IdentityFactoryOptions<FilipApplicationUserManager> options,
+            IOwinContext context)
+        {
+            var manager =
+                new FilipApplicationUserManager(new UserStore<ApplicationUser>(context.Get<InrappSosDbContext>()));
+            // Configure validation logic for usernames
+            manager.UserValidator = new UserValidator<ApplicationUser>(manager)
+            {
+                AllowOnlyAlphanumericUserNames = false,
+                RequireUniqueEmail = true
+            };
+
+           
+            var dataProtectionProvider = options.DataProtectionProvider;
+            if (dataProtectionProvider != null)
+            {
+                manager.UserTokenProvider =
+                    new DataProtectorTokenProvider<ApplicationUser>(dataProtectionProvider.Create("ASP.NET Identity"));
+            }
+            return manager;
+        }
+    }
+
     // Configure the application sign-in manager which is used in this application.
     public class ApplicationSignInManager : SignInManager<AppUserAdmin, string>
     {
@@ -195,6 +226,20 @@ namespace InrappSos.AstridWeb
         {
             var appRoleManager = new ApplicationRoleManager(new RoleStore<IdentityRole>(context.Get<InrappSosAstridDbContext>()));
             return appRoleManager;
+        }
+    }
+
+    public class FilipApplicationRoleManager : RoleManager<IdentityRole>
+    {
+        public FilipApplicationRoleManager(IRoleStore<IdentityRole, string> roleStore) : base(roleStore)
+        {
+        }
+
+        public static FilipApplicationRoleManager Create(IdentityFactoryOptions<FilipApplicationRoleManager> options,
+            IOwinContext context)
+        {
+            var filipAppRoleManager = new FilipApplicationRoleManager(new RoleStore<IdentityRole>(context.Get<InrappSosDbContext>()));
+            return filipAppRoleManager;
         }
     }
 }

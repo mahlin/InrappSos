@@ -1311,6 +1311,36 @@ namespace InrappSos.DataAccess
             DbContext.SaveChanges();
         }
 
+        public void AddRoleToFilipUser(string userId, string roleName)
+        {
+            //Anv RoleManager istället? Flytta till svc-layer?
+            //var user = DbContext.Users.Where(x => x.Id == userId).Include(u => u.);
+
+            //var finns = false;
+            //var existingRolesInFilip = DbContext.AspNetRoles.ToString();
+            //var roleid = DbContext.AspNetRoles.Where(x => x.Name == roleName).Select(x => x.Id).ToString();
+            //var currentRolesForUser = DbContext.AspNetUserRoles.Where(x => x.UserId == userId).ToList();
+            //foreach (var userRole in currentRolesForUser)
+            //{
+            //    var role = DbContext.AspNetRoles.SingleOrDefault(x => x.Id == userRole.RoleId);
+            //    if (role.Name == roleName)
+            //    {
+            //        finns = true;
+            //    }
+            //}
+            //if (!finns)
+            //{
+            //    var userRole = new AspNetUserRoles
+            //    {
+            //        UserId = userId,
+            //        RoleId = roleid
+            //    };
+            //    DbContext.AspNetUserRoles.Add(userRole);
+            //    DbContext.SaveChanges();
+            //}
+
+        }
+
         public void UpdateCaseUnregisteredReporters(int caseId, List<UndantagEpostDoman> userList, string userName)
         {
             //delete prevoious unregistered reporters for current case

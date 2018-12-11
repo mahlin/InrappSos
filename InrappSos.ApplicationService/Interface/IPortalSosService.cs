@@ -29,6 +29,8 @@ namespace InrappSos.ApplicationService.Interface
 
         string HamtaAnvandaresNamn(string userId);
 
+        ApplicationUser HamtaAnvandareMedEpost(string epost);
+
         string HamtaAnvandaresKontaktnummer(string userId);
 
         string HamtaAnvandaresMobilnummer(string userId);

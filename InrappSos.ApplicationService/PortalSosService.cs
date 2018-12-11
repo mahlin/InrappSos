@@ -26,6 +26,7 @@ namespace InrappSos.ApplicationService
 
         private readonly IPortalSosRepository _portalSosRepository;
 
+
         System.Globalization.CultureInfo _culture = new System.Globalization.CultureInfo("sv-SE");
 
 
@@ -34,6 +35,8 @@ namespace InrappSos.ApplicationService
             _portalSosRepository = portalSosRepository;
 
         }
+
+
 
         public void AktiveraKontaktperson(string userId)
         {
@@ -109,6 +112,12 @@ namespace InrappSos.ApplicationService
         {
             var userName = _portalSosRepository.GetUserName(userId);
             return userName;
+        }
+
+        public ApplicationUser HamtaAnvandareMedEpost(string epost)
+        {
+            var user = _portalSosRepository.GetUserByEmail(epost);
+            return user;
         }
 
         public string HamtaAnvandaresKontaktnummer(string userId)
@@ -1311,7 +1320,10 @@ namespace InrappSos.ApplicationService
 
             _portalSosRepository.UpdateCaseReporters(arendeDb.Id, registeredReportersList, userName);
             //Lägg till rollen RegSvcRapp för redan reggad användare (om den inte redan är satt)
-            //TODO
+            foreach (var reporterId in registeredReportersList)
+            {
+                _portalSosRepository.AddRoleToFilipUser(reporterId, "RegSvcRapp");
+            }
 
             //Oreggade användare läggs i undantagstabellen tills användaren registrerat sig
             foreach (var unregistered in unregisteredReportersList)

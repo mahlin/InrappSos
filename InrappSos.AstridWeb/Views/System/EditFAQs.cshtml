@@ -93,10 +93,10 @@
             type: 'GET',
             contentType: 'application/json; charset=utf-8',
             success: function (data) {
-                location.reload();
-                //$("#editSelectedFAQForm").html(data);
-                //$("#editSelectedFAQForm").show();
-                //$('#footer').hide();
+                $("#editSelectedFAQForm").html(data);
+                $("#editSelectedFAQForm").show();
+                //location.reload();
+                $('#footer').hide();
             }
         });
         //faqLista.forEach(function (info, index) {
@@ -128,10 +128,15 @@
 
     $(function () {
         $('.edit-mode').hide();
-        $('.edit-user, .cancel-user').on('click', function () {
+        $('.cancel-user').on('click', function () {
             var tr = $(this).parents('tr:first');
             tr.find('.edit-mode, .display-mode').toggle();
             $("#editSelectedFAQForm").hide();
+        });
+        $('.edit-user').on('click', function () {
+            var tr = $(this).parents('tr:first');
+            tr.find('.edit-mode, .display-mode').toggle();
+            $("#editSelectedFAQForm").show();
         });
         $('.save-user').on('click', function () {
             var tr = $(this).parents('tr:first');

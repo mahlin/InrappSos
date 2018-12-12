@@ -1292,29 +1292,33 @@ namespace InrappSos.ApplicationService
             _portalSosRepository.CreateCase(arendeDb);
             //Hantera rapportörer för ärendet
             //Kontrollera om rapportör redan är registrerad i Filip, annars spara i undantagstabell
-            var newEmailStr = arende.Rapportorer.Split(',');
+            var reporters = arende.Rapportorer.Replace(' ', ',');
+            var newEmailStr = reporters.Split(',');
             foreach (var email in newEmailStr)
             {
-                var redanReggadAnv = _portalSosRepository.GetUserByEmail(email.Trim());
-                if (redanReggadAnv != null)
+                if (!String.IsNullOrEmpty(email.Trim()))
                 {
-                    registeredReportersList.Add(redanReggadAnv.Id);
-                }
-                else
-                {
-                    //Spara i undantagstabell
-                    var undantag = new UndantagEpostDoman
+                    var redanReggadAnv = _portalSosRepository.GetUserByEmail(email.Trim());
+                    if (redanReggadAnv != null)
                     {
-                        OrganisationsId = arende.OrganisationsId,
-                        ArendeId = arendeDb.Id,
-                        PrivatEpostAdress = email.Trim(),
-                        AktivFrom = DateTime.Now,
-                        SkapadAv = userName,
-                        SkapadDatum = DateTime.Now,
-                        AndradAv = userName,
-                        AndradDatum = DateTime.Now
-                    };
-                    unregisteredReportersList.Add(undantag);
+                        registeredReportersList.Add(redanReggadAnv.Id);
+                    }
+                    else
+                    {
+                        //Spara i undantagstabell
+                        var undantag = new UndantagEpostDoman
+                        {
+                            OrganisationsId = arende.OrganisationsId,
+                            ArendeId = arendeDb.Id,
+                            PrivatEpostAdress = email.Trim(),
+                            AktivFrom = DateTime.Now,
+                            SkapadAv = userName,
+                            SkapadDatum = DateTime.Now,
+                            AndradAv = userName,
+                            AndradDatum = DateTime.Now
+                        };
+                        unregisteredReportersList.Add(undantag);
+                    }
                 }
             }
 
@@ -1714,29 +1718,33 @@ namespace InrappSos.ApplicationService
 
             //Hantera rapportörer för ärendet
             //Kontrollera om rapportör redan är registrerad i Filip, annars spara i undantagstabell
-            var newEmailStr = rapportorer.Split(',');
+            var reporters = rapportorer.Replace(' ', ',');
+            var newEmailStr = reporters.Split(',');
             foreach (var email in newEmailStr)
             {
-                var redanReggadAnv = _portalSosRepository.GetUserByEmail(email.Trim());
-                if (redanReggadAnv != null)
+                if (!String.IsNullOrEmpty(email.Trim()))
                 {
-                    registeredReportersList.Add(redanReggadAnv.Id);
-                }
-                else
-                {
-                    //Spara i undantagstabell
-                    var undantag = new UndantagEpostDoman
+                    var redanReggadAnv = _portalSosRepository.GetUserByEmail(email.Trim());
+                    if (redanReggadAnv != null)
                     {
-                        OrganisationsId = arende.OrganisationsId,
-                        ArendeId = arende.Id,
-                        PrivatEpostAdress = email.Trim(),
-                        AktivFrom = DateTime.Now,
-                        SkapadAv = userName,
-                        SkapadDatum = DateTime.Now,
-                        AndradAv = userName,
-                        AndradDatum = DateTime.Now
-                    };
-                    unregisteredReportersList.Add(undantag);
+                        registeredReportersList.Add(redanReggadAnv.Id);
+                    }
+                    else
+                    {
+                        //Spara i undantagstabell
+                        var undantag = new UndantagEpostDoman
+                        {
+                            OrganisationsId = arende.OrganisationsId,
+                            ArendeId = arende.Id,
+                            PrivatEpostAdress = email.Trim(),
+                            AktivFrom = DateTime.Now,
+                            SkapadAv = userName,
+                            SkapadDatum = DateTime.Now,
+                            AndradAv = userName,
+                            AndradDatum = DateTime.Now
+                        };
+                        unregisteredReportersList.Add(undantag);
+                    }
                 }
             }
 

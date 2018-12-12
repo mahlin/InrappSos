@@ -570,15 +570,19 @@ namespace InrappSos.AstridWeb.Controllers
                     _portalSosService.UppdateraArende(arende, userName, rapportorer);
                     //Lägg till roll för de rapportörer som är reggade
                     //TODO - Flytta detta till svc-lagret eller repo-lagret?
-                    var newEmailStr = arendeVM.Rapportorer.Split(',');
+                    var reporters = arendeVM.Rapportorer.Replace(' ', ',');
+                    var newEmailStr = reporters.Split(',');
                     foreach (var email in newEmailStr)
                     {
-                        var user = await FilipUserManager.FindByNameAsync(email.Trim());
-                        if (user != null)
+                        if (!String.IsNullOrEmpty(email.Trim()))
                         {
-                            if (!FilipUserManager.IsInRole(user.Id, "RegSvcRapp"))
+                            var user = await FilipUserManager.FindByNameAsync(email.Trim());
+                            if (user != null)
                             {
-                                FilipUserManager.AddToRole(user.Id, "RegSvcRapp");
+                                if (!FilipUserManager.IsInRole(user.Id, "RegSvcRapp"))
+                                {
+                                    FilipUserManager.AddToRole(user.Id, "RegSvcRapp");
+                                }
                             }
                         }
                     }
@@ -904,17 +908,22 @@ namespace InrappSos.AstridWeb.Controllers
                     _portalSosService.SkapaArende(arendeDTO, userName);
                     //Lägg till roll för de rapportörer som är reggade
                     //TODO - Flytta detta till svc-lagret eller repo-lagret?
-                    var newEmailStr = arendeVM.Rapportorer.Split(',');
+                    var reporters = arendeVM.Rapportorer.Replace(' ', ',');
+                    var newEmailStr = reporters.Split(',');
                     foreach (var email in newEmailStr)
                     {
-                        var user = await FilipUserManager.FindByNameAsync(email.Trim());
-                        if (user != null)
+                        if (!String.IsNullOrEmpty(email.Trim()))
                         {
-                            if (!FilipUserManager.IsInRole(user.Id, "RegSvcRapp"))
+                            var user = await FilipUserManager.FindByNameAsync(email.Trim());
+                            if (user != null)
                             {
-                                FilipUserManager.AddToRole(user.Id, "RegSvcRapp");
+                                if (!FilipUserManager.IsInRole(user.Id, "RegSvcRapp"))
+                                {
+                                    FilipUserManager.AddToRole(user.Id, "RegSvcRapp");
+                                }
                             }
                         }
+                        
                     }
                 }
                 catch (Exception e)

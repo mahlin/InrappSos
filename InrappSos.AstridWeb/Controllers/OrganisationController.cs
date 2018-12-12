@@ -887,6 +887,18 @@ namespace InrappSos.AstridWeb.Controllers
             {
                 try
                 {
+                    //TODO - testa detta på klienten
+                    //Check arendenr not already used
+                    var alredayUsed = CaseNumberAlreadyUsed(arendeVM.Arendenr, arendeVM.OrganisationsId);
+                    if (alredayUsed)
+                    {
+                        var errorModel = new CustomErrorPageModel
+                        {
+                            Information = "Ett ärende med valt ärendenummer (" + arendeVM.Arendenr + ")  finns redan upplagt. Ärendet kunde inte sparas.",
+                            ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                        };
+                        return View("CustomError", errorModel);
+                    }
                     var userName = User.Identity.GetUserName();
                     var arendeDTO = ConvertArendeVMToDb(arendeVM);
                     _portalSosService.SkapaArende(arendeDTO, userName);
@@ -1624,6 +1636,17 @@ namespace InrappSos.AstridWeb.Controllers
             // Setting.  
             lstobj = new SelectList(list, "Value", "Text");
             return lstobj;
+        }
+
+        private bool CaseNumberAlreadyUsed(string arendenr, int orgId)
+        {
+            var alreadyUsed = false;
+            var organisationCasenumbers = _portalSosService.HamtaArendenForOrg(orgId).Select(x => x.Arendenr);
+            if (organisationCasenumbers.Contains(arendenr))
+            {
+                alreadyUsed = true;
+            }
+            return alreadyUsed;
         }
 
 

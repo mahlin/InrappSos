@@ -847,10 +847,15 @@ namespace InrappSos.ApplicationService
         public IEnumerable<RapporteringsresultatDTO> HamtaRapporteringsresultatForDelregOchPeriod(int delRegId, string period)
         {
             var rappResList = _portalSosRepository.GetReportResultForSubdirAndPeriod(delRegId, period);
+            //Filtrera bort dubletter
+            IEnumerable<Rapporteringsresultat> filteredList = rappResList
+                .GroupBy(x => x.Email)
+                .Select(group => group.First());
+
             var ejLevList = new List<Rapporteringsresultat>();
 
             //Ta bara med dem som inte rapporterat alls eller som har leveransstatus "Leveransen är inte godkänd"
-            foreach (var rappRes in rappResList)
+            foreach (var rappRes in filteredList)
             {
                 if (rappRes.AntalLeveranser == null)
                 {
@@ -864,7 +869,9 @@ namespace InrappSos.ApplicationService
             }
 
             var rappResListDTO = ConvertRappListDBToVM(ejLevList, 0, delRegId);
-            return rappResListDTO;
+            //Filtrera bort dubletter
+            var distinctRappListDTO = rappResListDTO.GroupBy(x => x.Email).Select(x => x.First()).ToList();
+            return distinctRappListDTO;
         }
 
         public IEnumerable<RapporteringsresultatDTO> HamtaRapporteringsresultatForRegOchPeriod(int regId, string period)
@@ -886,8 +893,12 @@ namespace InrappSos.ApplicationService
 
             }
 
-            var rappResListDTO = ConvertRappListDBToVM(ejLevList, regId, 0);
-            return rappResListDTO;
+            var rappResListDTO = ConvertRappListDBToVM(ejLevList, regId, 0).ToList();
+
+            //Filtrera bort dubletter
+            var distinctRappListDTO = rappResListDTO.GroupBy(x => x.Email).Select(x => x.First()).ToList();
+
+            return distinctRappListDTO;
         }
 
         public IEnumerable<AdmRegister> HamtaRegisterForOrg(int orgId)

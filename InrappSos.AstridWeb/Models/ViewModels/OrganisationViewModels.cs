@@ -21,7 +21,7 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public string Kommunkod { get; set; }
             public Organisation Organisation { get; set; }
 
-            public IEnumerable<ApplicationUserViewModel> ContactPersons { get; set; }
+            public List<ApplicationUserViewModel> ContactPersons { get; set; }
 
             public string SelectedContactId { get; set; }
 
@@ -43,6 +43,7 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public List<AdmOrganisationstyp> OrganisationTypes { get; set; }
             public List<UndantagEpostDomanViewModel> UndantagEpostDomaner { get; set; }
             public List<ArendeViewModel> Arenden { get; set; }
+            public List<IdentityRoleViewModel> Roller { get; set; }
             public string Origin { get; set; }
 
         }
@@ -120,6 +121,9 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public bool PhoneNumberConfirmed { get; set; }
             public string Kontaktnummer { get; set; }
             public string ValdaDelregister { get; set; }
+            public string StringOfRoles { get; set; }
+            public List<IdentityRoleViewModel> ListOfRoles { get; set; }
+            public IList<string> Roles { get; set; }
             public DateTime SkapadDatum { get; set; }
             public string SkapadAv { get; set; }
             public DateTime AndradDatum { get; set; }

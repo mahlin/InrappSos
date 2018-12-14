@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.WebPages;
 using InrappSos.ApplicationService;
 using InrappSos.ApplicationService.DTOModel;
 using InrappSos.ApplicationService.Interface;
@@ -15,6 +16,7 @@ using InrappSos.AstridWeb.Models;
 using InrappSos.AstridWeb.Models.ViewModels;
 using Microsoft.Ajax.Utilities;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 
 namespace InrappSos.AstridWeb.Controllers
@@ -152,7 +154,9 @@ namespace InrappSos.AstridWeb.Controllers
                 model.Organisation = _portalSosService.HamtaOrganisation(model.SelectedOrganisationId);
                 model.Kommunkod = model.Organisation.Kommunkod;
                 var contacts = _portalSosService.HamtaKontaktpersonerForOrg(model.Organisation.Id);
-                model.ContactPersons = ConvertUsersViewModelUser(contacts);
+                //TODO - roller även här?
+                var roller = new List<IdentityRole>();
+                model.ContactPersons = ConvertUsersViewModelUser(contacts, roller);
 
                 model.OrgUnits = _portalSosService.HamtaOrgEnheterForOrg(model.Organisation.Id);
                 var reportObligationsDb = _portalSosService.HamtaUppgiftsskyldighetForOrg(model.Organisation.Id);
@@ -199,7 +203,10 @@ namespace InrappSos.AstridWeb.Controllers
         [Authorize]
         public ActionResult GetContacts()
         {
-            return View("EditContacts");
+            var model = new OrganisationViewModels.OrganisationViewModel();
+            model.ContactPersons = new List<OrganisationViewModels.ApplicationUserViewModel>();
+            model.SearchResult = new List<List<Organisation>>();
+            return View("EditContacts", model);
         }
 
 
@@ -218,12 +225,17 @@ namespace InrappSos.AstridWeb.Controllers
                 model.Organisation = _portalSosService.HamtaOrganisation(model.SelectedOrganisationId);
                 model.Kommunkod = model.Organisation.Kommunkod;
                 var contacts = _portalSosService.HamtaKontaktpersonerForOrg(model.Organisation.Id);
-                model.ContactPersons = ConvertUsersViewModelUser(contacts);
+                var roller = _portalSosService.HamtaAllaFilipRoller().ToList();
+                model.ContactPersons = ConvertUsersViewModelUser(contacts, roller);
                 foreach (var contact in model.ContactPersons)
                 {
                     //Hämta användarens valda register
                     contact.ValdaDelregister = GetContactsChosenSubDirectories(contact);
                 }
+               
+                //Skapa lista över filip-roller 
+                model.Roller = ConvertRolesToVM(roller);
+                ViewBag.RolesList = CreateRolesDropDownList(roller);
                 model.SearchResult = new List<List<Organisation>>();
             }
             catch (Exception e)
@@ -500,16 +512,39 @@ namespace InrappSos.AstridWeb.Controllers
 
         [HttpPost]
         [Authorize]
-        public ActionResult UpdateOrganisationsContact(ApplicationUser user)
+        public ActionResult UpdateOrganisationsContact(OrganisationViewModels.ApplicationUserViewModel user)
         {
             var org = new Organisation();
             try
             {
-                org = _portalSosService.HamtaOrgForAnvandare(user.Id);
+                org = _portalSosService.HamtaOrgForAnvandare(user.ID);
                 if (ModelState.IsValid)
                 {
                     var userName = User.Identity.GetUserName();
-                    _portalSosService.UppdateraKontaktperson(user, userName);
+                    var userToUpdate = ConvertViewModelToApplicationUser(user);
+                    _portalSosService.UppdateraKontaktperson(userToUpdate, userName);
+                    //Lägg till användarens roller med multiselect/ListOfRoles
+                    try
+                    {
+                        foreach (var role in user.ListOfRoles)
+                        {
+                            if (role.Selected)
+                            {
+                                FilipUserManager.AddToRole(user.ID, role.Name);
+                            }
+                            else
+                            {
+                                if (FilipUserManager.IsInRole(user.ID, role.Name))
+                                {
+                                    FilipUserManager.RemoveFromRole(user.ID, role.Name);
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        throw new ArgumentException(e.Message);
+                    }
                 }
             }
             catch (Exception e)
@@ -1227,7 +1262,7 @@ namespace InrappSos.AstridWeb.Controllers
 
 
 
-        private IEnumerable<OrganisationViewModels.ApplicationUserViewModel> ConvertUsersViewModelUser(IEnumerable<ApplicationUser> contacts)
+        private List<OrganisationViewModels.ApplicationUserViewModel> ConvertUsersViewModelUser(IEnumerable<ApplicationUser> contacts, List<IdentityRole> roller)
         {
             var contactPersonsView = new List<OrganisationViewModels.ApplicationUserViewModel>();
 
@@ -1235,6 +1270,8 @@ namespace InrappSos.AstridWeb.Controllers
 
             foreach (var contact in contacts)
             {
+                var roleVMList = new List<IdentityRoleViewModel>();
+
                 if (!contact.PhoneNumberConfirmed)
                 {
                     okToDelete = true;
@@ -1259,9 +1296,42 @@ namespace InrappSos.AstridWeb.Controllers
                     SkapadAv = contact.SkapadAv,
                     AndradDatum = contact.AndradDatum,
                     AndradAv = contact.AndradAv,
-                    OkToDelete = okToDelete
+                    OkToDelete = okToDelete,
+                    Roles = FilipUserManager.GetRoles(contact.Id)
                 };
 
+                //Skapa lista över roller och markera valda roller för aktuell användare
+                foreach (var roll in roller)
+                {
+                    var roleVm = new IdentityRoleViewModel
+                    {
+                        Id = roll.Id,
+                        Name = roll.Name
+                    };
+
+                    if (contactView.Roles.Contains(roll.Name))
+                    {
+                        roleVm.Selected = true;
+                    }
+                    roleVMList.Add(roleVm);
+                }
+
+                //Skapa kommaseparerad textsträng över användarens roller 
+                var rolesStr = String.Empty;
+                foreach (var role in contactView.Roles)
+                {
+                    if (rolesStr.IsEmpty())
+                    {
+                        rolesStr = role;
+                    }
+                    else
+                    {
+                        rolesStr = rolesStr + ", " + role;
+                    }
+                }
+
+                contactView.StringOfRoles = rolesStr;
+                contactView.ListOfRoles = roleVMList;
                 contactPersonsView.Add(contactView);
             }
             return contactPersonsView;
@@ -1656,6 +1726,61 @@ namespace InrappSos.AstridWeb.Controllers
                 alreadyUsed = true;
             }
             return alreadyUsed;
+        }
+
+        private List<IdentityRoleViewModel> ConvertRolesToVM(List<IdentityRole> roller)
+        {
+            var rollerList = new List<IdentityRoleViewModel>();
+
+            foreach (var roll in roller)
+            {
+                var roleVM = new IdentityRoleViewModel()
+                {
+                    Id = roll.Id,
+                    Name = roll.Name,
+                    Selected = false
+                };
+                rollerList.Add(roleVM);
+            }
+
+            return rollerList;
+        }
+
+        private IEnumerable<SelectListItem> CreateRolesDropDownList(IEnumerable<IdentityRole> roles)
+        {
+            SelectList lstobj = null;
+
+            var list = roles
+                .Select(p =>
+                    new SelectListItem
+                    {
+                        Value = p.Id.ToString(),
+                        Text = p.Name
+                    });
+
+            // Setting.  
+            lstobj = new SelectList(list, "Value", "Text");
+
+            return lstobj;
+        }
+
+        private ApplicationUser ConvertViewModelToApplicationUser(OrganisationViewModels.ApplicationUserViewModel userVM)
+        {
+            var user = new ApplicationUser()
+            {
+                Id = userVM.ID,
+                OrganisationId = userVM.OrganisationId,
+                Namn = userVM.Namn,
+                Kontaktnummer = userVM.Kontaktnummer,
+                AktivFrom = userVM.AktivFrom,
+                AktivTom = userVM.AktivTom,
+                Status = userVM.Status,
+                Email = userVM.Email,
+                PhoneNumber = userVM.PhoneNumber,
+                PhoneNumberConfirmed = userVM.PhoneNumberConfirmed
+            };
+
+            return user;
         }
 
 

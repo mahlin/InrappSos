@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -79,6 +80,24 @@ namespace InrappSos.ApplicationService.Helpers
             return days;
         }
 
+        public static IEnumerable<T> DistinctBy<T>(this IEnumerable<T> list, Func<T, object> propertySelector)
+        {
+            return list.GroupBy(propertySelector).Select(x => x.First());
+        }
+
+        //public static IEnumerable<TSource> DistinctBy<TSource, TKey>
+        //    (this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
+        //{
+        //    HashSet<TKey> seenKeys = new HashSet<TKey>();
+        //    foreach (TSource element in source)
+        //    {
+        //        if (seenKeys.Add(keySelector(element)))
+        //        {
+        //            yield return element;
+        //        }
+        //    }
+        //}
+
         //public static T SetAndradAv<T>(T inputObj, string userName)
         //{
         //    inputObj.SkapadAv = username
@@ -86,6 +105,6 @@ namespace InrappSos.ApplicationService.Helpers
 
         //}
 
-  
+
     }
 }

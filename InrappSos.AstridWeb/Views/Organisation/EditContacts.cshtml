@@ -1,11 +1,26 @@
 ﻿@model InrappSos.AstridWeb.Models.ViewModels.OrganisationViewModels.OrganisationViewModel
-<script src="~/Scripts/jquery-1.10.2.min.js"></script>
-@*<link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />*@
+@*<script src="~/Scripts/jquery-1.10.2.min.js"></script>*@
 
-<script src="@Url.Content("~/Scripts/custom.js")" type="text/javascript"></script>
+<link href="~/Scripts//bootstrap-multiselect/dist/css/bootstrap-multiselect.css" rel="stylesheet" type="text/css" />
+<script src="~/Scripts/bootstrap-multiselect/dist/js/bootstrap-multiselect.js" type="text/javascript"></script>
+
+@*<script src="@Url.Content("~/Scripts/custom.js")" type="text/javascript"></script>*@
 <script type="text/javascript">
 
+    var users = @Html.Raw(Json.Encode(Model.ContactPersons));
+    var usersRoleObjects = [];
+    users.forEach(function (user, index) {
+        usersRoleObjects[index] = user.ListOfRoles;
+    });
+
     $(document).ready(function () {
+        //Göm kolumnen med dropdown/Roller om ej edit-mode
+        $('#usersTable tr th:eq(0)').hide();
+        $('#usersTable tr th:eq(11)').hide();
+        $("#usersTable tbody tr").each(function (i, row) {
+            $(row).find('td:eq(0)').hide();
+            $(row).find('td:eq(11)').hide();
+        });
 
         var modalConfirm = function test(callback) {
             $("#modal-btn-si").on("click", function () {
@@ -46,21 +61,21 @@
         $("#searchText").focus();
     });
 
-    $(function () {
-        $('th a, tfoot a').click(function () {
-            //if querystring already contains selectedOrganisationId, remove it
-            var index = $(this).attr('href').indexOf("&selectedOrganisationId=");
-            if (index >= 0) {
-                var cleanUrl = $(this).attr('href').substring(0, index);
-                $(this).attr('href', cleanUrl);
-            }
-            var newUrl = $(this).attr('href') +
-                "&selectedOrganisationId=" +
-                $("#SelectedOrganisationId").val();
-            $('form').attr('action', newUrl).submit();
-            return false;
-        });
-    });
+    //$(function () {
+    //    $('th a, tfoot a').click(function () {
+    //        //if querystring already contains selectedOrganisationId, remove it
+    //        var index = $(this).attr('href').indexOf("&selectedOrganisationId=");
+    //        if (index >= 0) {
+    //            var cleanUrl = $(this).attr('href').substring(0, index);
+    //            $(this).attr('href', cleanUrl);
+    //        }
+    //        var newUrl = $(this).attr('href') +
+    //            "&selectedOrganisationId=" +
+    //            $("#SelectedOrganisationId").val();
+    //        $('form').attr('action', newUrl).submit();
+    //        return false;
+    //    });
+    //});
 
     function deleteContact(id, name) {
         $('#SelectedContactId').val(id);
@@ -70,9 +85,76 @@
     }
 
     $(function () {
+
+        //Multiselect
+        $('[id*=ddlRoleList]').multiselect({
+            onInitialized: function () {
+                var ddls = getTableRowsDDLs();
+
+                users.forEach(function (user, idx) {
+                    $.each(user.ListOfRoles, function (index, item) {
+                        if (item.Selected) {
+                            //hitta rätt rad/rätt drop
+                            var ddl = ddls[idx];
+                            var options = ddl.options;
+                            options[index].selected = true;
+                            options[index].checked = true;
+                        }
+                    });
+                });
+                this.refresh();
+            },
+            onChange: function (option, checked, select) {
+                //Update string of ChosenRoles
+                //var roleId = $(option).val();
+                //var roleName = $("#ddlRoleList option:selected").text();
+                var roleName = $(option).text();
+                var userId = $('#SelectedContactId').val();
+                users.forEach(function (user, index) {
+                    if (user.ID === userId) {
+                        user.StringOfRoles = "";
+                        $.each(usersRoleObjects, function (idx, item) {
+                            //Hitta användarens rollista
+                            if (idx === index) {
+                                //loopa användarens rollista
+                                item.forEach(function (roll, i) {
+                                    if (roll.Name === roleName) {
+                                        if (roll.Selected) {
+                                            roll.Selected = false;
+                                        } else {
+                                            roll.Selected = true;
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            },
+            includeSelectAllOption: false,
+            nonSelectedText: 'Välj roll',
+            allSelectedText: 'Alla valda',
+            selectAllText: "Välj alla",
+            nSelectedText: "valda",
+            astridDefaultText: "Välj roll"
+        });
+
         $('.edit-mode').hide();
-        $('.edit-user, .cancel-user').on('click', function () {
+        $(' .cancel-user').on('click', function () {
             var tr = $(this).parents('tr:first');
+            $('#SelectedContactId').val();
+            //Göm kolumnen med dropdown/Roller om ej edit-mode
+            tr.find('td:eq(11)').hide();
+            tr.find('td:eq(10)').show();
+            tr.find('.edit-mode, .display-mode').toggle();
+        });
+        $('.edit-user').on('click', function () {
+            var tr = $(this).parents('tr:first');
+            var userId = tr.find("#ContactId").val();
+            $('#SelectedContactId').val(userId);
+            //Visa kolumnen med dropdown/Roller om edit-mode
+            tr.find('td:eq(11)').show();
+            tr.find('td:eq(10)').hide();
             tr.find('.edit-mode, .display-mode').toggle();
         });
         $('.save-user').on('click', function () {
@@ -88,17 +170,27 @@
             }
             var contactAktivFrom = tr.find("#ContactAktivFrom").val();
             var contactAktivTom = tr.find("#ContactAktivTom").val();
+            var rolesStr = "";
+            var listOfRoles = [];
+            users.forEach(function (user, index) {
+                if (user.ID === contactId) {
+                    rolesStr = user.StringOfRoles;
+                    listOfRoles = user.ListOfRoles;
+                }
+            });
 
             //Creating ApplicationUser JSON object
             var applicationUser =
-                {
-                    "Id": contactId,
-                    "PhoneNumber": contactPhoneNumber,
-                    "PhoneNumberConfirmed": contactPhoneNumberConfirmed,
-                    "Kontaktnummer": contactNumber,
-                    "AktivFrom": contactAktivFrom,
-                    "AktivTom": contactAktivTom
-                };
+            {
+                "Id": contactId,
+                "PhoneNumber": contactPhoneNumber,
+                "PhoneNumberConfirmed": contactPhoneNumberConfirmed,
+                "Kontaktnummer": contactNumber,
+                "AktivFrom": contactAktivFrom,
+                "AktivTom": contactAktivTom,
+                "StringOfRoles": rolesStr,
+                "ListOfRoles": listOfRoles
+            };
             //Posting ApplicationUser object to controller's Update action method
             $.ajax({
                 url: '/Organisation/UpdateOrganisationsContact',
@@ -129,6 +221,10 @@
             tr.find("#lblAktivTom").text(contactAktivTom);
         });
     });
+
+    function getTableRowsDDLs() {
+        return $(".ddl");
+    }
 </script>
 <div id="pageContainer">
     @Html.HiddenFor(m => m.Kommunkod)
@@ -199,8 +295,27 @@
         else if (Model.Organisation != null)
         {
             @Html.HiddenFor(m => m.SelectedContactId)
-            @Html.HiddenFor(m => m.Kommunkod)
             @Html.HiddenFor(m => m.SelectedOrganisationId)
+
+            if (Model.ContactPersons != null)
+            {
+                for (int i = 0; i < Model.ContactPersons.Count; i++)
+                {
+                    @Html.HiddenFor(x => x.ContactPersons[i].ID)
+                    @Html.HiddenFor(x => x.ContactPersons[i].StringOfRoles)
+                    @Html.HiddenFor(x => x.ContactPersons[i].ListOfRoles)
+                }
+            }
+
+            if (Model.Roller != null)
+            {
+                for (int i = 0; i < Model.Roller.Count; i++)
+                {
+                    @Html.HiddenFor(x => x.Roller[i].Id)
+                    @Html.HiddenFor(x => x.Roller[i].Name)
+                    @Html.HiddenFor(x => x.Roller[i].Selected)
+                }
+            }
 
             <div style="font-size: 1.2em; padding-left: 20px; padding-bottom: 20px;"><b>@Model.Organisation.Organisationsnamn</b></div>
             <div id="gridContent" style="font-family: Arial; padding: 20px;">
@@ -210,43 +325,46 @@
                     var grid = new WebGrid(source: Model.ContactPersons, canPage: false, rowsPerPage: 10, ajaxUpdateContainerId: "contatcsGrid");
                 }
 
-                @grid.GetHtml(tableStyle: "webgrid-table1500",
-                              headerStyle: "webgrid-header",
-                              footerStyle: "webgrid-footer",
-                              alternatingRowStyle: "webgrid-alternating-row",
-                              selectedRowStyle: "webgrid-selected-row",
-                              rowStyle: "webgrid-row-style",
-                              mode: WebGridPagerModes.All,
-                              columns: grid.Columns(
-                                grid.Column(null, null, format: @<input type="hidden" id="ContactId" name="IDHidden" value="@item.ID" />),
-                                grid.Column("Namn", format: @<text><span class="display-mode">@item.Namn</span><label id="ContactName" class="edit-mode">@item.Namn</label></text>, style: "col3Width"),
-                                grid.Column("Email", "E-post", format: @<text><span class="display-mode col3Width">@item.Email</span><label id="Epost" class="edit-mode col3Width">@item.Email</label></text>, style: "col3Width"),
+                @grid.GetHtml(htmlAttributes: new { id = "usersTable" },
+                                   tableStyle: "webgrid-table1500",
+                                   headerStyle: "webgrid-header",
+                                   footerStyle: "webgrid-footer",
+                                   alternatingRowStyle: "webgrid-alternating-row",
+                                   selectedRowStyle: "webgrid-selected-row",
+                                   rowStyle: "webgrid-row-style",
+                                   mode: WebGridPagerModes.All,
+                                   columns: grid.Columns(
+                                     grid.Column(null, null, format: @<input type="hidden" id="ContactId" name="IDHidden" value="@item.ID" />),
+                                         grid.Column("Namn", format: @<text><span class="display-mode">@item.Namn</span><label id="ContactName" class="edit-mode">@item.Namn</label></text>, style: "col3Width"),
+                                             grid.Column("Email", "E-post", format: @<text><span class="display-mode col3Width">@item.Email</span><label id="Epost" class="edit-mode col3Width">@item.Email</label></text>, style: "col3Width"),
 
-                                grid.Column("PhoneNumber", "Telefon", format: @<text><span class="display-mode col2Width"><label id="lblPhoneNumber">@item.PhoneNumber</label></span>
-                                                                    <input type="text" id="ContactPhoneNumber" value="@item.PhoneNumber" class="edit-mode form-control" /></text>, style: "col2Width"),
+                                                 grid.Column("PhoneNumber", "Telefon", format: @<text><span class="display-mode col2Width"><label id="lblPhoneNumber">@item.PhoneNumber</label></span>
+                                                <input type="text" id="ContactPhoneNumber" value="@item.PhoneNumber" class="edit-mode form-control" /></text>, style: "col2Width"),
 
-                                grid.Column("PhoneNumberConfirmed", "Telefonnr verifierat", format: @<text>
-                                                                                    <span class="display-mode"><input id="lblContactPhoneNumberVerified" class="checkbox" name="select" type="checkbox" disabled @( item.PhoneNumberConfirmed ? "checked='checked'" : "") value="@item.PhoneNumberConfirmed" /></span>
-                                                                                    <input id="ContactPhoneNumberConfirmed" class="edit-mode checkbox" name="select" type="checkbox" @( item.PhoneNumberConfirmed ? "checked='checked'" : "") value="@item.PhoneNumberConfirmed" /></text>, style: "colMinWidth centered"),
-                                grid.Column("Kontaktnummer", "Kontaktnummer", format: @<text><span class="display-mode col2Width"><label id="lblContactNumber">@item.Kontaktnummer</label></span>
-                                                                                            <input type="text" id="ContactNumber" value="@item.Kontaktnummer" class="edit-mode form-control" /></text>, style: "col2Width"),
+                                                     grid.Column("PhoneNumberConfirmed", "Telefonnr verifierat", format: @<text>
+                                                        <span class="display-mode"><input id="lblContactPhoneNumberVerified" class="checkbox" name="select" type="checkbox" disabled @( item.PhoneNumberConfirmed ? "checked='checked'" : "") value="@item.PhoneNumberConfirmed" /></span>
+                                                        <input id="ContactPhoneNumberConfirmed" class="edit-mode checkbox" name="select" type="checkbox" @( item.PhoneNumberConfirmed ? "checked='checked'" : "") value="@item.PhoneNumberConfirmed" /></text>, style: "colMinWidth centered"),
+                                                         grid.Column("Kontaktnummer", "Kontaktnummer", format: @<text><span class="display-mode col2Width"><label id="lblContactNumber">@item.Kontaktnummer</label></span>
+                                                        <input type="text" id="ContactNumber" value="@item.Kontaktnummer" class="edit-mode form-control" /></text>, style: "col2Width"),
 
-                                grid.Column("AktivFrom", "Aktiv fr.o.m", format: @<text><span class="display-mode"><label id="lblAktivFrom">@( item.AktivFrom != null ? item.AktivFrom.ToString("yyyy-MM-dd") : item.AktivFrom)</label></span>
-                                                                                            <input type="text" id="ContactAktivFrom" value="@( item.AktivFrom != null ? item.AktivFrom.ToString("yyyy-MM-dd") : item.AktivFrom)" class="edit-mode form-control" /></text>, style: "col2Width"),
-                                grid.Column("AktivTom", "Aktiv t.o.m", format: @<text><span class="display-mode"><label id="lblAktivTom">@( item.AktivTom != null ? item.AktivTom.ToString("yyyy-MM-dd") : item.AktivTom)</label></span>
-                                                                                                        <input type="text" id="ContactAktivTom" value="@( item.AktivTom != null ? item.AktivTom.ToString("yyyy-MM-dd") : item.AktivTom)" class="edit-mode form-control" /></text>, style: "col2Width"),
-                                grid.Column("Status", "Status", format: @<text><span class="display-mode col1Width"><label id="lblStatus">@item.Status</label></span>
-                                                                                                                    <input type="text" id="ContactStatus" value="@item.Status" class="edit-mode form-control" /></text>, style: "col1Width"),
-                                grid.Column("Valda delregister", "Valda delregister", format: @<text><span class="display-mode col350Width" style="display: inline-block;">@item.ValdaDelregister</span><label id="lblValdaDelreg" class="edit-mode col350Width">@item.ValdaDelregister</label></text>, style: "col350Width"),
-                                grid.Column(null, format: @<text>
-                                        <button class="edit-user display-mode btn btn-default">Ändra</button>
-                                        @if (item.OkToDelete)
-                                        {
-                                        <button class="display-mode btn btn-default" onclick="deleteContact('@item.Id', '@item.Namn');return false;">Ta bort</button>
-                                        }
-                                        <button class="save-user edit-mode btn btn-default">Spara</button>
-                                        <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
-                                        </text>, style: "col3Width", canSort: false)))
+                                                        grid.Column("AktivFrom", "Aktiv fr.o.m", format: @<text><span class="display-mode"><label id="lblAktivFrom">@( item.AktivFrom != null ? item.AktivFrom.ToString("yyyy-MM-dd") : item.AktivFrom)</label></span>
+                                                    <input type="text" id="ContactAktivFrom" value="@( item.AktivFrom != null ? item.AktivFrom.ToString("yyyy-MM-dd") : item.AktivFrom)" class="edit-mode form-control" /></text>, style: "col2Width"),
+                                                    grid.Column("AktivTom", "Aktiv t.o.m", format: @<text><span class="display-mode"><label id="lblAktivTom">@( item.AktivTom != null ? item.AktivTom.ToString("yyyy-MM-dd") : item.AktivTom)</label></span>
+                                                    <input type="text" id="ContactAktivTom" value="@( item.AktivTom != null ? item.AktivTom.ToString("yyyy-MM-dd") : item.AktivTom)" class="edit-mode form-control" /></text>, style: "col2Width"),
+                                                    grid.Column("Status", "Status", format: @<text><span class="display-mode col1Width"><label id="lblStatus">@item.Status</label></span>
+                                                    <input type="text" id="ContactStatus" value="@item.Status" class="edit-mode form-control" /></text>, style: "col1Width"),
+                                                    grid.Column("Valda delregister", "Valda delregister", format: @<text><span class="display-mode col350Width" style="display: inline-block;">@item.ValdaDelregister</span><label id="lblValdaDelreg" class="edit-mode col350Width">@item.ValdaDelregister</label></text>, style: "col350Width"),
+                                                    grid.Column("Roller", "Roller", format: @<text><label id="lblRoller" class="longColumnText" style="width: 200px;">@item.StringOfRoles</label></text>, style: "col3Width"),
+                                                    grid.Column("Roller", format: @item => Html.DropDownListFor(m => m.Roller, new SelectList(@item.ListOfRoles, "Id", "Name"), new { id = "ddlRoleList", @class = "form-control edit-mode ddl", multiple = "multiple", style = "min-width:100px !important" })),
+                                                    grid.Column(null, format: @<text>
+                                                        <button class="edit-user display-mode btn btn-default">Ändra</button>
+                                                        @if (item.OkToDelete)
+                                                         {
+                                                            <button class="display-mode btn btn-default" onclick="deleteContact('@item.Id', '@item.Namn');return false;">Ta bort</button>
+                                                        }
+                                                        <button class="save-user edit-mode btn btn-default">Spara</button>
+                                                        <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
+                                                </text>, style: "col3Width", canSort: false)))
 
             </div>
         }

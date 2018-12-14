@@ -16,7 +16,7 @@
     });
 
     $(function () {
-        //Göm kolumnen med dropdown/Insamlingsfrekvens om ej edit-mode
+        //Göm kolumnen med dropdown/Roller om ej edit-mode
         $('#adminUsersTable tr th:eq(0)').hide();
         $('#adminUsersTable tr th:eq(4)').hide();
         $("#adminUsersTable tbody tr").each(function (i, row) {
@@ -136,7 +136,7 @@
             function () {
                 var tr = $(this).parents('tr:first');
                 $('#SelectedUser').val();
-                //Göm kolumnen med dropdown/Insamlingsfrekvens om ej edit-mode
+                //Göm kolumnen med dropdown/Roller om ej edit-mode
                 tr.find('td:eq(4)').hide();
                 tr.find('td:eq(3)').show();
                 tr.find('.edit-mode, .display-mode').toggle();
@@ -305,19 +305,19 @@
                                                           columns: grid.Columns(
                                                               grid.Column(null, null, format: @<text><input type="hidden" id="Id" value="@item.Id" class="edit-mode form-control hide" /></text>, style: "colZeroWidth"),
                   grid.Column("Email", "Email", format: @<text><span class="display-mode"><label id="lblEmail" style="width: 300px;">@item.Email</label></span>
-                <input type="text" id="Email" value="@item.Email" class="edit-mode form-control" /></text>, style: "col4Width"),
-grid.Column("PhoneNumber", "Telefonnummer", format: @<text><span class="display-mode"><label id="lblDescription" style="width: 200px;">@item.PhoneNumber  </label></span>
-<input type="text" id="PhoneNumber" value="@item.PhoneNumber" class="edit-mode form-control" /></text>, style: "colMinWidth"),
-grid.Column("Roller", "Roller", format: @<text><label id="lblRoller" class="longColumnText" style="width: 200px;">@item.StringOfRoles</label></text>, style: "col3Width"),
-//grid.Column("Roller", format: @item => Html.DropDownListFor(m => m.Roller, new SelectList(@item.ListOfRoles, "Id", "Name"), " - Välj roll -", new { id = "ddlRoleList", @class = "form-control edit-mode", style = "min-width:100px !important" })),
-grid.Column("Roller", format: @item => Html.DropDownListFor(m => m.Roller, new SelectList(@item.ListOfRoles, "Id", "Name"), new { id = "ddlRoleList", @class = "form-control edit-mode ddl", multiple = "multiple", style = "min-width:100px !important" })),
+                                <input type="text" id="Email" value="@item.Email" class="edit-mode form-control" /></text>, style: "col4Width"),
+                grid.Column("PhoneNumber", "Telefonnummer", format: @<text><span class="display-mode"><label id="lblDescription" style="width: 200px;">@item.PhoneNumber  </label></span>
+                <input type="text" id="PhoneNumber" value="@item.PhoneNumber" class="edit-mode form-control" /></text>, style: "colMinWidth"),
+                grid.Column("Roller", "Roller", format: @<text><label id="lblRoller" class="longColumnText" style="width: 200px;">@item.StringOfRoles</label></text>, style: "col3Width"),
+                //grid.Column("Roller", format: @item => Html.DropDownListFor(m => m.Roller, new SelectList(@item.ListOfRoles, "Id", "Name"), " - Välj roll -", new { id = "ddlRoleList", @class = "form-control edit-mode", style = "min-width:100px !important" })),
+                grid.Column("Roller", format: @item => Html.DropDownListFor(m => m.Roller, new SelectList(@item.ListOfRoles, "Id", "Name"), new { id = "ddlRoleList", @class = "form-control edit-mode ddl", multiple = "multiple", style = "min-width:100px !important" })),
 
-grid.Column(null, format: @<text>
-    <button class="edit-user display-mode btn btn-default">Ändra</button>
-    <button class="display-mode btn btn-default" onclick="deleteAdminUser('@item.Id'); return false;">Ta bort</button>
-    <button class="save-user edit-mode btn btn-default">Spara</button>
-    <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
-</text>, style: "col3Width", canSort: false)))
+                grid.Column(null, format: @<text>
+                    <button class="edit-user display-mode btn btn-default">Ändra</button>
+                    <button class="display-mode btn btn-default" onclick="deleteAdminUser('@item.Id'); return false;">Ta bort</button>
+                    <button class="save-user edit-mode btn btn-default">Spara</button>
+                    <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
+                </text>, style: "col3Width", canSort: false)))
 
                     </div>
                 </section>

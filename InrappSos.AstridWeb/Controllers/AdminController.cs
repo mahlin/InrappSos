@@ -60,7 +60,6 @@ namespace InrappSos.AstridWeb.Controllers
                 var roller = _portalSosService.HamtaAllaAstridRoller().ToList();
                 model.AdminUsers = ConvertAdminUsersToViewModel(adminUsers, roller).ToList();
                 //Skapa lista över astrid-roller 
-                
                 model.Roller = ConvertRolesToVM(roller);
                 ViewBag.RolesList = CreateRolesDropDownList(roller);
 
@@ -377,7 +376,7 @@ namespace InrappSos.AstridWeb.Controllers
                     roleVMList.Add(roleVm);
                 }
 
-                //Skapa kommaseparerad textsträngöver användarens roller 
+                //Skapa kommaseparerad textsträng över användarens roller 
                 var rolesStr = String.Empty;
                 foreach (var role in adminUserView.Roles)
                 {

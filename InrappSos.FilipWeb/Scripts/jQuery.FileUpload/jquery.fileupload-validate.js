@@ -274,8 +274,10 @@ function getTableRows() {
                     var regexMatch = CheckFileName(data.selectedRegister, file.name);
                     if (regexMatch === null) {
                         file.error = settings.i18n('incorrectFileName');
-                    } else if (!CheckKommunKodInFileName(regexMatch)) {
-                        file.error = settings.i18n('incorrectKommunKodInFileName');
+                    } else if (regexMatch[0] != 'LVM') {
+                        if (!CheckKommunKodInFileName(regexMatch)) {
+                            file.error = settings.i18n('incorrectKommunKodInFileName');
+                    }
                     } else if (!CheckPeriodInFileName(data.selectedRegister, regexMatch)) {
                         file.error = settings.i18n('incorrectPeriodInFileName');
                     } else if (DoubletFiles(data.selectedRegister, file.name)) {

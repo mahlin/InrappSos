@@ -23,6 +23,9 @@ namespace InrappSos.AstridWeb.Controllers
 
         public ActionResult Index(AccountController.AccountMessageId? message)
         {
+            ViewBag.TextVanster = _portalSosService.HamtaInfoText("AstridStartsidaVanster").Text;
+            ViewBag.TextMitten = _portalSosService.HamtaInfoText("AstridStartsidaMitten").Text;
+            ViewBag.TextHoger = _portalSosService.HamtaInfoText("AstridStartsidaHoger").Text;
             ViewBag.StatusMessage =
                 message == AccountController.AccountMessageId.AddUserSuccess ? "Användaren har registrerats."
                 : "";

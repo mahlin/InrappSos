@@ -40,6 +40,7 @@
                 var orgUnitCode = tr.find("#OrgUnitCode").val();
                 var orgUnitActiveFrom = tr.find("#OrgUnitAktivFrom").val();
                 var orgUnitActiveTom = tr.find("#OrgUnitAktivTom").val();
+                var orgUnitFileCode = tr.find("#OrgUnitFileCode").val();
 
                 //Creating Organisationsenhet JSON object
                 var orgUnit =
@@ -48,7 +49,8 @@
                     "Enhetsnamn": orgUnitName,
                     "Enhetskod": orgUnitCode,
                     "AktivFrom": orgUnitActiveFrom,
-                    "AktivTom": orgUnitActiveTom
+                    "AktivTom": orgUnitActiveTom,
+                    "Filkod": orgUnitFileCode
                 };
                 //Posting Organisationsenhet object to controller's Update action method
                 $.ajax({
@@ -75,11 +77,13 @@
                 var orgUnitCode = tr.find("#OrgUnitCode").val();
                 var orgUnitActiveFrom = tr.find("#OrgUnitAktivFrom").val();
                 var orgUnitActiveTom = tr.find("#OrgUnitAktivTom").val();
+                var orgUnitFileCode = tr.find("#OrgUnitFileCode").val();
 
                 tr.find("#lblName").text(orgUnitName);
                 tr.find("#lblCode").text(orgUnitCode);
                 tr.find("#lblAktivFrom").text(orgUnitActiveFrom);
                 tr.find("#lblAktivTom").text(orgUnitActiveTom);
+                tr.find("#lblFileCode").text(orgUnitFileCode);
             });
     });
 </script>
@@ -170,6 +174,8 @@
                 grid.Column("AktivTom", "Aktiv tom", format: @<text><span class="display-mode"><label id="lblAktivTom">
                             @if (item.AktivTom != null){@item.AktivTom.ToString("yyyy-MM-dd")}else{@item.AktivTom}</label></span>
                             <input type="text" id="OrgUnitAktivTom" value="@if (item.AktivTom != null){@item.AktivTom.ToString("yyyy-MM-dd")}else{@item.AktivTom}" class="edit-mode form-control" /></text>, style: "col2Width"),
+                grid.Column("Filkod", "Filkod", format: @<text><span class="display-mode"><label id="lblFileCode">@item.Filkod</label></span>
+                            <input type="text" id="OrgUnitFileCode" value="@item.Filkod" class="edit-mode form-control" /></text>, style: "col2Width"),
 
                  grid.Column(null, format: @<text>
                             <button class="edit-user display-mode btn btn-default">Ändra</button>

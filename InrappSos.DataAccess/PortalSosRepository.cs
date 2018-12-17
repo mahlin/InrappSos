@@ -1362,6 +1362,7 @@ namespace InrappSos.DataAccess
             orgU.Enhetskod = orgUnit.Enhetskod;
             orgU.AktivFrom = orgUnit.AktivFrom;
             orgU.AktivTom = orgUnit.AktivTom;
+            orgU.Filkod = orgUnit.Filkod;
             orgU.AndradDatum = orgUnit.AndradDatum;
             orgU.AndradAv = orgUnit.AndradAv;
             DbContext.SaveChanges(); 

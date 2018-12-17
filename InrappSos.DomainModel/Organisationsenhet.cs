@@ -14,6 +14,7 @@ namespace InrappSos.DomainModel
         public string Enhetskod{ get; set; }
         public DateTime? AktivFrom { get; set; }
         public DateTime? AktivTom { get; set; }
+        public string Filkod { get; set; }
         public DateTime SkapadDatum { get; set; }
         public string SkapadAv { get; set; }
         public DateTime AndradDatum { get; set; }

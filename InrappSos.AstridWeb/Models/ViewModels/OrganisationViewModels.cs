@@ -63,6 +63,7 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public string Enhetskod { get; set; }
             public DateTime? AktivFrom { get; set; }
             public DateTime? AktivTom { get; set; }
+            public string Filkod { get; set; }
             public IEnumerable<UnitReportObligationsViewModel> UnitReportObligations { get; set; }
 
         }

@@ -76,6 +76,7 @@ namespace InrappSos.DataAccess
             modelBuilder.Entity<Organisationsenhet>().Property(e => e.Enhetskod).HasColumnName("enhetskod");
             modelBuilder.Entity<Organisationsenhet>().Property(e => e.AktivFrom).HasColumnName("aktivfrom");
             modelBuilder.Entity<Organisationsenhet>().Property(e => e.AktivTom).HasColumnName("aktivtom");
+            modelBuilder.Entity<Organisationsenhet>().Property(e => e.Filkod).HasColumnName("filkod");
             modelBuilder.Entity<Organisationsenhet>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
             modelBuilder.Entity<Organisationsenhet>().Property(e => e.SkapadAv).HasColumnName("skapadav");
             modelBuilder.Entity<Organisationsenhet>().Property(e => e.AndradDatum).HasColumnName("andraddatum");

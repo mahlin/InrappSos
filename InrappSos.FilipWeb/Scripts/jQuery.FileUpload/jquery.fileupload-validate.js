@@ -271,10 +271,12 @@ function getTableRows() {
                 }
                 if (!file.error) {
                     //Regexp-kontroller
+                    var currRegister = file.name.substring(0, 3);
+
                     var regexMatch = CheckFileName(data.selectedRegister, file.name);
                     if (regexMatch === null) {
                         file.error = settings.i18n('incorrectFileName');
-                    } else if (regexMatch[0] != 'LVM') {
+                    } else if (currRegister != 'LVM') {
                         if (!CheckKommunKodInFileName(regexMatch)) {
                             file.error = settings.i18n('incorrectKommunKodInFileName');
                     }

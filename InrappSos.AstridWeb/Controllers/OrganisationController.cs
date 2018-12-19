@@ -1206,59 +1206,59 @@ namespace InrappSos.AstridWeb.Controllers
         }
 
 
-        private OrganisationViewModels.UnitReportObligationsViewModel GetOrgDropDownLists(OrganisationViewModels.UnitReportObligationsViewModel model)
-        {
-            var orgList = _portalSosService.HamtaAllaOrganisationer();
-            var orgListDTO = GetOrganisationDTOList();
+        //private OrganisationViewModels.UnitReportObligationsViewModel GetOrgDropDownLists(OrganisationViewModels.UnitReportObligationsViewModel model)
+        //{
+        //    var orgList = _portalSosService.HamtaAllaOrganisationer();
+        //    var orgListDTO = GetOrganisationDTOList();
 
-            foreach (var org in orgListDTO)
-            {
-                    var orgenheter = _portalSosService.HamtaOrgEnheterForOrg(org.Id).ToList();
-                    var orgenhetsListDTO = new List<OrganisationsenhetDTO>();
+        //    foreach (var org in orgListDTO)
+        //    {
+        //            var orgenheter = _portalSosService.HamtaOrgEnheterForOrg(org.Id).ToList();
+        //            var orgenhetsListDTO = new List<OrganisationsenhetDTO>();
 
-                    foreach (var orgenhet in orgenheter)
-                    {
-                        var orgenhetDTO = new OrganisationsenhetDTO
-                        {
-                            Id = orgenhet.Id,
-                            Enhetsnamn = orgenhet.Enhetsnamn,
-                            Enhetskod = orgenhet.Enhetskod
-                        };
-                        orgenhetsListDTO.Add(orgenhetDTO);
-                    }
-                    org.Organisationsenheter = orgenhetsListDTO;
-            }
+        //            foreach (var orgenhet in orgenheter)
+        //            {
+        //                var orgenhetDTO = new OrganisationsenhetDTO
+        //                {
+        //                    Id = orgenhet.Id,
+        //                    Enhetsnamn = orgenhet.Enhetsnamn,
+        //                    Enhetskod = orgenhet.Enhetskod
+        //                };
+        //                orgenhetsListDTO.Add(orgenhetDTO);
+        //            }
+        //            org.Organisationsenheter = orgenhetsListDTO;
+        //    }
 
-            model.OrganisationList = orgListDTO.ToList();
-            ViewBag.OrganisationList = new SelectList(orgListDTO, "Id", "KommunkodOchOrgnamn");
+        //    model.OrganisationList = orgListDTO.ToList();
+        //    ViewBag.OrganisationList = new SelectList(orgListDTO, "Id", "KommunkodOchOrgnamn");
 
-            return model;
+        //    return model;
 
-        }
+        //}
 
-        private IEnumerable<OrganisationDTO> GetOrganisationDTOList()
-        {
-            var orgList = _portalSosService.HamtaAllaOrganisationer();
-            var orgListDTO = new List<OrganisationDTO>();
+        //private IEnumerable<OrganisationDTO> GetOrganisationDTOList()
+        //{
+        //    var orgList = _portalSosService.HamtaAllaOrganisationer();
+        //    var orgListDTO = new List<OrganisationDTO>();
 
-            foreach (var org in orgList)
-            {
-                if (org.Kommunkod != null) //Endast kommuner tills vidare
-                {
-                    var organisationDTO = new OrganisationDTO
-                    {
-                        Id = org.Id,
-                        Kommunkod = org.Kommunkod,
-                        Landstingskod = org.Landstingskod,
-                        Organisationsnamn = org.Organisationsnamn,
-                        KommunkodOchOrgnamn = org.Kommunkod + ", " + org.Organisationsnamn
-                    };
-                    orgListDTO.Add(organisationDTO);
-                }
-            }
+        //    foreach (var org in orgList)
+        //    {
+        //        if (org.Kommunkod != null) //Endast kommuner tills vidare
+        //        {
+        //            var organisationDTO = new OrganisationDTO
+        //            {
+        //                Id = org.Id,
+        //                Kommunkod = org.Kommunkod,
+        //                Landstingskod = org.Landstingskod,
+        //                Organisationsnamn = org.Organisationsnamn,
+        //                KommunkodOchOrgnamn = org.Kommunkod + ", " + org.Organisationsnamn
+        //            };
+        //            orgListDTO.Add(organisationDTO);
+        //        }
+        //    }
 
-            return orgListDTO;
-        }
+        //    return orgListDTO;
+        //}
 
 
 

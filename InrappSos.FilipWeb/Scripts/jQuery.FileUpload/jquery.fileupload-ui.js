@@ -541,6 +541,12 @@
                 this._trigger('fail', e, data);
             }
             //Handle buttonbar
+            var x = data.files.length;
+            if (data.files.length - 1 == 0) {
+                $('.start').hide();
+                $('#fileinputButton').prop('disabled', false);
+                $('#fileinputButton').removeClass('disabled');
+            }
             //$('.start').prop('disabled', true);
             //$('.start').hide();
             ////_enableFileInputButton();
@@ -550,7 +556,7 @@
             //this.element.find('.fileinput-button input')
             //    .prop('disabled', false)
             //    .parent().removeClass('disabled')
-            
+
         },
 
         _deleteHandler: function (e) {

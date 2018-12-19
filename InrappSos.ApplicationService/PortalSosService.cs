@@ -1146,12 +1146,18 @@ namespace InrappSos.ApplicationService
                 {
                     item.RapporterarPerEnhet = true;
                     var orgUnits = _portalSosRepository.GetOrganisationUnits(orgId);
+                    //Ger cirkulär reference, därva keyValuePair nedan
+                    //item.Orgenheter = orgUnits.ToList();
                     item.Organisationsenheter = new List<KeyValuePair<string, string>>();
+                    item.Orgenheter = new List<KeyValuePair<string, string>>();
                     foreach (var orgUnit in orgUnits)
                     {
                         KeyValuePair<string, string> keyValuePair = new KeyValuePair<string, string>(orgUnit.Enhetskod, orgUnit.Enhetsnamn);
                         item.Organisationsenheter.Add(keyValuePair);
+                        KeyValuePair<string, string> keyValuePairFilkod = new KeyValuePair<string, string>(orgUnit.Enhetskod, orgUnit.Filkod);
+                        item.Orgenheter.Add(keyValuePairFilkod);
                     }
+
                 }
             }
 

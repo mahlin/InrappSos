@@ -11,5 +11,8 @@ namespace InrappSos.ApplicationService.DTOModel
         public int Id { get; set; }
         public string Enhetsnamn { get; set; }
         public string Enhetskod { get; set; }
+        public DateTime? AktivFrom { get; set; }
+        public DateTime? AktivTom { get; set; }
+        public string Filkod { get; set; }
     }
 }

@@ -11,7 +11,7 @@ namespace InrappSos.DomainModel
         public int Id { get; set; }
         public int OrganisationsId { get; set; }
         public string Enhetsnamn { get; set; }
-        public string Enhetskod{ get; set; }
+        public string Enhetskod { get; set; }
         public DateTime? AktivFrom { get; set; }
         public DateTime? AktivTom { get; set; }
         public string Filkod { get; set; }

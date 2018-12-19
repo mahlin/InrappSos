@@ -16,8 +16,8 @@ namespace InrappSos.DomainModel
         public string Slussmapp { get; set; }
         public bool RapporterarPerEnhet { get; set; } = false;
         public List<KeyValuePair<string, string>> Organisationsenheter { get; set; }
+        public List<KeyValuePair<string, string>> Orgenheter { get; set; }
         public List<RegisterFilkrav> Filkrav { get; set; }
         public string SelectedFilkrav { get; set; }
-
     }
 }

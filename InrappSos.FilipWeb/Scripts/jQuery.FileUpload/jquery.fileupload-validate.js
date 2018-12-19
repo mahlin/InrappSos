@@ -52,6 +52,28 @@ function CheckKommunKodInFileName(regexMatch) {
     return false;
 }
 
+function CheckFilkodInFileName(selectedRegister, selectedOrgUnitId, regexMatch) {
+    var filkod = (regexMatch[1]);
+    var validFilkod = "";
+    registerLista.forEach(function (register, index) {
+        if (selectedRegister === register.Id.toString()) {
+            register.Orgenheter.forEach(function (unit, ix) {
+                var x = unit.Value;
+                var y = unit.Key;
+                if (selectedOrgUnitId === unit.Key) {
+                    validFilkod = unit.Value;
+                }
+            });
+        }
+    });
+
+    if (validFilkod === filkod)
+        return true;
+    return false;
+}
+
+
+
 function CheckPeriodInFileName(selectedRegister, regexMatch) {
     //var periodInFilename = regexMatch.groups["period"];
     var periodInFilename = (regexMatch[2]);
@@ -201,6 +223,7 @@ function getTableRows() {
                 maxNumberOfFiles: '@',
                 incorrectFileName: '@',
                 incorrectKommunKodInFileName: '@',
+                incorrectFilkodInFileName: '@',
                 incorrectPeriodInFileName: '@',
                 filetypAlreadySelected: '@',
             disabled: '@disableValidation'
@@ -236,6 +259,7 @@ function getTableRows() {
                 minFileSize: ('Filen är tom'),
                 incorrectFileName: ('Felaktigt filnamn'),
                 incorrectKommunKodInFileName: ('Felaktig kommunkod i filnamnet'),
+                incorrectFilkodInFileName: ('Felaktig filkod i filnamnet'),
                 incorrectPeriodInFileName: ('Felaktig period i filnamnet'),
                 filetypAlreadySelected: ('En fil av denna typ är redan vald'),
             }
@@ -272,15 +296,18 @@ function getTableRows() {
                 if (!file.error) {
                     //Regexp-kontroller
                     var currRegister = file.name.substring(0, 3);
+                    var selectedOrgUnitId = $('#SelectedUnitId').val();
 
                     var regexMatch = CheckFileName(data.selectedRegister, file.name);
                     if (regexMatch === null) {
                         file.error = settings.i18n('incorrectFileName');
-                    } else if (currRegister != 'LVM') {
-                        if (!CheckKommunKodInFileName(regexMatch)) {
-                            file.error = settings.i18n('incorrectKommunKodInFileName');
                     }
-                    } else if (!CheckPeriodInFileName(data.selectedRegister, regexMatch)) {
+                    else if (currRegister === 'CAN' && !CheckFilkodInFileName(data.selectedRegister, selectedOrgUnitId, regexMatch)) {
+                        file.error = settings.i18n('incorrectFilkodInFileName');
+                    } else if ((currRegister != 'LVM' && currRegister != 'CAN') && !CheckKommunKodInFileName(regexMatch)) {
+                        file.error = settings.i18n('incorrectKommunKodInFileName');
+                    }
+                    else if (!CheckPeriodInFileName(data.selectedRegister, regexMatch)) {
                         file.error = settings.i18n('incorrectPeriodInFileName');
                     } else if (DoubletFiles(data.selectedRegister, file.name)) {
                         file.error = settings.i18n('filetypAlreadySelected');

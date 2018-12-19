@@ -129,7 +129,7 @@ namespace InrappSos.AstridWeb.Controllers
                 };
                 if (e.Message == "Sequence contains no elements")
                 {
-                    errorModel.Information = "Felaktig kommunkod";
+                    errorModel.Information = "Ingen organisation kunde hittas.";
                 }
 
                 return View("CustomError", errorModel);
@@ -179,7 +179,7 @@ namespace InrappSos.AstridWeb.Controllers
                 };
                 if (e.Message == "Sequence contains no elements")
                 {
-                    errorModel.Information = "Felaktig kommunkod";
+                    errorModel.Information = "Ingen organisation kunde hittas.";
                 }
 
                 return View("CustomError", errorModel);
@@ -250,7 +250,7 @@ namespace InrappSos.AstridWeb.Controllers
                 };
                 if (e.Message == "Sequence contains no elements")
                 {
-                    errorModel.Information = "Felaktig kommunkod";
+                    errorModel.Information = "Ingen organisation kunde hittas.";
                 }
                 return View("CustomError", errorModel);
             }
@@ -381,7 +381,7 @@ namespace InrappSos.AstridWeb.Controllers
                 };
                 if (e.Message == "Sequence contains no elements")
                 {
-                    errorModel.Information = "Felaktig kommunkod";
+                    errorModel.Information = "Ingen organisation kunde hittas.";
                 }
                 return View("CustomError", errorModel);
             }
@@ -474,7 +474,7 @@ namespace InrappSos.AstridWeb.Controllers
                 };
                 if (e.Message == "Sequence contains no elements")
                 {
-                    errorModel.Information = "Felaktig kommunkod";
+                    errorModel.Information = "Ingen organisation kunde hittas.";
                 }
                 return View("CustomError", errorModel);
             }

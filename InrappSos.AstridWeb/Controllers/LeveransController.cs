@@ -122,7 +122,7 @@ namespace InrappSos.AstridWeb.Controllers
                 };
                 if (e.Message == "Sequence contains no elements")
                 {
-                    errorModel.Information = "Felaktig kommunkod";
+                    errorModel.Information = "Ingen organisation kunde hittas.";
                 }
 
                 return View("CustomError", errorModel);
@@ -435,7 +435,7 @@ namespace InrappSos.AstridWeb.Controllers
                 ErrorManager.WriteToErrorLog("LeveransController", "GetOrganisationsDeliveries", e.ToString(), e.HResult, User.Identity.Name);
                 var errorModel = new CustomErrorPageModel
                 {
-                    Information = "Ett fel inträffade vid hämtning av leveranser för kommun.",
+                    Information = "Ett fel inträffade vid hämtning av leveranser för vald organisation.",
                     ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
                 };
                 return View("CustomError", errorModel);
@@ -1506,7 +1506,7 @@ namespace InrappSos.AstridWeb.Controllers
 
             foreach (var org in orgList)
             {
-                if (org.Kommunkod != null) //Endast kommuner tills vidare
+                if (org.Kommunkod != null) //TODO - Endast kommuner tills vidare
                 {
                     var organisationDTO = new OrganisationDTO
                     {

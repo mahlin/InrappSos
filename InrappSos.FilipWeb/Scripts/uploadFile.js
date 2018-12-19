@@ -288,11 +288,6 @@ function addSelect(divname, perioder) {
 
 function checkIfDisabled(event) {
     //alert('click egen check');
-    var x = $('#fileinputButton');
-    var y = $('#filesExplorerOpener');
-    //if ($('#fileinputButton').attr('disabled', 'true')) {
-    //    return false;
-    //}
     if ($('#fileinputButton').hasClass('disabled')) {
         $('#filesExplorerOpener').prop('disabled', true);
         $('#filesExplorerOpener').addClass('disabled');

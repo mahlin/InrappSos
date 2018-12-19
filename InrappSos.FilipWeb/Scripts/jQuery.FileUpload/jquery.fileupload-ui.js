@@ -546,6 +546,12 @@
                 $('.start').hide();
                 $('#fileinputButton').prop('disabled', false);
                 $('#fileinputButton').removeClass('disabled');
+                $('#filesExplorerOpener').prop('disabled', false);
+                $('#filesExplorerOpener').removeClass('disabled');
+
+                //$('#fileinputButton').prop('readonly', false);
+                //$('#fileinputButton').removeClass('readonly');
+                //$('#fileinputButton').parent().removeClass('disabled');
             }
             //$('.start').prop('disabled', true);
             //$('.start').hide();

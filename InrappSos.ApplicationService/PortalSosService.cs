@@ -491,6 +491,53 @@ namespace InrappSos.ApplicationService
             return delregMedFilkravList;
         }
 
+        public IEnumerable<RegisterInfo> HamtaDelregisterOchAktuellaFilkrav()
+        {
+            var delregMedFilkravList = new List<RegisterInfo>();
+
+            var delregList = _portalSosRepository.GetAllSubDirectoriesForPortal();
+            foreach (var delreg in delregList)
+            {
+                var regFilkravList = new List<RegisterFilkrav>();
+                var regInfo = new RegisterInfo
+                {
+                    Id = delreg.Id,
+                    Kortnamn = delreg.Kortnamn
+                };
+
+                //Hämta varje delregisters filkrav
+                var filkravList = _portalSosRepository.GetFileRequirementsForSubDirectory(delreg.Id).ToList();
+                foreach (var filkrav in filkravList)
+                {
+                    //Kolla om filkravet har en aktuell foreskrift
+                    var currDate = DateTime.Now;
+                    var foreskrift = _portalSosRepository.GetForeskriftByFileReq(filkrav.Id);
+                    if (foreskrift != null)
+                    {
+                        if (foreskrift.GiltigTom == null || foreskrift.GiltigTom > currDate)
+                        {
+                            var regFilkrav = new RegisterFilkrav
+                            {
+                                Id = filkrav.Id
+                            };
+                            var namn = delreg.Kortnamn;
+                            if (filkrav.Namn != null)
+                            {
+                                namn = namn + " - " + filkrav.Namn;
+                            }
+                            regFilkrav.Namn = namn;
+                            regFilkravList.Add(regFilkrav);
+                        }
+                    }
+                    
+                }
+
+                regInfo.Filkrav = regFilkravList;
+                delregMedFilkravList.Add(regInfo);
+            }
+            return delregMedFilkravList;
+        }
+
 
         public IEnumerable<AdmForvantadleverans> HamtaForvantadeLeveranser()
         {

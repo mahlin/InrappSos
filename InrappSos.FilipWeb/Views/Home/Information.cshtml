@@ -1,0 +1,25 @@
+﻿@using System.Configuration
+@{
+    ViewBag.Title = "Information";
+}
+
+@{
+    if (Model.PortalClosed)
+    {
+        Layout = "~/Views/Shared/_LayoutClosed.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+
+<div class="row padding-top-55">
+    <h3>@ViewBag.Message</h3>
+    <div class="col-md-8">
+        @Html.Raw(ViewBag.Text)
+    </div>
+    <div class="padding-top-55 col-md-offset-1 col-md-3" style="white-space: nowrap;margin-top: 10px; color: red;">
+        @Html.Raw(ViewBag.AvvikandeOppettider)
+    </div>
+</div>

@@ -49,7 +49,15 @@
                         <li>@Html.ActionLink("Leveransstatus", "GetDeliveryStatus", "History")</li>
                     </ul>
                 </li>
-                <li>@Html.ActionLink("Hjälp", "About", "Home")</li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Hjälp<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li>@Html.ActionLink("FAQ", "About", "Home")</li>
+                        <li>@Html.ActionLink("Kommande förändringar", "Information", "Home")</li>
+                    </ul>
+                </li>
+                
+
                 <li>@Html.ActionLink("Kontakt", "Contact", "Home")</li>
             </ul>
             @Html.Partial("_LoginPartial")

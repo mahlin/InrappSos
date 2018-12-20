@@ -87,6 +87,35 @@ namespace InrappSos.FilipWeb.Controllers
             }
         }
 
+        public ActionResult Information(bool closed = false)
+        {
+            try
+            {
+                var model = new AboutViewModel();
+                model.PortalClosed = closed;
+
+                var str = _portalService.ClosedComingWeek();
+                if (str != String.Empty)
+                {
+                    ViewBag.AvvikandeOppettider = "Avvikande öppettider<br/>" + str;
+                }
+
+                ViewBag.Text = _portalService.HamtaInfoText("Informationssida").Text;
+                return View(model);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("HomeController", "Information", e.ToString(), e.HResult);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade vid öppning av informationssidan.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
+            }
+        }
+
         public ActionResult Contact(bool closed = false)
         {
             try

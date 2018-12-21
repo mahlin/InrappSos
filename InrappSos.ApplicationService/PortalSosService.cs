@@ -894,15 +894,10 @@ namespace InrappSos.ApplicationService
         public IEnumerable<RapporteringsresultatDTO> HamtaRapporteringsresultatForDelregOchPeriod(int delRegId, string period)
         {
             var rappResList = _portalSosRepository.GetReportResultForSubdirAndPeriod(delRegId, period);
-            //Filtrera bort dubletter
-            IEnumerable<Rapporteringsresultat> filteredList = rappResList
-                .GroupBy(x => x.Email)
-                .Select(group => group.First());
-
             var ejLevList = new List<Rapporteringsresultat>();
 
             //Ta bara med dem som inte rapporterat alls eller som har leveransstatus "Leveransen är inte godkänd"
-            foreach (var rappRes in filteredList)
+            foreach (var rappRes in rappResList)
             {
                 if (rappRes.AntalLeveranser == null)
                 {
@@ -2035,13 +2030,58 @@ namespace InrappSos.ApplicationService
                     Mail = false
                 };
 
+                //Get Email for users for current subdir and org
+                if (String.IsNullOrEmpty(rappResRadVM.Email))
+                {
+                    var contacts = _portalSosRepository.GetContactPersonsForOrg(rappResRadVM.OrganisationsId);
+                    foreach (var contact in contacts)
+                    {
+                        var subDirs = _portalSosRepository.GetChosenDelRegistersForUser(contact.Id);
+                        foreach (var subDir in subDirs)
+                        {
+                            if (subDir.DelregisterId == rappResRadVM.DelregisterId)
+                            {
+                                if (String.IsNullOrEmpty(rappResRadVM.Email))
+                                {
+                                    rappResRadVM.Email = contact.Email;
+                                }
+                                else
+                                {
+                                    rappResRadVM.Email = rappResRadVM.Email + ", " +  contact.Email;
+                                }
+                            }
+                        }
+                    }
+                }
+                
+
                 //If user is inactive, remove emailadress from list
                 if (!String.IsNullOrEmpty(rappResRadVM.Email))
                 {
-                    var user = _portalSosRepository.GetUserByEmail(rappResRadVM.Email);
-                    if (user.AktivTom < DateTime.Now.Date)
-                        rappResRadVM.Email = null;
+                    var newEmailList = "";
+                    //Check if more than one emailadress
+                    if (rappResRadVM.Email.IndexOf(",", StringComparison.Ordinal) > 0)
+                    {
+                        //Fler epostadresser finns för raden, splitta
+                        var newEmailStr = rappResRadVM.Email.Split(',');
+                        foreach (var email in newEmailStr)
+                        {
+                            if (UserIsActive(email))
+                            {
+                                newEmailList = AddToEmailList(email, newEmailList);
+                            }
+                        }
+                    }
+                    else //Bara en epostadress
+                    {
+                        if (UserIsActive(rappResRadVM.Email))
+                        {
+                            newEmailList = AddToEmailList(rappResRadVM.Email, newEmailList);
+                        }
+                    }
+                    rappResRadVM.Email = newEmailList;
                 }
+
                 //If no emailadress/contactperson for delivery, get organisations contactperson for chosen subdir
                 if (String.IsNullOrEmpty(rappResRadVM.Email))
                 {
@@ -2051,6 +2091,30 @@ namespace InrappSos.ApplicationService
             }
                 
             return rappListDTO;
+        }
+
+        private bool UserIsActive(string email)
+        {
+            var active = false;
+            var user = _portalSosRepository.GetUserByEmail(email.Trim());
+            if (user.AktivTom == null || user.AktivTom > DateTime.Now.Date)
+            {
+                active = true;
+            }
+            return active;
+        }
+
+        private string AddToEmailList(string email, string emailList)
+        {
+            if (!String.IsNullOrEmpty(emailList))
+            {
+                emailList = emailList + ", " + email.Trim();
+            }
+            else
+            {
+                emailList = email.Trim();
+            }
+            return emailList;
         }
 
         private Arende ConvertArendeDTOToDb(ArendeDTO arendeDto)

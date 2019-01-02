@@ -4,9 +4,16 @@
 
 <script type="text/javascript">
     var latestYear = (new Date()).getFullYear();
-    var latestMonth =  (new Date()).getMonth() + 1;
+    var latestMonth = getMonth(new Date());
     var latestPeriodYear = latestYear.toString();
     var latestPeriodMonth = latestYear + latestMonth.toString();
+    //var dateobj = new Date('October 13, 2019 05:35:32');
+    //var y = getMonth(dateobj);
+
+    function getMonth(date) {
+        var month = date.getMonth() + 1;
+        return month < 10 ? '0' + month : '' + month; // ('' + month) for string result
+    } 
         
     $(document).ready(function () {
         //Fix webgrid-header

@@ -209,8 +209,14 @@ namespace InrappSos.AstridWeb.Controllers
         // GET: /Roles/Edit/5
         public ActionResult EditAstridRole(string roleName)
         {
-            var thisRole = _portalSosService.HamtaAstridRoll(roleName);
-            return View("EditRole",thisRole);
+            var model = new AdminViewModels.AdminRoleViewModel();
+            model.SelectedApplication = "Astrid";
+            model.Role = _portalSosService.HamtaAstridRoll(roleName);
+            model.PermissionsList =  _portalSosService.HamtaValdaAstridRattigheterForRoll(model.Role.Id).ToList();
+            //var thisRole = _portalSosService.HamtaAstridRoll(roleName);
+            ViewBag.Text = "Ändra Astrid-roll";
+
+            return View("EditRole",model);
             //return RedirectToAction("CRUDRoles");
         }
 
@@ -218,16 +224,18 @@ namespace InrappSos.AstridWeb.Controllers
         // POST: /Roles/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult EditAstridRole(Microsoft.AspNet.Identity.EntityFramework.IdentityRole role)
+        public ActionResult EditAstridRole(AdminViewModels.AdminRoleViewModel model)
         {
             try
             {
-                _portalSosService.UppdateraAstridRoll(role);
+                _portalSosService.UppdateraAstridRoll(model.Role);
+                _portalSosService.UppdateraAstridRollsRattigheter(model.Role.Id, model.PermissionsList);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                ErrorManager.WriteToErrorLog("AdminController", "EditAstridRole", e.ToString(), e.HResult, User.Identity.Name);
+                ErrorManager.WriteToErrorLog("AdminController", "EditAstridRole", e.ToString(), e.HResult,
+                    User.Identity.Name);
                 var errorModel = new CustomErrorPageModel
                 {
                     Information = "Ett fel inträffade när Astrid-roll skulle uppdateras.",
@@ -235,8 +243,8 @@ namespace InrappSos.AstridWeb.Controllers
                 };
                 return View("CustomError", errorModel);
             }
-            return RedirectToAction("CRUDRoles");
-        }
+            return RedirectToAction("EditAstridRole", new {roleName = model.Role.Name});
+    }
 
         [Authorize(Roles = "Admin")]
         public ActionResult DeleteAstridRole(string roleName)
@@ -289,6 +297,7 @@ namespace InrappSos.AstridWeb.Controllers
         public ActionResult EditFilipRole(string roleName)
         {
             var thisRole = _portalSosService.HamtaFilipRoll(roleName);
+            ViewBag.Text = "Ändra Filip-roll";
             return View("EditRole", thisRole);
             //return RedirectToAction("CRUDRoles");
         }

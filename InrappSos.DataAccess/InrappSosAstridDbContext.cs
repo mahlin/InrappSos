@@ -50,9 +50,20 @@ namespace InrappSos.DataAccess
             modelBuilder.Entity<AppUserAdmin>().Property(e => e.SkapadAv).HasColumnName("skapadav");
             modelBuilder.Entity<AppUserAdmin>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
             modelBuilder.Entity<AppUserAdmin>().Property(e => e.AndradAv).HasColumnName("andradav");
+
+            //Permissions
+            modelBuilder.Entity<AspNetPermissions>().Property(e => e.Id).HasColumnName("PermissionId");
+
+            //RolesPermissions
+            modelBuilder.Entity<AspNetRolesPermissions>().Property(e => e.Id).HasColumnName("RolesPermissionId");
+            modelBuilder.Entity<AspNetRolesPermissions>()
+                .HasRequired(c => c.AspNetPermissions)
+                .WithMany(d => d.AspNetRolesPermissions)
+                .HasForeignKey(c => c.PermissionId);
         }
 
-        //public DbSet<AppUserAdmin> AppUserAdmin { get; set; }
+        public DbSet<AspNetPermissions> AspNetPermissions { get; set; }
+        public DbSet<AspNetRolesPermissions> AspNetRolesPermissions { get; set; }
 
 
     }

@@ -1,31 +1,89 @@
-﻿@model Microsoft.AspNet.Identity.EntityFramework.IdentityRole
+﻿@model InrappSos.AstridWeb.Models.ViewModels.AdminViewModels.AdminRoleViewModel
 @{
     ViewBag.Title = "View";
 }
 
-<div class="col-md-8 padding-top-25">
-    <h4>Ändra Astridroll</h4>
-    <br/>
+<script type="text/javascript">
+    var permissionList = @Html.Raw(Json.Encode(Model.PermissionsList));
+
+    $(document).ready(function () {
+        $('#permissionsTable tr th:eq(0)').hide();
+        $("#permissionsTable tbody tr").each(function (i, row) {
+            $(row).find('td:eq(0)').hide();
+        });
+        //$('#permissionsTable tr td:eq(0)').hide();
+    });
+
+    function setChosen(id) {
+        var selectedId = parseInt(id);
+        $.each(permissionList,
+            function(index, item) {
+                if (permissionList[index].Id === selectedId) {
+                    if ($('#PermissionsList_' + index + '__Chosen').val() === 'False')
+                        $('#PermissionsList_' + index + '__Chosen').val('True');
+                    else
+                        $('#PermissionsList_' + index + '__Chosen').val('False');
+                }
+            });
+    }
+   
+
+</script>
+
+<div class="col-md-8 padding-top-55">
+    <h4>@Html.Raw(ViewBag.Text)</h4>
+    <br />
     @Html.ActionLink("Tillbaka", "CRUDRoles")
     <hr />
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
         @Html.ValidationSummary(true)
-        @Html.HiddenFor(model => model.Id)
-        @*<div>
-            Rollnamn
-        </div>
-        <p>
-            @Html.TextBoxFor(model => model.Name)
-        </p>*@
+        @Html.HiddenFor(model => model.Role.Id)
+        @Html.HiddenFor(model => model.SelectedApplication)
+
         <div class="form-group">
             @Html.Label("Rollnamn", new { @class = "control-label col-md-2" })
             <div class="col-md-6">
-                @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                @Html.TextBoxFor(model => model.Role.Name, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Role.Name, "", new { @class = "text-danger" })
             </div>
         </div>
-        <input type="submit" value="Spara" class="btn btn-default" style="margin-right: 15px; margin-left: -15px;" />
-    }
-</div>
+        <br /><br />
+
+        if (Model.PermissionsList != null)
+        {
+            if (Model.PermissionsList.Count > 0)
+            {
+
+                for (var index = 0; index < Model.PermissionsList.Count(); index++)
+                {
+                    @Html.HiddenFor(m => m.PermissionsList[index].Id)
+                    @Html.HiddenFor(m => m.PermissionsList[index].Chosen)
+                }
+
+                <div id="gridContent" style="font-family: Arial; padding: 20px;">
+
+                        @{
+                            var grid = new WebGrid(source: Model.PermissionsList, canPage: false, rowsPerPage: 10, ajaxUpdateContainerId: "permissionGrid");
+                        }
+
+                        @grid.GetHtml(htmlAttributes: new { id = "permissionsTable" },
+                                            tableStyle: "webgrid-table300",
+                                            headerStyle: "webgrid-header",
+                                            footerStyle: "webgrid-footer",
+                                            alternatingRowStyle: "webgrid-alternating-row",
+                                            selectedRowStyle: "webgrid-selected-row",
+                                            rowStyle: "webgrid-row-style",
+                                            mode: WebGridPagerModes.All,
+                                            columns: grid.Columns(
+                                            grid.Column(null, format: @<text><input type="hidden" id="Id" value="@item.Id" class="form-control hide" /></text>, style: "colZeroWidth"),
+                                            grid.Column("Description", "Rättighet", format: @<text><span class="">@item.Description</span></text>, style: "col1Width"),
+                                            grid.Column("Chosen", "Välj", format: @<text><span class=""><input id="chkbxChosen" class="checkbox" onchange="setChosen('@item.Id');" name="select" type="checkbox" @( item.Chosen ? "checked='checked'" : "") value="@item.Chosen" /></span></text>, style: "colMinWidth", canSort: false)))
+                    </div>
+                }
+            }
+
+            <input type="submit" value="Spara" class="btn btn-default" style="margin-right: 15px; margin-left: -15px;" />
+        }
+    </div>

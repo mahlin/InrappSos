@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using InrappSos.ApplicationService.DTOModel;
 using InrappSos.DomainModel;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace InrappSos.AstridWeb.Models.ViewModels
 {
@@ -28,7 +30,13 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public string SkapadAv { get; set; }
             public DateTime AndradDatum { get; set; }
             public string AndradAv { get; set; }
-            
+        }
+
+        public class AdminRoleViewModel
+        {
+            public IdentityRole Role { get; set; }
+            public string SelectedApplication { get; set; }
+            public List<PermissionDTO> PermissionsList { get; set; }
 
         }
     }

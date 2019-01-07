@@ -88,7 +88,8 @@ $(document).on('change','#ddlRegister',
         registerLista.forEach(function (register, index) {
             if (selectedRegister === register.Id.toString()) {
                 if (register.Filkrav.length === 0) {
-                    $('#registerInfo').html("Det finns ingen pågående insamling av de valda uppgifterna."); 
+                    var info = "<b>Det finns ingen pågående insamling av de valda uppgifterna.</b><br>" + register.InfoText ;
+                    $('#registerInfo').html(info); 
                     $('.fileinput-button').hide();
                     $('.start').hide();
                     $('#ingetAttRapportera').hide();

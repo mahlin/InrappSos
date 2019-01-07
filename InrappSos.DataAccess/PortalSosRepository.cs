@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -92,6 +93,23 @@ namespace InrappSos.DataAccess
             AstridDbContext.SaveChanges();
         }
 
+        public void CreateAstridRolePermission(string roleId, int permissionId)
+        {
+            AstridDbContext.AspNetRolesPermissions.Add(new AspNetRolesPermissions()
+            {
+                PermissionId = permissionId,
+                RoleId = roleId
+            });
+            AstridDbContext.SaveChanges();
+        }
+
+        public void DeleteAstridRolePermission(string roleId, int permissionId)
+        {
+            var thisPermission = AstridDbContext.AspNetRolesPermissions.FirstOrDefault(r => r.RoleId.Equals(roleId) && r.PermissionId == permissionId);
+            AstridDbContext.AspNetRolesPermissions.Remove(thisPermission);
+            AstridDbContext.SaveChanges();
+        }
+
         public void CreateFilipRole(string roleName)
         {
             DbContext.Roles.Add(new Microsoft.AspNet.Identity.EntityFramework.IdentityRole()
@@ -118,6 +136,24 @@ namespace InrappSos.DataAccess
             var thisRole = AstridDbContext.Roles.FirstOrDefault(r => r.Name.Equals(roleName, StringComparison.CurrentCultureIgnoreCase));
             AstridDbContext.Roles.Remove(thisRole);
             AstridDbContext.SaveChanges();
+        }
+
+        public IEnumerable<AspNetPermissions> GetAllAstridPermissions()
+        {
+            var permissions = AstridDbContext.AspNetPermissions.ToList();
+            return permissions;
+        }
+
+        public IEnumerable<AspNetRolesPermissions> GetAstridRolesPermissions(string roleId)
+        {
+            var permissionIdsForRole = AstridDbContext.AspNetRolesPermissions.Where(x => x.RoleId == roleId).ToList();
+            return permissionIdsForRole;
+        }
+
+        public IEnumerable<int> GetAstridRolesPermissionIds(string roleId)
+        {
+            var permissionIdsForRole = AstridDbContext.AspNetRolesPermissions.Where(x => x.RoleId == roleId).Select(x => x.PermissionId).ToList();
+            return permissionIdsForRole;
         }
 
         public IdentityRole GetFilipRole(string roleName)

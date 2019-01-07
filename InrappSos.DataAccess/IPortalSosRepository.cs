@@ -24,6 +24,9 @@ namespace InrappSos.DataAccess
         IEnumerable<IdentityRole> GetAllFilipRoles();
 
         void CreateAstridRole(string roleName);
+        void CreateAstridRolePermission(string roleId, int permissionId);
+
+        void DeleteAstridRolePermission(string roleId, int permissionId);
 
         void CreateFilipRole(string roleName);
 
@@ -33,7 +36,11 @@ namespace InrappSos.DataAccess
 
         void DeleteAstridRole(string roleName);
 
-        //List<UserRolesDTO>
+        IEnumerable<AspNetPermissions> GetAllAstridPermissions();
+
+        IEnumerable<AspNetRolesPermissions> GetAstridRolesPermissions(string roleId);
+
+        IEnumerable<int> GetAstridRolesPermissionIds(string roleId);
 
         //****************************************************************//
         IdentityRole GetFilipRole(string roleName);

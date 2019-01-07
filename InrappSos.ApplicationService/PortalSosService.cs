@@ -290,6 +290,63 @@ namespace InrappSos.ApplicationService
             return astridRoll;
         }
 
+        public IEnumerable<AspNetPermissions> HamtaAllaAstridRattigheter()
+        {
+            var astridRattigheter = _portalSosRepository.GetAllAstridPermissions();
+            return astridRattigheter;
+        }
+
+        public IEnumerable<AspNetRolesPermissions> HamtaAstridRattigheterForRoll(string rollId)
+        {
+            var rattigheterForRoll = _portalSosRepository.GetAstridRolesPermissions(rollId);
+            return rattigheterForRoll;
+        }
+
+        public IEnumerable<PermissionDTO> HamtaValdaAstridRattigheterForRoll(string rollId)
+        {
+            var valdaAstridRattigheterList = new List<PermissionDTO>();
+            var allaAstridRattigheter = HamtaAllaAstridRattigheter();
+            var astridrattigheterForRoll = HamtaAstridRattigheterForRoll(rollId);
+
+            foreach (var rattighet in allaAstridRattigheter)
+            {
+                var rattighetDTO = new PermissionDTO
+                {
+                    Id = rattighet.Id,
+                    Description = rattighet.Description,
+                    PermissionName = rattighet.PermissionName,
+                };
+                foreach (var valdrattighet in astridrattigheterForRoll)
+                {
+                    if (valdrattighet.PermissionId == rattighetDTO.Id)
+                    {
+                        rattighetDTO.Chosen = true;
+                    }
+                }
+
+                valdaAstridRattigheterList.Add(rattighetDTO);
+            }
+
+            return valdaAstridRattigheterList;
+        }
+
+        public void UppdateraAstridRollsRattigheter(string rollId, List<PermissionDTO> rattighetsLista)
+        {
+            var nuvarandeRattigheterForRollLista = _portalSosRepository.GetAstridRolesPermissionIds(rollId).ToList();
+            foreach (var rattighet in rattighetsLista)
+            {
+                if (rattighet.Chosen && !nuvarandeRattigheterForRollLista.Contains(rattighet.Id)) //Lägg till
+                {
+                    _portalSosRepository.CreateAstridRolePermission(rollId, rattighet.Id);
+                }
+                else if (!rattighet.Chosen && nuvarandeRattigheterForRollLista.Contains(rattighet.Id)) //Ta bort
+                {
+                    _portalSosRepository.DeleteAstridRolePermission(rollId, rattighet.Id);
+                }    
+
+            }
+        }
+
         public IdentityRole HamtaFilipRoll(string roleName)
         {
             var filipRoll = _portalSosRepository.GetFilipRole(roleName);

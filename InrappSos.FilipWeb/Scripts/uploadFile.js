@@ -108,7 +108,7 @@ $(document).on('change','#ddlRegister',
                 } else {
                     $('.fileinput-button').show();
                     $('#parallellaForeskrifter').hide
-                    if (register.Kortnamn == 'LVM') {
+                    if (register.Kortnamn == 'LVM' || register.Kortnamn == 'OJ2') {
                         var info = register.InfoText + register.Filkrav[0].InfoText;
                     } else {
                         var info = "<span style='color:red'>Notera att våra kontrollprogram inte accepterar <b>rubrikrad</b> i filerna. Kontrollera att dina filer inte innehåller rubrikrad innan uppladdning.</span><br>" + register.InfoText + register.Filkrav[0].InfoText;

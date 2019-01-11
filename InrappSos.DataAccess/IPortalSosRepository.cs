@@ -40,6 +40,7 @@ namespace InrappSos.DataAccess
 
         IEnumerable<AspNetRolesPermissions> GetAstridRolesPermissions(string roleId);
 
+        string GetAstridPermissionName(int permissionId);
         IEnumerable<int> GetAstridRolesPermissionIds(string roleId);
 
         //****************************************************************//
@@ -130,6 +131,8 @@ namespace InrappSos.DataAccess
 
         AdmFAQ GetFAQ(int faqId);
 
+        AdmForeskrift GetRegulation(int regulationId);
+
         AdmFAQKategori GetFAQCategory(int faqCatId);
 
         IEnumerable<AdmInformation> GetInformationTexts();
@@ -155,6 +158,9 @@ namespace InrappSos.DataAccess
         IEnumerable<AdmDelregister> GetSubDirectories();
 
         IEnumerable<AdmDelregister> GetSubDirectoriesForDirectory(int dirId);
+
+        IEnumerable<AdmForeskrift> GetRegulationsForDirectory(int dirId);
+
 
         AdmDelregister GetSubDirectoryByShortName(string shortName);
 
@@ -188,6 +194,8 @@ namespace InrappSos.DataAccess
         IEnumerable<AdmRegister> GetAllRegistersForPortal();
 
         IEnumerable<AdmDelregister> GetAllSubDirectoriesForPortal();
+
+        IEnumerable<AdmForeskrift> GetAllRegulations();
 
         string GetDirectoryShortName(int dirId);
 
@@ -287,6 +295,8 @@ namespace InrappSos.DataAccess
 
         void CreateSubDirectory(AdmDelregister subDir);
 
+        void CreateRegulation(AdmForeskrift regulation);
+
         void CreateExpectedDelivery(AdmForvantadleverans forvLev);
 
         void CreateExpectedFile(AdmForvantadfil forvFil);
@@ -327,6 +337,8 @@ namespace InrappSos.DataAccess
         void UpdateDirectory(AdmRegister directory);
 
         void UpdateSubDirectory(AdmDelregister subDirectory);
+
+        void UpdateRegulation(AdmForeskrift regulation);
 
         void UpdateExpectedDelivery(AdmForvantadleverans forvLev);
 

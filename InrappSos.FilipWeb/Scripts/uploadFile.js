@@ -107,8 +107,12 @@ $(document).on('change','#ddlRegister',
                     $('#parallellaForeskrifter').show();
                 } else {
                     $('.fileinput-button').show();
-                    $('#parallellaForeskrifter').hide();
-                    var info = register.InfoText + register.Filkrav[0].InfoText;
+                    $('#parallellaForeskrifter').hide
+                    if (register.Kortnamn == 'LVM') {
+                        var info = register.InfoText + register.Filkrav[0].InfoText;
+                    } else {
+                        var info = "<span style='color:red'>Notera att våra kontrollprogram inte accepterar <b>rubrikrad</b> i filerna. Kontrollera att dina filer inte innehåller rubrikrad innan uppladdning.</span><br>" + register.InfoText + register.Filkrav[0].InfoText;
+                    }
                     register.SelectedFilkrav = register.Filkrav[0].Id;
                     $('#registerInfo').html(info);
 

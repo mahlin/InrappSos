@@ -1,0 +1,87 @@
+﻿@model InrappSos.AstridWeb.Models.ViewModels.RegisterViewModels.AdmForeskriftViewModel
+
+@{
+    ViewBag.Title = "Lägg in ny föreskrift";
+}
+
+<script>
+
+    //$(document).ready(function () {
+    //    alert("Orgid: " + $('#Organisationsid').val());
+    //});
+</script>
+
+@using (Html.BeginForm("CreateRegulation", "Register", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.RegisterShortName)
+        @Html.HiddenFor(m => m.SelectedDirectoryId)
+
+        <div class="form-horizontal padding-top-55">
+            <h4>Lägg in föreskrift</h4>
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="form-group">
+                @Html.LabelFor(model => model.RegisterShortName, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.RegisterShortName, htmlAttributes: new { @class = "form-control", disabled = "disabled" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.Label("Författningsnummer", new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.NyForeskrift.Forfattningsnr, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.NyForeskrift.Forfattningsnr, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            
+            <div class="form-group">
+                @Html.Label("Författningsnamn", new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.TextAreaFor(m => Model.NyForeskrift.Forfattningsnamn, 10, 100, new { @class = "form-control", id = "textArea", style = "max-width:95% !important;" })
+                    @Html.ValidationMessageFor(model => model.NyForeskrift.Forfattningsnamn, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.Label("Giltig from", new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.NyForeskrift.GiltigFrom, new { htmlAttributes = new { @class = "form-control", placeholder = "ÅÅÅÅ-MM-dd" } })
+                    @Html.ValidationMessageFor(model => model.NyForeskrift.GiltigFrom, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.Label("Giltig tom", new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.NyForeskrift.GiltigTom, new { htmlAttributes = new { @class = "form-control", placeholder = "ÅÅÅÅ-MM-dd" } })
+                    @Html.ValidationMessageFor(model => model.NyForeskrift.GiltigTom, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.Label("Beslutsdatum", new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.NyForeskrift.Beslutsdatum, new { htmlAttributes = new { @class = "form-control", placeholder = "ÅÅÅÅ-MM-dd" } })
+                    @Html.ValidationMessageFor(model => model.NyForeskrift.Beslutsdatum, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Spara" class="btn btn-default" />
+                </div>
+            </div>
+        </div>
+        <div>
+            @Html.ActionLink("Tillbaka", "GetRegulationsForDirectory", "Register", new { regShortName = Model.RegisterShortName }, null)
+
+        </div>
+    }
+
+
+
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }

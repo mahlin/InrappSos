@@ -26,6 +26,8 @@ namespace InrappSos.ApplicationService.Interface
             
         IEnumerable<AspNetRolesPermissions> HamtaAstridRattigheterForRoll(string rollId);
 
+        IEnumerable<string> HamtaAstridRattighetersNamnForRoll(string rollId);
+
         IEnumerable<PermissionDTO> HamtaValdaAstridRattigheterForRoll(string rollId);
 
         void UppdateraAstridRollsRattigheter(string rollId, List<PermissionDTO> rattighetsLista);
@@ -91,6 +93,8 @@ namespace InrappSos.ApplicationService.Interface
 
         AdmFAQ HamtaFAQ(int faqId);
 
+        AdmForeskrift HamtaForeskrift(int foreskriftId);
+
         AdmFAQKategori HamtaFAQKategori(int faqCatId);
 
         IEnumerable<AdmInformation> HamtaInformationstexter();
@@ -110,7 +114,11 @@ namespace InrappSos.ApplicationService.Interface
 
         IEnumerable<AdmDelregister> HamtaDelRegister();
 
+        AdmDelregister HamtaDelregister(int delregId);
+
         IEnumerable<AdmDelregister> HamtaDelRegisterForRegister(int regId);
+
+        IEnumerable<AdmForeskrift> HamtaForeskrifterForRegister(int regId);
 
         AdmDelregister HamtaDelRegisterForUppgiftsskyldighet(int uppgSkId);
         AdmDelregister HamtaDelRegisterForKortnamn(string shortName);
@@ -149,6 +157,8 @@ namespace InrappSos.ApplicationService.Interface
         IEnumerable<IdentityRole> HamtaAllaFilipRoller();
 
         IEnumerable<AdmDelregister> HamtaAllaDelregisterForPortalen();
+
+        IEnumerable<AdmForeskrift> HamtaAllaForeskrifter();
 
         IEnumerable<AdmDelregister> HamtaDelregisterMedInsamlingsfrekvens(int insamlingsfrekvensId);
 
@@ -256,6 +266,8 @@ namespace InrappSos.ApplicationService.Interface
 
         void SkapaDelregister(AdmDelregister delReg, string userName);
 
+        void SkapaForeskrift(AdmForeskrift foreskrift, string userName);
+
         void SkapaForvantadLeverans(AdmForvantadleverans forvLev, string userName);
         void SkapaForvantadLeveranser(IEnumerable<AdmForvantadleverans> forvLevList, string userName);
         IEnumerable<ForvantadLeveransDTO> SkapaForvantadeLeveranserUtkast(int selectedYear, int selectedDelRegId, int selectedFilkravId);
@@ -304,6 +316,7 @@ namespace InrappSos.ApplicationService.Interface
         void UppdateraRegister(AdmRegister register, string userName);
 
         void UppdateraDelregister(AdmDelregister delregister, string userName);
+        void UppdateraForeskrift(AdmForeskrift foreskrift, string userName);
 
         void UppdateraForvantadLeverans(AdmForvantadleverans forvLev, string userName);
 

@@ -259,6 +259,12 @@ textarea {
     padding: 3px 7px 2px;
 }
 
+.col600Width {
+    width: 600px;
+    margin: -5px;
+    padding: 3px 7px 2px;
+}
+
 label {
     font-weight: normal;
     width: 100px;

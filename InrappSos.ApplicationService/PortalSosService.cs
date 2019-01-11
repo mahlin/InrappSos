@@ -302,6 +302,18 @@ namespace InrappSos.ApplicationService
             return rattigheterForRoll;
         }
 
+        public IEnumerable<string> HamtaAstridRattighetersNamnForRoll(string rollId)
+        {
+            var rattighetsnamLista = new List<string>();
+            var rattigheterForRoll = _portalSosRepository.GetAstridRolesPermissions(rollId);
+            foreach (var item in rattigheterForRoll)
+            {
+                var rattighetsnamn = _portalSosRepository.GetAstridPermissionName(item.PermissionId);
+                rattighetsnamLista.Add(rattighetsnamn);
+            }
+            return rattighetsnamLista;
+        }
+
         public IEnumerable<PermissionDTO> HamtaValdaAstridRattigheterForRoll(string rollId)
         {
             var valdaAstridRattigheterList = new List<PermissionDTO>();
@@ -491,10 +503,22 @@ namespace InrappSos.ApplicationService
             return subDirectories;
         }
 
+        public AdmDelregister HamtaDelregister(int delregId)
+        {
+            var delreg = _portalSosRepository.GetSubDirectoryById(delregId);
+            return delreg;
+        }
+
         public IEnumerable<AdmDelregister> HamtaDelRegisterForRegister(int regId)
         {
             var subDirectories = _portalSosRepository.GetSubDirectoriesForDirectory(regId);
             return subDirectories;
+        }
+
+        public IEnumerable<AdmForeskrift> HamtaForeskrifterForRegister(int regId)
+        {
+            var foreskrifter = _portalSosRepository.GetRegulationsForDirectory(regId);
+            return foreskrifter;
         }
 
         public AdmDelregister HamtaDelRegisterForUppgiftsskyldighet(int uppgSkId)
@@ -703,6 +727,12 @@ namespace InrappSos.ApplicationService
             return delregistersList;
         }
 
+        public IEnumerable<AdmForeskrift> HamtaAllaForeskrifter()
+        {
+            var foreskrifter = _portalSosRepository.GetAllRegulations();
+            return foreskrifter;
+        }
+
         public IEnumerable<AdmDelregister> HamtaDelregisterMedInsamlingsfrekvens(int insamlingsfrekvensId)
         {
             var delregisterManadList = new List<AdmDelregister>();
@@ -783,6 +813,12 @@ namespace InrappSos.ApplicationService
         {
             var filkrav= _portalSosRepository.GetFileRequirementsForDirectory(regId); 
             return filkrav;
+        }
+
+        public AdmForeskrift HamtaForeskrift(int foreskriftId)
+        {
+            var foreskrift = _portalSosRepository.GetRegulation(foreskriftId);
+            return foreskrift;
         }
 
         public AdmFAQKategori HamtaFAQKategori(int faqCatId)
@@ -1558,6 +1594,16 @@ namespace InrappSos.ApplicationService
             _portalSosRepository.CreateSubDirectory(delReg);
         }
 
+        public void SkapaForeskrift(AdmForeskrift foreskrift, string userName)
+        {
+            //Sätt datum och användare
+            foreskrift.SkapadDatum = DateTime.Now;
+            foreskrift.SkapadAv = userName;
+            foreskrift.AndradDatum = DateTime.Now;
+            foreskrift.AndradAv = userName;
+            _portalSosRepository.CreateRegulation(foreskrift);
+        }
+
         public void SkapaForvantadLeverans(AdmForvantadleverans forvLev, string userName)
         {
             //Sätt datum och användare
@@ -1779,6 +1825,14 @@ namespace InrappSos.ApplicationService
             delregister.AndradAv = userName;
             delregister.AndradDatum = DateTime.Now;
             _portalSosRepository.UpdateSubDirectory(delregister);
+        }
+
+        public void UppdateraForeskrift(AdmForeskrift foreskrift, string userName)
+        {
+            foreskrift.AndradAv = userName;
+            foreskrift.AndradDatum = DateTime.Now;
+            _portalSosRepository.UpdateRegulation(foreskrift);
+
         }
 
         public void UppdateraForvantadLeverans(AdmForvantadleverans forvLev, string userName)

@@ -46,7 +46,17 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public string Beskrivning { get; set; }
             public string Slussmapp { get; set; }
             public bool Inrapporteringsportal { get; set; }
+        }
 
+        public class AdmForeskriftViewModel
+        {
+            public IEnumerable<AdmForeskrift> ForeskriftList { get; set; }
+            public AdmForeskrift NyForeskrift { get; set; }
+            [DisplayName("Register")]
+            public string RegisterShortName { get; set; }
+            public int SelectedDirectoryId { get; set; }
+            public int SelectedForeskriftId { get; set; }
+            public AdmForeskrift SelectedForeskrift { get; set; }
         }
     }
 }

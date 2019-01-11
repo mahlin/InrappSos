@@ -186,6 +186,7 @@
     <Compile Include="Controllers\OrganisationController.cs" />
     <Compile Include="Controllers\RegisterController.cs" />
     <Compile Include="Controllers\SystemController.cs" />
+    <Compile Include="Filters\HasPermissionAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -327,6 +328,9 @@
     <Content Include="Views\Organisation\CreatePrivateEmailAdress.cshtml" />
     <Content Include="Views\Organisation\EditCases.cshtml" />
     <Content Include="Views\Organisation\CreateCase.cshtml" />
+    <Content Include="Views\Register\EditRegulations.cshtml" />
+    <Content Include="Views\Register\CreateRegulation.cshtml" />
+    <Content Include="Views\Register\_EditSelectedRegulation.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

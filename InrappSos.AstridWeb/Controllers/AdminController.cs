@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using System.Web.WebPages;
 using InrappSos.ApplicationService;
 using InrappSos.ApplicationService.Interface;
+using InrappSos.AstridWeb.Filters;
 using InrappSos.DataAccess;
 using InrappSos.DomainModel;
 using InrappSos.AstridWeb.Helpers;
@@ -205,7 +206,8 @@ namespace InrappSos.AstridWeb.Controllers
             return RedirectToAction("CRUDRoles");
         }
 
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
+        [HasPermission("EditFAQ")]
         // GET: /Roles/Edit/5
         public ActionResult EditAstridRole(string roleName)
         {

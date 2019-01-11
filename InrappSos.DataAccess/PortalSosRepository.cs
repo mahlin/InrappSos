@@ -150,6 +150,12 @@ namespace InrappSos.DataAccess
             return permissionIdsForRole;
         }
 
+        public string GetAstridPermissionName(int permissionId)
+        {
+            var permissionName = AstridDbContext.AspNetPermissions.Where(x => x.Id == permissionId).Select(x => x.PermissionName).SingleOrDefault();
+            return permissionName;
+        }
+
         public IEnumerable<int> GetAstridRolesPermissionIds(string roleId)
         {
             var permissionIdsForRole = AstridDbContext.AspNetRolesPermissions.Where(x => x.RoleId == roleId).Select(x => x.PermissionId).ToList();
@@ -601,6 +607,12 @@ namespace InrappSos.DataAccess
             return subDirectories;
         }
 
+        public IEnumerable<AdmForeskrift> GetRegulationsForDirectory(int dirId)
+        {
+            var regulations = DbContext.AdmForeskrift.Where(x => x.RegisterId == dirId).ToList();
+            return regulations;
+        }
+
 
         public AdmDelregister GetSubDirectoryByShortName(string shortName)
         {
@@ -612,6 +624,12 @@ namespace InrappSos.DataAccess
         {
             var expDeliveries = DbContext.AdmForvantadleverans.OrderBy(x => x.Uppgiftsstart).ToList();
             return expDeliveries;
+        }
+
+        public IEnumerable<AdmForeskrift> GetAllRegulations()
+        {
+            var regulations = DbContext.AdmForeskrift.ToList();
+            return regulations;
         }
 
         public string GetDirectoryShortName(int dirId)
@@ -758,6 +776,12 @@ namespace InrappSos.DataAccess
         {
             var delregistersList = DbContext.AdmDelregister.Where(x => x.Inrapporteringsportal).Include(x => x.AdmFilkrav).ToList();
             return delregistersList;
+        }
+
+        public AdmForeskrift GetRegulation(int regulationId)
+        {
+            var foreskrift = DbContext.AdmForeskrift.SingleOrDefault(x => x.Id == regulationId);
+            return foreskrift;
         }
 
         public AdmFAQKategori GetFAQCategory(int faqCatId)
@@ -1153,6 +1177,12 @@ namespace InrappSos.DataAccess
             DbContext.SaveChanges();
         }
 
+        public void CreateRegulation(AdmForeskrift regulation)
+        {
+            DbContext.AdmForeskrift.Add(regulation);
+            DbContext.SaveChanges();
+        }
+
         public void CreateExpectedDelivery(AdmForvantadleverans forvLev)
         {
             DbContext.AdmForvantadleverans.Add(forvLev);
@@ -1519,6 +1549,20 @@ namespace InrappSos.DataAccess
             subDirectoryToUpdate.Slussmapp = subDirectory.Slussmapp;
             subDirectoryToUpdate.AndradAv = subDirectory.AndradAv;
             subDirectoryToUpdate.AndradDatum = subDirectory.AndradDatum;
+
+            DbContext.SaveChanges();
+        }
+
+        public void UpdateRegulation(AdmForeskrift regulation)
+        {
+            var regulationToUpdate = DbContext.AdmForeskrift.SingleOrDefault(x => x.Id == regulation.Id);
+            regulationToUpdate.Forfattningsnr = regulation.Forfattningsnr;
+            regulationToUpdate.Forfattningsnamn = regulation.Forfattningsnamn;
+            regulationToUpdate.GiltigFrom = regulation.GiltigFrom;
+            regulationToUpdate.GiltigTom = regulation.GiltigTom;
+            regulationToUpdate.Beslutsdatum = regulation.Beslutsdatum;
+            regulationToUpdate.AndradAv = regulation.AndradAv;
+            regulationToUpdate.AndradDatum = regulation.AndradDatum;
 
             DbContext.SaveChanges();
         }

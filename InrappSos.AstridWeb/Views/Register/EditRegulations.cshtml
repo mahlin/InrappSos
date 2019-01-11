@@ -1,0 +1,195 @@
+﻿@model InrappSos.AstridWeb.Models.ViewModels.RegisterViewModels.AdmForeskriftViewModel
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        var x = $('#SelectedDirectoryId').val();
+        if ($('#SelectedDirectoryId').val() !== "0") {
+            $(".createRegulation").show();
+        } else {
+            $(".createRegulation").hide();
+        }
+
+        $("#editSelectedRegulationForm").hide();
+    });
+
+    $(document).on('change','#ddlRegister',function() {
+        $("#SelectedDirectoryId").val($('#ddlRegister').val());
+    });
+
+
+    //$(function() {
+    //    $("#txtRegisterKortNamn").focus();
+    //});
+
+    //$(document).on('blur','input.regShortName',function() {
+    //        var tmp = $('input.regShortName').val();
+    //        $('#RegisterShortName').val($('input.regShortName').val());
+    //        if ($('#RegisterShortName').val() !== "") {
+    //            $(".createRegulation").show();
+    //        } else {
+    //            $(".createRegulation").hide();
+    //        }
+    //    });
+
+    function showEditForm(id) {
+        $('#SelectedForeskriftId').val(parseInt(id));
+        var y = parseInt(id);
+
+        $.ajax({
+            url: '/Register/EditSelectedRegulation?foreskriftId=' + y,
+            data: JSON.stringify({ faqId: y }),
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',
+            success: function(data) {
+                $("#editSelectedRegulationForm").html(data);
+                $("#editSelectedRegulationForm").show();
+                //location.reload();
+                $('#footer').hide();
+            }
+        });
+    }
+
+    $(function() {
+        $('.edit-mode').hide();
+        $('.cancel-user').on('click', function () {
+            var tr = $(this).parents('tr:first');
+            tr.find('.edit-mode, .display-mode').toggle();
+            $("#editSelectedRegulationForm").hide();
+        });
+        $('.edit-user').on('click',
+            function() {
+                var tr = $(this).parents('tr:first');
+                tr.find('.edit-mode, .display-mode').toggle();
+                $("#editSelectedReagulationForm").show();
+            });
+        $('.save-user').on('click',
+            function() {
+                var tr = $(this).parents('tr:first');
+                var forfId = tr.find("#ForfId").html();
+                var forfNr = tr.find("#ForfNr").val();
+                var forfName = tr.find("#ForfName").val();
+                var forfGiltigFrom = tr.find("#ForfGiltigFrom").val();
+                var forfGiltigTom = tr.find("#ForfGiltigTom").val();
+                var forfBeslutsdatum = tr.find("#ForfBeslutsdatum").val();
+
+                //Creating AdmForeskrift JSON object
+                var foreskrift =
+                {
+                    "Id": forfId,
+                    "Forfattningsnr": forfNr,
+                    "Forfattningsnamn": forfName,
+                    "GiltigFrom": forfGiltigFrom,
+                    "GiltigTom": forfGiltigTom,
+                    "Beslutsdatum": forfBeslutsdatum
+                };
+                //Posting Organisationsenhet object to controller's Update action method
+                $.ajax({
+                    url: '/Register/UpdateRegulation',
+                    data: JSON.stringify(foreskrift),
+                    type: 'POST',
+                    contentType: 'application/json; charset=utf-8',
+                    success: function(data) {
+                        location.reload();
+                        //$("#pageContainer").html(data);
+                        //tr.find('.edit-mode, .display-mode').toggle();
+                        //$('#footer').hide();
+                        //alert('Record updated Successfully!!');
+                    }
+                });
+
+            });
+
+        //$('.edit-user').on('click',
+        //    function() {
+        //        var tr = $(this).parents('tr:first');
+        //        var forfId = tr.find("#ForfId").html();
+        //        var forfNr= tr.find("#ForfNr").val();
+        //        var forfName = tr.find("#ForfName").val();
+        //        var forfGiltigFrom = tr.find("#ForfGiltigFrom").val();
+        //        var forfGiltigTom = tr.find("#ForfGiltigTom").val();
+        //        var forfBeslutsdatum = tr.find("#ForfBeslutsdatum").val();
+
+        //        tr.find("#lblForfNr").text(forfNr);
+        //        tr.find("#lblForfName").text(forfName);
+        //        tr.find("#lblGiltigFrom").text(forfGiltigFrom);
+        //        tr.find("#lblGiltigTom").text(forfGiltigTom);
+        //        tr.find("#lblBeslutsdatum").text(forfBeslutsdatum);
+        //    });
+    });
+</script>
+
+<div id="pageContainer">
+    <br />
+    <div class="row">
+        <div class="col-md-8 padding-top-55">
+            <h4>Administrera föreskrifter</h4>
+            <br />
+            <section id="orgForm">
+                @using (Html.BeginForm("GetRegulationsForDirectory", "Register", new { ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                {
+                    @Html.HiddenFor(m => m.SelectedDirectoryId)
+
+                    <div class="row">
+                        <div class="col-md-8 form-group" style="width: 225px !important; margin-left: 5px;">
+                            @Html.DropDownListFor(m => m.SelectedDirectoryId, ViewBag.RegisterList as SelectList, " - Välj Register -", new { id = "ddlRegister", @class = "form-control", style = "max-width:150px !important" })
+                        </div>
+                        <div class="col-md-8" style="padding-left: 0px; margin-left: -10px;">
+                            <div><input type="submit" value="Visa" class="btn btn-default" /></div>
+                        </div>
+                    </div>
+                }
+            </section>
+        </div>
+    </div>
+
+    @if (Model != null)
+    {
+        @Html.HiddenFor(m => m.SelectedDirectoryId)
+        @Html.HiddenFor(m => m.RegisterShortName)
+        <br />
+        <hr />
+        <div class="row col-md-8">
+            @Html.ActionLink("Lägg in ny föreskrift", "CreateRegulation", "Register", new { selectedRegId = Model.SelectedDirectoryId }, new { @class = "createRegulation" })
+        </div>
+        <br/>
+
+        <div id="gridContent" style="font-family: Arial; padding: 20px;">
+            @{
+                ViewBag.Title = "Administrera föreskrifter";
+                var grid = new WebGrid(source: Model.ForeskriftList, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "regulationsGrid");
+                grid.Pager(WebGridPagerModes.All);
+            }
+            @grid.GetHtml(tableStyle: "webgrid-table1500",
+                headerStyle: "webgrid-header",
+                footerStyle: "webgrid-footer",
+                alternatingRowStyle: "webgrid-alternating-row",
+                selectedRowStyle: "webgrid-selected-row",
+                rowStyle: "webgrid-row-style",
+                mode: WebGridPagerModes.All,
+                columns: grid.Columns(
+                    grid.Column("ID", format: @<text><label id="ForfId">@item.Id</label></text>, style: "colMinWidth"),
+                    grid.Column("Författningsnr", "Författningsnr", format: @<text><label id="lblForfNr">@item.Forfattningsnr</label></text>, style: "col1Width"),
+                    grid.Column("Författningsnamn", "Författningsnamn", format: @<text><label id="lblForfName" class="longColumnText" style="width: 650px;">@item.Forfattningsnamn</label></text>, style: "col600Width"),
+                    grid.Column("GiltigFrom", "Giltig from", format: @<text><label id="lblGiltigFrom">
+                        @if (item.GiltigFrom != null)
+                        {
+                            @item.GiltigFrom.ToString("yyyy-MM-dd")
+                        }
+                        else
+                        {
+                            @item.GiltigFrom
+                        }</label></text>, style: "col1Width"),
+                    grid.Column("GiltigTom", "Giltig tom", format: @<text><label id="lblGiltigTom">@if (item.GiltigTom != null){@item.GiltigTom.ToString("yyyy-MM-dd")}else{@item.GiltigTom}</label></text>, style: "col1Width"),
+                    grid.Column("Beslutsdatum", "Beslutsdatum", format: @<text><label id="lblBeslutsdatum">@if (item.Beslutsdatum != null){@item.Beslutsdatum.ToString("yyyy-MM-dd")}else{@item.Beslutsdatum}</label></text>, style: "col1Width"),
+                    grid.Column(null, format: @<text>
+                                                  <button class="edit-user display-mode btn btn-default" onclick="showEditForm('@item.Id');">Ändra</button>
+                                                  <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
+                                               </text>, style: "col3Width", canSort: false)))
+                                                                                                                                                                                                                                                                                              </div>
+        <div id="editSelectedRegulationForm">
+            @Html.Partial("_EditSelectedRegulation")
+        </div>
+    }
+</div>
+

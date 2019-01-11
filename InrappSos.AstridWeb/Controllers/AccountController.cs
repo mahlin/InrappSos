@@ -122,6 +122,9 @@ namespace InrappSos.AstridWeb.Controllers
                     switch (result)
                     {
                         case SignInStatus.Success:
+                            // Resolve the user via their email
+                            // Get the roles for the user
+                            //var roles = await UserManager.GetRolesAsync(user.Id);
                             return RedirectToLocal(returnUrl, true );
                         case SignInStatus.LockedOut:
                             return View("Lockout");

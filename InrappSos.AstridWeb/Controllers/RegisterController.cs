@@ -110,6 +110,51 @@ namespace InrappSos.AstridWeb.Controllers
 
         // GET
         [Authorize]
+        public ActionResult GetRegulationsForDirectory(RegisterViewModels.AdmForeskriftViewModel model, string regShortName = "", int regId = 0)
+        {
+            try
+            {
+                var register = new AdmRegister();
+
+                var dirId = model.SelectedDirectoryId;
+                if (dirId == 0 && regId != 0)
+                {
+                    dirId = regId;
+                }
+
+                if (dirId == 0)
+                {
+                    return RedirectToAction("GetAllRegulations");
+                }
+                if (dirId != 0)
+                {
+                    model.SelectedDirectoryId = dirId;
+                    model.ForeskriftList = _portalSosService.HamtaForeskrifterForRegister(dirId);
+
+                    // Ladda drop down lists. 
+                    var registerList = _portalSosService.HamtaAllaRegisterForPortalen();
+                    this.ViewBag.RegisterList = CreateRegisterDropDownList(registerList);
+
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("RegisterController", "GetRegulationsForDirectory", e.ToString(), e.HResult,
+                    User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade vid hämtning av föreskrift.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
+
+            }
+            return View("EditRegulations", model);
+        }
+
+        // GET
+        [Authorize]
         public ActionResult GetAllSubDirectories()
         {
             var model = new RegisterViewModels.RegisterViewModel();
@@ -132,6 +177,37 @@ namespace InrappSos.AstridWeb.Controllers
 
             }
             return View("EditSubDirectories", model);
+        }
+
+
+        // GET
+        [Authorize]
+        public ActionResult GetAllRegulations()
+        {
+            var model = new RegisterViewModels.AdmForeskriftViewModel();
+            try
+            {
+                model.ForeskriftList = _portalSosService.HamtaAllaForeskrifter();
+                model.RegisterShortName = "";
+                // Ladda drop down lists. 
+                var registerList = _portalSosService.HamtaAllaRegisterForPortalen();
+                this.ViewBag.RegisterList = CreateRegisterDropDownList(registerList);
+                model.SelectedDirectoryId = 0;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("RegisterController", "GetAllRegulations", e.ToString(), e.HResult,
+                    User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade vid hämtning av föreskrifter.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
+
+            }
+            return View("EditRegulations", model);
         }
 
 
@@ -188,6 +264,40 @@ namespace InrappSos.AstridWeb.Controllers
                     var errorModel = new CustomErrorPageModel
                     {
                         Information = "Ett fel inträffade vid uppadtering av delregister.",
+                        ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                    };
+                    return View("CustomError", errorModel);
+
+                }
+            }
+            return RedirectToAction("GetSubDirectoriesForDirectory", new { regShortName = regShortName });
+
+        }
+
+        [HttpPost]
+        [Authorize]
+        public ActionResult UpdateRegulation(AdmForeskrift foreskrift)
+        {
+            var regShortName = "";
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var userName = User.Identity.GetUserName();
+                    if (foreskrift.RegisterId != 0)
+                    {
+                        var register = _portalSosService.HamtaRegisterMedId(foreskrift.RegisterId);
+                        regShortName = register.Kortnamn;
+                    }
+                    _portalSosService.UppdateraForeskrift(foreskrift, userName);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    ErrorManager.WriteToErrorLog("RegisterController", "UpdateRegulation", e.ToString(), e.HResult, User.Identity.Name);
+                    var errorModel = new CustomErrorPageModel
+                    {
+                        Information = "Ett fel inträffade vid uppadtering av föreskrift.",
                         ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
                     };
                     return View("CustomError", errorModel);
@@ -294,6 +404,147 @@ namespace InrappSos.AstridWeb.Controllers
             }
 
             return View();
+        }
+
+        // GET
+        [Authorize]
+        public ActionResult EditSelectedRegulation(int foreskriftId = 0)
+        {
+            var model = new RegisterViewModels.AdmForeskriftViewModel();
+            model.SelectedForeskrift = new AdmForeskrift();
+            var selectedForeskriftDb = _portalSosService.HamtaForeskrift(foreskriftId);
+            model.SelectedForeskrift.Id = selectedForeskriftDb.Id;
+            model.SelectedForeskrift.Forfattningsnr = selectedForeskriftDb.Forfattningsnr;
+            model.SelectedForeskrift.Forfattningsnamn = selectedForeskriftDb.Forfattningsnamn;
+            model.SelectedForeskrift.GiltigFrom = selectedForeskriftDb.GiltigFrom;
+            model.SelectedForeskrift.GiltigTom = selectedForeskriftDb.GiltigTom;
+            model.SelectedForeskrift.Beslutsdatum = selectedForeskriftDb.Beslutsdatum;
+            if (selectedForeskriftDb.RegisterId != null)
+            {
+                model.SelectedForeskrift.RegisterId = selectedForeskriftDb.RegisterId;
+            }
+            model.RegisterShortName = _portalSosService.HamtaKortnamnForRegister(model.SelectedForeskrift.RegisterId);
+
+            //// Ladda drop down lists. 
+            //var registerList = _portalSosService.HamtaAllaRegisterForPortalen();
+            //this.ViewBag.RegisterList = CreateRegisterDropDownList(registerList);
+
+            return View("_EditSelectedRegulation", model);
+        }
+
+        // POST
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public ActionResult EditSelectedRegulation(RegisterViewModels.AdmForeskriftViewModel model)
+        {
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var userName = User.Identity.GetUserName();
+                    _portalSosService.UppdateraForeskrift(model.SelectedForeskrift, userName);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    ErrorManager.WriteToErrorLog("SystemController", "EditSelectedRegulation", e.ToString(), e.HResult, User.Identity.Name);
+                    var errorModel = new CustomErrorPageModel
+                    {
+                        Information = "Ett fel inträffade när föreskrift skulle sparas.",
+                        ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                    };
+                    return View("CustomError", errorModel);
+                }
+                return RedirectToAction("GetRegulationsForDirectory", new { regShortName = model.RegisterShortName });
+            }
+
+            return RedirectToAction("GetRegulationsForDirectory", new { regShortName = model.RegisterShortName });
+        }
+
+        // GET
+        [Authorize]
+        public ActionResult CreateRegulation(int selectedRegId = 0)
+        {
+            var model = new RegisterViewModels.AdmForeskriftViewModel();
+            var dir = _portalSosService.HamtaRegisterMedId(selectedRegId);
+            model.RegisterShortName = dir.Kortnamn;
+            model.SelectedDirectoryId = selectedRegId;
+            return View(model);
+        }
+
+        // POST
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public ActionResult CreateRegulation(RegisterViewModels.AdmForeskriftViewModel foreskriftVM)
+        {
+            var regShortName = String.Empty;
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var userName = User.Identity.GetUserName();
+                    var foreskrift = ConvertAdmForeskriftVMToAdmForeskrift(foreskriftVM);
+
+                    _portalSosService.SkapaForeskrift(foreskrift, userName);
+                    var register = _portalSosService.HamtaRegisterMedId(foreskriftVM.SelectedDirectoryId);
+                    regShortName = register.Kortnamn;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    ErrorManager.WriteToErrorLog("RegisterController", "CreateRegulation", e.ToString(), e.HResult, User.Identity.Name);
+                    var errorModel = new CustomErrorPageModel
+                    {
+                        Information = "Ett fel inträffade när ny föreskrift skulle sparas.",
+                        ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                    };
+                    return View("CustomError", errorModel);
+                }
+                return RedirectToAction("GetRegulationsForDirectory", new { regShortName = regShortName });
+            }
+
+            return View();
+        }
+
+        /// <summary>  
+        /// Create list for register-dropdown  
+        /// </summary>  
+        /// <returns>Return register for drop down list.</returns>  
+        private IEnumerable<SelectListItem> CreateRegisterDropDownList(IEnumerable<AdmRegister> registerInfoList)
+        {
+            SelectList lstobj = null;
+
+            var list = registerInfoList
+                .Select(p =>
+                    new SelectListItem
+                    {
+                        Value = p.Id.ToString(),
+                        Text = p.Kortnamn
+                    });
+
+            // Setting.  
+            lstobj = new SelectList(list, "Value", "Text");
+
+            return lstobj;
+        }
+
+
+        private AdmForeskrift ConvertAdmForeskriftVMToAdmForeskrift(RegisterViewModels.AdmForeskriftViewModel foreskriftVM)
+        {
+            var foreskrift = new AdmForeskrift
+            {
+               RegisterId = foreskriftVM.SelectedDirectoryId,
+               Forfattningsnr = foreskriftVM.NyForeskrift.Forfattningsnr,
+               Forfattningsnamn = foreskriftVM.NyForeskrift.Forfattningsnamn,
+               GiltigFrom = foreskriftVM.NyForeskrift.GiltigFrom,
+               GiltigTom = foreskriftVM.NyForeskrift.GiltigTom,
+               Beslutsdatum = foreskriftVM.NyForeskrift.Beslutsdatum
+            };
+
+            return foreskrift;
         }
     }
 }

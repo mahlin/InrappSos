@@ -55,10 +55,10 @@
         <H4>Leveransstatus för @Html.Raw(Model.OrganisationsNamn)</H4>
     </div>
     @Html.HiddenFor(m => m.SelectedYear)
-    <div class="row col-md-6">
+    <div class="row col-md-8">
         @*<H4> &lt; &nbsp;&nbsp;&nbsp;&nbsp;@Html.Raw(Model.SelectedYear)&nbsp;&nbsp;&nbsp;&nbsp; &gt;</H4>*@
         <div class="col-md-1" id="previousYear"><H4>@Html.ActionLink("<", "GetDeliveryStatus", "History", new { chosenYear = (Model.SelectedYear - 1) }, null)</H4></div> 
-        <div class="col-md-2"><H4>&nbsp;&nbsp;@Html.Raw(Model.SelectedYear)</H4></div>
+        <div class="col-md-3"><H4>&nbsp;Statistikår @Html.Raw(Model.SelectedYear)</H4></div>
         <div class="col-md-2" id="nextYear"><H4> @Html.ActionLink(">", "GetDeliveryStatus", "History", new { chosenYear = (Model.SelectedYear + 1) }, null)</H4></div>
     </div>
 </div>

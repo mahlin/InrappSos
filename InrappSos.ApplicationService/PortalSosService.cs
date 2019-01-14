@@ -1279,20 +1279,21 @@ namespace InrappSos.ApplicationService
                 var uppgiftsskyldighet = HamtaUppgiftsskyldighetForOrganisationOchRegister(orgId, item.Id);
                 if (uppgiftsskyldighet.RapporterarPerEnhet)
                 {
-                    item.RapporterarPerEnhet = true;
-                    var orgUnits = _portalSosRepository.GetOrganisationUnits(orgId);
-                    //Ger cirkulär reference, därva keyValuePair nedan
+                    //Ger cirkulär reference, därav keyValuePair nedan
                     //item.Orgenheter = orgUnits.ToList();
                     item.Organisationsenheter = new List<KeyValuePair<string, string>>();
                     item.Orgenheter = new List<KeyValuePair<string, string>>();
-                    foreach (var orgUnit in orgUnits)
+
+                    item.RapporterarPerEnhet = true;
+                    var enhetsuppgiftsskyldighetList = _portalSosRepository.GetUnitReportObligationForReportObligation(uppgiftsskyldighet.Id);
+                    foreach (var enhetsuppgiftsskyldighet in enhetsuppgiftsskyldighetList)
                     {
+                        var orgUnit = _portalSosRepository.GetOrganisationUnit(enhetsuppgiftsskyldighet.OrganisationsenhetsId);
                         KeyValuePair<string, string> keyValuePair = new KeyValuePair<string, string>(orgUnit.Enhetskod, orgUnit.Enhetsnamn);
                         item.Organisationsenheter.Add(keyValuePair);
                         KeyValuePair<string, string> keyValuePairFilkod = new KeyValuePair<string, string>(orgUnit.Enhetskod, orgUnit.Filkod);
                         item.Orgenheter.Add(keyValuePairFilkod);
                     }
-
                 }
             }
 

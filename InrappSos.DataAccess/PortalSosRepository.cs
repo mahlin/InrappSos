@@ -1085,6 +1085,20 @@ namespace InrappSos.DataAccess
         }
 
 
+
+        public IEnumerable<AdmEnhetsUppgiftsskyldighet> GetUnitReportObligationForReportObligation(int uppgSkyldighetId)
+        {
+            var unitReportObligations = DbContext.AdmEnhetsUppgiftsskyldighet.Where(x => x.UppgiftsskyldighetId == uppgSkyldighetId).ToList();
+            return unitReportObligations;
+        }
+
+        public Organisationsenhet GetOrganisationUnit(int orgunitId)
+        {
+            var orgUnit = DbContext.Organisationsenhet.SingleOrDefault(x => x.Id == orgunitId);
+            return orgUnit;
+        }
+
+
         public int CreateOrganisation(Organisation org, ICollection<Organisationstyp> orgtyperForOrg)
         {
             DbContext.Organisation.Add(org);

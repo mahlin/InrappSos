@@ -271,6 +271,9 @@ namespace InrappSos.DataAccess
         AdmUppgiftsskyldighet GetUppgiftsskyldighetForOrganisationAndRegister(int orgId, int delregid);
 
         IEnumerable<Organisationsenhet> GetOrganisationUnits(int orgId);
+        IEnumerable<AdmEnhetsUppgiftsskyldighet> GetUnitReportObligationForReportObligation(int uppgSkyldighetId);
+
+        Organisationsenhet GetOrganisationUnit(int orgunitId);
 
         int CreateOrganisation(Organisation org, ICollection<Organisationstyp> orgtyperForOrg);
 

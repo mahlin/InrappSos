@@ -13,6 +13,11 @@
 <br/><br/>
 <div class="row">
     <div class="col-md-8 padding-top-25">
+        @Html.Raw(ViewBag.LoginInfoText)
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-8 padding-top-25">
         <h4>Logga in</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })

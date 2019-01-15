@@ -62,6 +62,13 @@ namespace InrappSos.FilipWeb.Controllers
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
+            //Om infotext för loginsidan finns
+            var info = _portalService.HamtaInfoText("LoginInfoText");
+            if (!String.IsNullOrEmpty(info?.Text))
+            {
+                ViewBag.LoginInfoText = _portalService.HamtaInfoText("LoginInfoText").Text;
+            }
+
             //Om planerade avvikelser i öppettiderna kommande vecka
             var str = _portalService.ClosedComingWeek();
             if (str != String.Empty)

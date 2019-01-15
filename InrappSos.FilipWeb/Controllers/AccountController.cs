@@ -299,41 +299,55 @@ namespace InrappSos.FilipWeb.Controllers
             {
                 try
                 {
-
                     var organisation = GetOrganisationForEmailDomain(model.Email);
                     if (organisation == null)
                     {
-                        ModelState.AddModelError("",
-                            "Epostdomänen saknas i vårt register. Kontakta Socialstyrelsen för mer information. Support, epost: " +
-                            ConfigurationManager.AppSettings["ContactEmail"]);
-                    }
-                    else
-                    {
-                        var user = new ApplicationUser {UserName = model.Email, Email = model.Email};
-                        user.OrganisationId = organisation.Id;
-                        user.SkapadAv = model.Email;
-                        user.SkapadDatum = DateTime.Now;
-                        user.AndradAv = model.Email;
-                        user.AndradDatum = DateTime.Now;
-                        user.Namn = model.Namn;
-                        user.Kontaktnummer = model.Telefonnummer;
-
-                        var result = await UserManager.CreateAsync(user, model.Password);
-                        if (result.Succeeded)
+                        //Check if user emailadress connected to organisation via private emails table (UntantagEpostDoman)
+                        if (_portalService.IsConnectedViaPrivateEmailadress(model.Email))
                         {
-                            await UserManager.SetTwoFactorEnabledAsync(user.Id, true);
-                            //Spara valda register
-                            //_portalService.SparaValdaRegistersForAnvandare(user.Id, user.UserName, model.RegisterList);
-                            //Verifiera epostadress
-                            var code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                            var callbackUrl = Url.Action("ConfirmEmail", "Account", new {userId = user.Id, code = code},
-                                protocol: Request.Url.Scheme);
-                            //TODO mail/utvecklingsmiljön
-                            await UserManager.SendEmailAsync(user.Id, "Bekräfta e-postadress", "Bekräfta din e-postadress i Socialstyrelsens inrapporteringsportal genom att klicka <a href=\"" + callbackUrl + "\">här</a>");
+                            //Register user
+                            var undantagEpost = _portalService.HamtaUndantagEpostDoman(model.Email);
+                            await RegisterUser(undantagEpost.OrganisationsId, model);
                             ViewBag.Email = model.Email;
                             return View("DisplayEmail");
                         }
-                        AddErrors(result);
+                        else
+                        {
+                            ModelState.AddModelError("",
+                                "Epostdomänen saknas i vårt register. Kontakta Socialstyrelsen för mer information. Support, epost: " +
+                                ConfigurationManager.AppSettings["ContactEmail"]);
+                        }
+                    }
+                    else
+                    {
+                        await RegisterUser(organisation.Id, model);
+                        ViewBag.Email = model.Email;
+                        return View("DisplayEmail");
+                        //var user = new ApplicationUser {UserName = model.Email, Email = model.Email};
+                        //user.OrganisationId = organisation.Id;
+                        //user.SkapadAv = model.Email;
+                        //user.SkapadDatum = DateTime.Now;
+                        //user.AndradAv = model.Email;
+                        //user.AndradDatum = DateTime.Now;
+                        //user.Namn = model.Namn;
+                        //user.Kontaktnummer = model.Telefonnummer;
+
+                        //var result = await UserManager.CreateAsync(user, model.Password);
+                        //if (result.Succeeded)
+                        //{
+                        //    await UserManager.SetTwoFactorEnabledAsync(user.Id, true);
+                        //    //Spara valda register
+                        //    //_portalService.SparaValdaRegistersForAnvandare(user.Id, user.UserName, model.RegisterList);
+                        //    //Verifiera epostadress
+                        //    var code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                        //    var callbackUrl = Url.Action("ConfirmEmail", "Account", new {userId = user.Id, code = code},
+                        //        protocol: Request.Url.Scheme);
+                        //    //TODO mail/utvecklingsmiljön
+                        //    await UserManager.SendEmailAsync(user.Id, "Bekräfta e-postadress", "Bekräfta din e-postadress i Socialstyrelsens inrapporteringsportal genom att klicka <a href=\"" + callbackUrl + "\">här</a>");
+                        //    ViewBag.Email = model.Email;
+                        //    return View("DisplayEmail");
+                        //}
+                        //AddErrors(result);
                     }
                 }
                 catch (System.Net.Mail.SmtpException e)
@@ -849,6 +863,34 @@ namespace InrappSos.FilipWeb.Controllers
             }
             //return RedirectToAction("Index", "Home");
             return RedirectToAction("Index", "FileUpload");
+        }
+
+        private async Task<ActionResult> RegisterUser(int orgId, RegisterViewModel model)
+        {
+            var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+            user.OrganisationId = orgId;
+            user.SkapadAv = model.Email;
+            user.SkapadDatum = DateTime.Now;
+            user.AndradAv = model.Email;
+            user.AndradDatum = DateTime.Now;
+            user.Namn = model.Namn;
+            user.Kontaktnummer = model.Telefonnummer;
+
+            var result = await UserManager.CreateAsync(user, model.Password);
+            if (result.Succeeded)
+            {
+                await UserManager.SetTwoFactorEnabledAsync(user.Id, true);
+                //Spara valda register
+                //_portalService.SparaValdaRegistersForAnvandare(user.Id, user.UserName, model.RegisterList);
+                //Verifiera epostadress
+                var code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code },
+                    protocol: Request.Url.Scheme);
+                //TODO mail/utvecklingsmiljön
+                await UserManager.SendEmailAsync(user.Id, "Bekräfta e-postadress", "Bekräfta din e-postadress i Socialstyrelsens inrapporteringsportal genom att klicka <a href=\"" + callbackUrl + "\">här</a>");
+            }
+            AddErrors(result);
+            return View();
         }
 
         internal class ChallengeResult : HttpUnauthorizedResult

@@ -37,6 +37,26 @@ namespace InrappSos.ApplicationService
         }
 
 
+        public bool IsConnectedViaPrivateEmailadress(string email)
+        {
+            var userException = _portalSosRepository.GetUserFromUndantagEpostDoman(email);
+            var currDate = DateTime.Now;
+            var isConnected = false;
+            if (userException != null)
+            {
+                if (userException.AktivTom == null || userException.AktivTom >= currDate)
+                {
+                    isConnected = true;
+                }
+            }
+            return isConnected;
+        }
+
+        public UndantagEpostDoman HamtaUndantagEpostDoman(string email)
+        {
+            var userException = _portalSosRepository.GetUserFromUndantagEpostDoman(email);
+            return userException;
+        }
 
         public void AktiveraKontaktperson(string userId)
         {

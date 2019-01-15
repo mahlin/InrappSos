@@ -44,6 +44,8 @@ namespace InrappSos.DataAccess
         IEnumerable<int> GetAstridRolesPermissionIds(string roleId);
 
         //****************************************************************//
+
+        UndantagEpostDoman GetUserFromUndantagEpostDoman(string email);
         IdentityRole GetFilipRole(string roleName);
         void UpdateFilipRole(IdentityRole role);
         void DeleteFilipRole(string roleName);

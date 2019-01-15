@@ -162,6 +162,12 @@ namespace InrappSos.DataAccess
             return permissionIdsForRole;
         }
 
+        public UndantagEpostDoman GetUserFromUndantagEpostDoman(string email)
+        {
+            var userException = DbContext.UndantagEpostDoman.FirstOrDefault(x => x.PrivatEpostAdress == email);
+            return userException;
+        }
+
         public IdentityRole GetFilipRole(string roleName)
         {
             var thisRole = DbContext.Roles.FirstOrDefault(r => r.Name.Equals(roleName, StringComparison.CurrentCultureIgnoreCase));

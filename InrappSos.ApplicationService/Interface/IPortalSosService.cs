@@ -12,6 +12,9 @@ namespace InrappSos.ApplicationService.Interface
 {
     public interface IPortalSosService
     {
+        bool IsConnectedViaPrivateEmailadress(string email);
+
+        UndantagEpostDoman HamtaUndantagEpostDoman(string email);
         void AktiveraKontaktperson(string userId);
         string ClosedComingWeek();
         string HelgdagComingWeek();

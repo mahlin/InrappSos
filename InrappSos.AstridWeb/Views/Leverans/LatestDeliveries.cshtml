@@ -121,13 +121,13 @@
                 @Html.HiddenFor(m => m.SelectedOrganisationId)
                 @Html.HiddenFor(m => m.SelectedYear)
                 @Html.HiddenFor(m => m.Kommunkod)
-                <div class="row col-md-6">
+                <div class="row col-md-8">
                     @*<H4> &lt; &nbsp;&nbsp;&nbsp;&nbsp;@Html.Raw(Model.SelectedYear)&nbsp;&nbsp;&nbsp;&nbsp; &gt;</H4>*@
                     <div class="col-md-1" id="previousYear">
                         <H4>@Html.ActionLink("<", "GetDeliveryStatusForOrg", "Leverans", new {chosenYear = (Model.SelectedYear - 1), selectedOrganisationId = Model.SelectedOrganisationId}, null)</H4>
                     </div>
-                    <div class="col-md-2">
-                        <H4>&nbsp;&nbsp;@Html.Raw(Model.SelectedYear)</H4>
+                    <div class="col-md-3">
+                        <H4>&nbsp;Statistikår @Html.Raw(Model.SelectedYear)</H4>
                     </div>
                     <div class="col-md-2" id="nextYear">
                         <H4> @Html.ActionLink(">", "GetDeliveryStatusForOrg", "Leverans", new {chosenYear = (Model.SelectedYear + 1), selectedOrganisationId = Model.SelectedOrganisationId}, null)</H4>

@@ -92,6 +92,12 @@
                 var tr = $(this).parents('tr:first');
                 var insamlingsfrekvensId = tr.find("#ddlInsamlingsfrekvens").val();
                 var filkravId = tr.find("#FilkravId").html();
+                var foreskriftsId = 0;
+                filkravsLista.forEach(function(filkrav, index) {
+                    if (filkrav.Id.toString() === filkravId) {
+                        foreskriftsId = filkrav.ForeskriftsId;
+                    }
+                });
                 var namn = tr.find("#Namn").val();
                 var insamlingsfrekvens = tr.find("#Insamlingsfrekvens").val();
                 var uppgiftsstartdag = tr.find("#Uppgiftsstartdag").val();
@@ -106,11 +112,12 @@
                 var uppgifterAntalmanader = tr.find("#UppgifterAntalmanader").val();
 
                 //Creating AdmFilkrav JSON object
-                var admFilkrav =
+                var admFilkrav = 
                 {
                     "Id": filkravId,
                     "Namn": namn,
                     "Insamlingsfrekvens": insamlingsfrekvens,
+                    "ForeskriftsId": foreskriftsId,
                     "Uppgiftsstartdag": uppgiftsstartdag,
                     "Uppgiftslutdag": uppgiftslutdag,
                     "Rapporteringsstartdag": rapporteringsstartdag,

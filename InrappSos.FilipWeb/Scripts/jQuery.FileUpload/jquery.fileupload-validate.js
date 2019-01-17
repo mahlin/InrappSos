@@ -302,9 +302,9 @@ function getTableRows() {
                     if (regexMatch === null) {
                         file.error = settings.i18n('incorrectFileName');
                     }
-                    else if (currRegister === 'CAN' && !CheckFilkodInFileName(data.selectedRegister, selectedOrgUnitId, regexMatch)) {
+                    else if ((currRegister === 'CAN' || currRegister === 'OV_') && !CheckFilkodInFileName(data.selectedRegister, selectedOrgUnitId, regexMatch)) {
                         file.error = settings.i18n('incorrectFilkodInFileName');
-                    } else if ((currRegister != 'LVM' && currRegister != 'CAN') && !CheckKommunKodInFileName(regexMatch)) {
+                    } else if ((currRegister != 'LVM' && currRegister != 'CAN' && currRegister != 'OV_') && !CheckKommunKodInFileName(regexMatch)) {
                         file.error = settings.i18n('incorrectKommunKodInFileName');
                     }
                     else if (!CheckPeriodInFileName(data.selectedRegister, regexMatch)) {

@@ -137,14 +137,15 @@
             </div>
             @if (Model.OrgtypesForOrgList != null)
             {
-                <div class="col-md-7" style="padding-left: 20px; float: left;">
-                    <select id="OrgtypList" multiple="multiple">
-                        @for (var i = 0; i < Model.OrgtypesForOrgList.Count; i++)
-                        {
-                            <option value=@Model.OrgtypesForOrgList[i].Organisationstypid>@Model.OrgtypesForOrgList[i].Typnamn</option>
-                        }
-                    </select>
-                </div>
+            <div class="col-md-7" style="padding-left: 20px; float: left;">
+                <select id="OrgtypList" multiple="multiple">
+                    @for (var i = 0; i < Model.OrgtypesForOrgList.Count; i++)
+                    {
+                        <option value=@Model.OrgtypesForOrgList[i].Organisationstypid>@Model.OrgtypesForOrgList[i].Typnamn</option>
+                    }
+                </select>
+                @Html.ValidationMessage("CustomError", new { @class = "text-danger" })
+            </div>
             }
         </div>
 

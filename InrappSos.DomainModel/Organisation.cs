@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
@@ -14,6 +15,7 @@ namespace InrappSos.DomainModel
         public string Inrapporteringskod { get; set; }
         //public string Organisationstyp { get; set; }
         public string Organisationsnr { get; set; }
+        [Required(ErrorMessage = "Fältet Organisationsnamn är obligatoriskt.")]
         public string Organisationsnamn { get; set; }
         public string Hemsida { get; set; }
         public string EpostAdress { get; set; }
@@ -22,8 +24,11 @@ namespace InrappSos.DomainModel
         public string Postnr { get; set; }
         public string Postort { get; set; }
         public string Epostdoman { get; set; }
+        [Required(ErrorMessage = "Fältet Aktiv fr.o.m. är obligatoriskt.")]
+        [DisplayName("Aktiv fr.o.m.")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        public DateTime? AktivFrom { get; set; }
+        public DateTime AktivFrom { get; set; }
+        [DisplayName("Aktiv t.o.m.")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? AktivTom { get; set; }
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]

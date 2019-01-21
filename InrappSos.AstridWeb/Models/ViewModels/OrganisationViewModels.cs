@@ -36,9 +36,9 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             
             public List<List<Organisation>> SearchResult { get; set; }
 
-            public IEnumerable<Organisationsenhet> OrgUnits { get; set; }
+            public List<Organisationsenhet> OrgUnits { get; set; }
 
-            public  IEnumerable<ReportObligationsViewModel> ReportObligations { get; set; }
+            public  List<ReportObligationsViewModel> ReportObligations { get; set; }
 
             public List<AdmOrganisationstyp> OrganisationTypes { get; set; }
             public List<UndantagEpostDomanViewModel> UndantagEpostDomaner { get; set; }

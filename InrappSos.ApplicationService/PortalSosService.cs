@@ -1424,6 +1424,27 @@ namespace InrappSos.ApplicationService
             org.AndradDatum = DateTime.Now;
             org.AndradAv = userName;
 
+            ////TODO - test
+            //var orgTest = new Organisation
+            //{
+            //    Kommunkod = "1",
+            //    Organisationsnamn = "Maries org",
+            //    Organisationsnr = "123",
+            //    Hemsida = "dn.se",
+            //    EpostAdress = "m@home.se",
+            //    Telefonnr = "111",
+            //    Adress = "ggg",
+            //    Postort = "Sthlm",
+            //    Postnr = "8888",
+            //    Epostdoman = "home.se",
+            //    AktivFrom = DateTime.Now,
+            //    AktivTom = null,
+            //    SkapadAv = "MAH",
+            //    SkapadDatum = DateTime.Now,
+            //    AndradAv = "MAH",
+            //    AndradDatum = DateTime.Now
+            //};
+
             var orgId = _portalSosRepository.CreateOrganisation(org, orgtyperForOrg);
             return orgId;
         }

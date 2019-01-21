@@ -158,7 +158,7 @@ namespace InrappSos.AstridWeb.Controllers
                 var roller = new List<IdentityRole>();
                 model.ContactPersons = ConvertUsersViewModelUser(contacts, roller);
 
-                model.OrgUnits = _portalSosService.HamtaOrgEnheterForOrg(model.Organisation.Id);
+                model.OrgUnits = _portalSosService.HamtaOrgEnheterForOrg(model.Organisation.Id).ToList();
                 var reportObligationsDb = _portalSosService.HamtaUppgiftsskyldighetForOrg(model.Organisation.Id);
                 model.ReportObligations = ConvertAdmUppgiftsskyldighetToViewModel(reportObligationsDb.ToList());
                 model.SearchResult = new List<List<Organisation>>();
@@ -366,7 +366,7 @@ namespace InrappSos.AstridWeb.Controllers
 
                 model.Organisation = _portalSosService.HamtaOrganisation(model.SelectedOrganisationId);
                 model.Kommunkod = model.Organisation.Kommunkod;
-                model.OrgUnits = _portalSosService.HamtaOrgEnheterForOrg(model.Organisation.Id);
+                model.OrgUnits = _portalSosService.HamtaOrgEnheterForOrg(model.Organisation.Id).ToList();
                 model.SearchResult = new List<List<Organisation>>();
             }
             catch (Exception e)
@@ -488,12 +488,56 @@ namespace InrappSos.AstridWeb.Controllers
         {
             try
             {
+                var orgtypeSet = false;
+                //Check if orgtyp set
+                foreach (var orgtype in model.OrgtypesForOrgList)
+                {
+                    if (orgtype.Selected)
+                    {
+                        orgtypeSet = true;
+                    }
+                }
+
+                if (!orgtypeSet)
+                {
+                    ModelState.AddModelError("CustomError", "Minst en organisationstyp måste väljas.");
+                    //model.SearchResult.Add();
+                    //Fulfix
+                    if (model.ContactPersons == null)
+                    {
+                        model.ContactPersons = new List<OrganisationViewModels.ApplicationUserViewModel>();
+                    }
+                    if (model.OrgUnits == null)
+                    {
+                        model.OrgUnits = new List<Organisationsenhet>();
+                    }
+                    if (model.ReportObligations == null)
+                    {
+                        model.ReportObligations = new List<OrganisationViewModels.ReportObligationsViewModel>();
+                    }
+                }
                 if (ModelState.IsValid)
                 {
                     var userName = User.Identity.GetUserName();
                     model.Organisation.Organisationstyp = ConvertOrgTypesForOrgList(model.Organisation.Id, model.OrgtypesForOrgList, userName, false);
                     _portalSosService.UppdateraOrganisation(model.Organisation, userName);
+                    return RedirectToAction("GetOrganisation", new { selectedOrganisationId = model.SelectedOrganisationId });
                 }
+                //Fulfix
+                if (model.ContactPersons == null)
+                {
+                    model.ContactPersons = new List<OrganisationViewModels.ApplicationUserViewModel>();
+                }
+                if (model.OrgUnits == null)
+                {
+                    model.OrgUnits = new List<Organisationsenhet>();
+                }
+                if (model.ReportObligations == null)
+                {
+                    model.ReportObligations = new List<OrganisationViewModels.ReportObligationsViewModel>();
+                }
+                model.SearchResult = new List<List<Organisation>>();
+                return View("Index",model);
             }
             catch (Exception e)
             {
@@ -507,7 +551,6 @@ namespace InrappSos.AstridWeb.Controllers
                 };
                 return View("CustomError", errorModel);
             }
-            return RedirectToAction("GetOrganisation", new { selectedOrganisationId = model.SelectedOrganisationId });
         }
 
         [HttpPost]
@@ -794,6 +837,20 @@ namespace InrappSos.AstridWeb.Controllers
         {
             var kommunkod = String.Empty;
             var orgId = 0;
+            var orgtypeSet = false;
+            //Check if orgtyp set
+            foreach (var orgtype in model.OrgtypesForOrgList)
+            {
+                if (orgtype.Selected)
+                {
+                    orgtypeSet = true;
+                }
+            }
+
+            if (!orgtypeSet)
+            {
+                ModelState.AddModelError("CustomError", "Minst en organisationstyp måste väljas.");
+            }
             if (ModelState.IsValid)
             {
                 try
@@ -817,7 +874,7 @@ namespace InrappSos.AstridWeb.Controllers
                 return RedirectToAction("GetOrganisation", new { selectedOrganisationId = orgId });
             }
 
-            return View();
+            return View(model);
         }
 
         [Authorize]

@@ -276,7 +276,7 @@ namespace InrappSos.AstridWeb.Controllers
 
         [HttpPost]
         [Authorize]
-        public ActionResult UpdateRegulation(AdmForeskrift foreskrift)
+        public ActionResult UpdateRegulation(RegisterViewModels.AdmForeskriftViewModel foreskriftVM)
         {
             var regShortName = "";
             if (ModelState.IsValid)
@@ -284,12 +284,13 @@ namespace InrappSos.AstridWeb.Controllers
                 try
                 {
                     var userName = User.Identity.GetUserName();
-                    if (foreskrift.RegisterId != 0)
+                    if (foreskriftVM.SelectedForeskrift.RegisterId != 0)
                     {
-                        var register = _portalSosService.HamtaRegisterMedId(foreskrift.RegisterId);
+                        var register = _portalSosService.HamtaRegisterMedId(foreskriftVM.SelectedForeskrift.RegisterId);
                         regShortName = register.Kortnamn;
                     }
-                    _portalSosService.UppdateraForeskrift(foreskrift, userName);
+                    //var foreskrift = ConvertVMToAdmForeskrift(foreskriftVM.SelectedForeskrift);
+                    _portalSosService.UppdateraForeskrift(foreskriftVM.SelectedForeskrift, userName);
                 }
                 catch (Exception e)
                 {
@@ -304,7 +305,11 @@ namespace InrappSos.AstridWeb.Controllers
 
                 }
             }
-            return RedirectToAction("GetSubDirectoriesForDirectory", new { regShortName = regShortName });
+            if (foreskriftVM.SelectedDirectoryId != 0)
+            {
+                return RedirectToAction("GetRegulationsForDirectory", new {regId = foreskriftVM.SelectedDirectoryId});
+            }
+            return RedirectToAction("GetAllRegulations");
 
         }
 
@@ -408,7 +413,7 @@ namespace InrappSos.AstridWeb.Controllers
 
         // GET
         [Authorize]
-        public ActionResult EditSelectedRegulation(int foreskriftId = 0)
+        public ActionResult EditSelectedRegulation(int foreskriftId = 0, int selectedDirectoryId = 0)
         {
             var model = new RegisterViewModels.AdmForeskriftViewModel();
             model.SelectedForeskrift = new AdmForeskrift();
@@ -424,6 +429,7 @@ namespace InrappSos.AstridWeb.Controllers
                 model.SelectedForeskrift.RegisterId = selectedForeskriftDb.RegisterId;
             }
             model.RegisterShortName = _portalSosService.HamtaKortnamnForRegister(model.SelectedForeskrift.RegisterId);
+            model.SelectedDirectoryId = selectedDirectoryId;
 
             //// Ladda drop down lists. 
             //var registerList = _portalSosService.HamtaAllaRegisterForPortalen();
@@ -432,36 +438,36 @@ namespace InrappSos.AstridWeb.Controllers
             return View("_EditSelectedRegulation", model);
         }
 
-        // POST
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize]
-        public ActionResult EditSelectedRegulation(RegisterViewModels.AdmForeskriftViewModel model)
-        {
+        //// POST
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //[Authorize]
+        //public ActionResult EditSelectedRegulation(RegisterViewModels.AdmForeskriftViewModel model)
+        //{
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    var userName = User.Identity.GetUserName();
-                    _portalSosService.UppdateraForeskrift(model.SelectedForeskrift, userName);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                    ErrorManager.WriteToErrorLog("SystemController", "EditSelectedRegulation", e.ToString(), e.HResult, User.Identity.Name);
-                    var errorModel = new CustomErrorPageModel
-                    {
-                        Information = "Ett fel inträffade när föreskrift skulle sparas.",
-                        ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
-                    };
-                    return View("CustomError", errorModel);
-                }
-                return RedirectToAction("GetRegulationsForDirectory", new { regShortName = model.RegisterShortName });
-            }
+        //    if (ModelState.IsValid)
+        //    {
+        //        try
+        //        {
+        //            var userName = User.Identity.GetUserName();
+        //            _portalSosService.UppdateraForeskrift(model.SelectedForeskrift, userName);
+        //        }
+        //        catch (Exception e)
+        //        {
+        //            Console.WriteLine(e);
+        //            ErrorManager.WriteToErrorLog("SystemController", "EditSelectedRegulation", e.ToString(), e.HResult, User.Identity.Name);
+        //            var errorModel = new CustomErrorPageModel
+        //            {
+        //                Information = "Ett fel inträffade när föreskrift skulle sparas.",
+        //                ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+        //            };
+        //            return View("CustomError", errorModel);
+        //        }
+        //        return RedirectToAction("GetRegulationsForDirectory", new { regShortName = model.RegisterShortName });
+        //    }
 
-            return RedirectToAction("GetRegulationsForDirectory", new { regShortName = model.RegisterShortName });
-        }
+        //    return RedirectToAction("GetRegulationsForDirectory", new { regShortName = model.RegisterShortName });
+        //}
 
         // GET
         [Authorize]

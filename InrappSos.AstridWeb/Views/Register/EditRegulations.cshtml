@@ -34,11 +34,12 @@
 
     function showEditForm(id) {
         $('#SelectedForeskriftId').val(parseInt(id));
-        var y = parseInt(id);
+        var foreskriftId = parseInt(id);
+        var dirId = parseInt($('#ddlRegister').val());
 
         $.ajax({
-            url: '/Register/EditSelectedRegulation?foreskriftId=' + y,
-            data: JSON.stringify({ faqId: y }),
+            url: '/Register/EditSelectedRegulation?foreskriftId=' + foreskriftId + '&selectedDirectoryId=' + dirId ,
+           // data: JSON.stringify({ faqId: y }),
             type: 'GET',
             contentType: 'application/json; charset=utf-8',
             success: function(data) {

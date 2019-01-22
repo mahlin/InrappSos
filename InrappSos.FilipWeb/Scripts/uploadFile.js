@@ -321,7 +321,7 @@ function checkOkToUpload() {
     }
     var numberOfFilesForSelectedRegister = 0;
     var numberOfRequiredFilesForSelectedRegister = 0;
-    var numberOfNorRequiredFilesForSelectedRegister = 0;
+    var numberOfNotRequiredFilesForSelectedRegister = 0;
     //get number of required files for chosen register
     registerLista.forEach(function (register, index) {
         if (selectedRegister === register.Id.toString()) {
@@ -329,12 +329,12 @@ function checkOkToUpload() {
                 if (selectedFilkravId === filkrav.Id) {
                     numberOfFilesForSelectedRegister = filkrav.AntalFiler;
                     numberOfRequiredFilesForSelectedRegister = filkrav.AntalObligatoriskaFiler;
-                    numberOfNorRequiredFilesForSelectedRegister = filkrav.AntalEjObligatoriskaFiler;
+                    numberOfNotRequiredFilesForSelectedRegister = filkrav.AntalEjObligatoriskaFiler;
                 }
             });
         }
     });
-    if (!errorExists) {
+    if (!errorExists || filelist.length != 0) {
         //Check if files to upload all are required
         antAddedRequiredFiles = 0;
         antAddedNotRequiredFiles = 0;
@@ -346,7 +346,7 @@ function checkOkToUpload() {
             }
         }
         if (antAddedRequiredFiles === numberOfRequiredFilesForSelectedRegister && filelist.length <= numberOfFilesForSelectedRegister) {
-            if (antAddedNotRequiredFiles === numberOfNorRequiredFilesForSelectedRegister) {
+            if (antAddedNotRequiredFiles === numberOfNotRequiredFilesForSelectedRegister) {
                 $('#fileinputButton').prop('disabled', true);
                 $('#fileinputButton').addClass('disabled');
                 $('#filesExplorerOpener').prop('disabled', true);

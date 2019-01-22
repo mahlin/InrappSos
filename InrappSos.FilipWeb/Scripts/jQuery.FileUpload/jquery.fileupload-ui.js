@@ -540,19 +540,19 @@
                 data.errorThrown = 'abort';
                 this._trigger('fail', e, data);
             }
-            //Handle buttonbar
-            var x = data.files.length;
-            if (data.files.length - 1 == 0) {
-                $('.start').hide();
-                $('#fileinputButton').prop('disabled', false);
-                $('#fileinputButton').removeClass('disabled');
-                $('#filesExplorerOpener').prop('disabled', false);
-                $('#filesExplorerOpener').removeClass('disabled');
+            ////Handle buttonbar
+            //var x = data.files.length;
+            //if (data.files.length - 1 == 0) {
+            //    $('.start').hide();
+            //    $('#fileinputButton').prop('disabled', false);
+            //    $('#fileinputButton').removeClass('disabled');
+            //    $('#filesExplorerOpener').prop('disabled', false);
+            //    $('#filesExplorerOpener').removeClass('disabled');
 
-                //$('#fileinputButton').prop('readonly', false);
-                //$('#fileinputButton').removeClass('readonly');
-                //$('#fileinputButton').parent().removeClass('disabled');
-            }
+            //    //$('#fileinputButton').prop('readonly', false);
+            //    //$('#fileinputButton').removeClass('readonly');
+            //    //$('#fileinputButton').parent().removeClass('disabled');
+            //}
             //$('.start').prop('disabled', true);
             //$('.start').hide();
             ////_enableFileInputButton();

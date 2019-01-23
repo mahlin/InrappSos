@@ -313,7 +313,7 @@ namespace InrappSos.FilipWeb.Controllers
                         if (_portalService.IsConnectedViaPrivateEmailadress(model.Email))
                         {
                             //Register user
-                            var undantagEpost = _portalService.HamtaUndantagEpostDoman(model.Email);
+                            var undantagEpost = _portalService.HamtaUndantagEpostadress(model.Email);
                             await RegisterUser(undantagEpost.OrganisationsId, model);
                             ViewBag.Email = model.Email;
                             return View("DisplayEmail");

@@ -39,7 +39,7 @@ namespace InrappSos.ApplicationService
 
         public bool IsConnectedViaPrivateEmailadress(string email)
         {
-            var userException = _portalSosRepository.GetUserFromUndantagEpostDoman(email);
+            var userException = _portalSosRepository.GetUserFromUndantagEpostadress(email);
             var currDate = DateTime.Now;
             var isConnected = false;
             if (userException != null)
@@ -52,9 +52,9 @@ namespace InrappSos.ApplicationService
             return isConnected;
         }
 
-        public UndantagEpostDoman HamtaUndantagEpostDoman(string email)
+        public UndantagEpostadress HamtaUndantagEpostadress(string email)
         {
-            var userException = _portalSosRepository.GetUserFromUndantagEpostDoman(email);
+            var userException = _portalSosRepository.GetUserFromUndantagEpostadress(email);
             return userException;
         }
 
@@ -216,7 +216,7 @@ namespace InrappSos.ApplicationService
             return contacts;
         }
 
-        public IEnumerable<UndantagEpostDoman> HamtaPrivataEpostadresserForOrg(int orgId)
+        public IEnumerable<UndantagEpostadress> HamtaPrivataEpostadresserForOrg(int orgId)
         {
             var privEmails = _portalSosRepository.GetPrivateEmailAdressesForOrg(orgId);
             return privEmails;
@@ -1460,7 +1460,7 @@ namespace InrappSos.ApplicationService
             _portalSosRepository.CreateOrgUnit(orgUnit);
         }
 
-        public void SkapaPrivatEpostadress(UndantagEpostDoman privEmail, string userName)
+        public void SkapaPrivatEpostadress(UndantagEpostadress privEmail, string userName)
         {
             //Sätt datum och användare
             privEmail.SkapadDatum = DateTime.Now;
@@ -1474,7 +1474,7 @@ namespace InrappSos.ApplicationService
         public void SkapaArende(ArendeDTO arende, string userName)
         {
             var registeredReportersList = new List<string>();
-            var unregisteredReportersList = new List<UndantagEpostDoman>();
+            var unregisteredReportersList = new List<UndantagEpostadress>();
 
             var arendeDb = ConvertArendeDTOToDb(arende);
             //Sätt datum och användare
@@ -1500,7 +1500,7 @@ namespace InrappSos.ApplicationService
                     else
                     {
                         //Spara i undantagstabell
-                        var undantag = new UndantagEpostDoman
+                        var undantag = new UndantagEpostadress
                         {
                             OrganisationsId = arende.OrganisationsId,
                             ArendeId = arendeDb.Id,
@@ -1912,7 +1912,7 @@ namespace InrappSos.ApplicationService
             _portalSosRepository.UpdateAdminUserInfo(user);
         }
 
-        public void UppdateraPrivatEpostAdress(UndantagEpostDoman privEpostDoman, string userName)
+        public void UppdateraPrivatEpostAdress(UndantagEpostadress privEpostDoman, string userName)
         {
             privEpostDoman.AndradAv = userName;
             privEpostDoman.AndradDatum = DateTime.Now;
@@ -1922,7 +1922,7 @@ namespace InrappSos.ApplicationService
         public void UppdateraArende(ArendeDTO arende,  string userName, string rapportorer)
         {
             var registeredReportersList = new List<string>();
-            var unregisteredReportersList = new List<UndantagEpostDoman>();
+            var unregisteredReportersList = new List<UndantagEpostadress>();
             var arendeDb = ConvertArendeDTOToDb(arende);
             arendeDb.AndradAv = userName;
             arendeDb.AndradDatum = DateTime.Now;
@@ -1944,7 +1944,7 @@ namespace InrappSos.ApplicationService
                     else
                     {
                         //Spara i undantagstabell
-                        var undantag = new UndantagEpostDoman
+                        var undantag = new UndantagEpostadress
                         {
                             OrganisationsId = arende.OrganisationsId,
                             ArendeId = arende.Id,
@@ -2281,7 +2281,8 @@ namespace InrappSos.ApplicationService
                 ArendetypId = arendeDto.ArendetypId,
                 ArendestatusId = arendeDto.ArendestatusId,
                 StartDatum = arendeDto.StartDatum,
-                SlutDatum = arendeDto.SlutDatum
+                SlutDatum = arendeDto.SlutDatum,
+                AnsvarigEpost = arendeDto.AnsvarigEpost
             };
             return arende;
         }

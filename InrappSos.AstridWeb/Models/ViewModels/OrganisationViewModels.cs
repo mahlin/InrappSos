@@ -41,7 +41,7 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public  List<ReportObligationsViewModel> ReportObligations { get; set; }
 
             public List<AdmOrganisationstyp> OrganisationTypes { get; set; }
-            public List<UndantagEpostDomanViewModel> UndantagEpostDomaner { get; set; }
+            public List<UndantagEpostadressViewModel> UndantagEpostadresser { get; set; }
             public List<ArendeViewModel> Arenden { get; set; }
             public List<IdentityRoleViewModel> Roller { get; set; }
             public string Origin { get; set; }
@@ -133,7 +133,7 @@ namespace InrappSos.AstridWeb.Models.ViewModels
 
         }
 
-        public class UndantagEpostDomanViewModel
+        public class UndantagEpostadressViewModel
         {
             public int Id { get; set; }
             public int ArendeId { get; set; }

@@ -162,9 +162,9 @@ namespace InrappSos.DataAccess
             return permissionIdsForRole;
         }
 
-        public UndantagEpostDoman GetUserFromUndantagEpostDoman(string email)
+        public UndantagEpostadress GetUserFromUndantagEpostadress(string email)
         {
-            var userException = DbContext.UndantagEpostDoman.FirstOrDefault(x => x.PrivatEpostAdress == email);
+            var userException = DbContext.UndantagEpostadress.FirstOrDefault(x => x.PrivatEpostAdress == email);
             return userException;
         }
 
@@ -337,15 +337,15 @@ namespace InrappSos.DataAccess
             return orgId;
         }
 
-        public IEnumerable<UndantagEpostDoman> GetPrivateEmailAdressesForOrg(int orgId)
+        public IEnumerable<UndantagEpostadress> GetPrivateEmailAdressesForOrg(int orgId)
         {
-            var privEmails = DbContext.UndantagEpostDoman.Where(x => x.OrganisationsId == orgId).ToList();
+            var privEmails = DbContext.UndantagEpostadress.Where(x => x.OrganisationsId == orgId).ToList();
             return privEmails;
         }
 
-        public IEnumerable<UndantagEpostDoman> GetPrivateEmailAdressesForOrgAndCase(int orgId, int caseId)
+        public IEnumerable<UndantagEpostadress> GetPrivateEmailAdressesForOrgAndCase(int orgId, int caseId)
         {
-            var privEmails = DbContext.UndantagEpostDoman.Where(x => x.OrganisationsId == orgId && x.ArendeId == caseId).ToList();
+            var privEmails = DbContext.UndantagEpostadress.Where(x => x.OrganisationsId == orgId && x.ArendeId == caseId).ToList();
             return privEmails;
         }
 
@@ -1126,9 +1126,9 @@ namespace InrappSos.DataAccess
             DbContext.SaveChanges();
         }
 
-        public void CreatePrivateEmail(UndantagEpostDoman privEmail)
+        public void CreatePrivateEmail(UndantagEpostadress privEmail)
         {
-            DbContext.UndantagEpostDoman.Add(privEmail);
+            DbContext.UndantagEpostadress.Add(privEmail);
             DbContext.SaveChanges();
         }
 
@@ -1348,9 +1348,9 @@ namespace InrappSos.DataAccess
             DbContext.SaveChanges();
         }
 
-        public void UpdatePrivateEmail(UndantagEpostDoman privEmail)
+        public void UpdatePrivateEmail(UndantagEpostadress privEmail)
         {
-            var privEmailDb = DbContext.UndantagEpostDoman.SingleOrDefault(x => x.Id == privEmail.Id);
+            var privEmailDb = DbContext.UndantagEpostadress.SingleOrDefault(x => x.Id == privEmail.Id);
             privEmailDb.ArendeId = privEmail.ArendeId;
             privEmailDb.OrganisationsId = privEmail.OrganisationsId;
             privEmailDb.PrivatEpostAdress = privEmail.PrivatEpostAdress;
@@ -1371,6 +1371,7 @@ namespace InrappSos.DataAccess
             arendeDb.ArendestatusId = arende.ArendestatusId;
             arendeDb.StartDatum = arende.StartDatum;
             arendeDb.SlutDatum = arende.SlutDatum;
+            arendeDb.AnsvarigEpost = arende.AnsvarigEpost;
             DbContext.SaveChanges();
         }
 
@@ -1427,16 +1428,16 @@ namespace InrappSos.DataAccess
 
         }
 
-        public void UpdateCaseUnregisteredReporters(int caseId, List<UndantagEpostDoman> userList, string userName)
+        public void UpdateCaseUnregisteredReporters(int caseId, List<UndantagEpostadress> userList, string userName)
         {
             //delete prevoious unregistered reporters for current case
-            var currentUsersList = DbContext.UndantagEpostDoman.RemoveRange(DbContext.UndantagEpostDoman.Where(x => x.ArendeId == caseId));
+            var currentUsersList = DbContext.UndantagEpostadress.RemoveRange(DbContext.UndantagEpostadress.Where(x => x.ArendeId == caseId));
             DbContext.SaveChanges();
 
             //Insert new unregistered reporters
             foreach (var user in userList)
             {
-                DbContext.UndantagEpostDoman.Add(user);
+                DbContext.UndantagEpostadress.Add(user);
             }
             DbContext.SaveChanges();
         }

@@ -45,7 +45,7 @@ namespace InrappSos.DataAccess
 
         //****************************************************************//
 
-        UndantagEpostDoman GetUserFromUndantagEpostDoman(string email);
+        UndantagEpostadress GetUserFromUndantagEpostadress(string email);
         IdentityRole GetFilipRole(string roleName);
         void UpdateFilipRole(IdentityRole role);
         void DeleteFilipRole(string roleName);
@@ -89,9 +89,9 @@ namespace InrappSos.DataAccess
 
         int GetReportObligationOrganisationId(int repObligationId);
 
-        IEnumerable<UndantagEpostDoman> GetPrivateEmailAdressesForOrg(int orgId);
+        IEnumerable<UndantagEpostadress> GetPrivateEmailAdressesForOrg(int orgId);
 
-        IEnumerable<UndantagEpostDoman> GetPrivateEmailAdressesForOrgAndCase(int orgId, int caseId);
+        IEnumerable<UndantagEpostadress> GetPrivateEmailAdressesForOrgAndCase(int orgId, int caseId);
 
         IEnumerable<Arende> GetCasesForOrg(int orgId);
 
@@ -281,7 +281,7 @@ namespace InrappSos.DataAccess
 
         void CreateOrgUnit(Organisationsenhet orgUnit);
 
-        void CreatePrivateEmail(UndantagEpostDoman privEmail);
+        void CreatePrivateEmail(UndantagEpostadress privEmail);
 
         void CreateCase(Arende arende);
         void CreateOrgType(AdmOrganisationstyp orgType);
@@ -355,7 +355,7 @@ namespace InrappSos.DataAccess
 
         void UpdateUserInfo(ApplicationUser user);
 
-        void UpdatePrivateEmail(UndantagEpostDoman privEmail);
+        void UpdatePrivateEmail(UndantagEpostadress privEmail);
 
         void UpdateCase(Arende arende);
 
@@ -363,7 +363,7 @@ namespace InrappSos.DataAccess
 
         void AddRoleToFilipUser(string userId, string roleName);
 
-        void UpdateCaseUnregisteredReporters(int caseId, List<UndantagEpostDoman> userList, string userName);
+        void UpdateCaseUnregisteredReporters(int caseId, List<UndantagEpostadress> userList, string userName);
 
         void SaveOpeningHours(AdmKonfiguration admKonf);
         void SaveToFilelogg(string userName, string ursprungligtFilNamn, string nyttFilNamn, int leveransId, int sequenceNumber);

@@ -19,6 +19,7 @@ namespace InrappSos.ApplicationService.DTOModel
             public string Arendestatus { get; set; }
             public DateTime StartDatum { get; set; }
             public DateTime? SlutDatum { get; set; }
+            public string AnsvarigEpost { get; set; }
             public string Rapportorer { get; set; }
 
 

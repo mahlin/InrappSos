@@ -14,7 +14,7 @@ namespace InrappSos.ApplicationService.Interface
     {
         bool IsConnectedViaPrivateEmailadress(string email);
 
-        UndantagEpostDoman HamtaUndantagEpostDoman(string email);
+        UndantagEpostadress HamtaUndantagEpostadress(string email);
         void AktiveraKontaktperson(string userId);
         string ClosedComingWeek();
         string HelgdagComingWeek();
@@ -73,7 +73,7 @@ namespace InrappSos.ApplicationService.Interface
 
         IEnumerable<ApplicationUser> HamtaKontaktpersonerForOrg(int orgId);
 
-        IEnumerable<UndantagEpostDoman> HamtaPrivataEpostadresserForOrg(int orgId);
+        IEnumerable<UndantagEpostadress> HamtaPrivataEpostadresserForOrg(int orgId);
         IEnumerable<Arende> HamtaArendenForOrg(int orgId);
         IEnumerable<Organisationsenhet> HamtaOrgEnheterForOrg(int orgId);
         Organisationsenhet HamtaOrganisationsenhetMedEnhetskod(string kod, int orgId);
@@ -246,7 +246,7 @@ namespace InrappSos.ApplicationService.Interface
 
         void SkapaOrganisationsenhet(Organisationsenhet orgUnit, string userName);
 
-        void SkapaPrivatEpostadress(UndantagEpostDoman privEmail, string userName);
+        void SkapaPrivatEpostadress(UndantagEpostadress privEmail, string userName);
 
         void SkapaArende(ArendeDTO arende, string userName);
         void SkapaOrganisationstyp(AdmOrganisationstyp orgtyp, string userName);
@@ -331,7 +331,7 @@ namespace InrappSos.ApplicationService.Interface
 
         void UppdateraAnvandarInfo(AppUserAdmin user, string userName);
 
-        void UppdateraPrivatEpostAdress(UndantagEpostDoman privEpostDoman, string userName);
+        void UppdateraPrivatEpostAdress(UndantagEpostadress privEpostDoman, string userName);
 
         void UppdateraArende(ArendeDTO arende, string userName, string rapportorer);
 

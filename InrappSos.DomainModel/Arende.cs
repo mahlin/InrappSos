@@ -16,6 +16,7 @@ namespace InrappSos.DomainModel
         public int ArendestatusId { get; set; }
         public DateTime StartDatum { get; set; }
         public DateTime? SlutDatum { get; set; }
+        public string AnsvarigEpost { get; set; }
         public DateTime SkapadDatum { get; set; }
         public string SkapadAv { get; set; }
         public DateTime AndradDatum { get; set; }
@@ -25,6 +26,6 @@ namespace InrappSos.DomainModel
         public virtual Arendetyp Arendetyp { get; set; }
         public virtual ICollection<ArendeKontaktperson> ArendeKontaktperson { get; set; }
         public virtual ICollection<DroppadFil> DroppadFil { get; set; }
-        public virtual ICollection<UndantagEpostDoman> UndantagEpostDoman { get; set; }
+        public virtual ICollection<UndantagEpostadress> UndantagEpostadress { get; set; }
     }
 }

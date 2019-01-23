@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace InrappSos.DomainModel
 {
-    public class UndantagEpostDoman
+    public class UndantagEpostadress
     {
         public int Id { get; set; }
         public int? ArendeId { get; set; }

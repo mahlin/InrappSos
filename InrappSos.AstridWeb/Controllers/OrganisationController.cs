@@ -280,7 +280,7 @@ namespace InrappSos.AstridWeb.Controllers
                 }
                 model.Organisation = _portalSosService.HamtaOrganisation(model.SelectedOrganisationId);
                 var privEmails = _portalSosService.HamtaPrivataEpostadresserForOrg(model.Organisation.Id);
-                model.UndantagEpostDomaner = ConvertPrivateEmailAdressesToVM(privEmails.ToList());
+                model.UndantagEpostadresser = ConvertPrivateEmailAdressesToVM(privEmails.ToList());
                 model.SearchResult = new List<List<Organisation>>();
             }
             catch (Exception e)
@@ -608,7 +608,7 @@ namespace InrappSos.AstridWeb.Controllers
 
         [HttpPost]
         [Authorize]
-        public ActionResult UpdateOrganisationPrivateEmailAdress(OrganisationViewModels.UndantagEpostDomanViewModel privEmailAdressVM)
+        public ActionResult UpdateOrganisationPrivateEmailAdress(OrganisationViewModels.UndantagEpostadressViewModel privEmailAdressVM)
         {
             try
             {
@@ -918,7 +918,7 @@ namespace InrappSos.AstridWeb.Controllers
         [Authorize]
         public ActionResult CreatePrivateEmailAdress(int selectedOrganisationId = 0)
         {
-            var model = new OrganisationViewModels.UndantagEpostDomanViewModel();
+            var model = new OrganisationViewModels.UndantagEpostadressViewModel();
             model.OrganisationsId = selectedOrganisationId;
             model.Organisationsnamn = _portalSosService.HamtaOrganisation(selectedOrganisationId).Organisationsnamn;
             return View(model);
@@ -928,7 +928,7 @@ namespace InrappSos.AstridWeb.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public ActionResult CreatePrivateEmailAdress(OrganisationViewModels.UndantagEpostDomanViewModel privEmail)
+        public ActionResult CreatePrivateEmailAdress(OrganisationViewModels.UndantagEpostadressViewModel privEmail)
         {
             var org = new Organisation();
             if (ModelState.IsValid)
@@ -1628,9 +1628,9 @@ namespace InrappSos.AstridWeb.Controllers
             return orgtypesList;
         }
 
-        private UndantagEpostDoman ConvertPrivEmailAdressVMToDb(OrganisationViewModels.UndantagEpostDomanViewModel privEmailAdressVM)
+        private UndantagEpostadress ConvertPrivEmailAdressVMToDb(OrganisationViewModels.UndantagEpostadressViewModel privEmailAdressVM)
         {
-            var privEmail = new UndantagEpostDoman
+            var privEmail = new UndantagEpostadress
             {
                 Id = privEmailAdressVM.Id,
                 OrganisationsId = privEmailAdressVM.OrganisationsId,
@@ -1652,13 +1652,13 @@ namespace InrappSos.AstridWeb.Controllers
             return privEmail;
         }
 
-        private List<OrganisationViewModels.UndantagEpostDomanViewModel> ConvertPrivateEmailAdressesToVM(List<UndantagEpostDoman> privEmailAdressVM)
+        private List<OrganisationViewModels.UndantagEpostadressViewModel> ConvertPrivateEmailAdressesToVM(List<UndantagEpostadress> privEmailAdressVM)
         {
-            var privEmailList = new List<OrganisationViewModels.UndantagEpostDomanViewModel>();
+            var privEmailList = new List<OrganisationViewModels.UndantagEpostadressViewModel>();
 
             foreach (var privEmailDb in privEmailAdressVM)
             {
-                var privEmailVM = new OrganisationViewModels.UndantagEpostDomanViewModel
+                var privEmailVM = new OrganisationViewModels.UndantagEpostadressViewModel
                 {
                     Id = privEmailDb.Id,
                     OrganisationsId = privEmailDb.OrganisationsId,

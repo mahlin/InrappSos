@@ -489,6 +489,7 @@ namespace InrappSos.DataAccess
             modelBuilder.Entity<Arende>().Property(e => e.ArendestatusId).HasColumnName("arendestatusid");
             modelBuilder.Entity<Arende>().Property(e => e.StartDatum).HasColumnName("startdatum");
             modelBuilder.Entity<Arende>().Property(e => e.SlutDatum).HasColumnName("slutdatum");
+            modelBuilder.Entity<Arende>().Property(e => e.AnsvarigEpost).HasColumnName("ansvarigepost");
             modelBuilder.Entity<Arende>()
                 .HasRequired(c => c.Organisation)
                 .WithMany(d => d.Arende)
@@ -555,21 +556,21 @@ namespace InrappSos.DataAccess
             modelBuilder.Entity<DroppadFil>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
             modelBuilder.Entity<DroppadFil>().Property(e => e.AndradAv).HasColumnName("andradav");
 
-            //UndantagEpostDoman
-            modelBuilder.Entity<UndantagEpostDoman>().Property(e => e.Id).HasColumnName("undantagsid");
-            modelBuilder.Entity<UndantagEpostDoman>().Property(e => e.OrganisationsId).HasColumnName("organisationsid");
-            modelBuilder.Entity<UndantagEpostDoman>().Property(e => e.ArendeId).HasColumnName("arendeid");
-            modelBuilder.Entity<UndantagEpostDoman>().Property(e => e.PrivatEpostAdress).HasColumnName("epostadress");
-            modelBuilder.Entity<UndantagEpostDoman>().Property(e => e.Status).HasColumnName("status");
-            modelBuilder.Entity<UndantagEpostDoman>().Property(e => e.AktivFrom).HasColumnName("aktivfrom");
-            modelBuilder.Entity<UndantagEpostDoman>().Property(e => e.AktivTom).HasColumnName("aktivtom");
-            modelBuilder.Entity<UndantagEpostDoman>()
+            //UndantagEpostadress
+            modelBuilder.Entity<UndantagEpostadress>().Property(e => e.Id).HasColumnName("undantagsid");
+            modelBuilder.Entity<UndantagEpostadress>().Property(e => e.OrganisationsId).HasColumnName("organisationsid");
+            modelBuilder.Entity<UndantagEpostadress>().Property(e => e.ArendeId).HasColumnName("arendeid");
+            modelBuilder.Entity<UndantagEpostadress>().Property(e => e.PrivatEpostAdress).HasColumnName("epostadress");
+            modelBuilder.Entity<UndantagEpostadress>().Property(e => e.Status).HasColumnName("status");
+            modelBuilder.Entity<UndantagEpostadress>().Property(e => e.AktivFrom).HasColumnName("aktivfrom");
+            modelBuilder.Entity<UndantagEpostadress>().Property(e => e.AktivTom).HasColumnName("aktivtom");
+            modelBuilder.Entity<UndantagEpostadress>()
                 .HasRequired(c => c.Organisation)
-                .WithMany(d => d.UndantagEpostDoman)
+                .WithMany(d => d.UndantagEpostadress)
                 .HasForeignKey(c => c.OrganisationsId);
-            modelBuilder.Entity<UndantagEpostDoman>()
+            modelBuilder.Entity<UndantagEpostadress>()
                 .HasRequired(c => c.Arende)
-                .WithMany(d => d.UndantagEpostDoman)
+                .WithMany(d => d.UndantagEpostadress)
                 .HasForeignKey(c => c.ArendeId);
             modelBuilder.Entity<DroppadFil>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
             modelBuilder.Entity<DroppadFil>().Property(e => e.SkapadAv).HasColumnName("skapadav");
@@ -613,7 +614,7 @@ namespace InrappSos.DataAccess
         public DbSet<Arende> Arende { get; set; }
         public DbSet<ArendeStatus> ArendeStatus { get; set; }
         public DbSet<Arendetyp> Arendetyp { get; set; }
-        public DbSet<UndantagEpostDoman> UndantagEpostDoman { get; set; }
+        public DbSet<UndantagEpostadress> UndantagEpostadress { get; set; }
 
     }
 }

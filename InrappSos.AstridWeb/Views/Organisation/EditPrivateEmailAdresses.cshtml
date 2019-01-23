@@ -35,7 +35,7 @@
             var aktivTom = tr.find("#AktivTom").val();
             var status = tr.find('#Status').val();
 
-            //Creating UndantagEpostDoman JSON object
+            //Creating UndantagEpostadress JSON object
             var undantagEpostDoman =
                 {
                     "Id": id,
@@ -158,7 +158,7 @@
 
                 @{
                     ViewBag.Title = "Administrera privata epostadresser";
-                    var grid = new WebGrid(source: Model.UndantagEpostDomaner, canPage: false, rowsPerPage: 10, ajaxUpdateContainerId: "privateEmailAdressesGrid");
+                    var grid = new WebGrid(source: Model.UndantagEpostadresser, canPage: false, rowsPerPage: 10, ajaxUpdateContainerId: "privateEmailAdressesGrid");
                 }
                 
             @grid.GetHtml(htmlAttributes: new { id = "privEmailsTable" },

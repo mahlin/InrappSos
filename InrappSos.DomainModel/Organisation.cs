@@ -43,6 +43,6 @@ namespace InrappSos.DomainModel
         public virtual ICollection<Organisationsenhet> Organisationsenhet { get; set; }
         public virtual ICollection<Organisationstyp> Organisationstyp { get; set; }
         public virtual ICollection<Arende> Arende { get; set; }
-        public virtual ICollection<UndantagEpostDoman> UndantagEpostDoman { get; set; }
+        public virtual ICollection<UndantagEpostadress> UndantagEpostadress { get; set; }
     }
 }

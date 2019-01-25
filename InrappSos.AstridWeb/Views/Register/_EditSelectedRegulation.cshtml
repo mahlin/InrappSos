@@ -2,20 +2,22 @@
 
 <script>
     $(function () {
-        $("#txtRegisterId").focus();
+        //alert("Dirid: " + $('#SelectedDirectoryId').val());
+        //$("#SelectedDirectoryId").val($('#ddlRegister').val());
+        //$("#txtRegisterId").focus();
+        //alert("Dirid2: " + $('#SelectedDirectoryId').val());
     });
 
-    $(document).on('change', '#ddlRegister', function () {
-        $("#SelectedDirectoryId").val($('#ddlRegister').val());
-    });
+    //$(document).on('change', '#ddlRegister', function () {
+    //    $("#SelectedDirectoryId").val($('#ddlRegister').val());
+    //});
 </script>
 
 
 @using (Html.BeginForm("UpdateRegulation", "Register", FormMethod.Post))
 {
     @Html.AntiForgeryToken()
-    @Html.HiddenFor(m => m.SelectedForeskriftId)
-    @Html.HiddenFor(m => m.SelectedDirectoryId)
+    @Html.HiddenFor(m => m.SelectedDirectoryIdInUpdate)
     @Html.HiddenFor(m => m.SelectedForeskrift.RegisterId)
     @Html.HiddenFor(m => m.SelectedForeskrift.Id)
 

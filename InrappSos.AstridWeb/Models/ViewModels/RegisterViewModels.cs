@@ -55,6 +55,7 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             [DisplayName("Register")]
             public string RegisterShortName { get; set; }
             public int SelectedDirectoryId { get; set; }
+            public int SelectedDirectoryIdInUpdate { get; set; }
             public int SelectedForeskriftId { get; set; }
             public AdmForeskrift SelectedForeskrift { get; set; }
         }

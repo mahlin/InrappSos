@@ -3,6 +3,7 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
+        //alert("Dirid: " + $('#SelectedDirectoryId').val());
         var x = $('#SelectedDirectoryId').val();
         if ($('#SelectedDirectoryId').val() !== "0") {
             $(".createRegulation").show();
@@ -36,6 +37,7 @@
         $('#SelectedForeskriftId').val(parseInt(id));
         var foreskriftId = parseInt(id);
         var dirId = parseInt($('#ddlRegister').val());
+        $('#SelectedDirectoryId').val(parseInt($('#ddlRegister').val()));
 
         $.ajax({
             url: '/Register/EditSelectedRegulation?foreskriftId=' + foreskriftId + '&selectedDirectoryId=' + dirId ,
@@ -146,7 +148,6 @@
 
     @if (Model != null)
     {
-        @Html.HiddenFor(m => m.SelectedDirectoryId)
         @Html.HiddenFor(m => m.RegisterShortName)
         <br />
         <hr />

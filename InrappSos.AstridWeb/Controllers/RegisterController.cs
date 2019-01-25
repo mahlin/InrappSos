@@ -278,17 +278,22 @@ namespace InrappSos.AstridWeb.Controllers
         [Authorize]
         public ActionResult UpdateRegulation(RegisterViewModels.AdmForeskriftViewModel foreskriftVM)
         {
-            var regShortName = "";
+            //var regShortName = "";
+            if (!String.IsNullOrEmpty(foreskriftVM.RegisterShortName))
+            {
+                foreskriftVM.SelectedDirectoryId =
+                    _portalSosService.HamtaRegisterMedKortnamn(foreskriftVM.RegisterShortName).Id;
+            }
             if (ModelState.IsValid)
             {
                 try
                 {
                     var userName = User.Identity.GetUserName();
-                    if (foreskriftVM.SelectedForeskrift.RegisterId != 0)
-                    {
-                        var register = _portalSosService.HamtaRegisterMedId(foreskriftVM.SelectedForeskrift.RegisterId);
-                        regShortName = register.Kortnamn;
-                    }
+                    //if (foreskriftVM.SelectedForeskrift.RegisterId != 0)
+                    //{
+                    //    var register = _portalSosService.HamtaRegisterMedId(foreskriftVM.SelectedForeskrift.RegisterId);
+                    //    //regShortName = register.Kortnamn;
+                    //}
                     //var foreskrift = ConvertVMToAdmForeskrift(foreskriftVM.SelectedForeskrift);
                     _portalSosService.UppdateraForeskrift(foreskriftVM.SelectedForeskrift, userName);
                 }
@@ -298,16 +303,16 @@ namespace InrappSos.AstridWeb.Controllers
                     ErrorManager.WriteToErrorLog("RegisterController", "UpdateRegulation", e.ToString(), e.HResult, User.Identity.Name);
                     var errorModel = new CustomErrorPageModel
                     {
-                        Information = "Ett fel inträffade vid uppadtering av föreskrift.",
+                        Information = "Ett fel inträffade vid uppdatering av föreskrift.",
                         ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
                     };
                     return View("CustomError", errorModel);
 
                 }
             }
-            if (foreskriftVM.SelectedDirectoryId != 0)
+            if (foreskriftVM.SelectedDirectoryIdInUpdate != 0)
             {
-                return RedirectToAction("GetRegulationsForDirectory", new {regId = foreskriftVM.SelectedDirectoryId});
+                return RedirectToAction("GetRegulationsForDirectory", new {regId = foreskriftVM.SelectedDirectoryIdInUpdate });
             }
             return RedirectToAction("GetAllRegulations");
 
@@ -424,12 +429,15 @@ namespace InrappSos.AstridWeb.Controllers
             model.SelectedForeskrift.GiltigFrom = selectedForeskriftDb.GiltigFrom;
             model.SelectedForeskrift.GiltigTom = selectedForeskriftDb.GiltigTom;
             model.SelectedForeskrift.Beslutsdatum = selectedForeskriftDb.Beslutsdatum;
+            model.SelectedDirectoryId = selectedDirectoryId;
+            model.SelectedDirectoryIdInUpdate = selectedDirectoryId;
+
             if (selectedForeskriftDb.RegisterId != null)
             {
                 model.SelectedForeskrift.RegisterId = selectedForeskriftDb.RegisterId;
+                //model.SelectedDirectoryId = selectedForeskriftDb.RegisterId;
             }
             model.RegisterShortName = _portalSosService.HamtaKortnamnForRegister(model.SelectedForeskrift.RegisterId);
-            model.SelectedDirectoryId = selectedDirectoryId;
 
             //// Ladda drop down lists. 
             //var registerList = _portalSosService.HamtaAllaRegisterForPortalen();
@@ -492,7 +500,7 @@ namespace InrappSos.AstridWeb.Controllers
                 try
                 {
                     var userName = User.Identity.GetUserName();
-                    var foreskrift = ConvertAdmForeskriftVMToAdmForeskrift(foreskriftVM);
+                    var foreskrift = ConvertAdmForeskriftVMToNewAdmForeskrift(foreskriftVM);
 
                     _portalSosService.SkapaForeskrift(foreskrift, userName);
                     var register = _portalSosService.HamtaRegisterMedId(foreskriftVM.SelectedDirectoryId);
@@ -538,7 +546,7 @@ namespace InrappSos.AstridWeb.Controllers
         }
 
 
-        private AdmForeskrift ConvertAdmForeskriftVMToAdmForeskrift(RegisterViewModels.AdmForeskriftViewModel foreskriftVM)
+        private AdmForeskrift ConvertAdmForeskriftVMToNewAdmForeskrift(RegisterViewModels.AdmForeskriftViewModel foreskriftVM)
         {
             var foreskrift = new AdmForeskrift
             {
@@ -553,4 +561,5 @@ namespace InrappSos.AstridWeb.Controllers
             return foreskrift;
         }
     }
+
 }

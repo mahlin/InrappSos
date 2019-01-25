@@ -317,22 +317,27 @@ function getTableRows() {
                 }
                 if (file.error || data.files.error) {
                     data.files.error = true;
+                    $('.start').prop('disabled', true);
                     $('.start').hide();
-                    var selectedRegister = $('#ddlRegister').val();
-                    var numberOfFilesForSelectedRegister = 0;
-                    var numberOfRequiredFilesForSelectedRegister = 0;
-                    //get number of required files for chosen register
-                    registerLista.forEach(function (register, index) {
-                        if (selectedRegister === register.Id.toString()) {
-                            var selectedFilkrav = register.SelectedFilkrav;
-                            register.Filkrav.forEach(function(filkrav, ix) {
-                                if (selectedFilkrav === filkrav.Id) {
-                                    numberOfFilesForSelectedRegister = filkrav.AntalFiler;
-                                    numberOfRequiredFilesForSelectedRegister = filkrav.AntalObligatoriskaFiler;
-                                }
-                            });
-                        }
-                    });
+                    $('#fileinputButton').prop('disabled', false);
+                    $('#fileinputButton').removeClass('disabled');
+                    $('#filesExplorerOpener').prop('disabled', false);
+                    $('#filesExplorerOpener').removeClass('disabled');
+                    //var selectedRegister = $('#ddlRegister').val();
+                    //var numberOfFilesForSelectedRegister = 0;
+                    //var numberOfRequiredFilesForSelectedRegister = 0;
+                    ////get number of required files for chosen register
+                    //registerLista.forEach(function (register, index) {
+                    //    if (selectedRegister === register.Id.toString()) {
+                    //        var selectedFilkrav = register.SelectedFilkrav;
+                    //        register.Filkrav.forEach(function(filkrav, ix) {
+                    //            if (selectedFilkrav === filkrav.Id) {
+                    //                numberOfFilesForSelectedRegister = filkrav.AntalFiler;
+                    //                numberOfRequiredFilesForSelectedRegister = filkrav.AntalObligatoriskaFiler;
+                    //            }
+                    //        });
+                    //    }
+                    //});
                     //if (antAddedRequiredFiles === numberOfRequiredFilesForSelectedRegister && filelist.length <= numberOfFilesForSelectedRegister) {
                     //    $('#fileinputButton').prop('disabled', true);
                     //    $('#fileinputButton').addClass('disabled');

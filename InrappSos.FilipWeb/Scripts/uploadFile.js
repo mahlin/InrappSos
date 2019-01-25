@@ -334,7 +334,7 @@ function checkOkToUpload() {
             });
         }
     });
-    if (!errorExists || filelist.length != 0) {
+    if (!errorExists && filelist.length !== 0) {
         //Check if files to upload all are required
         antAddedRequiredFiles = 0;
         antAddedNotRequiredFiles = 0;
@@ -359,6 +359,14 @@ function checkOkToUpload() {
             }
             $('.start').prop('disabled', false);
             $('.start').show(); 
+        }
+        else {
+            $('.start').prop('disabled', true);
+            $('.start').hide();
+            $('#fileinputButton').prop('disabled', false);
+            $('#fileinputButton').removeClass('disabled');
+            $('#filesExplorerOpener').prop('disabled', false);
+            $('#filesExplorerOpener').removeClass('disabled');
         }
     } else {
         $('.start').prop('disabled', true);

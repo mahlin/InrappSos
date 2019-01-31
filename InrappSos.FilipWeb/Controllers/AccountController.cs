@@ -321,7 +321,7 @@ namespace InrappSos.FilipWeb.Controllers
                         else
                         {
                             ModelState.AddModelError("",
-                                "Epostdomänen saknas i vårt register. Kontakta Socialstyrelsen för mer information. Support, epost: " +
+                                "E-postdomänen saknas i vårt register. Kontakta Socialstyrelsen för mer information. Support, epost: " +
                                 ConfigurationManager.AppSettings["ContactEmail"]);
                         }
                     }

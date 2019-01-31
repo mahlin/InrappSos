@@ -372,28 +372,28 @@
 
 
                     grid.Column("Period", "Period", format: @<text><span class="display-mode"><label id="lblPeriod">@item.Period </label></span>
-                                                                <input type="text" id="Period" value="@item.Period" class="edit-mode form-control" /></text>, style: "col70Width"),
+                                                                <input type="text" id="Period" value="@item.Period" class="edit-mode form-control" style="width:70px;"/></text>, style: "col70Width"),
 
                     grid.Column("Uppgiftsstart", "Uppgiftsstart", format: @<text><span class="display-mode">
                                                                                   <label id="lblUppgiftsstart">@( item.Uppgiftsstart != null ? item.Uppgiftsstart.ToString("yyyy-MM-dd") : item.Uppgiftsstart)</label>
                                                                               </span>
-                                                                              <input type="text" id="Uppgiftsstart" value="@( item.Uppgiftsstart != null ? item.Uppgiftsstart.ToString("yyyy-MM-dd") : item.Uppgiftsstart)" class="edit-mode form-control" /></text>, style: "col70Width"),
+                                                                              <input type="text" id="Uppgiftsstart" value="@( item.Uppgiftsstart != null ? item.Uppgiftsstart.ToString("yyyy-MM-dd") : item.Uppgiftsstart)" class="edit-mode form-control"  style="width:100px;"/></text>, style: "col70Width"),
                     grid.Column("Uppgiftsslut", "Uppgiftsslut", format: @<text><span class="display-mode">
                                                                                 <label id="lblUppgiftsslut">@( item.Uppgiftsslut != null ? item.Uppgiftsslut.ToString("yyyy-MM-dd") : item.Uppgiftsslut)</label>
                                                                             </span>
-                                                                            <input type="text" id="Uppgiftsslut" value="@( item.Uppgiftsslut != null ? item.Uppgiftsslut.ToString("yyyy-MM-dd") : item.Uppgiftsslut)" class="edit-mode form-control" /></text>, style: "col70Width"),
+                                                                            <input type="text" id="Uppgiftsslut" value="@( item.Uppgiftsslut != null ? item.Uppgiftsslut.ToString("yyyy-MM-dd") : item.Uppgiftsslut)" class="edit-mode form-control"  style="width:100px;"/></text>, style: "col70Width"),
                     grid.Column("Rapporteringsstart", "Rapp.start", format: @<text><span class="display-mode">
                                                                                             <label id="lblRapporteringsstart">@( item.Rapporteringsstart != null ? item.Rapporteringsstart.ToString("yyyy-MM-dd") : item.Rapporteringsstart)</label>
                                                                                         </span>
-                                                                                        <input type="text" id="Rapporteringsstart" value="@( item.Rapporteringsstart != null ? item.Rapporteringsstart.ToString("yyyy-MM-dd") : item.Rapporteringsstart)" class="edit-mode form-control"/></text>, style: "col70Width"),
+                                                                                        <input type="text" id="Rapporteringsstart" value="@( item.Rapporteringsstart != null ? item.Rapporteringsstart.ToString("yyyy-MM-dd") : item.Rapporteringsstart)" class="edit-mode form-control" style="width:100px;"/></text>, style: "col70Width"),
                     grid.Column("Rapporteringsslut", "Rapp.slut", format: @<text><span class="display-mode">
                                                                                           <label id="lblRapporteringsslut">@( item.Rapporteringsslut != null ? item.Rapporteringsslut.ToString("yyyy-MM-dd") : item.Rapporteringsslut)</label>
                                                                                       </span>
-                                                                                      <input type="text" id="Rapporteringsslut" value="@( item.Rapporteringsslut != null ? item.Rapporteringsslut.ToString("yyyy-MM-dd") : item.Rapporteringsslut)" class="edit-mode form-control" /></text>, style: "col70Width"),
+                                                                                      <input type="text" id="Rapporteringsslut" value="@( item.Rapporteringsslut != null ? item.Rapporteringsslut.ToString("yyyy-MM-dd") : item.Rapporteringsslut)" class="edit-mode form-control"  style="width:100px;" /></text>, style: "col70Width"),
                     grid.Column("Rapporteringsenast", "Rapp.senast", format: @<text><span class="display-mode">
                                                                                             <label id="lblRapporteringsenast">@( item.Rapporteringsenast != null ? item.Rapporteringsenast.ToString("yyyy-MM-dd") : item.Rapporteringsenast)</label>
                                                                                         </span>
-                                                                                        <input type="text" id="Rapporteringsenast" value="@( item.Rapporteringsenast != null ? item.Rapporteringsenast.ToString("yyyy-MM-dd") : item.Rapporteringsenast)" class="edit-mode form-control" /></text>, style: "col70Width"),
+                                                                                        <input type="text" id="Rapporteringsenast" value="@( item.Rapporteringsenast != null ? item.Rapporteringsenast.ToString("yyyy-MM-dd") : item.Rapporteringsenast)" class="edit-mode form-control"  style="width:100px;" /></text>, style: "col70Width"),
 
                     grid.Column("Paminnelse1", "Paminnelse1", format: @<text><span class="display-mode">
                                                                               <label id="lblPaminnelse1">@( item.Paminnelse1 != null ? item.Paminnelse1.ToString("yyyy-MM-dd") : item.Paminnelse1)</label>

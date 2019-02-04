@@ -75,6 +75,8 @@ namespace InrappSos.DataAccess
 
         string GetKommunkodForOrganisation(int orgId);
 
+        string GetLandstingskodForOrganisation(int orgId);
+
         Organisation GetOrgForUser(string userId);
 
         Organisation GetOrgForEmailDomain(string modelEmailDomain);

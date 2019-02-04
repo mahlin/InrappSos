@@ -129,7 +129,22 @@ namespace InrappSos.FilipWeb.Controllers
             var userName = "";
             try
             {
-                var kommunKod = _portalService.HamtaKommunKodForAnvandare(User.Identity.GetUserId());
+                //Get orgcode
+                var orgCode = String.Empty;
+                var org = _portalService.HamtaOrgForAnvandare(User.Identity.GetUserId());
+                var orgtypeList = _portalService.HamtaOrgtyperForOrganisation(org.Id);
+                //TODO - om många orgtyper satta, vilken ska väljas? Nu tas den första.
+                //TODO - övriga orgtyper? T ex privat vårdgivare 
+                var orgCodeName = orgtypeList[0].Typnamn;
+                if (orgCodeName == "Kommun")
+                {
+                    orgCode = _portalService.HamtaKommunKodForAnvandare(User.Identity.GetUserId());
+                }
+                else if (orgCodeName == "Landsting")
+                {
+                    orgCode = _portalService.HamtaLandstingsKodForAnvandare(User.Identity.GetUserId());
+                }
+                //var kommunKod = _portalService.HamtaKommunKodForAnvandare(User.Identity.GetUserId());
                 userName = User.Identity.GetUserName();
                 var CurrentContext = HttpContext;
 
@@ -145,7 +160,7 @@ namespace InrappSos.FilipWeb.Controllers
                 }
 
                 filesHelper.UploadAndShowResults(CurrentContext, resultList, User.Identity.GetUserId(), userName,
-                    kommunKod, Convert.ToInt32(model.SelectedRegisterId), enhetskod, model.SelectedPeriod,
+                    orgCode, Convert.ToInt32(model.SelectedRegisterId), enhetskod, model.SelectedPeriod,
                     model.RegisterList);
             }
             catch (ArgumentException e)

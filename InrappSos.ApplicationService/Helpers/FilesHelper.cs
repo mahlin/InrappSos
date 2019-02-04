@@ -115,7 +115,7 @@ namespace InrappSos.ApplicationService.Helpers
             return files;
         }
 
-        public void UploadAndShowResults(HttpContextBase ContentBase, List<ViewDataUploadFilesResult> resultList, string userId, string userName, string kommunKod, int selectedRegisterId, string selectedUnitId, string selectedPeriod, List<RegisterInfo> registerList)
+        public void UploadAndShowResults(HttpContextBase ContentBase, List<ViewDataUploadFilesResult> resultList, string userId, string userName, string orgKod, int selectedRegisterId, string selectedUnitId, string selectedPeriod, List<RegisterInfo> registerList)
         {
             var httpRequest = ContentBase.Request;
             //System.Diagnostics.Debug.WriteLine(Directory.Exists(tempPath));
@@ -175,7 +175,7 @@ namespace InrappSos.ApplicationService.Helpers
             }
 
             var levId = _portalSosRepository.GetNewLeveransId(userId, userName, orgId, selectedRegisterId, orgenhetsId, forvantadLevId, "Levererad");
-            var hash = GetHashAddOn(kommunKod, levId);
+            var hash = GetHashAddOn(orgKod, levId);
             var headers = httpRequest.Headers;
 
             if (string.IsNullOrEmpty(headers["X-File-Name"]))
@@ -270,11 +270,11 @@ namespace InrappSos.ApplicationService.Helpers
             statuses.Add(UploadResult(file.FileName, file.ContentLength, file.FileName));
         }
 
-        private string GetHashAddOn(string kommunKod, int levId)
+        private string GetHashAddOn(string orgKod, int levId)
         {
             var hashAddOn = String.Empty;
 
-            hashAddOn = "#" + kommunKod + "!" + levId;
+            hashAddOn = "#" + orgKod + "!" + levId;
 
             return hashAddOn;
         }

@@ -183,6 +183,13 @@ namespace InrappSos.ApplicationService
             return kommunKod;
         }
 
+        public string HamtaLandstingsKodForAnvandare(string userId)
+        {
+            var orgId = _portalSosRepository.GetUserOrganisationId(userId);
+            var landstingsKod = _portalSosRepository.GetLandstingskodForOrganisation(orgId);
+            return landstingsKod;
+        }
+
         public List<OrganisationstypDTO> HamtaOrgtyperForOrganisation(int orgId, List<AdmOrganisationstyp> orgtyperList)
         {
             var chosenOrgTypeIdsForOrgList = _portalSosRepository.GetOrgTypesIdsForOrg(orgId);
@@ -202,6 +209,31 @@ namespace InrappSos.ApplicationService
                 orgTypeList.Add(orgtypDTO);
             }
             return orgTypeList;
+        }
+
+        public List<OrganisationstypDTO> HamtaOrgtyperForOrganisation(int orgId)
+        {
+            var orgTypeList = new List<OrganisationstypDTO>();
+            var chosenOrgTypeIdsForOrgList = _portalSosRepository.GetOrgTypesIdsForOrg(orgId);
+            var orgtyper = HamtaAllaOrganisationstyper().ToList();
+
+            foreach (var orgtyp in orgtyper)
+            {
+                if (chosenOrgTypeIdsForOrgList.Contains(orgtyp.Id))
+                {
+                    var orgtypDTO = new OrganisationstypDTO()
+                    {
+                        Organisationstypid = orgtyp.Id,
+                        Typnamn = orgtyp.Typnamn,
+                        Beskrivning = orgtyp.Beskrivning,
+                    };
+                    orgTypeList.Add(orgtypDTO);
+                }
+                
+            }
+
+            var sorterdOrgTypeList = orgTypeList.OrderBy(x => x.Organisationstypid).ToList();
+            return sorterdOrgTypeList;
         }
 
         //public List<UserRolesDTO> HamtaAstridRoller()

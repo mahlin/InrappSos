@@ -289,6 +289,12 @@ namespace InrappSos.DataAccess
             return org;
         }
 
+        public string GetLandstingskodForOrganisation(int orgId)
+        {
+            var landstingskod = DbContext.Organisation.Where(x => x.Id == orgId).Select(x => x.Landstingskod).SingleOrDefault();
+            return landstingskod;
+        }
+
         public Organisation GetOrgForUser(string userId)
         {
             var orgId = GetUserOrganisationId(userId);

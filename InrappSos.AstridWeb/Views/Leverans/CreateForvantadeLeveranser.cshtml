@@ -267,7 +267,7 @@
                  columns: grid.Columns(
                      grid.Column(null, null, format: @<text><input type="hidden" id="AlreadyExists" value="@item.AlreadyExists.ToString()" class="edit-mode form-control hide" /></text>, style: "colZeroWidth"),
                 grid.Column("FilkravId", "Filkravid", format: @<text><span class="display-mode"><label>@item.Filkravid</label></span></text>, style: "colMinWidth"),
-                grid.Column("FilkravNamn", "Filkravnamn", format: @<text><span class="display-mode"><label>@item.FilkravNamn</label></span></text>, style: "colMinWidth"),
+                grid.Column("FilkravNamn", "Filkravnamn", format: @<text><span class="display-mode"><label style="width: 150px;">@item.FilkravNamn</label></span></text>, style: "col2Width"),
                 grid.Column("Period", "Period", format: @<text><span class="display-mode"><label id="lblPeriod">@item.Period </label></span></text>, style: "col1Width"),
                 grid.Column("Uppgiftsstart", "Uppgiftsstart", format: @<text><span class="display-mode">
                 <label id="lblUppgiftsstart">@( item.Uppgiftsstart != null ? item.Uppgiftsstart.ToString("yyyy-MM-dd") : item.Uppgiftsstart)</label>

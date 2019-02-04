@@ -62,12 +62,16 @@ namespace InrappSos.ApplicationService.Interface
         string HamtaKommunkodForOrg(int orgId);
         string HamtaKommunKodForAnvandare(string userId);
 
+        string HamtaLandstingsKodForAnvandare(string userId);
+
         Organisation HamtaOrgForAnvandare(string userId);
         Organisation HamtaOrgForOrganisationsenhet(int orgUnitId);
 
         Organisation HamtaOrgForUppgiftsskyldighet(int uppgSkId);
 
         List<OrganisationstypDTO> HamtaOrgtyperForOrganisation(int orgId, List<AdmOrganisationstyp> orgtyperList);
+
+        List<OrganisationstypDTO> HamtaOrgtyperForOrganisation(int orgId);
 
         //List<UserRolesDTO> HamtaAstridRoller();
 

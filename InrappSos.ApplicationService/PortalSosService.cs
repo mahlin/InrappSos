@@ -809,11 +809,11 @@ namespace InrappSos.ApplicationService
             return delregisterManadList;
         }
 
-        public IEnumerable<RegisterInfo> HamtaAllRegisterInformation()
-        {
-            var registerList = _portalSosRepository.GetAllRegisterInformation();
-            return registerList;
-        }
+        //public IEnumerable<RegisterInfo> HamtaAllRegisterInformation()
+        //{
+        //    var registerList = _portalSosRepository.GetAllRegisterInformation();
+        //    return registerList;
+        //}
 
         public IEnumerable<Organisation> HamtaAllaOrganisationer()
         {

@@ -1038,26 +1038,26 @@ namespace InrappSos.DataAccess
             return specialDays;
         }
 
-        public IEnumerable<RegisterInfo> GetAllRegisterInformation()
-        {
-            var registerInfoList = new List<RegisterInfo>();
+        //public IEnumerable<RegisterInfo> GetAllRegisterInformation()
+        //{
+        //    var registerInfoList = new List<RegisterInfo>();
 
-            var delregister = DbContext.AdmDelregister
-                .Include(z => z.AdmRegister)
-                .Include(b => b.AdmForvantadleverans)
-                .Include(f => f.AdmFilkrav.Select(q => q.AdmForvantadfil))
-                .Where(x => x.Inrapporteringsportal)
-                .ToList();
+        //    var delregister = DbContext.AdmDelregister
+        //        .Include(z => z.AdmRegister)
+        //        .Include(b => b.AdmForvantadleverans)
+        //        .Include(f => f.AdmFilkrav.Select(q => q.AdmForvantadfil))
+        //        .Where(x => x.Inrapporteringsportal)
+        //        .ToList();
 
 
-            foreach (var item in delregister)
-            {
-                var regInfoObj = CreateRegisterInfoObj(item);
-                registerInfoList.Add(regInfoObj);
-            }
+        //    foreach (var item in delregister)
+        //    {
+        //        var regInfoObj = CreateRegisterInfoObj(item);
+        //        registerInfoList.Add(regInfoObj);
+        //    }
 
-            return registerInfoList;
-        }
+        //    return registerInfoList;
+        //}
 
         public IEnumerable<RegisterInfo> GetAllRegisterInformationForOrganisation(int orgId)
         {
@@ -1075,7 +1075,7 @@ namespace InrappSos.DataAccess
 
             foreach (var item in delregister)
             {
-                var regInfoObj = CreateRegisterInfoObj(item);
+                var regInfoObj = CreateRegisterInfoObj(item, orgId);
                 registerInfoList.Add(regInfoObj);
             }
 
@@ -1836,7 +1836,7 @@ namespace InrappSos.DataAccess
         }
 
 
-        private RegisterInfo CreateRegisterInfoObj(AdmDelregister delReg)
+        private RegisterInfo CreateRegisterInfoObj(AdmDelregister delReg, int orgId)
         {
             var regInfo = new RegisterInfo
             {
@@ -1854,8 +1854,6 @@ namespace InrappSos.DataAccess
             foreach (var filkrav in delReg.AdmFilkrav)
             {
                 var regFilkrav = new RegisterFilkrav();
-                var filmaskList = new List<string>();
-                var regExpList = new List<string>();
                 if (filkrav.Namn != null)
                 {
                     regFilkrav.Namn = filkrav.Namn;
@@ -1870,31 +1868,39 @@ namespace InrappSos.DataAccess
                 var antObligatoriskaFiler = 0;
                 var antEjObligatoriskaFiler = 0;
                 var forvantadeFiler = new List<RegisterForvantadfil>();
+                var undantagForvantadFil = new List<int>();
+                //Kolla om någon förväntad fil ska undantas för aktuell organisation
+                undantagForvantadFil = DbContext.UndantagForvantadfil.Where(x => x.OrganisationsId == orgId && x.DelregisterId == delReg.Id).Select(x => x.ForvantadfilId).ToList();
+
 
                 foreach (var forvFilDb in forvantadeFilerDb)
                 {
-                    if (forvFilDb.Obligatorisk)
+                    if (!undantagForvantadFil.Contains(forvFilDb.Id))
                     {
-                        antObligatoriskaFiler++;
+                        if (forvFilDb.Obligatorisk)
+                        {
+                            antObligatoriskaFiler++;
+                        }
+                        else
+                        {
+                            antEjObligatoriskaFiler++;
+                        }
+                        var forvFil = new RegisterForvantadfil
+                        {
+                            Id = forvFilDb.Id,
+                            FilkravId = forvFilDb.FilkravId,
+                            ForeskriftsId = forvFilDb.ForeskriftsId,
+                            Filmask = forvFilDb.Filmask,
+                            Regexp = forvFilDb.Regexp,
+                            Obligatorisk = forvFilDb.Obligatorisk,
+                            Tom = forvFilDb.Tom
+                        };
+                        forvantadeFiler.Add(forvFil);
+                        regFilkrav.InfoText = regFilkrav.InfoText + "<br> Filformat: " + forvFil.Filmask;
                     }
-                    else
-                    {
-                        antEjObligatoriskaFiler++;
-                    }
-                    var forvFil = new RegisterForvantadfil
-                    {
-                        Id = forvFilDb.Id,
-                        FilkravId = forvFilDb.FilkravId,
-                        ForeskriftsId = forvFilDb.ForeskriftsId,
-                        Filmask = forvFilDb.Filmask,
-                        Regexp = forvFilDb.Regexp,
-                        Obligatorisk = forvFilDb.Obligatorisk,
-                        Tom = forvFilDb.Tom
-                    };
-                    forvantadeFiler.Add(forvFil);
-                    regFilkrav.InfoText = regFilkrav.InfoText + "<br> Filformat: " + forvFil.Filmask;
                 }
-                regFilkrav.AntalFiler = forvantadeFilerDb.Count;
+                //regFilkrav.AntalFiler = forvantadeFilerDb.Count;
+                regFilkrav.AntalFiler = forvantadeFiler.Count;
                 regFilkrav.AntalObligatoriskaFiler = antObligatoriskaFiler;
                 regFilkrav.AntalEjObligatoriskaFiler = antEjObligatoriskaFiler;
                 regFilkrav.ForvantadeFiler = forvantadeFiler;

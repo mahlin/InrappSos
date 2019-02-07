@@ -169,7 +169,7 @@ namespace InrappSos.ApplicationService.Interface
 
         IEnumerable<AdmDelregister> HamtaDelregisterMedInsamlingsfrekvens(int insamlingsfrekvensId);
 
-        IEnumerable<RegisterInfo> HamtaAllRegisterInformation();
+        //IEnumerable<RegisterInfo> HamtaAllRegisterInformation();
         IEnumerable<AdmInsamlingsfrekvens> HamtaAllaInsamlingsfrekvenser();
 
         IEnumerable<Arendetyp> HamtaAllaArendetyper();

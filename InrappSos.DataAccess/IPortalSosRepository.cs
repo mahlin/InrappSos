@@ -268,7 +268,7 @@ namespace InrappSos.DataAccess
         IEnumerable<AdmSpecialdag> GetSpecialDays();
 
         IEnumerable<Roll> GetChosenDelRegistersForUser(string userId);
-        IEnumerable<RegisterInfo> GetAllRegisterInformation();
+        //IEnumerable<RegisterInfo> GetAllRegisterInformation();
 
         IEnumerable<RegisterInfo> GetAllRegisterInformationForOrganisation(int orgId);
 

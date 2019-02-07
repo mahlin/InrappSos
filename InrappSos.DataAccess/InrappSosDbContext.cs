@@ -572,10 +572,33 @@ namespace InrappSos.DataAccess
                 .HasRequired(c => c.Arende)
                 .WithMany(d => d.UndantagEpostadress)
                 .HasForeignKey(c => c.ArendeId);
-            modelBuilder.Entity<DroppadFil>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
-            modelBuilder.Entity<DroppadFil>().Property(e => e.SkapadAv).HasColumnName("skapadav");
-            modelBuilder.Entity<DroppadFil>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
-            modelBuilder.Entity<DroppadFil>().Property(e => e.AndradAv).HasColumnName("andradav");
+            modelBuilder.Entity<UndantagEpostadress>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
+            modelBuilder.Entity<UndantagEpostadress>().Property(e => e.SkapadAv).HasColumnName("skapadav");
+            modelBuilder.Entity<UndantagEpostadress>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
+            modelBuilder.Entity<UndantagEpostadress>().Property(e => e.AndradAv).HasColumnName("andradav");
+
+
+            //UndantagForvantadfil
+            modelBuilder.Entity<UndantagForvantadfil>().Property(e => e.Id).HasColumnName("undantagforvantadfilid");
+            modelBuilder.Entity<UndantagForvantadfil>().Property(e => e.OrganisationsId).HasColumnName("organisationsid");
+            modelBuilder.Entity<UndantagForvantadfil>().Property(e => e.DelregisterId).HasColumnName("delregisterId");
+            modelBuilder.Entity<UndantagForvantadfil>().Property(e => e.ForvantadfilId).HasColumnName("forvantadfilId");
+            modelBuilder.Entity<UndantagForvantadfil>()
+                .HasRequired(c => c.Organisation)
+                .WithMany(d => d.UndantagForvantadfil)
+                .HasForeignKey(c => c.OrganisationsId);
+            modelBuilder.Entity<UndantagForvantadfil>()
+                .HasRequired(c => c.AdmDelregister)
+                .WithMany(d => d.UndantagForvantadfil)
+                .HasForeignKey(c => c.DelregisterId);
+            modelBuilder.Entity<UndantagForvantadfil>()
+                .HasRequired(c => c.AdmForvantadfil)
+                .WithMany(d => d.UndantagForvantadfil)
+                .HasForeignKey(c => c.ForvantadfilId);
+            modelBuilder.Entity<UndantagForvantadfil>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
+            modelBuilder.Entity<UndantagForvantadfil>().Property(e => e.SkapadAv).HasColumnName("skapadav");
+            modelBuilder.Entity<UndantagForvantadfil>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
+            modelBuilder.Entity<UndantagForvantadfil>().Property(e => e.AndradAv).HasColumnName("andradav");
 
         }
 
@@ -615,6 +638,7 @@ namespace InrappSos.DataAccess
         public DbSet<ArendeStatus> ArendeStatus { get; set; }
         public DbSet<Arendetyp> Arendetyp { get; set; }
         public DbSet<UndantagEpostadress> UndantagEpostadress { get; set; }
+        public DbSet<UndantagForvantadfil> UndantagForvantadfil { get; set; }
 
     }
 }

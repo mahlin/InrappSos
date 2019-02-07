@@ -20,5 +20,6 @@ namespace InrappSos.DomainModel
         public string AndradAv { get; set; }
         public virtual AdmFilkrav AdmFilkrav { get; set; }
         public virtual AdmForeskrift AdmForeskrift { get; set; }
+        public virtual ICollection<UndantagForvantadfil> UndantagForvantadfil { get; set; }
     }
 }

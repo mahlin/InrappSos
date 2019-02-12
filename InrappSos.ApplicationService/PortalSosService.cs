@@ -254,6 +254,12 @@ namespace InrappSos.ApplicationService
             return privEmails;
         }
 
+        public IEnumerable<UndantagForvantadfil> HamtaUndantagnaForvantadeFilerForOrg(int orgId)
+        {
+            var exceptionsExpectedFiles = _portalSosRepository.GetExceptionsExpectedFilesforOrg(orgId);
+            return exceptionsExpectedFiles;
+        }
+
         public IEnumerable<Arende> HamtaArendenForOrg(int orgId)
         {
             var cases = _portalSosRepository.GetCasesForOrg(orgId);
@@ -463,6 +469,12 @@ namespace InrappSos.ApplicationService
         {
             var insamlingsfrekvens = _portalSosRepository.GetInsamlingsfrekvens(insamlingsid);
             return insamlingsfrekvens;
+        }
+
+        public AdmFilkrav HamtaFilkravById(int filkravsId)
+        {
+            var filkrav = _portalSosRepository.GetFileRequirementById(filkravsId);
+            return filkrav;
         }
 
         public string HamtaHelgEllerSpecialdagsInfo()
@@ -747,6 +759,25 @@ namespace InrappSos.ApplicationService
         {
             var forvFiler = _portalSosRepository.GetExpectedFile(filkravId);
             return forvFiler;
+        }
+
+        public IEnumerable<AdmForvantadfilDTO> HamtaAllaForvantadeFilerForOrg(int orgId)
+        {
+            var forvantadeFilerList = new List<AdmForvantadfil>();
+            var forvantadeFilerDTOList = new List<AdmForvantadfilDTO>();
+            var delregisterList = _portalSosRepository.GetSubDirsObligatedForOrg(orgId);
+
+            foreach (var delReg in delregisterList)
+            {
+                foreach (var filkrav in delReg.AdmFilkrav)
+                {
+                    //TODO - ta bara med filkrav med giltig föreskrift?
+                    //Sök forväntad fil för varje filkrav 
+                    forvantadeFilerList.AddRange(filkrav.AdmForvantadfil.ToList());
+                }
+            }
+            forvantadeFilerDTOList = ConvertForvFiltoDTO(forvantadeFilerList);
+            return forvantadeFilerDTOList;
         }
 
         public IEnumerable<AdmRegister> HamtaAllaRegister()
@@ -1836,6 +1867,39 @@ namespace InrappSos.ApplicationService
             _portalSosRepository.UpdateReportObligation(uppgSkyldighet);
         }
 
+        public void UppdateraUndantagForvantadFil(List<UndantagForvantadfilDTO> undantagList, string userName)
+        {
+            foreach (var undantagForvFil in undantagList)
+            {
+                var undantagDb = _portalSosRepository.GetExceptionExpectedFile(undantagForvFil.OrganisationsId, undantagForvFil.DelregisterId, undantagForvFil.ForvantadfilId);
+
+                if (undantagForvFil.Selected)
+                {
+                    //Lägg till i undantagstabellen om inte redan finns
+                    if (undantagDb == null)
+                    {
+                        var exceptionDb = new UndantagForvantadfil
+                        {
+                            OrganisationsId = undantagForvFil.OrganisationsId,
+                            DelregisterId = undantagForvFil.DelregisterId,
+                            ForvantadfilId = undantagForvFil.ForvantadfilId,
+                            SkapadAv = userName,
+                            SkapadDatum = DateTime.Now,
+                            AndradAv = userName,
+                            AndradDatum = DateTime.Now
+                        };
+                        _portalSosRepository.SaveExceptionExpectedFile(exceptionDb);
+                    }
+                }
+                else if (!undantagForvFil.Selected && undantagDb != null)
+                {
+                    //Ta bort från undantagslistan om finns
+                    _portalSosRepository.DeleteExceptionExpectedFile(undantagForvFil.OrganisationsId, undantagForvFil.DelregisterId, undantagForvFil.ForvantadfilId);
+
+                }
+            }
+        }
+
         public void UppdateraValdaRegistersForAnvandare(string userId, string userName, List<RegisterInfo> registerList)
         {
             _portalSosRepository.UpdateChosenRegistersForUser(userId, userName, registerList);
@@ -2317,6 +2381,25 @@ namespace InrappSos.ApplicationService
                 AnsvarigEpost = arendeDto.AnsvarigEpost
             };
             return arende;
+        }
+
+        private List<AdmForvantadfilDTO> ConvertForvFiltoDTO(List<AdmForvantadfil> forvantadFilList)
+        {
+            var dtoList = new List<AdmForvantadfilDTO>();
+            foreach (var forvantadFil in forvantadFilList)
+            {
+                var forvFilDTO = new AdmForvantadfilDTO
+                {
+                    Id = forvantadFil.Id,
+                    FilkravId = forvantadFil.FilkravId,
+                    DelregisterId = _portalSosRepository.GetFileRequirementById(forvantadFil.FilkravId).DelregisterId,
+                    ForeskriftsId = forvantadFil.ForeskriftsId,
+                    Filmask = forvantadFil.Filmask
+                };
+                dtoList.Add(forvFilDTO);
+            }
+           
+            return dtoList;
         }
 
         private string GetEmail(RapporteringsresultatDTO rappRes, int regId, int delRegId)

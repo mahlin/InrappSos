@@ -349,6 +349,19 @@ namespace InrappSos.DataAccess
             return privEmails;
         }
 
+        public IEnumerable<UndantagForvantadfil> GetExceptionsExpectedFilesforOrg(int orgId)
+        {
+            var exceptionsExpectedFiles = DbContext.UndantagForvantadfil.Where(x => x.OrganisationsId == orgId).ToList();
+            return exceptionsExpectedFiles;
+        }
+
+        public UndantagForvantadfil GetExceptionExpectedFile(int orgId, int subdirId, int expectedFielId)
+        {
+            var exception = DbContext.UndantagForvantadfil
+                .SingleOrDefault(x => x.OrganisationsId == orgId && x.DelregisterId == subdirId && x.ForvantadfilId == expectedFielId);
+            return exception;
+        }
+
         public IEnumerable<UndantagEpostadress> GetPrivateEmailAdressesForOrgAndCase(int orgId, int caseId)
         {
             var privEmails = DbContext.UndantagEpostadress.Where(x => x.OrganisationsId == orgId && x.ArendeId == caseId).ToList();
@@ -619,6 +632,20 @@ namespace InrappSos.DataAccess
             return subDirectories;
         }
 
+        public IEnumerable<AdmDelregister> GetSubDirsObligatedForOrg(int orgId)
+        {
+            var uppgSkyldighetDelRegIds = DbContext.AdmUppgiftsskyldighet.Where(x => x.OrganisationId == orgId).Select(x => x.DelregisterId).ToList();
+
+            var delregister = DbContext.AdmDelregister
+                .Include(z => z.AdmRegister)
+                .Include(f => f.AdmFilkrav.Select(q => q.AdmForvantadfil))
+                .Where(x => x.Inrapporteringsportal && uppgSkyldighetDelRegIds.Contains(x.Id))
+                .Include(f => f.AdmFilkrav.Select(q => q.AdmForvantadleverans))
+                .ToList();
+
+            return delregister;
+        }
+
         public IEnumerable<AdmForeskrift> GetRegulationsForDirectory(int dirId)
         {
             var regulations = DbContext.AdmForeskrift.Where(x => x.RegisterId == dirId).ToList();
@@ -745,6 +772,12 @@ namespace InrappSos.DataAccess
                 fileRequirementsList.AddRange(fileRequirementList);
             }
             return fileRequirementsList;
+        }
+
+        public AdmFilkrav GetFileRequirementById(int fileReqId)
+        {
+            var fileReq = DbContext.AdmFilkrav.SingleOrDefault(x => x.Id == fileReqId);
+            return fileReq;
         }
 
         public IEnumerable<AdmFilkrav> GetFileRequirementsForSubDirectory(int subdirId)
@@ -1063,14 +1096,8 @@ namespace InrappSos.DataAccess
         {
             var registerInfoList = new List<RegisterInfo>();
 
-            var uppgSkyldighetDelRegIds = DbContext.AdmUppgiftsskyldighet.Where(x => x.OrganisationId == orgId).Select(x => x.DelregisterId).ToList();
-
-            var delregister = DbContext.AdmDelregister
-                .Include(z => z.AdmRegister)
-                .Include(f => f.AdmFilkrav.Select(q => q.AdmForvantadfil))
-                .Where(x => x.Inrapporteringsportal && uppgSkyldighetDelRegIds.Contains(x.Id))
-                .Include(f => f.AdmFilkrav.Select(q => q.AdmForvantadleverans))
-                .ToList();
+            //Get all subdirs thar org are obligated to report for
+            var delregister = GetSubDirsObligatedForOrg(orgId);
 
 
             foreach (var item in delregister)
@@ -1729,6 +1756,12 @@ namespace InrappSos.DataAccess
             DbContext.SaveChanges();
         }
 
+        public void SaveExceptionExpectedFile(UndantagForvantadfil exception)
+        {
+            DbContext.UndantagForvantadfil.Add(exception);
+            DbContext.SaveChanges();
+        }
+
         public void DeleteFAQCategory(int faqCategoryId)
         {
             var faqCatToDelete = DbContext.AdmFAQKategori.SingleOrDefault(x => x.Id == faqCategoryId);
@@ -1825,6 +1858,14 @@ namespace InrappSos.DataAccess
         {
             var deliveryToDelete = DbContext.Leverans.SingleOrDefault(x => x.Id == deliveryId);
             DbContext.Leverans.Remove(deliveryToDelete);
+            DbContext.SaveChanges();
+        }
+
+        public void DeleteExceptionExpectedFile(int orgId, int subdirId, int expectedFileId)
+        {
+            var exceptionToDelete = DbContext.UndantagForvantadfil
+                .SingleOrDefault(x => x.OrganisationsId == orgId && x.DelregisterId == subdirId && x.ForvantadfilId == expectedFileId);
+            DbContext.UndantagForvantadfil.Remove(exceptionToDelete);
             DbContext.SaveChanges();
         }
 

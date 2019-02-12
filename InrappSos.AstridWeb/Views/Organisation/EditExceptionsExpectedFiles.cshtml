@@ -1,0 +1,206 @@
+﻿@model InrappSos.AstridWeb.Models.ViewModels.OrganisationViewModels.OrganisationViewModel
+@*<script src="~/Scripts/jquery-1.10.2.min.js"></script>*@
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#exceptionsTable tr th:eq(0)').hide();
+        $('#exceptionsTable tr th:eq(1)').hide();
+        $("#exceptionsTable tbody tr").each(function (i, row) {
+            $(row).find('td:eq(0)').hide();
+            $(row).find('td:eq(1)').hide();
+        });
+
+    });
+
+    $(function () {
+        $("#searchText").focus();
+    });
+
+    function setException(id) {
+        var selectedId = parseInt(id);
+        $.each(undantagsLista,
+            function(index, item) {
+                if (undantagsLista[index].ForvantadfilId === selectedId) {
+                    if ($('#UndantagForvantadfiler_' + index + '__Selected').val() === 'False')
+                        $('#UndantagForvantadfiler_' + index + '__Selected').val('True');
+                    else
+                        $('#UndantagForvantadfiler_' + index + '__Selected').val('False');
+                }
+            });
+    }
+
+    var undantagsLista = @Html.Raw(Json.Encode(Model.UndantagForvantadfiler));
+
+
+    //$(function () {
+    //    $('.edit-mode').hide();
+    //    $('.edit-user, .cancel-user').on('click', function () {
+    //        var tr = $(this).parents('tr:first');
+    //        tr.find('.edit-mode, .display-mode').toggle();
+    //    });
+    //    $('.save-user').on('click', function () {
+    //        var tr = $(this).parents('tr:first');
+    //        var id = tr.find("#Id").val();
+    //        var orgId = tr.find("#orgId").val();
+    //        var privEpostAdr = tr.find("#Epost").val();
+    //        var orgNamn = tr.find("#Organisationsnamn").val();
+    //        var arendeNr = tr.find("#ArendeNr").val();
+    //        var aktivFrom = tr.find("#AktivFrom").val();
+    //        var aktivTom = tr.find("#AktivTom").val();
+    //        var status = tr.find('#Status').val();
+
+    //        //Creating UndantagEpostadress JSON object
+    //        var undantagEpostDoman =
+    //            {
+    //                "Id": id,
+    //                "OrganisationsId": orgId,
+    //                "Organisationsnamn": orgNamn,
+    //                "ArendeNr": arendeNr,
+    //                "PrivatEpostAdress": privEpostAdr,
+    //                "AktivFrom": aktivFrom,
+    //                "AktivTom": aktivTom,
+    //                "Status": status
+    //            };
+    //        //Posting ApplicationUser object to controller's Update action method
+    //        $.ajax({
+    //            url: '/Organisation/UpdateOrganisationPrivateEmailAdress',
+    //            data: JSON.stringify(undantagEpostDoman),
+    //            type: 'POST',
+    //            contentType: 'application/json; charset=utf-8',
+    //            success: function (data) {
+    //                location.reload();
+    //                //$("#pageContainer").html(data);
+    //                //tr.find('.edit-mode, .display-mode').toggle();
+    //                //$('#footer').hide();
+    //                //alert('Record updated Successfully!!');
+    //            }
+    //        });
+
+    //    });
+
+    //    $('.edit-user').on('click', function () {
+    //        var tr = $(this).parents('tr:first');
+    //        //var id = tr.find("#Id").val();
+    //        //var orgId = tr.find("#OrganisationsId").val();
+    //        var privEpostDoman = tr.find("#PrivatEpostAdress").val();
+    //        var arendeNr = tr.find("#ArendeNr").val();
+    //        var aktivFrom = tr.find("#AktivFrom").val();
+    //        var aktivTom = tr.find("#AktivTom").val();
+
+    //        tr.find("#lblEpost").text(privEpostDoman);
+    //        tr.find("#lblArendeNr").text(arendeNr);
+    //        tr.find("#lblAktivFrom").text(aktivFrom);
+    //        tr.find("#lblAktivTom").text(aktivTom);
+    //    });
+    //});
+</script>
+<div id="pageContainer">
+    <br />
+
+    <div class="row">
+        <div class="col-md-8 padding-top-25">
+            <h4>Administrera undantag för förväntade filer</h4>
+            <section id="orgForm">
+                @Html.AntiForgeryToken()
+                <hr />
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                @using (Html.BeginForm("SearchOrganisation", "Organisation", new { origin = "exceptionsExpectedFiles" }, FormMethod.Post, null))
+                {
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div id="custom-search-input">
+                                    <div class="input-group col-md-12">
+                                        <input type="text" class="form-control" id="searchText" name="searchText" style="max-width: 350px !important;" placeholder="Sök med organisationskod eller organisationsnamn" />
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-info btn-lg" type="submit">
+                                                <i class="glyphicon glyphicon-search"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </section>
+        </div>
+    </div>
+    <br />
+
+
+    @if (Model != null)
+    {
+        @* Om sökresultat finns, visa listan *@
+        if (Model.SearchResult.Count > 0 && Model.SearchResult[0].Count > 0)
+        {
+            @Html.Partial("_SearchResult")
+        }
+        @* Om inga sökträffar *@
+        else if (Model.SearchResult.Count == 1 && Model.SearchResult[0].Count == 0 && Model.Organisation == null)
+        {
+            <h2>Din sökning på gav inget resultat. </h2>
+        }
+        @* Om en relevant organisation hittats, visa organisationsinfon *@
+        else if (Model.Organisation != null)
+        {
+
+            if (Model.UndantagForvantadfiler != null)
+            {
+                if (Model.UndantagForvantadfiler.Count > 0)
+                {
+                    using (Html.BeginForm("UpdateExceptionsExpectedFiles", "Organisation", FormMethod.Post, new { @class = "form-horizontal", role = "form", id = "exceptionForm" }))
+                    {
+                        @Html.HiddenFor(m => m.SelectedOrganisationId)
+
+                        <div style="font-size: 1.2em; padding-left: 20px; padding-bottom: 20px;">
+                            <b>@Model.Organisation.Organisationsnamn</b>
+                        </div>
+                        for (var index = 0; index < Model.UndantagForvantadfiler.Count(); index++)
+                        {
+                            @Html.HiddenFor(m => m.UndantagForvantadfiler[index].OrganisationsId)
+                            @Html.HiddenFor(m => m.UndantagForvantadfiler[index].DelregisterId)
+                            @Html.HiddenFor(m => m.UndantagForvantadfiler[index].ForvantadfilId)
+                            @Html.HiddenFor(m => m.UndantagForvantadfiler[index].Selected)
+                        }
+
+                        <div id="gridContent" style="font-family: Arial; padding: 20px;">
+
+                            @{
+                                ViewBag.Title = "Administrera undantag av förväntade filer";
+                                var grid = new WebGrid(source: Model.UndantagForvantadfiler, canPage: false, rowsPerPage: 10, ajaxUpdateContainerId: "exceptionsExpectedFilesGrid");
+                            }
+
+                            @grid.GetHtml(htmlAttributes: new { id = "exceptionsTable" },
+                                     tableStyle: "webgrid-table500",
+                                     headerStyle: "webgrid-header",
+                                     footerStyle: "webgrid-footer",
+                                     alternatingRowStyle: "webgrid-alternating-row",
+                                     selectedRowStyle: "webgrid-selected-row",
+                                     rowStyle: "webgrid-row-style",
+                                     mode: WebGridPagerModes.All,
+                                     columns: grid.Columns(
+                                         grid.Column(null, null, format: @<input type="hidden" id="Id" name="IDHidden" value="@item.DelregisterId" />),
+                                             grid.Column(null, null, format: @<input type="hidden" id="Id" name="IDHidden" value="@item.ForvantadfilId" />),
+
+                                                 grid.Column("Filmask", "Filmask", format: @<text><label id="Filmask" class="col3Width">@item.Filmask</label></text>, style: "col3Width"),
+                                                     grid.Column("Selected", "Undanta", format: @<text><span class=""><input id="chkbxUndanta" class="checkbox centered" onchange="setException('@item.ForvantadfilId');" name="select" type="checkbox" @( item.Selected ? "checked='checked'" : "") value="@item.Selected" /></span></text>, style: "colMinWidth centered", canSort: false)))
+
+                        </div>
+                        <div class="row col-md-6">
+                            <div class="col-md-10 padding-top-15" id="headerText" style="padding-left: 20px;">
+                            </div>
+                            <div class="" style="">
+                                <input type="submit" value="Spara" class="btn btn-default" />
+                            </div>
+                        </div>
+                        <br /><br />
+                    }
+                }
+            }
+        }
+    }
+
+</div>

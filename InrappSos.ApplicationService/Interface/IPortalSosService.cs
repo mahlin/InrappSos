@@ -78,6 +78,8 @@ namespace InrappSos.ApplicationService.Interface
         IEnumerable<ApplicationUser> HamtaKontaktpersonerForOrg(int orgId);
 
         IEnumerable<UndantagEpostadress> HamtaPrivataEpostadresserForOrg(int orgId);
+
+        IEnumerable<UndantagForvantadfil> HamtaUndantagnaForvantadeFilerForOrg(int orgId);
         IEnumerable<Arende> HamtaArendenForOrg(int orgId);
         IEnumerable<Organisationsenhet> HamtaOrgEnheterForOrg(int orgId);
         Organisationsenhet HamtaOrganisationsenhetMedEnhetskod(string kod, int orgId);
@@ -142,6 +144,8 @@ namespace InrappSos.ApplicationService.Interface
 
         IEnumerable<AdmForvantadfil> HamtaForvantadFil(int filkravId);
 
+        IEnumerable<AdmForvantadfilDTO> HamtaAllaForvantadeFilerForOrg(int orgId);
+
         IEnumerable<AdmForvantadleverans> HamtaForvantadeLeveranserForRegister(int regId);
 
         IEnumerable<AdmForvantadleverans> HamtaForvantadeLeveranserForDelregister(int delregId);
@@ -150,6 +154,8 @@ namespace InrappSos.ApplicationService.Interface
         List<string> HamtaGiltigaPerioderForDelregister(int delregId);
 
         IEnumerable<AdmFilkrav> HamtaFilkravForRegister(int regId);
+
+        AdmFilkrav HamtaFilkravById(int filkravsId);
 
         string HamtaHelgEllerSpecialdagsInfo();
 
@@ -304,6 +310,7 @@ namespace InrappSos.ApplicationService.Interface
 
         void UppdateraUppgiftsskyldighet(AdmUppgiftsskyldighet uppgSkyldighet, string userName);
 
+        void UppdateraUndantagForvantadFil(List<UndantagForvantadfilDTO> undantagList, string userName);
 
         void UppdateraValdaRegistersForAnvandare(string userId, string userName, List<RegisterInfo> registerList);
 

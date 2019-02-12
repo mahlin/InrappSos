@@ -103,6 +103,8 @@ namespace InrappSos.AstridWeb.Controllers
                             return RedirectToAction("GetOrganisationsUnitReportObligations", new { selectedOrganisationId = orgList[0][0].Id });
                         case "privateEmailAdresses":
                             return RedirectToAction("GetOrganisationsPrivateEmailAdresses", new { selectedOrganisationId = orgList[0][0].Id });
+                        case "exceptionsExpectedFiles":
+                            return RedirectToAction("GetOrganisationsExceptionsExpectedFiles", new { selectedOrganisationId = orgList[0][0].Id });
                         case "cases":
                             return RedirectToAction("GetOrganisationsCases", new { selectedOrganisationId = orgList[0][0].Id });
 
@@ -297,6 +299,51 @@ namespace InrappSos.AstridWeb.Controllers
             }
             return View("EditPrivateEmailAdresses", model);
         }
+
+        // GET
+        [Authorize]
+        public ActionResult GetExceptionsExpectedFiles()
+        {
+            var model = new OrganisationViewModels.OrganisationViewModel();
+            model.UndantagForvantadfiler = new List<OrganisationViewModels.UndantagForvantadfilViewModel>();
+            model.SearchResult = new List<List<Organisation>>();
+            return View("EditExceptionsExpectedFiles", model);
+        }
+
+        // GET
+        [Authorize]
+        public ActionResult GetOrganisationsExceptionsExpectedFiles(int selectedOrganisationId = 0)
+        {
+            var model = new OrganisationViewModels.OrganisationViewModel();
+            model.UndantagForvantadfiler = new List<OrganisationViewModels.UndantagForvantadfilViewModel>();
+
+            try
+            {
+                if (selectedOrganisationId != 0)
+                {
+                    model.SelectedOrganisationId = selectedOrganisationId;
+                }
+                model.Organisation = _portalSosService.HamtaOrganisation(model.SelectedOrganisationId);
+                var allExpectedFilesForOrg = _portalSosService.HamtaAllaForvantadeFilerForOrg(model.Organisation.Id);
+                var exceptionsExpectedFiles = _portalSosService.HamtaUndantagnaForvantadeFilerForOrg(model.Organisation.Id);
+                model.UndantagForvantadfiler = CreateExceptionList(exceptionsExpectedFiles.ToList(), allExpectedFilesForOrg.ToList(), model.Organisation.Id);
+                model.SearchResult = new List<List<Organisation>>();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("OrganisationController", "GetOrganisationsExceptionsExpectedFiles", e.ToString(), e.HResult,
+                    User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade vid hämtning av undantag av förväntade filer för vald organisation.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
+            }
+            return View("EditExceptionsExpectedFiles", model);
+        }
+
 
         // GET
         [Authorize]
@@ -707,10 +754,36 @@ namespace InrappSos.AstridWeb.Controllers
                 return View("CustomError", errorModel);
             }
             return RedirectToAction("GetOrganisationtypes");
-
         }
 
-
+        [HttpPost]
+        [Authorize]
+        public ActionResult UpdateExceptionsExpectedFiles(OrganisationViewModels.OrganisationViewModel model)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var userName = User.Identity.GetUserName();
+                    var undantagDbList = ConvertUndantagVMtoDbList(model.UndantagForvantadfiler);
+                    _portalSosService.UppdateraUndantagForvantadFil(undantagDbList, userName);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("OrganisationController", "UpdateExceptionsExpectedFiles", e.ToString(),
+                    e.HResult,
+                    User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade vid uppdatering av undantag av förväntad fil.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
+            }
+            return RedirectToAction("GetOrganisationsExceptionsExpectedFiles",new {selectedOrganisationId = model.SelectedOrganisationId});
+        }
 
         [HttpPost]
         [Authorize]
@@ -1409,6 +1482,25 @@ namespace InrappSos.AstridWeb.Controllers
             return uppgSkyldighet;
         }
 
+        private List<UndantagForvantadfilDTO> ConvertUndantagVMtoDbList(List<OrganisationViewModels.UndantagForvantadfilViewModel> undantagVMList)
+        {
+            var undantagDbList = new List<UndantagForvantadfilDTO>();
+            foreach (var undantagForvFil in undantagVMList)
+            {
+
+                var undantagDb = new UndantagForvantadfilDTO
+                {
+                    OrganisationsId = undantagForvFil.OrganisationsId,
+                    DelregisterId = undantagForvFil.DelregisterId,
+                    ForvantadfilId = undantagForvFil.ForvantadfilId,
+                    Selected = undantagForvFil.Selected
+                };
+                undantagDbList.Add(undantagDb);
+            }
+
+            return undantagDbList;
+        }
+
         private List<OrganisationViewModels.ReportObligationsViewModel> ConvertAdmUppgiftsskyldighetToViewModel(List<AdmUppgiftsskyldighet> admUppgskyldighetList)
         {
             var uppgSkyldigheter = new List<OrganisationViewModels.ReportObligationsViewModel>();
@@ -1839,6 +1931,33 @@ namespace InrappSos.AstridWeb.Controllers
 
             return user;
         }
+
+        private List<OrganisationViewModels.UndantagForvantadfilViewModel> CreateExceptionList(List<UndantagForvantadfil> uList, List<AdmForvantadfilDTO> forvFilList, int orgId)
+        {
+            var undantagsList = new List<OrganisationViewModels.UndantagForvantadfilViewModel>();
+            var undantagFinnsList = new List<int>();
+            foreach (var forvFil in forvFilList)
+            {
+                var undantagForvFil = new OrganisationViewModels.UndantagForvantadfilViewModel
+                {
+                    OrganisationsId = orgId,
+                    DelregisterId = forvFil.DelregisterId,
+                    ForvantadfilId = forvFil.Id,
+                    Filmask = forvFil.Filmask
+                };
+                undantagFinnsList = uList.Where(x => x.ForvantadfilId == forvFil.Id).Select(x => x.ForvantadfilId).ToList();
+                if (undantagFinnsList.Count != 0)
+                {
+                    undantagForvFil.Selected = true;
+                }
+                undantagsList.Add(undantagForvFil);
+            }
+
+            var sortedList = undantagsList.OrderBy(x => x.Filmask).ToList();
+
+            return sortedList;
+        }
+
 
 
     }

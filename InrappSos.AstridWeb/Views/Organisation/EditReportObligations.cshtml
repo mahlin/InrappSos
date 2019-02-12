@@ -9,17 +9,17 @@
         $("#searchText").focus();
     });
 
+    //Fulfix - får skräptecken i url:en vid bläddring
     $(function () {
         $('th a, tfoot a').click(function () {
-            //if querystring already contains selectedOrganisationId, remove it
-            var index = $(this).attr('href').indexOf("&selectedOrganisationId=");
-            if (index >= 0) {
-                var cleanUrl = $(this).attr('href').substring(0, index);
-                $(this).attr('href', cleanUrl);
-            }
+            var paramStart = $(this).attr('href').indexOf("?");
+            var pageIndex = $(this).attr('href').indexOf("page=");
+            var page = $(this).attr('href').substring(pageIndex, $(this).attr('href').length);
+            var cleanUrl = $(this).attr('href').substring(0, paramStart);
+            $(this).attr('href', cleanUrl);
             var newUrl = $(this).attr('href') +
-                "&selectedOrganisationId=" +
-                $("#SelectedOrganisationId").val();
+                "?selectedOrganisationId=" +
+                $("#SelectedOrganisationId").val() + "&" + page;
             $('form').attr('action', newUrl).submit();
             return false;
         });

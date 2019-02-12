@@ -93,6 +93,10 @@ namespace InrappSos.DataAccess
 
         IEnumerable<UndantagEpostadress> GetPrivateEmailAdressesForOrg(int orgId);
 
+        IEnumerable<UndantagForvantadfil> GetExceptionsExpectedFilesforOrg(int orgId);
+
+        UndantagForvantadfil GetExceptionExpectedFile(int orgId, int subdirId, int expectedFielId);
+
         IEnumerable<UndantagEpostadress> GetPrivateEmailAdressesForOrgAndCase(int orgId, int caseId);
 
         IEnumerable<Arende> GetCasesForOrg(int orgId);
@@ -163,6 +167,8 @@ namespace InrappSos.DataAccess
 
         IEnumerable<AdmDelregister> GetSubDirectoriesForDirectory(int dirId);
 
+        IEnumerable<AdmDelregister> GetSubDirsObligatedForOrg(int orgId);
+
         IEnumerable<AdmForeskrift> GetRegulationsForDirectory(int dirId);
 
 
@@ -183,6 +189,8 @@ namespace InrappSos.DataAccess
         IEnumerable<AdmForvantadleverans> GetExpectedDeliveriesForDirectory(int dirId);
         IEnumerable<AdmForvantadleverans> GetExpectedDeliveriesForSubDirectory(int subdirId);
         IEnumerable<AdmFilkrav> GetFileRequirementsForDirectory(int dirId);
+
+        AdmFilkrav GetFileRequirementById(int fileReqId);
 
         IEnumerable<AdmFilkrav> GetFileRequirementsForSubDirectory(int subdirId);
         AdmFilkrav GetFileRequirementsForSubDirectoryAndFileReqId(int subdirId, int filereqId);
@@ -375,6 +383,8 @@ namespace InrappSos.DataAccess
         List<List<Organisation>> SearchOrganisation(string[] searchString);
         void SaveChosenRegistersForUser(string userId, string userName, List<RegisterInfo> registerList);
 
+        void SaveExceptionExpectedFile(UndantagForvantadfil exception);
+
         void DeleteFAQCategory(int faqCategoryId);
 
         void DeleteFAQ(int faqId);
@@ -391,5 +401,7 @@ namespace InrappSos.DataAccess
         void DeleteChosenSubDirectoriesForUser(string userId);
 
         void DeleteDelivery(int deliveryId);
+
+        void DeleteExceptionExpectedFile(int orgId, int subdirId, int expectedFileId);
     }
 }

@@ -55,6 +55,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DTOModel\AdmForvantadfilDTO.cs" />
     <Compile Include="DTOModel\ArendeDTO.cs" />
     <Compile Include="DTOModel\DelregisterBasicDTO.cs" />
     <Compile Include="DTOModel\FilloggDetaljDTO.cs" />
@@ -65,6 +66,7 @@
     <Compile Include="DTOModel\OrganisationDTO.cs" />
     <Compile Include="DTOModel\OrganisationsenhetDTO.cs" />
     <Compile Include="DTOModel\PermissionDTO.cs" />
+    <Compile Include="DTOModel\UndantagForvantadfilDTO.cs" />
     <Compile Include="DTOModel\UserRolesDTO.cs" />
     <Compile Include="DTOModel\OrganisationstypDTO.cs" />
     <Compile Include="DTOModel\RapporteringsresultatDTO.cs" />

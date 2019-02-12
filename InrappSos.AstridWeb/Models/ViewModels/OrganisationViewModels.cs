@@ -42,6 +42,8 @@ namespace InrappSos.AstridWeb.Models.ViewModels
 
             public List<AdmOrganisationstyp> OrganisationTypes { get; set; }
             public List<UndantagEpostadressViewModel> UndantagEpostadresser { get; set; }
+
+            public List<UndantagForvantadfilViewModel> UndantagForvantadfiler { get; set; }
             public List<ArendeViewModel> Arenden { get; set; }
             public List<IdentityRoleViewModel> Roller { get; set; }
             public string Origin { get; set; }
@@ -149,6 +151,15 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public DateTime? AktivFrom { get; set; }
             [Display(Name = "Aktiv t.o.m.")]
             public DateTime? AktivTom { get; set; }
+        }
+
+        public class UndantagForvantadfilViewModel
+        {
+            public int OrganisationsId { get; set; }
+            public int DelregisterId { get; set; }
+            public int ForvantadfilId { get; set; }
+            public string Filmask { get; set; }
+            public bool Selected { get; set; }
         }
 
         public class ArendeViewModel

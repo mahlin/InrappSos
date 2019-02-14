@@ -188,6 +188,18 @@ namespace InrappSos.ApplicationService.Helpers
             {
                 _portalSosRepository.DeleteDelivery(levId);
             }
+            //Om PAR-filer, skapa statusfil och ladda upp
+            else
+            {
+                var registerId = _portalSosRepository.GetSubDirectoryById(selectedRegisterId).RegisterId;
+                var register = _portalSosRepository.GetDirectoryById(registerId);
+                if (register.Kortnamn == "PAR")
+                {
+                    //Skapa statusfil
+                    CreateAndUploadPARStatusFile(ContentBase, levId);
+                }
+
+            }
 
             //TODO - Test EncryptDecrypt
             //var krypteradUtfil = "C:\\Socialstyrelsen\\KrypteringTest\\krypteradUtfil.txt";
@@ -362,6 +374,26 @@ namespace InrappSos.ApplicationService.Helpers
 
             }
             return Filess;
+        }
+
+        private void CreateAndUploadPARStatusFile(HttpContextBase requestContext, int levId)
+        {
+            var datStr = DateTime.Now.ToString("yyyy-MM-dd_HH-mm");
+            String pathOnServer = Path.Combine(StorageRoot);
+            var request = requestContext.Request;
+
+            //var header = Lev_ID, FileName, Status
+            var filepath = pathOnServer + "Filleverans_" + datStr + ".csv";
+            using (StreamWriter writer = new StreamWriter(new FileStream(filepath, FileMode.Create, FileAccess.Write)))
+            {
+                writer.WriteLine("sep=,");
+                writer.WriteLine("Lev_ID, FileName, Status");
+                for (int i = 0; i < request.Files.Count; i++)
+                {
+                    var fileName = request.Files[i].FileName;
+                    writer.WriteLine(levId +  ", " + fileName + ", 0");
+                }
+            }
         }
 
         //private string GetPeriodFromFilename(HttpPostedFileBase file)

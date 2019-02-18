@@ -64,6 +64,8 @@ namespace InrappSos.ApplicationService.Interface
 
         string HamtaLandstingsKodForAnvandare(string userId);
 
+        string HamtaInrapporteringskodKodForAnvandare(string userId);
+
         Organisation HamtaOrgForAnvandare(string userId);
         Organisation HamtaOrgForOrganisationsenhet(int orgUnitId);
 

@@ -295,6 +295,12 @@ namespace InrappSos.DataAccess
             return landstingskod;
         }
 
+        public string GetInrapporteringskodForOrganisation(int orgId)
+        {
+            var inrapporteringskod = DbContext.Organisation.Where(x => x.Id == orgId).Select(x => x.Inrapporteringskod).SingleOrDefault();
+            return inrapporteringskod;
+        }
+
         public Organisation GetOrgForUser(string userId)
         {
             var orgId = GetUserOrganisationId(userId);

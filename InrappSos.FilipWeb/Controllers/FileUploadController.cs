@@ -144,6 +144,10 @@ namespace InrappSos.FilipWeb.Controllers
                 {
                     orgCode = _portalService.HamtaLandstingsKodForAnvandare(User.Identity.GetUserId());
                 }
+                else
+                {
+                    orgCode = _portalService.HamtaInrapporteringskodKodForAnvandare(User.Identity.GetUserId());
+                }
                 //var kommunKod = _portalService.HamtaKommunKodForAnvandare(User.Identity.GetUserId());
                 userName = User.Identity.GetUserName();
                 var CurrentContext = HttpContext;

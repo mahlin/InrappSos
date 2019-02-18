@@ -52,25 +52,32 @@ function CheckKommunKodInFileName(regexMatch) {
     return false;
 }
 
-function CheckFilkodInFileName(selectedRegister, selectedOrgUnitId, regexMatch) {
+function CheckFilkodInFileName(selectedOrgUnitId, regexMatch) {
     var filkod = (regexMatch[1]);
-    var validFilkod = "";
-    registerLista.forEach(function (register, index) {
-        if (selectedRegister === register.Id.toString()) {
-            register.Orgenheter.forEach(function (unit, ix) {
-                var x = unit.Value;
-                var y = unit.Key;
-                if (selectedOrgUnitId === unit.Key) {
-                    validFilkod = unit.Value;
-                }
-            });
-        }
-    });
-
-    if (validFilkod === filkod)
+    if (selectedOrgUnitId === filkod)
         return true;
     return false;
 }
+
+//function CheckFilkodInFileName(selectedRegister, selectedOrgUnitId, regexMatch) {
+//    var filkod = (regexMatch[1]);
+//    var validFilkod = "";
+//    registerLista.forEach(function (register, index) {
+//        if (selectedRegister === register.Id.toString()) {
+//            register.Orgenheter.forEach(function (unit, ix) {
+//                var x = unit.Value;
+//                var y = unit.Key;
+//                if (selectedOrgUnitId === unit.Key) {
+//                    validFilkod = unit.Value;
+//                }
+//            });
+//        }
+//    });
+
+//    if (validFilkod === filkod)
+//        return true;
+//    return false;
+//}
 
 
 
@@ -302,7 +309,8 @@ function getTableRows() {
                     if (regexMatch === null) {
                         file.error = settings.i18n('incorrectFileName');
                     }
-                    else if ((currRegister === 'CAN' || currRegister === 'OV_') && !CheckFilkodInFileName(data.selectedRegister, selectedOrgUnitId, regexMatch)) {
+                    else if ((currRegister === 'CAN' || currRegister === 'OV_') && !CheckFilkodInFileName(selectedOrgUnitId, regexMatch)) {
+                    //else if ((currRegister === 'CAN' || currRegister === 'OV_') && !CheckFilkodInFileName(data.selectedRegister, selectedOrgUnitId, regexMatch)) {
                         file.error = settings.i18n('incorrectFilkodInFileName');
                     } else if ((currRegister != 'LVM' && currRegister != 'CAN' && currRegister != 'OV_') && !CheckKommunKodInFileName(regexMatch)) {
                         file.error = settings.i18n('incorrectKommunKodInFileName');

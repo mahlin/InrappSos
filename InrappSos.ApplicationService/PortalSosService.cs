@@ -190,6 +190,13 @@ namespace InrappSos.ApplicationService
             return landstingsKod;
         }
 
+        public string HamtaInrapporteringskodKodForAnvandare(string userId)
+        {
+            var orgId = _portalSosRepository.GetUserOrganisationId(userId);
+            var inrapporteringsKod = _portalSosRepository.GetInrapporteringskodForOrganisation(orgId);
+            return inrapporteringsKod;
+        }
+
         public List<OrganisationstypDTO> HamtaOrgtyperForOrganisation(int orgId, List<AdmOrganisationstyp> orgtyperList)
         {
             var chosenOrgTypeIdsForOrgList = _portalSosRepository.GetOrgTypesIdsForOrg(orgId);

@@ -95,6 +95,22 @@
                 tr.find("#lblFolder").text(subDirFolder);
             });
     });
+
+    //$(document).on('keydown', 'pageContainer', function (e) {
+    //    var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+    //    if (key == 13) {
+    //        e.preventDefault();
+    //        $('#getSubDirform').submit();
+    //    }
+    //});
+
+    $(document).on("keydown", event => {
+        if (event.keyCode === 13) {
+            $('#RegisterShortName').val($('#txtRegisterKortNamn').val());
+            $('#searchBtn').click();
+        }
+    });
+
 </script>
 
 
@@ -110,7 +126,7 @@
             <h4>Administrera delregister</h4>
             <br />
             <section id="orgForm">
-                @using (Html.BeginForm("GetSubDirectoriesForDirectory", "Register", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                @using (Html.BeginForm("GetSubDirectoriesForDirectory", "Register", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { name = "getSubDirform", @class = "form-horizontal", role = "form" }))
                 {
                     @Html.AntiForgeryToken()
                     @Html.HiddenFor(m => m.RegisterShortName)

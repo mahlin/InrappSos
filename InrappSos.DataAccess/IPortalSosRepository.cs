@@ -119,6 +119,8 @@ namespace InrappSos.DataAccess
 
         List<int> GetOrgTypesIdsForOrg(int orgId);
 
+        List<int> GetOrgTypesIdsForSubDir(int subdirId);
+
         int GetOrganisationsenhetsId(string orgUnitCode, int orgId);
         Organisationsenhet GetOrganisationUnitByCode(string code, int orgId);
 
@@ -177,6 +179,8 @@ namespace InrappSos.DataAccess
         AdmDelregister GetSubDirectoryByShortName(string shortName);
 
         IEnumerable<AdmForvantadleverans> GetExpectedDeliveries();
+
+        IEnumerable<LevereradFil> GetDeliveredFiles(int deliveryId);
 
         IEnumerable<AdmForvantadfil> GetAllExpectedFiles();
 

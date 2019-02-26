@@ -239,8 +239,34 @@ namespace InrappSos.ApplicationService
                 
             }
 
-            var sorterdOrgTypeList = orgTypeList.OrderBy(x => x.Organisationstypid).ToList();
-            return sorterdOrgTypeList;
+            var sortedOrgTypeList = orgTypeList.OrderBy(x => x.Organisationstypid).ToList();
+            return sortedOrgTypeList;
+        }
+
+        public List<OrganisationstypDTO> HamtaOrgtyperForDelregister(int delregId)
+        {
+            var orgTypeList = new List<OrganisationstypDTO>();
+            var orgTypeIdsForSubDir = _portalSosRepository.GetOrgTypesIdsForSubDir(delregId);
+            var orgtyper = HamtaAllaOrganisationstyper().ToList();
+
+            foreach (var orgtyp in orgtyper)
+            {
+                if (orgTypeIdsForSubDir.Contains(orgtyp.Id))
+                {
+                    var orgtypDTO = new OrganisationstypDTO()
+                    {
+                        Organisationstypid = orgtyp.Id,
+                        Typnamn = orgtyp.Typnamn,
+                        Beskrivning = orgtyp.Beskrivning,
+                    };
+                    orgTypeList.Add(orgtypDTO);
+                }
+
+            }
+
+            var sortedOrgTypeList = orgTypeList.OrderBy(x => x.Organisationstypid).ToList();
+            return sortedOrgTypeList;
+
         }
 
         //public List<UserRolesDTO> HamtaAstridRoller()
@@ -3012,7 +3038,5 @@ namespace InrappSos.ApplicationService
             var orgList = _portalSosRepository.SearchOrganisation(searchstring);
             return orgList;
         }
-
-
     }
 }

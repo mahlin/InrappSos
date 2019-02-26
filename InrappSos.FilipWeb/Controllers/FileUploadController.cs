@@ -132,22 +132,45 @@ namespace InrappSos.FilipWeb.Controllers
                 //Get orgcode
                 var orgCode = String.Empty;
                 var org = _portalService.HamtaOrgForAnvandare(User.Identity.GetUserId());
-                var orgtypeList = _portalService.HamtaOrgtyperForOrganisation(org.Id);
-                //TODO - om många orgtyper satta, vilken ska väljas? Nu tas den första.
-                //TODO - övriga orgtyper? T ex privat vårdgivare 
-                var orgCodeName = orgtypeList[0].Typnamn;
-                if (orgCodeName == "Kommun")
+                var orgtypeListForOrg = _portalService.HamtaOrgtyperForOrganisation(org.Id);
+                var orgtypeListForSubDir = _portalService.HamtaOrgtyperForDelregister(Convert.ToInt32(model.SelectedRegisterId));
+
+                //Compare organisations orgtypes with orgtypes for current subdir
+                foreach (var subDirOrgtype in orgtypeListForSubDir)
                 {
-                    orgCode = _portalService.HamtaKommunKodForAnvandare(User.Identity.GetUserId());
+                    foreach (var orgOrgtype in orgtypeListForOrg)
+                    {
+                        if (subDirOrgtype.Typnamn == orgOrgtype.Typnamn )
+                        {
+                            if (orgOrgtype.Typnamn == "Kommun")
+                            {
+                                orgCode = _portalService.HamtaKommunKodForAnvandare(User.Identity.GetUserId());
+                            }
+                            else if (orgOrgtype.Typnamn == "Landsting")
+                            {
+                                orgCode = _portalService.HamtaLandstingsKodForAnvandare(User.Identity.GetUserId());
+                            }
+                            else
+                            {
+                                orgCode = _portalService.HamtaInrapporteringskodKodForAnvandare(User.Identity.GetUserId());
+                            }
+                        }
+                    }
                 }
-                else if (orgCodeName == "Landsting")
-                {
-                    orgCode = _portalService.HamtaLandstingsKodForAnvandare(User.Identity.GetUserId());
-                }
-                else
-                {
-                    orgCode = _portalService.HamtaInrapporteringskodKodForAnvandare(User.Identity.GetUserId());
-                }
+
+                //var orgCodeName = orgtypeList[0].Typnamn;
+                //if (orgCodeName == "Kommun")
+                //{
+                //    orgCode = _portalService.HamtaKommunKodForAnvandare(User.Identity.GetUserId());
+                //}
+                //else if (orgCodeName == "Landsting")
+                //{
+                //    orgCode = _portalService.HamtaLandstingsKodForAnvandare(User.Identity.GetUserId());
+                //}
+                //else
+                //{
+                //    orgCode = _portalService.HamtaInrapporteringskodKodForAnvandare(User.Identity.GetUserId());
+                //}
                 //var kommunKod = _portalService.HamtaKommunKodForAnvandare(User.Identity.GetUserId());
                 userName = User.Identity.GetUserName();
                 var CurrentContext = HttpContext;
@@ -411,5 +434,6 @@ namespace InrappSos.FilipWeb.Controllers
             return RedirectToAction("Index");
 
         }
+
     }
 }

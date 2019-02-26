@@ -211,20 +211,24 @@ namespace InrappSos.DataAccess
             modelBuilder.Entity<AdmUppgiftsskyldighet>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
             modelBuilder.Entity<AdmUppgiftsskyldighet>().Property(e => e.AndradAv).HasColumnName("andradav");
 
-            //UppgiftsskyldighetOrganisationstyp
-            modelBuilder.Entity<UppgiftsskyldighetOrganisationstyp>().Property(e => e.Id).HasColumnName("uppgiftsskyldighetid");
-            modelBuilder.Entity<UppgiftsskyldighetOrganisationstyp>().Property(e => e.DelregisterId).HasColumnName("delregisterid");
-            modelBuilder.Entity<UppgiftsskyldighetOrganisationstyp>().Property(e => e.OrganisationstypId).HasColumnName("organisationstypId");
-            modelBuilder.Entity<UppgiftsskyldighetOrganisationstyp>()
+            //AdmUppgiftsskyldighetOrganisationstyp
+            modelBuilder.Entity<AdmUppgiftsskyldighetOrganisationstyp>().Property(e => e.Id).HasColumnName("uppgiftsskyldighetid");
+            modelBuilder.Entity<AdmUppgiftsskyldighetOrganisationstyp>().Property(e => e.DelregisterId).HasColumnName("delregisterid");
+            modelBuilder.Entity<AdmUppgiftsskyldighetOrganisationstyp>().Property(e => e.OrganisationstypId).HasColumnName("organisationstypId");
+            modelBuilder.Entity<AdmUppgiftsskyldighetOrganisationstyp>()
                 .HasRequired(c => c.AdmDelregister)
-                .WithMany(d => d.UppgiftsskyldighetOrganisationstyp)
+                .WithMany(d => d.AdmUppgiftsskyldighetOrganisationstyp)
                 .HasForeignKey(c => c.DelregisterId);
-            modelBuilder.Entity<UppgiftsskyldighetOrganisationstyp>().Property(e => e.SkyldigFrom).HasColumnName("skyldigfrom");
-            modelBuilder.Entity<UppgiftsskyldighetOrganisationstyp>().Property(e => e.SkyldigTom).HasColumnName("skyldigtom");
-            modelBuilder.Entity<UppgiftsskyldighetOrganisationstyp>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
-            modelBuilder.Entity<UppgiftsskyldighetOrganisationstyp>().Property(e => e.SkapadAv).HasColumnName("skapadav");
-            modelBuilder.Entity<UppgiftsskyldighetOrganisationstyp>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
-            modelBuilder.Entity<UppgiftsskyldighetOrganisationstyp>().Property(e => e.AndradAv).HasColumnName("andradav");
+            modelBuilder.Entity<AdmUppgiftsskyldighetOrganisationstyp>()
+                .HasRequired(c => c.AdmOrganisationstyp)
+                .WithMany(d => d.AdmUppgiftsskyldighetOrganisationstyp)
+                .HasForeignKey(c => c.OrganisationstypId);
+            modelBuilder.Entity<AdmUppgiftsskyldighetOrganisationstyp>().Property(e => e.SkyldigFrom).HasColumnName("skyldigfrom");
+            modelBuilder.Entity<AdmUppgiftsskyldighetOrganisationstyp>().Property(e => e.SkyldigTom).HasColumnName("skyldigtom");
+            modelBuilder.Entity<AdmUppgiftsskyldighetOrganisationstyp>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
+            modelBuilder.Entity<AdmUppgiftsskyldighetOrganisationstyp>().Property(e => e.SkapadAv).HasColumnName("skapadav");
+            modelBuilder.Entity<AdmUppgiftsskyldighetOrganisationstyp>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
+            modelBuilder.Entity<AdmUppgiftsskyldighetOrganisationstyp>().Property(e => e.AndradAv).HasColumnName("andradav");
 
             //Organisationstyp
             modelBuilder.Entity<Organisationstyp>().Property(e => e.Id).HasColumnName("id");
@@ -627,7 +631,7 @@ namespace InrappSos.DataAccess
         public DbSet<Roll> Roll { get; set; }
         //public DbSet<ApplicationUser> ApplicationUser { get; set; }
         public DbSet<Rapporteringsresultat> RapporteringsResultat { get; set; }
-        public DbSet<UppgiftsskyldighetOrganisationstyp> UppgiftsskyldighetOrganisationstyp { get; set; }
+        public DbSet<AdmUppgiftsskyldighetOrganisationstyp> AdmUppgiftsskyldighetOrganisationstyp { get; set; }
         public DbSet<Organisationstyp> Organisationstyp { get; set; }
         public DbSet<AdmOrganisationstyp> AdmOrganisationstyp { get; set; }
         public DbSet<Kontaktpersonstyp> Kontaktpersonstyp { get; set; }

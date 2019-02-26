@@ -16,6 +16,6 @@ namespace InrappSos.DomainModel
         public DateTime AndradDatum { get; set; }
         public string AndradAv { get; set; }
         public virtual ICollection<Organisationstyp> Organisationstyp { get; set; }
-        public virtual ICollection<UppgiftsskyldighetOrganisationstyp> UppgiftsskyldighetOrganisationstyp { get; set; }
+        public virtual ICollection<AdmUppgiftsskyldighetOrganisationstyp> AdmUppgiftsskyldighetOrganisationstyp { get; set; }
     }
 }

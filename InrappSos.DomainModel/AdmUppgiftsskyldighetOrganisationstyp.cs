@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace InrappSos.DomainModel
 {
-    public class UppgiftsskyldighetOrganisationstyp
+    public class AdmUppgiftsskyldighetOrganisationstyp
     {
         public int Id { get; set; }
         public int DelregisterId { get; set; }

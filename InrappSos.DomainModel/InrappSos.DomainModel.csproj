@@ -97,7 +97,7 @@
     <Compile Include="Roll.cs" />
     <Compile Include="UndantagForvantadfil.cs" />
     <Compile Include="UndantagEpostadress.cs" />
-    <Compile Include="UppgiftsskyldighetOrganisationstyp.cs" />
+    <Compile Include="AdmUppgiftsskyldighetOrganisationstyp.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -443,6 +443,29 @@ namespace InrappSos.DataAccess
             return orgTypesIdsForOrg;
         }
 
+        public List<int> GetOrgTypesIdsForSubDir(int subdirId)
+        {
+            var orgTypesIdsForSubDir = new List<int>();
+            var today = DateTime.Now;
+            var uppgiftsskyldighetOrgtypeList = DbContext.AdmUppgiftsskyldighetOrganisationstyp.Where(x => x.DelregisterId == subdirId && x.SkyldigFrom <= today).ToList();
+            foreach (var item in uppgiftsskyldighetOrgtypeList)
+            {
+                if (item.SkyldigTom != null)
+                {
+                    //If date passed, exlude from list
+                    if (item.SkyldigTom >= today) 
+                    {
+                        orgTypesIdsForSubDir.Add(item.OrganisationstypId);
+                    }
+                }
+                else
+                {
+                    orgTypesIdsForSubDir.Add(item.OrganisationstypId);
+                }
+            }
+            return orgTypesIdsForSubDir;
+        }
+
         public int GetOrganisationsenhetsId(string orgUnitCode, int orgId)
         {
             var orgenhetsId = DbContext.Organisationsenhet.Where(x => x.Enhetskod == orgUnitCode && x.OrganisationsId == orgId).Select(x => x.Id).FirstOrDefault();
@@ -669,6 +692,12 @@ namespace InrappSos.DataAccess
         {
             var expDeliveries = DbContext.AdmForvantadleverans.OrderBy(x => x.Uppgiftsstart).ToList();
             return expDeliveries;
+        }
+
+        public IEnumerable<LevereradFil> GetDeliveredFiles(int deliveryId)
+        {
+            var deliveredFiles = DbContext.LevereradFil.Where(x => x.LeveransId == deliveryId).ToList();
+            return deliveredFiles;
         }
 
         public IEnumerable<AdmForeskrift> GetAllRegulations()

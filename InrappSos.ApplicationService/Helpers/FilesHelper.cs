@@ -196,7 +196,7 @@ namespace InrappSos.ApplicationService.Helpers
                 if (register.Kortnamn == "PAR")
                 {
                     //Skapa statusfil
-                    CreateAndUploadPARStatusFile(ContentBase, levId);
+                    CreateAndUploadPARStatusFile(levId, resultList);
                 }
 
             }
@@ -376,22 +376,19 @@ namespace InrappSos.ApplicationService.Helpers
             return Filess;
         }
 
-        private void CreateAndUploadPARStatusFile(HttpContextBase requestContext, int levId)
+        private void CreateAndUploadPARStatusFile(int levId, List<ViewDataUploadFilesResult> resultList )
         {
             var datStr = DateTime.Now.ToString("yyyy-MM-dd_HH-mm");
             String pathOnServer = Path.Combine(StorageRoot);
-            var request = requestContext.Request;
-
-            //var header = Lev_ID, FileName, Status
             var filepath = pathOnServer + "Filleverans_" + datStr + ".csv";
             using (StreamWriter writer = new StreamWriter(new FileStream(filepath, FileMode.Create, FileAccess.Write)))
             {
-                writer.WriteLine("sep=,");
-                writer.WriteLine("Lev_ID, FileName, Status");
-                for (int i = 0; i < request.Files.Count; i++)
+                //writer.WriteLine("sep=,");
+                writer.WriteLine("Lev_ID,FileName,Status");
+                foreach (var file in resultList)
                 {
-                    var fileName = request.Files[i].FileName;
-                    writer.WriteLine(levId +  ", " + fileName + ", 0");
+                    var fileName = file.sosName;
+                    writer.WriteLine(levId + "," + fileName + ",0");
                 }
             }
         }

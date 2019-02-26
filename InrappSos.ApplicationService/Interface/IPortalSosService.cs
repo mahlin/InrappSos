@@ -75,6 +75,8 @@ namespace InrappSos.ApplicationService.Interface
 
         List<OrganisationstypDTO> HamtaOrgtyperForOrganisation(int orgId);
 
+        List<OrganisationstypDTO> HamtaOrgtyperForDelregister(int delregId);
+
         //List<UserRolesDTO> HamtaAstridRoller();
 
         IEnumerable<ApplicationUser> HamtaKontaktpersonerForOrg(int orgId);

@@ -70,6 +70,22 @@ namespace InrappSos.ApplicationService
             return avvikandeOppettider;
         }
 
+        public string DeviatingOpeningHoursNextThreeWeeks()
+        {
+            var deviatingOpeningHoursNextThreeWeeks = String.Empty;
+            var deviatingHoursNextThreeWeeks = new List<DeviatingOpeningHoursDTO>();
+            var specialDaysNextThreeWeeks = SpecialdaysNextThreeWeeks();
+            var holidaysNextThreeWeeks = HolidaysNextThreeWeeks();
+            deviatingHoursNextThreeWeeks.AddRange(specialDaysNextThreeWeeks);
+            deviatingHoursNextThreeWeeks.AddRange(holidaysNextThreeWeeks);
+            var sortedDeviatingHoursNextThreeWeeks = deviatingHoursNextThreeWeeks.OrderBy(x => x.Datum);
+            foreach (var day in sortedDeviatingHoursNextThreeWeeks)
+            {
+                deviatingOpeningHoursNextThreeWeeks = deviatingOpeningHoursNextThreeWeeks + day.DeviatingInfo;
+            }
+            return deviatingOpeningHoursNextThreeWeeks;
+        }
+
         public string HelgdagComingWeek()
         {
             var helgdagarInomEnVecka = String.Empty;
@@ -91,6 +107,34 @@ namespace InrappSos.ApplicationService
             }
 
             return helgdagarInomEnVecka;
+        }
+
+        public List<DeviatingOpeningHoursDTO> HolidaysNextThreeWeeks()
+        {
+            var helgdagarInomTreVeckor = new List<DeviatingOpeningHoursDTO>();
+            var date = DateTime.Now.Date;
+            var dateNowPlusThreeWeeks = date.AddDays(21);
+            var helgdagar = _portalSosRepository.GetHolidays();
+
+            foreach (var helgdag in helgdagar)
+            {
+                if (helgdag.Helgdatum >= date && helgdag.Helgdatum <= dateNowPlusThreeWeeks)
+                {
+                    var veckodag = helgdag.Helgdatum.ToString("dddd", _culture);
+                    veckodag = char.ToUpper(veckodag[0]) + veckodag.Substring(1);
+                    var dagNr = helgdag.Helgdatum.Day;
+                    var manad = helgdag.Helgdatum.ToString("MMMM", _culture);
+                    var dagStr = veckodag + " " + dagNr + " " + manad + " stängt " + helgdag.Helgdag + "<br>";
+                    var devOpeningHoursObj = new DeviatingOpeningHoursDTO
+                    {
+                        Datum = helgdag.Helgdatum,
+                        DeviatingInfo = dagStr
+                    };
+                    helgdagarInomTreVeckor.Add(devOpeningHoursObj); 
+                }
+            }
+
+            return helgdagarInomTreVeckor;
         }
 
         public string SpecialdagComingWeek()
@@ -121,7 +165,40 @@ namespace InrappSos.ApplicationService
             return specialdagarInomEnVecka;
         }
 
-        
+        public List<DeviatingOpeningHoursDTO> SpecialdaysNextThreeWeeks()
+        {
+            var specialdagarInomTreVeckor = new List<DeviatingOpeningHoursDTO>();
+            var now = DateTime.Now;
+            var dateNow = DateTime.Now.Date;
+            var dateNowPlusThreeWeeks = dateNow.AddDays(21);
+
+            var specialdagar = _portalSosRepository.GetSpecialDays();
+
+            foreach (var dag in specialdagar)
+            {
+                if (dag.Specialdagdatum >= dateNow && dag.Specialdagdatum <= dateNowPlusThreeWeeks)
+                {
+                    //string FormatDate = dag.Specialdagdatum.ToString("dddd dd MMMM yyyy", culture);
+                    var veckodag = dag.Specialdagdatum.ToString("dddd", _culture);
+                    veckodag = char.ToUpper(veckodag[0]) + veckodag.Substring(1);
+                    var dagNr = dag.Specialdagdatum.Day;
+                    var manad = dag.Specialdagdatum.ToString("MMMM", _culture);
+                    var klockslagFrom = dag.Oppna.ToString(@"hh\:mm");
+                    var klockslagTom = dag.Stang.ToString(@"hh\:mm");
+                    var dagStr = veckodag + " " + dagNr + " " + manad + " öppet " + klockslagFrom + "-" + klockslagTom + " med anledning av " + dag.Anledning + "<br>";
+
+                    var devOpeningHoursObj = new DeviatingOpeningHoursDTO
+                    {
+                        Datum = dag.Specialdagdatum,
+                        DeviatingInfo = dagStr
+                    };
+                    specialdagarInomTreVeckor.Add(devOpeningHoursObj);
+                }
+            }
+            return specialdagarInomTreVeckor;
+        }
+
+
         public Organisation HamtaOrganisation(int orgId)
         {
             var org = _portalSosRepository.GetOrganisation(orgId);

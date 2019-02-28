@@ -1096,13 +1096,13 @@ namespace InrappSos.DataAccess
 
         public IEnumerable<AdmHelgdag> GetHolidays()
         {
-            var holidays = DbContext.AdmHelgdag.ToList();
+            var holidays = DbContext.AdmHelgdag.OrderBy(x => x.Helgdatum).ToList();
             return holidays;
         }
 
         public IEnumerable<AdmSpecialdag> GetSpecialDays()
         {
-            var specialDays = DbContext.AdmSpecialdag.ToList();
+            var specialDays = DbContext.AdmSpecialdag.OrderBy(x => x.Specialdagdatum).ToList();
             return specialDays;
         }
 

@@ -24,7 +24,8 @@ namespace InrappSos.FilipWeb.Controllers
             try
             {
                 //Kolla om avvikande öppettider finns inom den kommande veckan
-                var str = _portalService.ClosedComingWeek();
+                //var str = _portalService.ClosedComingWeek();
+                var str = _portalService.DeviatingOpeningHoursNextThreeWeeks();
                 if (str != String.Empty)
                     ViewBag.AvvikandeOppettider = "Avvikande öppettider<br/>" + str;
                 //"Avvikande öppettider<br/>Måndag 20 augusti 10 - 16 Underhåll <br/>Måndag 24 december stängt Julafton <br/> ";

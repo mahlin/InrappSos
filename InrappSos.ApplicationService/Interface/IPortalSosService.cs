@@ -17,6 +17,8 @@ namespace InrappSos.ApplicationService.Interface
         UndantagEpostadress HamtaUndantagEpostadress(string email);
         void AktiveraKontaktperson(string userId);
         string ClosedComingWeek();
+
+        string DeviatingOpeningHoursNextThreeWeeks();
         string HelgdagComingWeek();
         string SpecialdagComingWeek();
         List<List<Organisation>> SokOrganisation(string sokStr);

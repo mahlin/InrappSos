@@ -58,6 +58,7 @@
     <Compile Include="DTOModel\AdmForvantadfilDTO.cs" />
     <Compile Include="DTOModel\ArendeDTO.cs" />
     <Compile Include="DTOModel\DelregisterBasicDTO.cs" />
+    <Compile Include="DTOModel\DeviatingOpeningHoursDTO.cs" />
     <Compile Include="DTOModel\FilloggDetaljDTO.cs" />
     <Compile Include="DTOModel\ForvantadLeveransBasicDTO.cs" />
     <Compile Include="DTOModel\ForvantadLeveransDTO.cs" />

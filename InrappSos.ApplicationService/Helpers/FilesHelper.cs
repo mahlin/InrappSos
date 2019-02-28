@@ -180,7 +180,17 @@ namespace InrappSos.ApplicationService.Helpers
 
             if (string.IsNullOrEmpty(headers["X-File-Name"]))
             {
-                UploadWholeFile(ContentBase, resultList, hash, levId, selectedUnitId);
+                var registerId = _portalSosRepository.GetSubDirectoryById(selectedRegisterId).RegisterId;
+                var register = _portalSosRepository.GetDirectoryById(registerId);
+                //Om PAR-fil tagga före filnamnet
+                if (register.Kortnamn == "PAR")
+                {
+                    UploadWholePARFile(ContentBase, resultList, hash, levId, selectedUnitId);
+                }
+                else
+                {
+                    UploadWholeFile(ContentBase, resultList, hash, levId, selectedUnitId);
+                }
             }
 
             //Om inga filer kunde sparas, rensa levid
@@ -238,6 +248,36 @@ namespace InrappSos.ApplicationService.Helpers
                     file.SaveAs(fullPath);
 
                     statuses.Add(UploadResult(file.FileName, file.ContentLength, file.FileName, (extendedFileName), levId, i+1));
+                }
+            }
+        }
+
+        private void UploadWholePARFile(HttpContextBase requestContext, List<ViewDataUploadFilesResult> statuses, string hash, int levId, string selectedUnitId)
+        {
+            var request = requestContext.Request;
+            //Ta bort initiala brädgården
+            hash = hash.Substring(1, hash.Length-1);
+            for (int i = 0; i < request.Files.Count; i++)
+            {
+                var file = request.Files[i];
+
+                //TODO - check filename depending on chosen registertype
+                if (file.ContentLength > 0 && (Path.GetExtension(file.FileName).ToLower() == ".txt"
+                                               || Path.GetExtension(file.FileName).ToLower() == ".xls"
+                                               || Path.GetExtension(file.FileName).ToLower() == ".xlsx"))
+                {
+                    String pathOnServer = Path.Combine(StorageRoot);
+                    //var fullPath = Path.Combine(pathOnServer, Path.GetFileName(file.FileName));
+                    var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file.FileName);
+                    var extension = Path.GetExtension(file.FileName);
+                    var filOfFilesAddOn = "!" + (i + 1).ToString() + "!" + (request.Files.Count).ToString();
+                    var timestamp = DateTime.Now.ToString("yyyyMMdd" + "T" + "HHmmss");
+                    var extendedFileName = hash + filOfFilesAddOn + "!" + timestamp + "!" + selectedUnitId + "#" + file.FileName;
+                    //var extendedFileName = fileNameWithoutExtension + hash + filOfFilesAddOn + "!" + timestamp + "!" + selectedUnitId + extension;
+                    var fullPath = Path.Combine(pathOnServer, Path.GetFileName(extendedFileName));
+                    file.SaveAs(fullPath);
+
+                    statuses.Add(UploadResult(file.FileName, file.ContentLength, file.FileName, (extendedFileName), levId, i + 1));
                 }
             }
         }

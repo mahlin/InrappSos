@@ -466,6 +466,12 @@ namespace InrappSos.DataAccess
             return orgTypesIdsForSubDir;
         }
 
+        public AdmOrganisationstyp GetOrgtype(int orgtypeId)
+        {
+            var orgtype = DbContext.AdmOrganisationstyp.Where(x => x.Id == orgtypeId).SingleOrDefault();
+            return orgtype;
+        }
+
         public int GetOrganisationsenhetsId(string orgUnitCode, int orgId)
         {
             var orgenhetsId = DbContext.Organisationsenhet.Where(x => x.Enhetskod == orgUnitCode && x.OrganisationsId == orgId).Select(x => x.Id).FirstOrDefault();
@@ -490,6 +496,12 @@ namespace InrappSos.DataAccess
         {
             var reportObligation = DbContext.AdmUppgiftsskyldighet.SingleOrDefault(x => x.OrganisationId == orgId && x.DelregisterId == subdirId);
             return reportObligation;
+        }
+
+        public AdmUppgiftsskyldighetOrganisationstyp GetReportObligationForSubDirAndOrgtype(int subdirId, int orgtypeId)
+        {
+            var reportObligationForSubdirAndOrgtype = DbContext.AdmUppgiftsskyldighetOrganisationstyp.SingleOrDefault(x => x.DelregisterId == subdirId && x.OrganisationstypId == orgtypeId);
+            return reportObligationForSubdirAndOrgtype;
         }
 
         public IEnumerable<AdmEnhetsUppgiftsskyldighet> GetUnitReportObligationInformationForOrgUnit(int orgUnitId)
@@ -623,6 +635,18 @@ namespace InrappSos.DataAccess
         {
             var insamlingsfrekvens = DbContext.AdmInsamlingsfrekvens.SingleOrDefault(x => x.Id == insamlingsid);
             return insamlingsfrekvens;
+        }
+
+        public IEnumerable<AdmUppgiftsskyldighetOrganisationstyp> GetAllSubDirectoriesOrgtypes()
+        {
+            var subDirOrgtypes = DbContext.AdmUppgiftsskyldighetOrganisationstyp.ToList();
+            return subDirOrgtypes;
+        }
+
+        public IEnumerable<AdmUppgiftsskyldighetOrganisationstyp> GetOrgTypesForSubDir(int subdirId)
+        {
+            var subdirOrgtypes = DbContext.AdmUppgiftsskyldighetOrganisationstyp.Where(x => x.DelregisterId == subdirId).ToList();
+            return subdirOrgtypes;
         }
 
         public IEnumerable<AdmRegister> GetDirectories()
@@ -1253,6 +1277,12 @@ namespace InrappSos.DataAccess
             DbContext.SaveChanges();
         }
 
+        public void CreateSubdirReportObligation(AdmUppgiftsskyldighetOrganisationstyp subdirOrgtype)
+        {
+            DbContext.AdmUppgiftsskyldighetOrganisationstyp.Add(subdirOrgtype);
+            DbContext.SaveChanges();
+        }
+
         public void CreateDirectory(AdmRegister dir)
         {
             DbContext.AdmRegister.Add(dir);
@@ -1463,6 +1493,17 @@ namespace InrappSos.DataAccess
                 };
                 DbContext.ArendeKontaktperson.Add(caseContact);
             }
+            DbContext.SaveChanges();
+        }
+
+        public void UpdateSubdirReportObligation(AdmUppgiftsskyldighetOrganisationstyp subdirOrgtype)
+        {
+            var itemDb = DbContext.AdmUppgiftsskyldighetOrganisationstyp.SingleOrDefault(x => x.Id == subdirOrgtype.Id);
+
+            itemDb.SkyldigFrom = subdirOrgtype.SkyldigFrom;
+            itemDb.SkyldigTom = subdirOrgtype.SkyldigTom;
+            itemDb.AndradAv = subdirOrgtype.AndradAv;
+            itemDb.AndradDatum = subdirOrgtype.AndradDatum;
             DbContext.SaveChanges();
         }
 
@@ -1901,6 +1942,13 @@ namespace InrappSos.DataAccess
             var exceptionToDelete = DbContext.UndantagForvantadfil
                 .SingleOrDefault(x => x.OrganisationsId == orgId && x.DelregisterId == subdirId && x.ForvantadfilId == expectedFileId);
             DbContext.UndantagForvantadfil.Remove(exceptionToDelete);
+            DbContext.SaveChanges();
+        }
+
+        public void DeleteSubdirReportObligation(AdmUppgiftsskyldighetOrganisationstyp subdirOrgtype)
+        {
+            var subdirOrgtypeToDelete = DbContext.AdmUppgiftsskyldighetOrganisationstyp.SingleOrDefault(x => x.Id == subdirOrgtype.Id);
+            DbContext.AdmUppgiftsskyldighetOrganisationstyp.Remove(subdirOrgtypeToDelete);
             DbContext.SaveChanges();
         }
 

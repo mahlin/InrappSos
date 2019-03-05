@@ -1,0 +1,281 @@
+﻿@using System.ServiceModel.Dispatcher
+@model InrappSos.AstridWeb.Models.ViewModels.RegisterViewModels.RegisterViewModel
+@{
+    ViewBag.Title = "DelregOrgTypes";
+}
+
+<link href="~/Scripts//bootstrap-multiselect/dist/css/bootstrap-multiselect.css" rel="stylesheet" type="text/css" />
+<script src="~/Scripts/bootstrap-multiselect/dist/js/bootstrap-multiselect.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+
+    var subdirs = @Html.Raw(Json.Encode(Model.DelRegistersOrganisationstyper));
+    var subdirsOrgTypeObjects = [];
+    subdirs.forEach(function (subdir, index) {
+        subdirsOrgTypeObjects[index] = subdir.ListofOrgtypes;
+    });
+
+    $(function () {
+        //Göm kolumnen med dropdown/Organisationstyper om ej edit-mode
+        $('#subdirOrgtypesTable tr th:eq(0)').hide();
+        $('#subdirOrgtypesTable tr th:eq(1)').hide();
+        $('#subdirOrgtypesTable tr th:eq(4)').hide();
+        $("#subdirOrgtypesTable tbody tr").each(function (i, row) {
+            $(row).find('td:eq(0)').hide();
+            $(row).find('td:eq(1)').hide();
+            $(row).find('td:eq(4)').hide();
+        });
+
+        ////Tabort-dialog
+        //var modalConfirm = function test(callback) {
+        //    $("#modal-btn-si").on("click", function () {
+        //        callback(true);
+        //        $("#mi-modal").modal('hide');
+        //    });
+        //    $("#modal-btn-no").on("click", function () {
+        //        callback(false);
+        //        $("#mi-modal").modal('hide');
+        //    });
+        //};
+
+        //modalConfirm(function (confirm) {
+        //    if (confirm) {
+        //        var data = { 'selectedDirectoryId': $('#SelectedSubDirectoryId').val() };
+        //        $.ajax({
+        //            url: '/Register/DeleteSubdirOrgtype',
+        //            type: 'POST',
+        //            contentType: 'application/json; charset=utf-8',
+        //            data: JSON.stringify(data),
+        //            success: function (data) {
+        //                //On ajax success do this
+        //                location.reload();
+        //                //$("#pageContainer").html(data);
+        //                //tr.find('.edit-mode, .display-mode').toggle();
+        //                //$('#footer').hide();
+        //            }
+        //        });
+        //    } else {
+        //        //Do nothing
+        //        //$("#result").html("NO CONFIRMADO");
+        //    }
+        //});
+
+        //Multiselect
+        $('[id*=ddlOrgtypeList]').multiselect({
+            onInitialized: function () {
+
+                var ddls = getTableRowsDDLs();
+
+                subdirs.forEach(function (subdir, idx) {
+                    $.each(subdir.ListOfOrgtypes, function (index, item) {
+                        if (item.Selected) {
+                            //hitta rätt rad/rätt drop
+                            var ddl = ddls[idx];
+                            var options = ddl.options;
+                            options[index].selected = true;
+                            options[index].checked = true;
+                            }
+                    });
+                });
+                this.refresh();
+            },
+            onChange: function (option, checked, select) {
+                var orgtypeName = $(option).text();
+                var subdirId = $('#SelectedDirectoryId').val();
+                subdirs.forEach(function (subdir, index) {
+                    if (subdir.Id === subdirId) {
+                        var orgtypesStr = subdir.StringOfOrgtypes;
+                        subdir.StringOfOrgtypes = "";
+                        $.each(subdirsOrgTypeObjects, function (idx, item) {
+                            //Hitta delregistrets orgtypslista
+                            if (idx === index) {
+                                //loopa delregistrets orgtyplista
+                                item.forEach(function(orgtype, i) {
+                                    if (orgtype.Name === orgtypeName) {
+                                        if (orgtype.Selected) {
+                                            orgtype.Selected = false;
+                                        } else {
+                                            orgtype.Selected = true;
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            },
+            includeSelectAllOption: false,
+            nonSelectedText: 'Välj organisationstyp',
+            allSelectedText: 'Alla valda',
+            selectAllText: "Välj alla",
+            nSelectedText: "valda",
+            astridDefaultText: "Välj organisationstyp"
+        });
+
+        //funktioner för editerbara gridden
+        $('.edit-mode').hide();
+        $('.cancel-user').on('click',
+            function () {
+                var tr = $(this).parents('tr:first');
+                $('#SelectedDirectoryId').val();
+                //Göm kolumnen med dropdown/Orgtyper om ej edit-mode
+                tr.find('td:eq(4)').hide();
+                tr.find('td:eq(3)').show();
+                tr.find('.edit-mode, .display-mode').toggle();
+            });
+
+        $('.edit-user').on('click',
+            function () {
+                var tr = $(this).parents('tr:first');
+                var subdirId = tr.find("#Id").val();
+                $('#SelectedDirectoryId').val(subdirId);
+                var drop = tr.find("#ddlOrgtypeList");
+                //Visa kolumnen med dropdown/Orgtyper om edit-mode
+                tr.find('td:eq(4)').show();
+                tr.find('td:eq(3)').hide();
+                tr.find('.edit-mode, .display-mode').toggle();
+                
+            });
+        $('.save-user').on('click',
+            function () {
+                var tr = $(this).parents('tr:first');
+                var subdirId = tr.find("#Id").val();
+                var delregId = tr.find("#DelregId").val();
+                var skyldigFrom = tr.find("#SkyldigFrom").val();
+                var skyldigTom = tr.find("#SkyldigTom").val();
+                var orgtypesStr = "";
+                var listOfOrgtypes = [];
+                subdirs.forEach(function (subdir, index) {
+                    if (subdir.Id === subdirId) {
+                        orgtypesStr = subdir.StringOfOrgtypes;
+                        listOfOrgtypes = subdir.ListOfOrgtypes;
+                    }
+                });
+
+                //Creating AdmUppgiftsskyldighetOrganisationstypViewModel JSON object
+                var subdir =
+                    {
+                        "Id": subdirId,
+                        "DelregisterId": delregId,
+                        "SkyldigFrom": skyldigFrom,
+                        "SkyldigTom": skyldigTom,
+                        "StringOfOrgtypes": orgtypesStr,
+                         "ListOfOrgtypes": listOfOrgtypes
+                    };
+                //Posting AdmUppgiftsskyldighetOrganisationstypViewModel object to controller's Update action method
+                $.ajax({
+                    url: '/Register/UpdateSubdirOrgtypes',
+                    data: JSON.stringify(subdir),
+                    type: 'POST',
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (data) {
+                        location.reload();
+                        //$("#pageContainer").html(data);
+                        //tr.find('.edit-mode, .display-mode').toggle();
+                        //$('#footer').hide();
+                        //alert('Record updated Successfully!!');
+                    }
+                });
+            });
+        }); //slut document.ready
+
+     function getTableRowsDDLs() {
+        return $(".ddl");
+    }
+
+    //function deleteAdminUser(id) {
+    //    $('#SelectedUser').val(id);
+    //    $("#mi-modal").modal("show");
+    //    $('#modal-body').html("Vill du verkligen ta bort ta bort användaren?");
+    //}
+
+</script>
+
+@*<div class="modal fade ui-widget-content" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" id="mi-modal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body" id="modal-body">
+                <p>
+
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" id="modal-btn-si">Ja</button>
+                <button type="button" class="btn btn-default" id="modal-btn-no">Avbryt</button>
+            </div>
+        </div>
+    </div>
+</div>*@
+
+@if (Model != null)
+{
+    @Html.HiddenFor(m => m.SelectedDirectoryId)
+
+    if (Model.DelRegistersOrganisationstyper != null)
+    {
+        for (int i = 0; i < Model.DelRegistersOrganisationstyper.Count; i++)
+        {
+            @Html.HiddenFor(x => x.DelRegistersOrganisationstyper[i].Id)
+            @Html.HiddenFor(x => x.DelRegistersOrganisationstyper[i].StringOfOrgtypes)
+            @Html.HiddenFor(x => x.DelRegistersOrganisationstyper[i].ListOfOrgtypes)
+        }
+    }
+
+    if (Model.Organisationstyper != null)
+    {
+        for (int i = 0; i < Model.Organisationstyper.Count; i++)
+        {
+            @Html.HiddenFor(x => x.Organisationstyper[i].Id)
+            @Html.HiddenFor(x => x.Organisationstyper[i].Name)
+            @Html.HiddenFor(x => x.Organisationstyper[i].Selected)
+        }
+    }
+
+    <div id="pageContainer">
+        <div class="row">
+            <div class="col-md-8 padding-top-55">
+                <h4>Administrera uppgiftsskyldighet per delregister</h4>
+                <section id="adminSubdirOrgtypesForm">
+                    <br /><br />
+                    <hr />
+
+                    <div id="gridContent" style="font-family: Arial; padding: 20px;">
+                        @{
+                            ViewBag.Title = "Administrera uppgiftsskyldighet per delregister";
+                            var grid = new WebGrid(source: Model.DelRegistersOrganisationstyper, canPage: false, rowsPerPage: 10, ajaxUpdateContainerId: "adminUsersGrid");
+                        }
+
+                        @grid.GetHtml(htmlAttributes: new { id = "subdirOrgtypesTable" },
+                        tableStyle: "webgrid-table",
+                        headerStyle: "webgrid-header",
+                        footerStyle: "webgrid-footer",
+                        alternatingRowStyle: "webgrid-alternating-row",
+                        selectedRowStyle: "webgrid-selected-row",
+                        rowStyle: "webgrid-row-style",
+                        mode: WebGridPagerModes.All,
+                        columns: grid.Columns(
+                            grid.Column(null, null, format: @<text><input type="hidden" id="Id" value="@item.Id" class="edit-mode form-control hide" /></text>, style: "colZeroWidth"),
+                            grid.Column(null, null, format: @<text><input type="hidden" id="DelregId" value="@item.DelregisterId" class="edit-mode form-control hide" /></text>, style: "colZeroWidth"),
+                             grid.Column("DelregisterKortnamn", "Delregister", format: @<text><label id="lblEmail" style="width: 300px;">@item.DelregisterKortnamn</label></text>, style: "col4Width"),
+                             grid.Column("Organisationstyper", "Organisationstyper", format: @<text><label id="lblOrganisationstyper" class="longColumnText" style="width: 200px;">@item.StringOfOrgtypes</label></text>, style: "col3Width"),
+                             grid.Column("Organisationstyper", format: @item => Html.DropDownListFor(m => m.Organisationstyper,
+                             new SelectList(@item.ListOfOrgtypes, "Id", "Name"), new { id = "ddlOrgtypeList", @class = "form-control edit-mode ddl", multiple = "multiple", style = "min-width:100px !important" })),
+                             grid.Column("SkyldigFrom", "Skyldig fr.o.m", format: @<text><span class="display-mode"><label id="lblSkyldigFrom">@( item.SkyldigFrom != null ? item.SkyldigFrom.ToString("yyyy-MM-dd") : item.SkyldigFrom)</label></span>
+                                    <input type="text" id="SkyldigFrom" value="@( item.SkyldigFrom != null ? item.SkyldigFrom.ToString("yyyy-MM-dd") : item.SkyldigFrom)" class="edit-mode form-control" /></text>, style: "col2Width"),
+                             grid.Column("SkyldigTom", "Skyldig t.o.m", format: @<text><span class="display-mode"><label id="lblSkyldigTom">@( item.SkyldigTom != null ? item.SkyldigTom.ToString("yyyy-MM-dd") : item.SkyldigTom)</label></span>
+                                    <input type="text" id="SkyldigTom" value="@( item.SkyldigTom != null ? item.SkyldigTom.ToString("yyyy-MM-dd") : item.SkyldigTom)" class="edit-mode form-control" /></text>, style: "col2Width"),
+
+
+             grid.Column(null, format: @<text>
+                        <button class="edit-user display-mode btn btn-default">Ändra</button>
+                        <button class="save-user edit-mode btn btn-default">Spara</button>
+                        <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
+                    </text>, style: "col3Width", canSort: false)))
+
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+}
+

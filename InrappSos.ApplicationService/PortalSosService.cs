@@ -346,6 +346,12 @@ namespace InrappSos.ApplicationService
 
         }
 
+        public AdmOrganisationstyp HamtaOrganisationstyp(int orgtypId)
+        {
+            var orgtyp = _portalSosRepository.GetOrgtype(orgtypId);
+            return orgtyp;
+        }
+
         //public List<UserRolesDTO> HamtaAstridRoller()
         //{
         //    var roles = _portalSosRepository.GetAllAstridRoles();
@@ -681,6 +687,24 @@ namespace InrappSos.ApplicationService
         {
             var delreg = _portalSosRepository.GetSubDirectoryById(delregId);
             return delreg;
+        }
+
+        public IEnumerable<AdmUppgiftsskyldighetOrganisationstyp> HamtaAllaDelRegistersOrganisationstyper()
+        {
+            var delregOrgtyper = _portalSosRepository.GetAllSubDirectoriesOrgtypes();
+            return delregOrgtyper;
+        }
+
+        public List<string> HamtaOrganisationstyperForDelregister(int delregId)
+        {
+            var orgtypNamnList = new List<string>();
+            var delregOrgtypes = _portalSosRepository.GetOrgTypesForSubDir(delregId);
+            foreach (var delregOrgtype in delregOrgtypes)
+            {
+                orgtypNamnList.Add( _portalSosRepository.GetOrgtype(delregOrgtype.OrganisationstypId).Typnamn);
+            }
+
+            return orgtypNamnList;
         }
 
         public IEnumerable<AdmDelregister> HamtaDelRegisterForRegister(int regId)
@@ -2021,6 +2045,41 @@ namespace InrappSos.ApplicationService
             enhetsUppgSkyldighet.AndradDatum = DateTime.Now;
             enhetsUppgSkyldighet.AndradAv = userName;
             _portalSosRepository.UpdateUnitReportObligation(enhetsUppgSkyldighet);
+        }
+
+        public void UppdateraUppgiftsskyldighetOrganisationstyp(AdmUppgiftsskyldighetOrganisationstyp subdirOrgtypes,List<OrganisationstypDTO> listOfOrgtypes, string userName)
+        {
+            foreach (var organisationstyp in listOfOrgtypes)
+            {
+                subdirOrgtypes.OrganisationstypId = organisationstyp.Organisationstypid;
+                var subdirOrgtypeDb = _portalSosRepository.GetReportObligationForSubDirAndOrgtype(subdirOrgtypes.DelregisterId, organisationstyp.Organisationstypid);
+                if (organisationstyp.Selected)
+                {
+                    subdirOrgtypes.AndradAv = userName;
+                    subdirOrgtypes.AndradDatum = DateTime.Now;
+
+                    //check if already exists, otherwise insert into db
+                    if (subdirOrgtypeDb == null)
+                    {
+                        subdirOrgtypes.SkapadAv = userName;
+                        subdirOrgtypes.SkapadDatum = DateTime.Now;
+                        _portalSosRepository.CreateSubdirReportObligation(subdirOrgtypes);
+                    }
+                    else //Update
+                    {
+                        _portalSosRepository.UpdateSubdirReportObligation(subdirOrgtypes);
+
+                    }
+                }
+                else
+                {
+                    //Check if exists, if so - delete
+                    if (subdirOrgtypeDb != null)
+                    {
+                        _portalSosRepository.DeleteSubdirReportObligation(subdirOrgtypes);
+                    }
+                }
+            }
         }
 
         public void UppdateraFAQKategori(AdmFAQKategori faqKategori, string userName)

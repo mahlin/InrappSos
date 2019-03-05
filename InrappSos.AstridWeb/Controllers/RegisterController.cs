@@ -4,7 +4,9 @@ using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.WebPages;
 using InrappSos.ApplicationService;
+using InrappSos.ApplicationService.DTOModel;
 using InrappSos.ApplicationService.Interface;
 using InrappSos.DataAccess;
 using InrappSos.DomainModel;
@@ -23,7 +25,8 @@ namespace InrappSos.AstridWeb.Controllers
 
         public RegisterController()
         {
-            _portalSosService = new PortalSosService(new PortalSosRepository(new InrappSosDbContext(), new InrappSosAstridDbContext()));
+            _portalSosService =
+                new PortalSosService(new PortalSosRepository(new InrappSosDbContext(), new InrappSosAstridDbContext()));
         }
 
 
@@ -35,7 +38,7 @@ namespace InrappSos.AstridWeb.Controllers
             var registerViewList = new List<RegisterViewModels.AdmRegisterViewModel>();
             try
             {
-                 var registerList = _portalSosService.HamtaRegister();
+                var registerList = _portalSosService.HamtaRegister();
 
                 foreach (var register in registerList)
                 {
@@ -54,7 +57,8 @@ namespace InrappSos.AstridWeb.Controllers
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                ErrorManager.WriteToErrorLog("RegisterController", "GetDirectories", e.ToString(), e.HResult, User.Identity.Name);
+                ErrorManager.WriteToErrorLog("RegisterController", "GetDirectories", e.ToString(), e.HResult,
+                    User.Identity.Name);
                 var errorModel = new CustomErrorPageModel
                 {
                     Information = "Ett fel inträffade vid hämtning av register",
@@ -68,7 +72,8 @@ namespace InrappSos.AstridWeb.Controllers
 
         // GET
         [Authorize]
-        public ActionResult GetSubDirectoriesForDirectory( RegisterViewModels.RegisterViewModel model, string regShortName = "")
+        public ActionResult GetSubDirectoriesForDirectory(RegisterViewModels.RegisterViewModel model,
+            string regShortName = "")
         {
             try
             {
@@ -82,20 +87,21 @@ namespace InrappSos.AstridWeb.Controllers
                     model.RegisterShortName = model.RegisterShortName;
                     register = _portalSosService.HamtaRegisterMedKortnamn(model.RegisterShortName);
                 }
-                else if(regShortName != "")
+                else if (regShortName != "")
                 {
                     model.RegisterShortName = regShortName;
                     register = _portalSosService.HamtaRegisterMedKortnamn(regShortName);
                 }
 
-                
+
                 model.SelectedDirectoryId = register.Id;
-                model.DelRegisters = _portalSosService.HamtaDelRegisterForRegister(register.Id);
+                model.DelRegisters = _portalSosService.HamtaDelRegisterForRegister(register.Id).ToList();
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                ErrorManager.WriteToErrorLog("RegisterController", "GetSubDirectoriesForDirectory", e.ToString(), e.HResult,
+                ErrorManager.WriteToErrorLog("RegisterController", "GetSubDirectoriesForDirectory", e.ToString(),
+                    e.HResult,
                     User.Identity.Name);
                 var errorModel = new CustomErrorPageModel
                 {
@@ -110,7 +116,8 @@ namespace InrappSos.AstridWeb.Controllers
 
         // GET
         [Authorize]
-        public ActionResult GetRegulationsForDirectory(RegisterViewModels.AdmForeskriftViewModel model, string regShortName = "", int regId = 0)
+        public ActionResult GetRegulationsForDirectory(RegisterViewModels.AdmForeskriftViewModel model,
+            string regShortName = "", int regId = 0)
         {
             try
             {
@@ -140,7 +147,8 @@ namespace InrappSos.AstridWeb.Controllers
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                ErrorManager.WriteToErrorLog("RegisterController", "GetRegulationsForDirectory", e.ToString(), e.HResult,
+                ErrorManager.WriteToErrorLog("RegisterController", "GetRegulationsForDirectory", e.ToString(),
+                    e.HResult,
                     User.Identity.Name);
                 var errorModel = new CustomErrorPageModel
                 {
@@ -160,7 +168,7 @@ namespace InrappSos.AstridWeb.Controllers
             var model = new RegisterViewModels.RegisterViewModel();
             try
             {
-                model.DelRegisters = _portalSosService.HamtaDelRegister();
+                model.DelRegisters = _portalSosService.HamtaDelRegister().ToList();
                 model.RegisterShortName = "";
             }
             catch (Exception e)
@@ -178,6 +186,38 @@ namespace InrappSos.AstridWeb.Controllers
             }
             return View("EditSubDirectories", model);
         }
+
+        // GET
+        [Authorize]
+        public ActionResult GetAllSubDirectoriesOrgtypes()
+        {
+            var model = new RegisterViewModels.RegisterViewModel();
+            try
+            {
+                var delregOrgtyper = _portalSosService.HamtaAllaDelRegistersOrganisationstyper();
+                var allaOrgtyper = _portalSosService.HamtaAllaOrganisationstyper();
+                model.DelRegistersOrganisationstyper =
+                    ConvertAdmUppgiftsskyldighetOrganisationstypToVM(delregOrgtyper, allaOrgtyper);
+                model.RegisterShortName = "";
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("RegisterController", "GetAllSubDirectoriesOrgtypes", e.ToString(),
+                    e.HResult,
+                    User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade vid hämtning av delregisters organisationstyper",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
+
+            }
+            return View("EditSubDirectoriesOrgtypes", model);
+        }
+
+
 
 
         // GET
@@ -226,7 +266,8 @@ namespace InrappSos.AstridWeb.Controllers
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
-                    ErrorManager.WriteToErrorLog("RegisterController", "UpdateDirectory", e.ToString(), e.HResult, User.Identity.Name);
+                    ErrorManager.WriteToErrorLog("RegisterController", "UpdateDirectory", e.ToString(), e.HResult,
+                        User.Identity.Name);
                     var errorModel = new CustomErrorPageModel
                     {
                         Information = "Ett fel inträffade vid uppadtering av register.",
@@ -260,19 +301,89 @@ namespace InrappSos.AstridWeb.Controllers
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
-                    ErrorManager.WriteToErrorLog("RegisterController", "UpdateSubDirectory", e.ToString(), e.HResult, User.Identity.Name);
+                    ErrorManager.WriteToErrorLog("RegisterController", "UpdateSubDirectory", e.ToString(), e.HResult,
+                        User.Identity.Name);
                     var errorModel = new CustomErrorPageModel
                     {
-                        Information = "Ett fel inträffade vid uppadtering av delregister.",
+                        Information = "Ett fel inträffade vid uppdatering av delregister.",
                         ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
                     };
                     return View("CustomError", errorModel);
 
                 }
             }
-            return RedirectToAction("GetSubDirectoriesForDirectory", new { regShortName = regShortName });
+            return RedirectToAction("GetSubDirectoriesForDirectory", new {regShortName = regShortName});
 
         }
+
+        [HttpPost]
+        [Authorize]
+        public ActionResult UpdateSubdirOrgtypes(RegisterViewModels.AdmUppgiftsskyldighetOrganisationstypViewModel delRegisterOrgtypVM)
+        {
+            var regShortName = "";
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var userName = User.Identity.GetUserName();
+                    var subdirOrgtypesToUpdate = ConvertViewModelToDb(delRegisterOrgtypVM);
+                    var listOfOrgtypes = ConvertViewModelToOrgtypesDb(delRegisterOrgtypVM.ListOfOrgtypes);
+                    _portalSosService.UppdateraUppgiftsskyldighetOrganisationstyp(subdirOrgtypesToUpdate, listOfOrgtypes, userName);
+                    ////Lägg till användarens roller med multiselect/ListOfRoles
+                    //try
+                    //{
+                    //    foreach (var role in user.ListOfRoles)
+                    //    {
+                    //        if (role.Selected)
+                    //        {
+                    //            UserManager.AddToRole(user.Id, role.Name);
+                    //        }
+                    //        else
+                    //        {
+                    //            if (UserManager.IsInRole(user.Id, role.Name))
+                    //            {
+                    //                UserManager.RemoveFromRole(user.Id, role.Name);
+                    //            }
+                    //        }
+                    //    }
+                    //}
+                    ////Lägg till användarens roller från StringOfRoles
+                    //try
+                    //{
+                    //    var roles = user.StringOfRoles.Split(',');
+                    //    foreach (var role in roles)
+                    //    {
+                    //        if (!String.IsNullOrEmpty(role))
+                    //        {
+                    //            UserManager.AddToRole(user.Id, role.Trim());
+                    //        }
+                    //    }
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    throw new ArgumentException(e.Message);
+                    //}
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    ErrorManager.WriteToErrorLog("RegisterController", "UpdateSubdirOrgtypes", e.ToString(), e.HResult,
+                        User.Identity.Name);
+                    var errorModel = new CustomErrorPageModel
+                    {
+                        Information = "Ett fel inträffade vid uppdatering av uppgiftsskyldighet för delregister.",
+                        ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                    };
+                    return View("CustomError", errorModel);
+
+                }
+            }
+            return RedirectToAction("GetAllSubDirectoriesOrgtypes");
+
+        }
+
+
+        
 
         [HttpPost]
         [Authorize]
@@ -300,7 +411,8 @@ namespace InrappSos.AstridWeb.Controllers
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
-                    ErrorManager.WriteToErrorLog("RegisterController", "UpdateRegulation", e.ToString(), e.HResult, User.Identity.Name);
+                    ErrorManager.WriteToErrorLog("RegisterController", "UpdateRegulation", e.ToString(), e.HResult,
+                        User.Identity.Name);
                     var errorModel = new CustomErrorPageModel
                     {
                         Information = "Ett fel inträffade vid uppdatering av föreskrift.",
@@ -312,7 +424,8 @@ namespace InrappSos.AstridWeb.Controllers
             }
             if (foreskriftVM.SelectedDirectoryIdInUpdate != 0)
             {
-                return RedirectToAction("GetRegulationsForDirectory", new {regId = foreskriftVM.SelectedDirectoryIdInUpdate });
+                return RedirectToAction("GetRegulationsForDirectory",
+                    new {regId = foreskriftVM.SelectedDirectoryIdInUpdate});
             }
             return RedirectToAction("GetAllRegulations");
 
@@ -349,7 +462,8 @@ namespace InrappSos.AstridWeb.Controllers
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
-                    ErrorManager.WriteToErrorLog("RegisterController", "CreateDirectory", e.ToString(), e.HResult, User.Identity.Name);
+                    ErrorManager.WriteToErrorLog("RegisterController", "CreateDirectory", e.ToString(), e.HResult,
+                        User.Identity.Name);
                     var errorModel = new CustomErrorPageModel
                     {
                         Information = "Ett fel inträffade när nytt register skulle sparas.",
@@ -402,7 +516,8 @@ namespace InrappSos.AstridWeb.Controllers
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
-                    ErrorManager.WriteToErrorLog("RegisterController", "CreateSubDirectory", e.ToString(), e.HResult, User.Identity.Name);
+                    ErrorManager.WriteToErrorLog("RegisterController", "CreateSubDirectory", e.ToString(), e.HResult,
+                        User.Identity.Name);
                     var errorModel = new CustomErrorPageModel
                     {
                         Information = "Ett fel inträffade när nytt delregister skulle sparas.",
@@ -410,7 +525,7 @@ namespace InrappSos.AstridWeb.Controllers
                     };
                     return View("CustomError", errorModel);
                 }
-                return RedirectToAction("GetSubDirectoriesForDirectory", new { regShortName = regShortName });
+                return RedirectToAction("GetSubDirectoriesForDirectory", new {regShortName = regShortName});
             }
 
             return View();
@@ -509,7 +624,8 @@ namespace InrappSos.AstridWeb.Controllers
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
-                    ErrorManager.WriteToErrorLog("RegisterController", "CreateRegulation", e.ToString(), e.HResult, User.Identity.Name);
+                    ErrorManager.WriteToErrorLog("RegisterController", "CreateRegulation", e.ToString(), e.HResult,
+                        User.Identity.Name);
                     var errorModel = new CustomErrorPageModel
                     {
                         Information = "Ett fel inträffade när ny föreskrift skulle sparas.",
@@ -517,7 +633,7 @@ namespace InrappSos.AstridWeb.Controllers
                     };
                     return View("CustomError", errorModel);
                 }
-                return RedirectToAction("GetRegulationsForDirectory", new { regShortName = regShortName });
+                return RedirectToAction("GetRegulationsForDirectory", new {regShortName = regShortName});
             }
 
             return View();
@@ -546,19 +662,110 @@ namespace InrappSos.AstridWeb.Controllers
         }
 
 
-        private AdmForeskrift ConvertAdmForeskriftVMToNewAdmForeskrift(RegisterViewModels.AdmForeskriftViewModel foreskriftVM)
+        private AdmForeskrift ConvertAdmForeskriftVMToNewAdmForeskrift(
+            RegisterViewModels.AdmForeskriftViewModel foreskriftVM)
         {
             var foreskrift = new AdmForeskrift
             {
-               RegisterId = foreskriftVM.SelectedDirectoryId,
-               Forfattningsnr = foreskriftVM.NyForeskrift.Forfattningsnr,
-               Forfattningsnamn = foreskriftVM.NyForeskrift.Forfattningsnamn,
-               GiltigFrom = foreskriftVM.NyForeskrift.GiltigFrom,
-               GiltigTom = foreskriftVM.NyForeskrift.GiltigTom,
-               Beslutsdatum = foreskriftVM.NyForeskrift.Beslutsdatum
+                RegisterId = foreskriftVM.SelectedDirectoryId,
+                Forfattningsnr = foreskriftVM.NyForeskrift.Forfattningsnr,
+                Forfattningsnamn = foreskriftVM.NyForeskrift.Forfattningsnamn,
+                GiltigFrom = foreskriftVM.NyForeskrift.GiltigFrom,
+                GiltigTom = foreskriftVM.NyForeskrift.GiltigTom,
+                Beslutsdatum = foreskriftVM.NyForeskrift.Beslutsdatum
             };
 
             return foreskrift;
+        }
+
+        private List<RegisterViewModels.AdmUppgiftsskyldighetOrganisationstypViewModel>ConvertAdmUppgiftsskyldighetOrganisationstypToVM(IEnumerable<AdmUppgiftsskyldighetOrganisationstyp> delregOrgtyper,IEnumerable<AdmOrganisationstyp> allaOrgtyper)
+        {
+            var delregOrgtyperVM = new List<RegisterViewModels.AdmUppgiftsskyldighetOrganisationstypViewModel>();
+
+            foreach (var item in delregOrgtyper)
+            {
+                var orgtypVMList = new List<RegisterViewModels.OrganisationstypViewModel>();
+
+                var delregOrgtyp = new RegisterViewModels.AdmUppgiftsskyldighetOrganisationstypViewModel
+                {
+                    Id = item.Id,
+                    DelregisterId = item.DelregisterId,
+                    DelregisterKortnamn = _portalSosService.HamtaDelregister(item.DelregisterId).Kortnamn,
+                    OrganisationstypId = item.OrganisationstypId,
+                    OrganisationstypNamn = _portalSosService.HamtaOrganisationstyp(item.OrganisationstypId).Typnamn,
+                    Orgtyper = _portalSosService.HamtaOrganisationstyperForDelregister(item.DelregisterId), //Hämta namn på delregisters orgtyper
+                    SkyldigFrom = item.SkyldigFrom,
+                    SkyldigTom = item.SkyldigTom
+
+                };
+
+                //Skapa lista över orgtyper och markera valda orgtyper för aktuellt delregister
+                foreach (var orgtyp in allaOrgtyper)
+                {
+                    var orgtypVm = new RegisterViewModels.OrganisationstypViewModel
+                    {
+                        Id = orgtyp.Id,
+                        Name = orgtyp.Typnamn
+                    };
+
+                    if (delregOrgtyp.Orgtyper.Contains(orgtyp.Typnamn))
+                    {
+                        orgtypVm.Selected = true;
+                    }
+                    orgtypVMList.Add(orgtypVm);
+                }
+
+                //Skapa kommaseparerad textsträng över delregisters orgtyper
+                var orgtyperStr = String.Empty;
+                foreach (var orgtyp in delregOrgtyp.Orgtyper)
+                {
+                    if (orgtyperStr.IsEmpty())
+                    {
+                        orgtyperStr = orgtyp;
+                    }
+                    else
+                    {
+                        orgtyperStr = orgtyperStr + ", " + orgtyp;
+                    }
+                }
+                delregOrgtyp.StringOfOrgtypes = orgtyperStr;
+                delregOrgtyp.ListOfOrgtypes = orgtypVMList;
+                delregOrgtyperVM.Add(delregOrgtyp);
+
+
+            }
+            return delregOrgtyperVM;
+        }
+
+        private AdmUppgiftsskyldighetOrganisationstyp ConvertViewModelToDb(RegisterViewModels.AdmUppgiftsskyldighetOrganisationstypViewModel subdirOrgtypesVM)
+        {
+            var subdirOrgtypes = new AdmUppgiftsskyldighetOrganisationstyp()
+            {
+                Id = subdirOrgtypesVM.Id,
+                DelregisterId = subdirOrgtypesVM.DelregisterId,
+                SkyldigFrom = subdirOrgtypesVM.SkyldigFrom,
+                SkyldigTom = subdirOrgtypesVM.SkyldigTom
+            };
+
+            return subdirOrgtypes;
+        }
+
+
+        private List<OrganisationstypDTO> ConvertViewModelToOrgtypesDb(List<RegisterViewModels.OrganisationstypViewModel> listOfOrgTypesVM)
+        {
+            var listOfOrgtypes = new List<OrganisationstypDTO>();
+            foreach (var itemVM in listOfOrgTypesVM)
+            {
+                var orgtype = new OrganisationstypDTO
+                {
+                    Organisationstypid = itemVM.Id,
+                    Typnamn = itemVM.Name,
+                    Selected = itemVM.Selected
+                };
+                listOfOrgtypes.Add(orgtype);
+            }
+
+            return listOfOrgtypes;
         }
     }
 

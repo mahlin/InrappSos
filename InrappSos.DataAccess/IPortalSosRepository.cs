@@ -121,12 +121,16 @@ namespace InrappSos.DataAccess
 
         List<int> GetOrgTypesIdsForSubDir(int subdirId);
 
+        AdmOrganisationstyp GetOrgtype(int orgtypeId);
+
         int GetOrganisationsenhetsId(string orgUnitCode, int orgId);
         Organisationsenhet GetOrganisationUnitByCode(string code, int orgId);
 
         IEnumerable<AdmUppgiftsskyldighet> GetReportObligationInformationForOrg(int orgId);
 
         AdmUppgiftsskyldighet GetReportObligationInformationForOrgAndSubDir(int orgId, int subdirId);
+
+        AdmUppgiftsskyldighetOrganisationstyp GetReportObligationForSubDirAndOrgtype(int subdirId, int orgtypeId);
 
         IEnumerable<AdmEnhetsUppgiftsskyldighet> GetUnitReportObligationInformationForOrgUnit(int orgUnitId);
         AdmEnhetsUppgiftsskyldighet GetUnitReportObligationForReportObligationAndOrg(int oblId, int orgunitId);
@@ -164,6 +168,10 @@ namespace InrappSos.DataAccess
         AdmRegister GetDirectoryById(int dirId);
 
         AdmDelregister GetSubDirectoryById(int subdirId);
+
+        IEnumerable<AdmUppgiftsskyldighetOrganisationstyp> GetAllSubDirectoriesOrgtypes();
+
+        IEnumerable<AdmUppgiftsskyldighetOrganisationstyp> GetOrgTypesForSubDir(int subdirId);
 
         IEnumerable<AdmRegister> GetDirectories();
 
@@ -312,6 +320,8 @@ namespace InrappSos.DataAccess
 
         void CreateUnitReportObligation(AdmEnhetsUppgiftsskyldighet enhetsUppgSk);
 
+        void CreateSubdirReportObligation(AdmUppgiftsskyldighetOrganisationstyp subdirOrgtype);
+
         void CreateDirectory(AdmRegister dir);
 
         void CreateSubDirectory(AdmDelregister subDir);
@@ -377,6 +387,8 @@ namespace InrappSos.DataAccess
 
         void UpdateCaseReporters(int caseId, List<string> userIdList, string userName);
 
+        void UpdateSubdirReportObligation(AdmUppgiftsskyldighetOrganisationstyp subdirOrgtype);
+
         void AddRoleToFilipUser(string userId, string roleName);
 
         void UpdateCaseUnregisteredReporters(int caseId, List<UndantagEpostadress> userList, string userName);
@@ -409,5 +421,7 @@ namespace InrappSos.DataAccess
         void DeleteDelivery(int deliveryId);
 
         void DeleteExceptionExpectedFile(int orgId, int subdirId, int expectedFileId);
+
+        void DeleteSubdirReportObligation(AdmUppgiftsskyldighetOrganisationstyp subdirOrgtype);
     }
 }

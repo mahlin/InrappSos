@@ -12,7 +12,7 @@
     var subdirs = @Html.Raw(Json.Encode(Model.DelRegistersOrganisationstyper));
     var subdirsOrgTypeObjects = [];
     subdirs.forEach(function (subdir, index) {
-        subdirsOrgTypeObjects[index] = subdir.ListofOrgtypes;
+        subdirsOrgTypeObjects[index] = subdir.ListOfOrgtypes;
     });
 
     $(function () {
@@ -83,7 +83,7 @@
                 var orgtypeName = $(option).text();
                 var subdirId = $('#SelectedDirectoryId').val();
                 subdirs.forEach(function (subdir, index) {
-                    if (subdir.Id === subdirId) {
+                    if (subdir.Id === parseInt(subdirId)) {
                         var orgtypesStr = subdir.StringOfOrgtypes;
                         subdir.StringOfOrgtypes = "";
                         $.each(subdirsOrgTypeObjects, function (idx, item) {
@@ -146,7 +146,7 @@
                 var orgtypesStr = "";
                 var listOfOrgtypes = [];
                 subdirs.forEach(function (subdir, index) {
-                    if (subdir.Id === subdirId) {
+                    if (subdir.Id === parseInt(subdirId)) {
                         orgtypesStr = subdir.StringOfOrgtypes;
                         listOfOrgtypes = subdir.ListOfOrgtypes;
                     }

@@ -329,40 +329,7 @@ namespace InrappSos.AstridWeb.Controllers
                     var subdirOrgtypesToUpdate = ConvertViewModelToDb(delRegisterOrgtypVM);
                     var listOfOrgtypes = ConvertViewModelToOrgtypesDb(delRegisterOrgtypVM.ListOfOrgtypes);
                     _portalSosService.UppdateraUppgiftsskyldighetOrganisationstyp(subdirOrgtypesToUpdate, listOfOrgtypes, userName);
-                    ////Lägg till användarens roller med multiselect/ListOfRoles
-                    //try
-                    //{
-                    //    foreach (var role in user.ListOfRoles)
-                    //    {
-                    //        if (role.Selected)
-                    //        {
-                    //            UserManager.AddToRole(user.Id, role.Name);
-                    //        }
-                    //        else
-                    //        {
-                    //            if (UserManager.IsInRole(user.Id, role.Name))
-                    //            {
-                    //                UserManager.RemoveFromRole(user.Id, role.Name);
-                    //            }
-                    //        }
-                    //    }
-                    //}
-                    ////Lägg till användarens roller från StringOfRoles
-                    //try
-                    //{
-                    //    var roles = user.StringOfRoles.Split(',');
-                    //    foreach (var role in roles)
-                    //    {
-                    //        if (!String.IsNullOrEmpty(role))
-                    //        {
-                    //            UserManager.AddToRole(user.Id, role.Trim());
-                    //        }
-                    //    }
-                    //}
-                    //catch (Exception e)
-                    //{
-                    //    throw new ArgumentException(e.Message);
-                    //}
+                    
                 }
                 catch (Exception e)
                 {
@@ -379,7 +346,6 @@ namespace InrappSos.AstridWeb.Controllers
                 }
             }
             return RedirectToAction("GetAllSubDirectoriesOrgtypes");
-
         }
 
 

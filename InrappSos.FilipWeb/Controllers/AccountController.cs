@@ -368,6 +368,16 @@ namespace InrappSos.FilipWeb.Controllers
                     };
                     return View("CustomError", errorModel);
                 }
+                catch (ArgumentException e)
+                {
+                    ErrorManager.WriteToErrorLog("AccountController", "Register", e.ToString(), e.HResult, User.Identity.Name);
+                    var errorModel = new CustomErrorPageModel
+                    {
+                        Information = "Ett fel inträffade vid registreringen. Användaren kunde inte registreras.",
+                        ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                    };
+                    return View("CustomError",  errorModel);
+                }
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
@@ -896,7 +906,17 @@ namespace InrappSos.FilipWeb.Controllers
                 //TODO mail/utvecklingsmiljön
                 await UserManager.SendEmailAsync(user.Id, "Bekräfta e-postadress", "Bekräfta din e-postadress i Socialstyrelsens inrapporteringsportal genom att klicka <a href=\"" + callbackUrl + "\">här</a>");
             }
-            AddErrors(result);
+            else
+            {
+                AddErrors(result);
+                var str = String.Empty;
+                foreach (var error in result.Errors)
+                {
+                    str = str + " " +  error;
+                }
+                throw new System.ArgumentException(str);
+            }
+            
             return View();
         }
 

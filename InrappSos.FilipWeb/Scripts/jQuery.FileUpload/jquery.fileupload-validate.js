@@ -24,7 +24,7 @@ function CheckFileName(selectedRegister, fileName) {
                         var expression = new RegExp(forvFil.Regexp, "i");
                         //Kolla om filnamn matchar regex
                         tmp = fileName.match(expression);
-                        if (tmp != null) {
+                        if (tmp !== null) {
                             regexMatch = tmp;
                         }
                     });
@@ -133,7 +133,7 @@ function DoubletFiles(selectedRegister, fileName) {
                         //Kolla om filnamn matchar regex
                         tmp = fileName.match(expression);
                         //Om träff, kolla om nån annan fil i listan matchar samma regex
-                        if (tmp != null) {
+                        if (tmp !== null) {
                             window.filelist.forEach(function (file, i) {
                                 //alert("Regexp" + idx + ": " + regexp);
                                 if (expression.test(file.name)) {
@@ -309,10 +309,10 @@ function getTableRows() {
                     if (regexMatch === null) {
                         file.error = settings.i18n('incorrectFileName');
                     }
-                    else if ((currRegister === 'CAN' || currRegister === 'OV_') && !CheckFilkodInFileName(selectedOrgUnitId, regexMatch)) {
+                    else if ((currRegister === 'CAN' || currRegister === 'OV_' || currRegister === 'SV_') && !CheckFilkodInFileName(selectedOrgUnitId, regexMatch)) {
                     //else if ((currRegister === 'CAN' || currRegister === 'OV_') && !CheckFilkodInFileName(data.selectedRegister, selectedOrgUnitId, regexMatch)) {
                         file.error = settings.i18n('incorrectFilkodInFileName');
-                    } else if ((currRegister != 'LVM' && currRegister != 'CAN' && currRegister != 'OV_') && !CheckKommunKodInFileName(regexMatch)) {
+                    } else if ((currRegister !== 'LVM' && currRegister !== 'CAN' && currRegister !== 'OV_' && currRegister !== 'SV_') && !CheckKommunKodInFileName(regexMatch)) {
                         file.error = settings.i18n('incorrectKommunKodInFileName');
                     }
                     else if (!CheckPeriodInFileName(data.selectedRegister, regexMatch)) {

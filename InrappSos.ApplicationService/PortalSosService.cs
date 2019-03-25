@@ -253,6 +253,12 @@ namespace InrappSos.ApplicationService
             return kommunkod;
         }
 
+        public string HamtaLandstingskodForOrg(int orgId)
+        {
+            var landstingskodkod = _portalSosRepository.GetLandstingskodForOrganisation(orgId);
+            return landstingskodkod;
+        }
+
         public string HamtaKommunKodForAnvandare(string userId)
         {
             var orgId = _portalSosRepository.GetUserOrganisationId(userId);
@@ -270,6 +276,12 @@ namespace InrappSos.ApplicationService
         public string HamtaInrapporteringskodKodForAnvandare(string userId)
         {
             var orgId = _portalSosRepository.GetUserOrganisationId(userId);
+            var inrapporteringsKod = _portalSosRepository.GetInrapporteringskodForOrganisation(orgId);
+            return inrapporteringsKod;
+        }
+
+        public string HamtaInrapporteringskodKodForOrganisation(int orgId)
+        {
             var inrapporteringsKod = _portalSosRepository.GetInrapporteringskodForOrganisation(orgId);
             return inrapporteringsKod;
         }
@@ -585,6 +597,13 @@ namespace InrappSos.ApplicationService
         {
             var insamlingsfrekvens = _portalSosRepository.GetInsamlingsfrekvens(insamlingsid);
             return insamlingsfrekvens;
+        }
+
+        public List<string> HamtaGodkandaFilnamnsStarter()
+        {
+            var allaFilmasker = _portalSosRepository.GetAllFileMasks();
+            var allaFilmaskStarter = HamtaFilnamnsstarterFranFilmasker(allaFilmasker);
+            return allaFilmaskStarter;
         }
 
         public AdmFilkrav HamtaFilkravById(int filkravsId)
@@ -914,6 +933,12 @@ namespace InrappSos.ApplicationService
             return forvantadeFilerDTOList;
         }
 
+        public SFTPkonto HamtaFtpKontoByName(string name)
+        {
+            var sftpKonto = _portalSosRepository.GetSFTPAccountByName(name);
+            return sftpKonto;
+        }
+
         public IEnumerable<AdmRegister> HamtaAllaRegister()
         {
             var registersList = _portalSosRepository.GetAllRegisters();
@@ -942,6 +967,13 @@ namespace InrappSos.ApplicationService
         {
             var delregistersList = _portalSosRepository.GetAllSubDirectoriesForPortal();
             return delregistersList;
+        }
+
+        public IEnumerable<RegisterInfo> HamtaAllRegisterInformationForOrganisation(int orgId)
+        {
+            var allRegisterinfoForOrg = _portalSosRepository.GetAllRegisterInformationForOrganisation(orgId).ToList();
+            allRegisterinfoForOrg = HamtaOrgenheter(allRegisterinfoForOrg, orgId);
+            return allRegisterinfoForOrg;
         }
 
         public IEnumerable<AdmForeskrift> HamtaAllaForeskrifter()
@@ -1024,6 +1056,55 @@ namespace InrappSos.ApplicationService
                 }
             }
             return perioder;
+        }
+
+        public List<string> HamtaGiltigaFilkoderForOrganisation(int orgId)
+        {
+            var orgenheterForOrg = _portalSosRepository.GetOrgUnitsForOrg(orgId);
+            var orgenhetskoder = new List<string>();
+            foreach (var orgenhet in orgenheterForOrg)
+            {
+                orgenhetskoder.Add(orgenhet.Enhetskod);
+            }
+            return orgenhetskoder;
+        }
+
+        public List<string> HamtaGiltigaFilkoderForSFTPKonto(int sftpAccountId)
+        {
+            var filkoder = new List<string>();
+            var filkoderDistinct = new List<string>();
+            var sftpAccount = _portalSosRepository.GetSFTPAccount(sftpAccountId);
+            var orgenheterForOrg = _portalSosRepository.GetOrgUnitsForOrg(sftpAccount.OrganisationsId);
+            var delRegList = _portalSosRepository.GetSubDirectoriesForDirectory(sftpAccount.RegisterId);
+            var uppgiftskyldighetIdnForOrgOchRegisterList = new List<int>();
+            foreach (var delregister in delRegList)
+            {
+                var uppgiftsskyldighet =_portalSosRepository.GetReportObligationInformationForOrgAndSubDir(sftpAccount.OrganisationsId, delregister.Id);
+                if (uppgiftsskyldighet!= null)
+                    if (uppgiftsskyldighet.SkyldigTom == null)
+                    {
+                        uppgiftskyldighetIdnForOrgOchRegisterList.Add(uppgiftsskyldighet.Id);
+                    }
+                    else
+                    {
+                        if (uppgiftsskyldighet.SkyldigTom <= DateTime.Now)
+                            uppgiftskyldighetIdnForOrgOchRegisterList.Add(uppgiftsskyldighet.Id);
+                    }
+            }
+
+            //Kolla vilka orgenheter som är uppgiftsskyldiga för aktuellt register
+            foreach (var orgenhet in orgenheterForOrg)
+            {
+                var enhetsUppgiftsskyldighetList = _portalSosRepository.GetUnitReportObligationInformationForOrgUnit(orgenhet.Id);
+                foreach (var enhetsuppgiftsskyldighet in enhetsUppgiftsskyldighetList)
+                {
+                    if (uppgiftskyldighetIdnForOrgOchRegisterList.Contains(enhetsuppgiftsskyldighet.UppgiftsskyldighetId))
+                        filkoder.Add(orgenhet.Enhetskod);
+                }
+                
+            }
+            filkoderDistinct.AddRange(filkoder.Distinct());
+            return filkoderDistinct;
         }
 
         public IEnumerable<AdmFilkrav> HamtaFilkravForRegister(int regId)
@@ -1491,30 +1572,54 @@ namespace InrappSos.ApplicationService
             }
 
             //Check if users organisation reports per unit. If thats the case, get list of units
-            foreach (var item in userRegisterList)
-            {
-                var uppgiftsskyldighet = HamtaUppgiftsskyldighetForOrganisationOchRegister(orgId, item.Id);
-                if (uppgiftsskyldighet.RapporterarPerEnhet)
-                {
-                    //Ger cirkulär reference, därav keyValuePair nedan
-                    //item.Orgenheter = orgUnits.ToList();
-                    item.Organisationsenheter = new List<KeyValuePair<string, string>>();
-                    item.Orgenheter = new List<KeyValuePair<string, string>>();
+            userRegisterList = HamtaOrgenheter(userRegisterList, orgId);
+            //foreach (var item in userRegisterList)
+            //{
+            //    var uppgiftsskyldighet = HamtaUppgiftsskyldighetForOrganisationOchRegister(orgId, item.Id);
+            //    if (uppgiftsskyldighet.RapporterarPerEnhet)
+            //    {
+            //        //Ger cirkulär reference, därav keyValuePair nedan
+            //        //item.Orgenheter = orgUnits.ToList();
+            //        item.Organisationsenheter = new List<KeyValuePair<string, string>>();
+            //        item.Orgenheter = new List<KeyValuePair<string, string>>();
 
-                    item.RapporterarPerEnhet = true;
-                    var enhetsuppgiftsskyldighetList = _portalSosRepository.GetUnitReportObligationForReportObligation(uppgiftsskyldighet.Id);
-                    foreach (var enhetsuppgiftsskyldighet in enhetsuppgiftsskyldighetList)
-                    {
-                        var orgUnit = _portalSosRepository.GetOrganisationUnit(enhetsuppgiftsskyldighet.OrganisationsenhetsId);
-                        KeyValuePair<string, string> keyValuePair = new KeyValuePair<string, string>(orgUnit.Enhetskod, orgUnit.Enhetsnamn);
-                        item.Organisationsenheter.Add(keyValuePair);
-                        KeyValuePair<string, string> keyValuePairFilkod = new KeyValuePair<string, string>(orgUnit.Enhetskod, orgUnit.Filkod);
-                        item.Orgenheter.Add(keyValuePairFilkod);
-                    }
+            //        item.RapporterarPerEnhet = true;
+            //        var enhetsuppgiftsskyldighetList = _portalSosRepository.GetUnitReportObligationForReportObligation(uppgiftsskyldighet.Id);
+            //        foreach (var enhetsuppgiftsskyldighet in enhetsuppgiftsskyldighetList)
+            //        {
+            //            var orgUnit = _portalSosRepository.GetOrganisationUnit(enhetsuppgiftsskyldighet.OrganisationsenhetsId);
+            //            KeyValuePair<string, string> keyValuePair = new KeyValuePair<string, string>(orgUnit.Enhetskod, orgUnit.Enhetsnamn);
+            //            item.Organisationsenheter.Add(keyValuePair);
+            //            KeyValuePair<string, string> keyValuePairFilkod = new KeyValuePair<string, string>(orgUnit.Enhetskod, orgUnit.Filkod);
+            //            item.Orgenheter.Add(keyValuePairFilkod);
+            //        }
+            //    }
+            //}
+
+            return userRegisterList;
+        }
+
+        public AdmDelregister HamtaValtDelRegisterMedFilnamnsstart(string filnamnsStart)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<RegisterInfo> HamtaRelevantaDelregisterForSFTPKonto(SFTPkonto sftpKonto)
+        {
+            var registerList = _portalSosRepository.GetSubDirectoriesForDirectory(sftpKonto.RegisterId).ToList();
+            var allaRegisterList = _portalSosRepository.GetAllRegisterInformationForOrganisation(sftpKonto.OrganisationsId).ToList();
+            var sftpKontoRegisterList = new List<RegisterInfo>();
+            foreach (var register in allaRegisterList)
+            {
+                var finns = registerList.Find(r => r.Id == register.Id);
+                if (finns != null)
+                {
+                    register.SelectedFilkrav = "0";
+                    sftpKontoRegisterList.Add(register);
                 }
             }
 
-            return userRegisterList;
+            return sftpKontoRegisterList;
         }
 
         public IEnumerable<RegisterInfo> HamtaRegistersMedAnvandaresVal(string userId, int orgId)
@@ -3165,7 +3270,58 @@ namespace InrappSos.ApplicationService
 
             var indexToCutFrom = indexes[indexes.Count - 2];
             return hostAdress.Substring(indexToCutFrom + 1);
+        }
 
+        private List<string> HamtaFilnamnsstarterFranFilmasker(IEnumerable<string> filmasker)
+        {
+            var filnamnsStartList = new List<string>();
+            foreach (var filmask in filmasker)
+            {
+                //Hantera ej filmasker med värdet "*"
+                if (!filmask.Equals("*"))
+                {
+                    var firstUnderscorePos = filmask.IndexOf("_");
+                    if (firstUnderscorePos != -1)
+                    {
+                        var fileNameStart = filmask.Substring(0, firstUnderscorePos);
+                        filnamnsStartList.Add(fileNameStart);
+                    }
+                }
+            }
+            return filnamnsStartList.Distinct().ToList();
+        }
+
+
+        private List<RegisterInfo> HamtaOrgenheter(List<RegisterInfo> registerInfoList, int orgId)
+        {
+            foreach (var item in registerInfoList)
+            {
+                var uppgiftsskyldighet = HamtaUppgiftsskyldighetForOrganisationOchRegister(orgId, item.Id);
+                if (uppgiftsskyldighet.RapporterarPerEnhet)
+                {
+                    //Ger cirkulär reference, därav keyValuePair nedan
+                    //item.Orgenheter = orgUnits.ToList();
+                    item.Organisationsenheter = new List<KeyValuePair<string, string>>();
+                    item.Orgenheter = new List<KeyValuePair<string, string>>();
+
+                    item.RapporterarPerEnhet = true;
+                    var enhetsuppgiftsskyldighetList =
+                        _portalSosRepository.GetUnitReportObligationForReportObligation(uppgiftsskyldighet.Id);
+                    foreach (var enhetsuppgiftsskyldighet in enhetsuppgiftsskyldighetList)
+                    {
+                        var orgUnit =
+                            _portalSosRepository.GetOrganisationUnit(enhetsuppgiftsskyldighet.OrganisationsenhetsId);
+                        KeyValuePair<string, string> keyValuePair =
+                            new KeyValuePair<string, string>(orgUnit.Enhetskod, orgUnit.Enhetsnamn);
+                        item.Organisationsenheter.Add(keyValuePair);
+                        KeyValuePair<string, string> keyValuePairFilkod =
+                            new KeyValuePair<string, string>(orgUnit.Enhetskod, orgUnit.Filkod);
+                        item.Orgenheter.Add(keyValuePairFilkod);
+                    }
+                }
+            }
+
+            return registerInfoList;
         }
 
         public List<List<Organisation>> SokOrganisation(string sokStr)

@@ -176,7 +176,12 @@ namespace InrappSos.FilipWeb.Controllers
                 var CurrentContext = HttpContext;
 
                 if (model.SelectedUnitId != null)
+                {
                     enhetskod = model.SelectedUnitId;
+                    if (String.IsNullOrEmpty(orgCode))
+                    orgCode = enhetskod;
+                }
+                    
 
                 //Lägg till kontroll att antal filer > 0 (kan ha stoppats av användarens webbläsare (?))
                 var request = CurrentContext.Request;

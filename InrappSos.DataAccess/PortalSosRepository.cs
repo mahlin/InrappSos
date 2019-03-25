@@ -748,6 +748,12 @@ namespace InrappSos.DataAccess
             return fileReqs;
         }
 
+        public IEnumerable<string> GetAllFileMasks()
+        {
+            var allFilemasks = DbContext.AdmForvantadfil.Select(x => x.Filmask).ToList();
+            return allFilemasks;
+        }
+
         public IEnumerable<AdmInsamlingsfrekvens> GetAllCollectionFrequencies()
         {
             var collFreq = DbContext.AdmInsamlingsfrekvens.ToList();
@@ -1037,10 +1043,31 @@ namespace InrappSos.DataAccess
             var user = DbContext.Users.SingleOrDefault(x => x.Email == email);
             return user;
         }
+
+        public ApplicationUser GetUserBySFTPAccountId(int ftpAccountId)
+        {
+            var userId = DbContext.KontaktpersonSFTPkonto.Where(x => x.SFTPkontoId == ftpAccountId)
+                .Select(x => x.ApplicationUserId).SingleOrDefault();
+            var user = DbContext.Users.SingleOrDefault(x => x.Id == userId);
+            return user;
+        }
+
+        public SFTPkonto GetSFTPAccount(int ftpAccountId)
+        {
+            var sftpAccount = DbContext.SFTPkonto.SingleOrDefault(x => x.Id == ftpAccountId);
+            return sftpAccount;
+        }
+
         public string GetUserEmail(string userId)
         {
             var email = DbContext.Users.Where(x => x.Id == userId).Select(x => x.Email).SingleOrDefault();
             return email;
+        }
+
+        public SFTPkonto GetSFTPAccountByName(string name)
+        {
+            var sftpAccount = DbContext.SFTPkonto.Where(x => x.Kontonamn == name).Include(x => x.KontaktpersonSFTPkonto).SingleOrDefault();
+            return sftpAccount;
         }
 
         public IEnumerable<Roll> GetChosenDelRegistersForUser(string userId)
@@ -1157,7 +1184,6 @@ namespace InrappSos.DataAccess
 
             //Get all subdirs thar org are obligated to report for
             var delregister = GetSubDirsObligatedForOrg(orgId);
-
 
             foreach (var item in delregister)
             {

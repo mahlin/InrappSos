@@ -66,6 +66,8 @@ namespace InrappSos.ApplicationService.Interface
 
         string HamtaLandstingsKodForAnvandare(string userId);
 
+        string HamtaLandstingskodForOrg(int orgId);
+
         string HamtaInrapporteringskodKodForAnvandare(string userId);
 
         Organisation HamtaOrgForAnvandare(string userId);
@@ -165,6 +167,10 @@ namespace InrappSos.ApplicationService.Interface
         int HamtaForvantadleveransIdForRegisterOchPeriod(int delregId, string period);
         List<string> HamtaGiltigaPerioderForDelregister(int delregId);
 
+        List<string> HamtaGiltigaFilkoderForOrganisation(int orgId);
+
+        List<string> HamtaGiltigaFilkoderForSFTPKonto(int sftpAccountId);
+
         IEnumerable<AdmFilkrav> HamtaFilkravForRegister(int regId);
 
         AdmFilkrav HamtaFilkravById(int filkravsId);
@@ -175,6 +181,8 @@ namespace InrappSos.ApplicationService.Interface
 
         string HamtaSpecialdagsInfo();
 
+        SFTPkonto HamtaFtpKontoByName(string name);
+
         IEnumerable<AdmRegister> HamtaAllaRegister();
         IEnumerable<AdmRegister> HamtaAllaRegisterForPortalen();
 
@@ -182,6 +190,8 @@ namespace InrappSos.ApplicationService.Interface
         IEnumerable<IdentityRole> HamtaAllaFilipRoller();
 
         IEnumerable<AdmDelregister> HamtaAllaDelregisterForPortalen();
+
+        IEnumerable<RegisterInfo> HamtaAllRegisterInformationForOrganisation(int orgId);
 
         IEnumerable<AdmForeskrift> HamtaAllaForeskrifter();
 
@@ -201,6 +211,8 @@ namespace InrappSos.ApplicationService.Interface
         string HamtaKortnamnForDelregister(int delregId);
 
         AdmInsamlingsfrekvens HamtaInsamlingsfrekvens(int insamlingsid);
+
+        List<string> HamtaGodkandaFilnamnsStarter();
 
         string HamtaKortnamnForRegister(int regId);
 
@@ -243,6 +255,10 @@ namespace InrappSos.ApplicationService.Interface
         //IEnumerable<RegisterInfo> HamtaValdaRegistersForAnvandare(string userId, int orgId);
 
         List<RegisterInfo> HamtaValdaDelregisterForAnvandare(string userId, int orgId);
+
+        AdmDelregister HamtaValtDelRegisterMedFilnamnsstart(string filnamnsStart);
+
+        List<RegisterInfo> HamtaRelevantaDelregisterForSFTPKonto(SFTPkonto sftpKonto);
 
         IEnumerable<RegisterInfo> HamtaRegistersMedAnvandaresVal(string userId, int orgId);
 

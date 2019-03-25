@@ -389,7 +389,7 @@ function IsRequiredFile(selectedRegister, fileName) {
                         var expression = new RegExp(forvFil.Regexp, "i");
                         //Kolla om filnamn matchar regex och är obligatorisk. Refactor this!
                         tmp = fileName.match(expression);
-                        if (tmp != null) {
+                        if (tmp !== null) {
                             if (forvFil.Obligatorisk) {
                                 req = true;
                             }

@@ -256,6 +256,37 @@ namespace InrappSos.DataAccess
             modelBuilder.Entity<AdmOrganisationstyp>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
             modelBuilder.Entity<AdmOrganisationstyp>().Property(e => e.AndradAv).HasColumnName("andradav");
 
+            //KontaktpersonSFTPkonto
+            modelBuilder.Entity<KontaktpersonSFTPkonto>().Property(e => e.Id).HasColumnName("KontaktpersonSFTPkontoid");
+            modelBuilder.Entity<KontaktpersonSFTPkonto>().Property(e => e.ApplicationUserId).HasColumnName("kontaktpersonid");
+            modelBuilder.Entity<KontaktpersonSFTPkonto>().Property(e => e.SFTPkontoId).HasColumnName("sftpkontoId");
+            modelBuilder.Entity<KontaktpersonSFTPkonto>()
+                .HasRequired(c => c.ApplicationUser)
+                .WithMany(d => d.KontaktpersonSFTPkonto)
+                .HasForeignKey(c => c.ApplicationUserId);
+            modelBuilder.Entity<KontaktpersonSFTPkonto>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
+            modelBuilder.Entity<KontaktpersonSFTPkonto>().Property(e => e.SkapadAv).HasColumnName("skapadav");
+            modelBuilder.Entity<KontaktpersonSFTPkonto>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
+            modelBuilder.Entity<KontaktpersonSFTPkonto>().Property(e => e.AndradAv).HasColumnName("andradav");
+
+            //SFTPkonto
+            modelBuilder.Entity<SFTPkonto>().Property(e => e.Id).HasColumnName("sftpkontoid");
+            modelBuilder.Entity<SFTPkonto>().Property(e => e.Kontonamn).HasColumnName("kontonamn");
+            modelBuilder.Entity<SFTPkonto>().Property(e => e.OrganisationsId).HasColumnName("organisationsId");
+            modelBuilder.Entity<SFTPkonto>().Property(e => e.RegisterId).HasColumnName("registerId");
+            modelBuilder.Entity<SFTPkonto>()
+                .HasRequired(c => c.Organisation)
+                .WithMany(d => d.SFTPkonto)
+                .HasForeignKey(c => c.OrganisationsId);
+            modelBuilder.Entity<SFTPkonto>()
+                .HasRequired(c => c.AdmRegister)
+                .WithMany(d => d.SFTPkonto)
+                .HasForeignKey(c => c.RegisterId);
+            modelBuilder.Entity<SFTPkonto>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
+            modelBuilder.Entity<SFTPkonto>().Property(e => e.SkapadAv).HasColumnName("skapadav");
+            modelBuilder.Entity<SFTPkonto>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
+            modelBuilder.Entity<SFTPkonto>().Property(e => e.AndradAv).HasColumnName("andradav");
+
             //AdmEnhetsUppgiftsskyldighet
             modelBuilder.Entity<AdmEnhetsUppgiftsskyldighet>().ToTable("admEnhetsuppgiftsskyldighet");
             modelBuilder.Entity<AdmEnhetsUppgiftsskyldighet>().Property(e => e.Id).HasColumnName("enhetsuppgiftsskyldighetid");
@@ -643,6 +674,8 @@ namespace InrappSos.DataAccess
         public DbSet<Arendetyp> Arendetyp { get; set; }
         public DbSet<UndantagEpostadress> UndantagEpostadress { get; set; }
         public DbSet<UndantagForvantadfil> UndantagForvantadfil { get; set; }
+        public DbSet<SFTPkonto> SFTPkonto { get; set; }
+        public DbSet<KontaktpersonSFTPkonto> KontaktpersonSFTPkonto { get; set; }
 
     }
 }

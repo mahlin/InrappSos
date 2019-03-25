@@ -29,6 +29,7 @@ namespace InrappSos.DomainModel
         public virtual ICollection<Inloggning> Inloggningar { get; set; }
         public virtual ICollection<Kontaktpersonstyp> Kontaktpersontyp { get; set; }
         public virtual ICollection<ArendeKontaktperson> ArendeKontaktperson { get; set; }
+        public virtual ICollection<KontaktpersonSFTPkonto> KontaktpersonSFTPkonto { get; set; }
         public virtual ICollection<DroppadFil> DroppadFil { get; set; }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)

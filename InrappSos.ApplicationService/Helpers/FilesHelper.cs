@@ -225,6 +225,162 @@ namespace InrappSos.ApplicationService.Helpers
         }
 
 
+        public void UploadSFTPFilesAndShowResults(List<FileInfo> fileList, List<ViewDataUploadFilesResult> resultList, SFTPkonto ftpAccount, int selectedRegisterId, string selectedUnitId, string selectedPeriod, List<RegisterInfo> registerList)
+        {
+
+            //Kolla vilket register filen/filerna hör till och skapa mapp om det behövs
+            var slussmapp = registerList.Where(x => x.Id == selectedRegisterId).Select(x => x.Slussmapp).Single();
+            var user = _portalSosRepository.GetUserBySFTPAccountId(ftpAccount.Id);
+            //Get orgcode
+            var orgCode = String.Empty;
+            var orgtypeListForOrg = _portalSosService.HamtaOrgtyperForOrganisation(ftpAccount.OrganisationsId);
+            var orgtypeListForSubDir = _portalSosService.HamtaOrgtyperForDelregister(selectedRegisterId);
+
+            //Todo - hur ska detta hanteras? Jmfr FUCtrl/Upload
+            //Compare organisations orgtypes with orgtypes for current subdir
+            foreach (var subDirOrgtype in orgtypeListForSubDir)
+            {
+                foreach (var orgOrgtype in orgtypeListForOrg)
+                {
+                    if (subDirOrgtype.Typnamn == orgOrgtype.Typnamn)
+                    {
+                        if (orgOrgtype.Typnamn == "Kommun")
+                        {
+                            orgCode = _portalSosRepository.GetKommunkodForOrganisation(ftpAccount.OrganisationsId); 
+                        }
+                        else if (orgOrgtype.Typnamn == "Landsting")
+                        {
+                            orgCode = _portalSosRepository.GetLandstingskodForOrganisation(ftpAccount.OrganisationsId);
+                        }
+                        else
+                        {
+                            orgCode = _portalSosRepository.GetInrapporteringskodForOrganisation(ftpAccount.OrganisationsId);
+                        }
+                    }
+                }
+            }
+
+            //var fileName = fileList[0].Name;
+            //var filkravList = _portalSosRepository.GetFileRequirementsAndExpectedFilesForSubDirectory(selectedRegisterId);
+
+            //Hämta forvantadlevid beroende på vald period
+            var forvantadLevId = _portalSosRepository.GetExpextedDeliveryIdForSubDirAndPeriod(selectedRegisterId, selectedPeriod);
+            //var forvantadLevId = registerList.Where(x => x.Id == selectedRegisterId).Select(x => x.ForvantadLevransId).Single();
+            StorageRoot = StorageRoot + slussmapp + "\\";
+            String fullPath = Path.Combine(StorageRoot);
+            Directory.CreateDirectory(fullPath);
+
+            var orgenhetsId = 0;
+            //Om leverans för stadsdelar/organisationsenheter, hämta organisationsenhetsid
+            if (!String.IsNullOrWhiteSpace(selectedUnitId))
+            {
+                orgenhetsId = _portalSosRepository.GetOrganisationsenhetsId(selectedUnitId, ftpAccount.OrganisationsId);
+            }
+
+            var levId = _portalSosRepository.GetNewLeveransId(user.Id, user.Namn, ftpAccount.OrganisationsId, selectedRegisterId, orgenhetsId, forvantadLevId, "Levererad");
+            var hash = GetHashAddOn(orgCode, levId);
+
+            var regId = _portalSosRepository.GetSubDirectoryById(selectedRegisterId).RegisterId;
+            var reg = _portalSosRepository.GetDirectoryById(regId);
+            //Om PAR-fil tagga före filnamnet
+            if (reg.Kortnamn == "PAR")
+            {
+                UploadWholePARSFTPFile(fileList, resultList, hash, levId, selectedUnitId);
+            }
+            else
+            {
+                UploadWholeSFTPFile(fileList, resultList, hash, levId, selectedUnitId);
+            }
+
+            //Om inga filer kunde sparas, rensa levid
+            if (!resultList.Any())
+            {
+                _portalSosRepository.DeleteDelivery(levId);
+            }
+            else
+            {
+                //Om PAR-filer, skapa statusfil och ladda upp
+                var registerId = _portalSosRepository.GetSubDirectoryById(selectedRegisterId).RegisterId;
+                var register = _portalSosRepository.GetDirectoryById(registerId);
+                if (register.Kortnamn == "PAR")
+                {
+                    //Skapa statusfil
+                    CreateAndUploadPARStatusFile(levId, resultList);
+                }
+                //Save copied files to database filelog
+                foreach (var result in resultList)
+                {
+                    foreach (var itemFile in fileList)
+                    {
+                        if (result.name == itemFile.Name)
+                        {
+                            try
+                            {
+                                _portalSosRepository.SaveToFilelogg(ftpAccount.Kontonamn, itemFile.Name, result.sosName, result.leveransId, result.sequenceNumber);
+                            }
+                            catch (Exception e)
+                            {
+                                throw new ApplicationException("Kunde ej spara SFTPfil-info till databas. Konto: " + ftpAccount.Kontonamn + ", Filnamn: " + itemFile.Name + ", LeveransId: " + result.leveransId + ", sekvensnummer:" + result.sequenceNumber);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void UploadWholeSFTPFile(List<FileInfo> fileList, List<ViewDataUploadFilesResult> statuses, string hash, int levId, string selectedUnitId)
+        {
+            for (int i = 0; i < fileList.Count; i++)
+            {
+                var file = fileList[i];
+
+                //TODO - check filename depending on chosen registertype
+                if (file.Length > 0 && (Path.GetExtension(file.Name).ToLower() == ".txt"
+                                               || Path.GetExtension(file.Name).ToLower() == ".xls"
+                                               || Path.GetExtension(file.Name).ToLower() == ".xlsx"))
+                {
+                    String pathOnServer = Path.Combine(StorageRoot);
+                    //var fullPath = Path.Combine(pathOnServer, Path.GetFileName(file.FileName));
+                    var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file.Name);
+                    var extension = Path.GetExtension(file.Name);
+                    var filOfFilesAddOn = "!" + (i + 1).ToString() + "!" + (fileList.Count).ToString();
+                    var timestamp = DateTime.Now.ToString("yyyyMMdd" + "T" + "HHmmss");
+                    var extendedFileName = fileNameWithoutExtension + hash + filOfFilesAddOn + "!" + timestamp + "!" + selectedUnitId + extension;
+                    var fullPath = Path.Combine(pathOnServer, Path.GetFileName(extendedFileName));
+                    file.CopyTo(fullPath);
+                    //Behövs ej för SFTP-filer?
+                    statuses.Add(UploadResult(file.Name, Convert.ToInt32(file.Length), file.Name, (extendedFileName), levId, i + 1));
+                }
+            }
+        }
+
+        private void UploadWholePARSFTPFile(List<FileInfo> fileList, List<ViewDataUploadFilesResult> statuses, string hash, int levId, string selectedUnitId)
+        {
+            for (int i = 0; i < fileList.Count; i++)
+            {
+                var file = fileList[i];
+
+                //TODO - check filename depending on chosen registertype
+                if (file.Length > 0 && (Path.GetExtension(file.Name).ToLower() == ".txt"
+                                        || Path.GetExtension(file.Name).ToLower() == ".xls"
+                                        || Path.GetExtension(file.Name).ToLower() == ".xlsx"))
+                {
+                    String pathOnServer = Path.Combine(StorageRoot);
+                    //var fullPath = Path.Combine(pathOnServer, Path.GetFileName(file.FileName));
+                    var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file.Name);
+                    var extension = Path.GetExtension(file.Name);
+                    var filOfFilesAddOn = "!" + (i + 1).ToString() + "!" + (fileList.Count).ToString();
+                    var timestamp = DateTime.Now.ToString("yyyyMMdd" + "T" + "HHmmss");
+                    var extendedFileName = fileNameWithoutExtension + hash + filOfFilesAddOn + "!" + timestamp + "!" + selectedUnitId + extension;
+                    var fullPath = Path.Combine(pathOnServer, Path.GetFileName(extendedFileName));
+                    file.CopyTo(fullPath);
+                    //Behövs ej för SFTP-filer?
+                    statuses.Add(UploadResult(file.Name, Convert.ToInt32(file.Length), file.Name, (extendedFileName), levId, i + 1));
+                }
+            }
+        }
+
+
         private void UploadWholeFile(HttpContextBase requestContext, List<ViewDataUploadFilesResult> statuses, string hash, int levId, string selectedUnitId)
         {
             var request = requestContext.Request;
@@ -242,12 +398,13 @@ namespace InrappSos.ApplicationService.Helpers
                     var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file.FileName);
                     var extension = Path.GetExtension(file.FileName);
                     var filOfFilesAddOn = "!" + (i + 1).ToString() + "!" + (request.Files.Count).ToString();
-                    var timestamp = DateTime.Now.ToString("yyyyMMdd" + "T"+ "HHmmss"); 
-                    var extendedFileName = fileNameWithoutExtension + hash + filOfFilesAddOn + "!" + timestamp + "!" + selectedUnitId + extension;
+                    var timestamp = DateTime.Now.ToString("yyyyMMdd" + "T" + "HHmmss");
+                    var extendedFileName = hash + filOfFilesAddOn + "!" + timestamp + "!" + selectedUnitId + "#" + file.FileName;
+                    //var extendedFileName = fileNameWithoutExtension + hash + filOfFilesAddOn + "!" + timestamp + "!" + selectedUnitId + extension;
                     var fullPath = Path.Combine(pathOnServer, Path.GetFileName(extendedFileName));
                     file.SaveAs(fullPath);
 
-                    statuses.Add(UploadResult(file.FileName, file.ContentLength, file.FileName, (extendedFileName), levId, i+1));
+                    statuses.Add(UploadResult(file.FileName, file.ContentLength, file.FileName, (extendedFileName), levId, i + 1));
                 }
             }
         }
@@ -292,35 +449,35 @@ namespace InrappSos.ApplicationService.Helpers
         }
 
 
-        private void UploadPartialFile(string fileName, HttpContextBase requestContext, List<ViewDataUploadFilesResult> statuses)
-        {
-            var request = requestContext.Request;
-            if (request.Files.Count != 1) throw new HttpRequestValidationException("Attempt to upload chunked file containing more than one fragment per request");
-            var file = request.Files[0];
-            var inputStream = file.InputStream;
-            String patchOnServer = Path.Combine(StorageRoot);
-            var fullName = Path.Combine(patchOnServer, Path.GetFileName(file.FileName));
-            var ThumbfullPath = Path.Combine(fullName, Path.GetFileName(file.FileName + "80x80.jpg"));
-            //TODO - rensa imagehandler stuff
-            //ImageHandler handler = new ImageHandler();
+        //private void UploadPartialFile(string fileName, HttpContextBase requestContext, List<ViewDataUploadFilesResult> statuses)
+        //{
+        //    var request = requestContext.Request;
+        //    if (request.Files.Count != 1) throw new HttpRequestValidationException("Attempt to upload chunked file containing more than one fragment per request");
+        //    var file = request.Files[0];
+        //    var inputStream = file.InputStream;
+        //    String patchOnServer = Path.Combine(StorageRoot);
+        //    var fullName = Path.Combine(patchOnServer, Path.GetFileName(file.FileName));
+        //    var ThumbfullPath = Path.Combine(fullName, Path.GetFileName(file.FileName + "80x80.jpg"));
+        //    //TODO - rensa imagehandler stuff
+        //    //ImageHandler handler = new ImageHandler();
 
-            //var ImageBit = ImageHandler.LoadImage(fullName);
-            //handler.Save(ImageBit, 80, 80, 10, ThumbfullPath);
-            using (var fs = new FileStream(fullName, FileMode.Append, FileAccess.Write))
-            {
-                var buffer = new byte[1024];
+        //    //var ImageBit = ImageHandler.LoadImage(fullName);
+        //    //handler.Save(ImageBit, 80, 80, 10, ThumbfullPath);
+        //    using (var fs = new FileStream(fullName, FileMode.Append, FileAccess.Write))
+        //    {
+        //        var buffer = new byte[1024];
 
-                var l = inputStream.Read(buffer, 0, 1024);
-                while (l > 0)
-                {
-                    fs.Write(buffer, 0, l);
-                    l = inputStream.Read(buffer, 0, 1024);
-                }
-                fs.Flush();
-                fs.Close();
-            }
-            statuses.Add(UploadResult(file.FileName, file.ContentLength, file.FileName));
-        }
+        //        var l = inputStream.Read(buffer, 0, 1024);
+        //        while (l > 0)
+        //        {
+        //            fs.Write(buffer, 0, l);
+        //            l = inputStream.Read(buffer, 0, 1024);
+        //        }
+        //        fs.Flush();
+        //        fs.Close();
+        //    }
+        //    statuses.Add(UploadResult(file.FileName, file.ContentLength, file.FileName));
+        //}
 
         private string GetHashAddOn(string orgKod, int levId)
         {

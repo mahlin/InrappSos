@@ -194,6 +194,8 @@ namespace InrappSos.DataAccess
 
         IEnumerable<AdmFilkrav> GetAllFileRequirements();
 
+        IEnumerable<string> GetAllFileMasks();
+
         IEnumerable<AdmInsamlingsfrekvens> GetAllCollectionFrequencies();
 
         IEnumerable<Arendetyp> GetAllCaseTypes();
@@ -276,6 +278,10 @@ namespace InrappSos.DataAccess
 
         ApplicationUser GetUserByEmail(string email);
 
+        ApplicationUser GetUserBySFTPAccountId(int ftpAccountId);
+
+        SFTPkonto GetSFTPAccount(int ftpAccountId);
+
         string GetUserEmail(string userId);
         IEnumerable<AdmRegister> GetChosenRegistersForUser(string userId);
 
@@ -288,6 +294,8 @@ namespace InrappSos.DataAccess
 
         IEnumerable<AdmHelgdag> GetHolidays();
         IEnumerable<AdmSpecialdag> GetSpecialDays();
+
+        SFTPkonto GetSFTPAccountByName(string name);
 
         IEnumerable<Roll> GetChosenDelRegistersForUser(string userId);
         //IEnumerable<RegisterInfo> GetAllRegisterInformation();

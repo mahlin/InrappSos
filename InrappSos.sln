@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InrappSos.ApplicationServic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InrappSos.FilipWeb", "InrappSos.FilipWeb\InrappSos.FilipWeb.csproj", "{EABA0328-52D7-468E-9B64-2F5D660C7DBD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFTPFileHandler", "SFTPFileHandler\SFTPFileHandler.csproj", "{BC0D29F1-E888-4E0E-832F-B5B4C6F17C28}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{EABA0328-52D7-468E-9B64-2F5D660C7DBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EABA0328-52D7-468E-9B64-2F5D660C7DBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EABA0328-52D7-468E-9B64-2F5D660C7DBD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC0D29F1-E888-4E0E-832F-B5B4C6F17C28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC0D29F1-E888-4E0E-832F-B5B4C6F17C28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC0D29F1-E888-4E0E-832F-B5B4C6F17C28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC0D29F1-E888-4E0E-832F-B5B4C6F17C28}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

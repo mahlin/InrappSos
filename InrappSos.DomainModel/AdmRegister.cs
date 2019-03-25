@@ -18,6 +18,7 @@ namespace InrappSos.DomainModel
         public string AndradAv { get; set; }
         public virtual ICollection<AdmDelregister> AdmDelregister { get; set; }
         public virtual ICollection<AdmForeskrift> AdmForeskrift { get; set; }
+        public virtual ICollection<SFTPkonto> SFTPkonto { get; set; }
 
     }
 }

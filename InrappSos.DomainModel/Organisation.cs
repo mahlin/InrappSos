@@ -45,5 +45,7 @@ namespace InrappSos.DomainModel
         public virtual ICollection<Arende> Arende { get; set; }
         public virtual ICollection<UndantagEpostadress> UndantagEpostadress { get; set; }
         public virtual ICollection<UndantagForvantadfil> UndantagForvantadfil { get; set; }
+        public virtual ICollection<SFTPkonto> SFTPkonto { get; set; }
+
     }
 }

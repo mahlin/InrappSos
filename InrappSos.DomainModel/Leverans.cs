@@ -15,6 +15,7 @@ namespace InrappSos.DomainModel
         public int? OrganisationsenhetsId { get; set; }
         public string ApplicationUserId { get; set; }
         public int DelregisterId { get; set; }
+        public int? SFTPkontoId { get; set; }
         public DateTime Leveranstidpunkt { get; set; }
         public string Leveransstatus { get; set; }
         public DateTime SkapadDatum { get; set; }

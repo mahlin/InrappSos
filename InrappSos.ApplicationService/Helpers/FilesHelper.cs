@@ -340,7 +340,6 @@ namespace InrappSos.ApplicationService.Helpers
                                                || Path.GetExtension(file.Name).ToLower() == ".xlsx"))
                 {
                     String pathOnServer = Path.Combine(StorageRoot);
-                    //var fullPath = Path.Combine(pathOnServer, Path.GetFileName(file.FileName));
                     var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file.Name);
                     var extension = Path.GetExtension(file.Name);
                     var filOfFilesAddOn = "!" + (i + 1).ToString() + "!" + (fileList.Count).ToString();
@@ -348,7 +347,6 @@ namespace InrappSos.ApplicationService.Helpers
                     var extendedFileName = fileNameWithoutExtension + hash + filOfFilesAddOn + "!" + timestamp + "!" + selectedUnitId + extension;
                     var fullPath = Path.Combine(pathOnServer, Path.GetFileName(extendedFileName));
                     file.CopyTo(fullPath);
-                    //Behövs ej för SFTP-filer?
                     statuses.Add(UploadResult(file.Name, Convert.ToInt32(file.Length), file.Name, (extendedFileName), levId, i + 1));
                 }
             }
@@ -366,15 +364,11 @@ namespace InrappSos.ApplicationService.Helpers
                                         || Path.GetExtension(file.Name).ToLower() == ".xlsx"))
                 {
                     String pathOnServer = Path.Combine(StorageRoot);
-                    //var fullPath = Path.Combine(pathOnServer, Path.GetFileName(file.FileName));
-                    var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file.Name);
-                    var extension = Path.GetExtension(file.Name);
                     var filOfFilesAddOn = "!" + (i + 1).ToString() + "!" + (fileList.Count).ToString();
                     var timestamp = DateTime.Now.ToString("yyyyMMdd" + "T" + "HHmmss");
-                    var extendedFileName = fileNameWithoutExtension + hash + filOfFilesAddOn + "!" + timestamp + "!" + selectedUnitId + extension;
+                    var extendedFileName = hash + filOfFilesAddOn + "!" + timestamp + "!" + selectedUnitId + "#" + file.Name;
                     var fullPath = Path.Combine(pathOnServer, Path.GetFileName(extendedFileName));
                     file.CopyTo(fullPath);
-                    //Behövs ej för SFTP-filer?
                     statuses.Add(UploadResult(file.Name, Convert.ToInt32(file.Length), file.Name, (extendedFileName), levId, i + 1));
                 }
             }
@@ -399,8 +393,8 @@ namespace InrappSos.ApplicationService.Helpers
                     var extension = Path.GetExtension(file.FileName);
                     var filOfFilesAddOn = "!" + (i + 1).ToString() + "!" + (request.Files.Count).ToString();
                     var timestamp = DateTime.Now.ToString("yyyyMMdd" + "T" + "HHmmss");
-                    var extendedFileName = hash + filOfFilesAddOn + "!" + timestamp + "!" + selectedUnitId + "#" + file.FileName;
-                    //var extendedFileName = fileNameWithoutExtension + hash + filOfFilesAddOn + "!" + timestamp + "!" + selectedUnitId + extension;
+                    //var extendedFileName = hash + filOfFilesAddOn + "!" + timestamp + "!" + selectedUnitId + "#" + file.FileName;
+                    var extendedFileName = fileNameWithoutExtension + hash + filOfFilesAddOn + "!" + timestamp + "!" + selectedUnitId + extension;
                     var fullPath = Path.Combine(pathOnServer, Path.GetFileName(extendedFileName));
                     file.SaveAs(fullPath);
 
@@ -424,13 +418,9 @@ namespace InrappSos.ApplicationService.Helpers
                                                || Path.GetExtension(file.FileName).ToLower() == ".xlsx"))
                 {
                     String pathOnServer = Path.Combine(StorageRoot);
-                    //var fullPath = Path.Combine(pathOnServer, Path.GetFileName(file.FileName));
-                    var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file.FileName);
-                    var extension = Path.GetExtension(file.FileName);
                     var filOfFilesAddOn = "!" + (i + 1).ToString() + "!" + (request.Files.Count).ToString();
                     var timestamp = DateTime.Now.ToString("yyyyMMdd" + "T" + "HHmmss");
                     var extendedFileName = hash + filOfFilesAddOn + "!" + timestamp + "!" + selectedUnitId + "#" + file.FileName;
-                    //var extendedFileName = fileNameWithoutExtension + hash + filOfFilesAddOn + "!" + timestamp + "!" + selectedUnitId + extension;
                     var fullPath = Path.Combine(pathOnServer, Path.GetFileName(extendedFileName));
                     file.SaveAs(fullPath);
 

@@ -259,7 +259,7 @@ namespace InrappSos.DataAccess
             //KontaktpersonSFTPkonto
             modelBuilder.Entity<KontaktpersonSFTPkonto>().Property(e => e.Id).HasColumnName("KontaktpersonSFTPkontoid");
             modelBuilder.Entity<KontaktpersonSFTPkonto>().Property(e => e.ApplicationUserId).HasColumnName("kontaktpersonid");
-            modelBuilder.Entity<KontaktpersonSFTPkonto>().Property(e => e.SFTPkontoId).HasColumnName("sftpkontoId");
+            modelBuilder.Entity<KontaktpersonSFTPkonto>().Property(e => e.SFTPkontoId).HasColumnName("sftpkontoid");
             modelBuilder.Entity<KontaktpersonSFTPkonto>()
                 .HasRequired(c => c.ApplicationUser)
                 .WithMany(d => d.KontaktpersonSFTPkonto)

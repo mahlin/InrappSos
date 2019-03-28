@@ -182,15 +182,7 @@ namespace InrappSos.ApplicationService.Helpers
             {
                 var registerId = _portalSosRepository.GetSubDirectoryById(selectedRegisterId).RegisterId;
                 var register = _portalSosRepository.GetDirectoryById(registerId);
-                //Om PAR-fil tagga före filnamnet
-                if (register.Kortnamn == "PAR")
-                {
-                    UploadWholePARFile(ContentBase, resultList, hash, levId, selectedUnitId);
-                }
-                else
-                {
-                    UploadWholeFile(ContentBase, resultList, hash, levId, selectedUnitId);
-                }
+                UploadWholeFile(ContentBase, resultList, hash, levId, selectedUnitId, register.Kortnamn);
             }
 
             //Om inga filer kunde sparas, rensa levid
@@ -282,15 +274,8 @@ namespace InrappSos.ApplicationService.Helpers
 
             var regId = _portalSosRepository.GetSubDirectoryById(selectedRegisterId).RegisterId;
             var reg = _portalSosRepository.GetDirectoryById(regId);
-            //Om PAR-fil tagga före filnamnet
-            if (reg.Kortnamn == "PAR")
-            {
-                UploadWholePARSFTPFile(fileList, resultList, hash, levId, selectedUnitId);
-            }
-            else
-            {
-                UploadWholeSFTPFile(fileList, resultList, hash, levId, selectedUnitId);
-            }
+
+            UploadWholeSFTPFile(fileList, resultList, hash, levId, selectedUnitId, reg.Kortnamn);
 
             //Om inga filer kunde sparas, rensa levid
             if (!resultList.Any())
@@ -328,8 +313,10 @@ namespace InrappSos.ApplicationService.Helpers
             }
         }
 
-        private void UploadWholeSFTPFile(List<FileInfo> fileList, List<ViewDataUploadFilesResult> statuses, string hash, int levId, string selectedUnitId)
+        private void UploadWholeSFTPFile(List<FileInfo> fileList, List<ViewDataUploadFilesResult> statuses, string hash, int levId, string selectedUnitId, string dirShortName)
         {
+            var extendedFileName = String.Empty;
+
             for (int i = 0; i < fileList.Count; i++)
             {
                 var file = fileList[i];
@@ -340,43 +327,31 @@ namespace InrappSos.ApplicationService.Helpers
                                                || Path.GetExtension(file.Name).ToLower() == ".xlsx"))
                 {
                     String pathOnServer = Path.Combine(StorageRoot);
-                    var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file.Name);
-                    var extension = Path.GetExtension(file.Name);
                     var filOfFilesAddOn = "!" + (i + 1).ToString() + "!" + (fileList.Count).ToString();
                     var timestamp = DateTime.Now.ToString("yyyyMMdd" + "T" + "HHmmss");
-                    var extendedFileName = fileNameWithoutExtension + hash + filOfFilesAddOn + "!" + timestamp + "!" + selectedUnitId + extension;
+
+                    if (dirShortName == "PAR") //TODO - anpassa PAR till övriga? Taggas nu före filnamnet
+                    {
+                        extendedFileName = hash + filOfFilesAddOn + "!" + timestamp + "!" + selectedUnitId + "#" + file.Name;
+                    }
+                    else
+                    {
+                        var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file.Name);
+                        var extension = Path.GetExtension(file.Name);
+                        extendedFileName = fileNameWithoutExtension + hash + filOfFilesAddOn + "!" + timestamp + "!" + selectedUnitId + extension;
+
+                    }
                     var fullPath = Path.Combine(pathOnServer, Path.GetFileName(extendedFileName));
                     file.CopyTo(fullPath);
                     statuses.Add(UploadResult(file.Name, Convert.ToInt32(file.Length), file.Name, (extendedFileName), levId, i + 1));
                 }
             }
         }
+        
 
-        private void UploadWholePARSFTPFile(List<FileInfo> fileList, List<ViewDataUploadFilesResult> statuses, string hash, int levId, string selectedUnitId)
+        private void UploadWholeFile(HttpContextBase requestContext, List<ViewDataUploadFilesResult> statuses, string hash, int levId, string selectedUnitId, string dirShortName)
         {
-            for (int i = 0; i < fileList.Count; i++)
-            {
-                var file = fileList[i];
-
-                //TODO - check filename depending on chosen registertype
-                if (file.Length > 0 && (Path.GetExtension(file.Name).ToLower() == ".txt"
-                                        || Path.GetExtension(file.Name).ToLower() == ".xls"
-                                        || Path.GetExtension(file.Name).ToLower() == ".xlsx"))
-                {
-                    String pathOnServer = Path.Combine(StorageRoot);
-                    var filOfFilesAddOn = "!" + (i + 1).ToString() + "!" + (fileList.Count).ToString();
-                    var timestamp = DateTime.Now.ToString("yyyyMMdd" + "T" + "HHmmss");
-                    var extendedFileName = hash + filOfFilesAddOn + "!" + timestamp + "!" + selectedUnitId + "#" + file.Name;
-                    var fullPath = Path.Combine(pathOnServer, Path.GetFileName(extendedFileName));
-                    file.CopyTo(fullPath);
-                    statuses.Add(UploadResult(file.Name, Convert.ToInt32(file.Length), file.Name, (extendedFileName), levId, i + 1));
-                }
-            }
-        }
-
-
-        private void UploadWholeFile(HttpContextBase requestContext, List<ViewDataUploadFilesResult> statuses, string hash, int levId, string selectedUnitId)
-        {
+            var extendedFileName = String.Empty;
             var request = requestContext.Request;
             for (int i = 0; i < request.Files.Count; i++)
             {
@@ -388,39 +363,21 @@ namespace InrappSos.ApplicationService.Helpers
                     || Path.GetExtension(file.FileName).ToLower() == ".xlsx"))
                 {
                     String pathOnServer = Path.Combine(StorageRoot);
-                    //var fullPath = Path.Combine(pathOnServer, Path.GetFileName(file.FileName));
-                    var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file.FileName);
-                    var extension = Path.GetExtension(file.FileName);
                     var filOfFilesAddOn = "!" + (i + 1).ToString() + "!" + (request.Files.Count).ToString();
                     var timestamp = DateTime.Now.ToString("yyyyMMdd" + "T" + "HHmmss");
-                    //var extendedFileName = hash + filOfFilesAddOn + "!" + timestamp + "!" + selectedUnitId + "#" + file.FileName;
-                    var extendedFileName = fileNameWithoutExtension + hash + filOfFilesAddOn + "!" + timestamp + "!" + selectedUnitId + extension;
-                    var fullPath = Path.Combine(pathOnServer, Path.GetFileName(extendedFileName));
-                    file.SaveAs(fullPath);
+                    if (dirShortName == "PAR") //TODO - anpassa PAR till övriga? Taggas nu före filnamnet 
+                    {
+                        extendedFileName = hash + filOfFilesAddOn + "!" + timestamp + "!" + selectedUnitId + "#" + file.FileName;
 
-                    statuses.Add(UploadResult(file.FileName, file.ContentLength, file.FileName, (extendedFileName), levId, i + 1));
-                }
-            }
-        }
+                    }
+                    else
+                    {
+                        var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file.FileName);
+                        var extension = Path.GetExtension(file.FileName);
+                        //var extendedFileName = hash + filOfFilesAddOn + "!" + timestamp + "!" + selectedUnitId + "#" + file.FileName;
+                        extendedFileName = fileNameWithoutExtension + hash + filOfFilesAddOn + "!" + timestamp + "!" + selectedUnitId + extension;
 
-        private void UploadWholePARFile(HttpContextBase requestContext, List<ViewDataUploadFilesResult> statuses, string hash, int levId, string selectedUnitId)
-        {
-            var request = requestContext.Request;
-            //Ta bort initiala brädgården
-            hash = hash.Substring(1, hash.Length-1);
-            for (int i = 0; i < request.Files.Count; i++)
-            {
-                var file = request.Files[i];
-
-                //TODO - check filename depending on chosen registertype
-                if (file.ContentLength > 0 && (Path.GetExtension(file.FileName).ToLower() == ".txt"
-                                               || Path.GetExtension(file.FileName).ToLower() == ".xls"
-                                               || Path.GetExtension(file.FileName).ToLower() == ".xlsx"))
-                {
-                    String pathOnServer = Path.Combine(StorageRoot);
-                    var filOfFilesAddOn = "!" + (i + 1).ToString() + "!" + (request.Files.Count).ToString();
-                    var timestamp = DateTime.Now.ToString("yyyyMMdd" + "T" + "HHmmss");
-                    var extendedFileName = hash + filOfFilesAddOn + "!" + timestamp + "!" + selectedUnitId + "#" + file.FileName;
+                    }
                     var fullPath = Path.Combine(pathOnServer, Path.GetFileName(extendedFileName));
                     file.SaveAs(fullPath);
 
@@ -438,36 +395,6 @@ namespace InrappSos.ApplicationService.Helpers
             //return filloggar.Select(FilloggDetaljDTO.)
         }
 
-
-        //private void UploadPartialFile(string fileName, HttpContextBase requestContext, List<ViewDataUploadFilesResult> statuses)
-        //{
-        //    var request = requestContext.Request;
-        //    if (request.Files.Count != 1) throw new HttpRequestValidationException("Attempt to upload chunked file containing more than one fragment per request");
-        //    var file = request.Files[0];
-        //    var inputStream = file.InputStream;
-        //    String patchOnServer = Path.Combine(StorageRoot);
-        //    var fullName = Path.Combine(patchOnServer, Path.GetFileName(file.FileName));
-        //    var ThumbfullPath = Path.Combine(fullName, Path.GetFileName(file.FileName + "80x80.jpg"));
-        //    //TODO - rensa imagehandler stuff
-        //    //ImageHandler handler = new ImageHandler();
-
-        //    //var ImageBit = ImageHandler.LoadImage(fullName);
-        //    //handler.Save(ImageBit, 80, 80, 10, ThumbfullPath);
-        //    using (var fs = new FileStream(fullName, FileMode.Append, FileAccess.Write))
-        //    {
-        //        var buffer = new byte[1024];
-
-        //        var l = inputStream.Read(buffer, 0, 1024);
-        //        while (l > 0)
-        //        {
-        //            fs.Write(buffer, 0, l);
-        //            l = inputStream.Read(buffer, 0, 1024);
-        //        }
-        //        fs.Flush();
-        //        fs.Close();
-        //    }
-        //    statuses.Add(UploadResult(file.FileName, file.ContentLength, file.FileName));
-        //}
 
         private string GetHashAddOn(string orgKod, int levId)
         {
@@ -579,36 +506,8 @@ namespace InrappSos.ApplicationService.Helpers
                 }
             }
         }
-
-        //private string GetPeriodFromFilename(HttpPostedFileBase file)
-        //{
-        //    var fileName = file.FileName;
-        //    var period = String.Empty;
-
-        //    var chunkedFileName = fileName.Split('_');
-
-        //    switch (chunkedFileName[0].ToUpper())
-        //    {
-        //        case "SOL1":
-        //        case "SOL2":
-        //        case "KHSL":
-        //        case "KHSL1":
-        //        case "KHSL2":
-        //        case "LSS":
-        //            period = chunkedFileName[2];
-        //            break;
-        //        case "BU":
-        //            period = chunkedFileName[3];
-        //            break;
-        //        case "EKB":
-        //            period = chunkedFileName[1].ToUpper() == "AO" ? chunkedFileName[3] : chunkedFileName[2];
-        //            break;
-        //        default:
-        //            break;
-        //    }
-        //    return period;
-        //}
     }
+
     public class ViewDataUploadFilesResult
     {
         public string name { get; set; }

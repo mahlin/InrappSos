@@ -18,7 +18,7 @@ namespace SFTPFileHandler
     public class SFTPWatcher
     {
         private readonly IPortalSosService _portalService;
-        private DateTime _fullTimeReached;
+        private int _timeToWaitForCompleteDelivery;
         FilesHelper filesHelper;
 
 
@@ -27,14 +27,12 @@ namespace SFTPFileHandler
             get { return Path.Combine(ConfigurationManager.AppSettings["uploadFolder"]); }
         }
 
-
         public SFTPWatcher()
         {
             _portalService =
                 new PortalSosService(new PortalSosRepository(new InrappSosDbContext()));
-            int _timeToWaitForCompleteDelivery = Convert.ToInt32(ConfigurationManager.AppSettings["TimeSpan"]);
+            _timeToWaitForCompleteDelivery = Convert.ToInt32(ConfigurationManager.AppSettings["TimeSpan"]);
             DateTime currentTime = DateTime.Now;
-            _fullTimeReached = currentTime.AddMinutes(_timeToWaitForCompleteDelivery);
             filesHelper = new FilesHelper(StorageRoot);
         }
 
@@ -139,14 +137,18 @@ namespace SFTPFileHandler
                                     }
                                     else
                                     {
-                                        //If not complete, check if enought time elapsed
+                                        //If not complete, check if enough time elapsed
                                         var sortedFilesList = okFilesForSubDirList.OrderByDescending(p => p.CreationTime).ToList();
                                         //Check youngest file
-                                        if (sortedFilesList[0].CreationTime > _fullTimeReached)
+                                        var tmp = sortedFilesList[0].CreationTime.AddMinutes(_timeToWaitForCompleteDelivery);
+                                        var tmp2 = sortedFilesList[0].CreationTime;
+
+                                        if (sortedFilesList[0].CreationTime.AddMinutes(_timeToWaitForCompleteDelivery) <  DateTime.Now)
                                         {
                                             //TODO - email
                                             Console.WriteLine("Sending email. Not complete delivery.");
                                             Console.ReadLine();
+                                            //TODO - move files to other area
                                         }
                                     }
                                 }

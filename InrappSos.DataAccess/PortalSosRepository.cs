@@ -410,6 +410,19 @@ namespace InrappSos.DataAccess
             return contacts;
         }
 
+        public IEnumerable<ApplicationUser> GetContactPersonsForSFTPAccount(int sftpAccountId)
+        {
+            var contactsList = new List<ApplicationUser>();
+            var contactIds = DbContext.KontaktpersonSFTPkonto.Where(x => x.SFTPkontoId == sftpAccountId).Select(x => x.ApplicationUserId).ToList();
+            foreach (var contactId in contactIds)
+            {
+                var contact = DbContext.Users.SingleOrDefault(x => x.Id == contactId);
+                if (contact != null)
+                    contactsList.Add(contact);
+            }
+            return contactsList;
+        }
+
         public IEnumerable<ApplicationUser> GetContactPersonsForOrgAndSubdir(int orgId, int subdirId)
         {
             var contactList = new List<ApplicationUser>();

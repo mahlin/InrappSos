@@ -376,6 +376,23 @@ namespace InrappSos.ApplicationService
             return contacts;
         }
 
+        public IEnumerable<ApplicationUser> HamtaKontaktpersonerForSFTPKonto(int sftpKontoId)
+        {
+            var contacts = _portalSosRepository.GetContactPersonsForSFTPAccount(sftpKontoId);
+            return contacts;
+        }
+
+        public List<string> HamtaEpostadresserForSFTPKonto(int sftpKontoId)
+        {
+            var emailadresses = new List<string>();
+            var contacts = _portalSosRepository.GetContactPersonsForSFTPAccount(sftpKontoId);
+            foreach (var contact in contacts)
+            {
+                emailadresses.Add(contact.Email);
+            }
+            return emailadresses;
+        }
+
         public IEnumerable<UndantagEpostadress> HamtaPrivataEpostadresserForOrg(int orgId)
         {
             var privEmails = _portalSosRepository.GetPrivateEmailAdressesForOrg(orgId);

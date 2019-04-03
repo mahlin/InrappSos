@@ -206,8 +206,9 @@ namespace InrappSos.AstridWeb.Controllers
             return RedirectToAction("CRUDRoles");
         }
 
-        //[Authorize(Roles = "Admin")]
-        [HasPermission("EditFAQ")]
+        [Authorize(Roles = "Admin")]
+        //TODO - HasPermission?
+        //[HasPermission("EditFAQ")]
         // GET: /Roles/Edit/5
         public ActionResult EditAstridRole(string roleName)
         {

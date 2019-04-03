@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Configuration;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Net.Mail;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using InrappSos.ApplicationService;
 using InrappSos.ApplicationService.Helpers;
 using InrappSos.ApplicationService.Interface;
@@ -20,6 +20,11 @@ namespace SFTPFileHandler
         private readonly IPortalSosService _portalService;
         private int _timeToWaitForCompleteDelivery;
         FilesHelper filesHelper;
+        private static SmtpClient _smtpClient;
+        private string _mailSender;
+        private static bool _mailLogEnabled =bool.Parse(ConfigurationManager.AppSettings["MailLogEnabled"]);
+        private static string _mailLogPath = ConfigurationManager.AppSettings["SFTPMailLogFile"];
+        private static readonly object _mailLogLock = new object();
 
 
         private string StorageRoot
@@ -34,6 +39,9 @@ namespace SFTPFileHandler
             _timeToWaitForCompleteDelivery = Convert.ToInt32(ConfigurationManager.AppSettings["TimeSpan"]);
             DateTime currentTime = DateTime.Now;
             filesHelper = new FilesHelper(StorageRoot);
+            _smtpClient = new SmtpClient(ConfigurationManager.AppSettings["MailServer"]);
+            _mailSender = ConfigurationManager.AppSettings["MailSender"];
+            _mailLogPath = _mailLogPath.Replace(".txt", "_" + DateTime.Now.ToString("yyyyMMdd") + ".txt");
         }
 
         public void CheckFiles()
@@ -124,15 +132,43 @@ namespace SFTPFileHandler
                                         }
                                         catch (ApplicationException e)
                                         {
-                                            //Todo - send mail?
                                             ErrorManager.WriteToErrorLog("SFTPWatcher", "Upload approved files", e.ToString(),
                                                 e.HResult, folder);
+                                            //TODO - email, ta bort ReadLine
+                                            Console.WriteLine("Sending email-alert. Upload files aborted.");
+                                            Console.ReadLine();
+                                            var mailRecipients = new List<string>();
+                                            mailRecipients.Add(_mailSender);
+                                            string subject = "SFTP-leverans gick ej att ladda upp.";
+                                            string body = "Hej! </br>";
+                                            body += "Fel inträffade när leveransen skulle sparas. <br>";
+                                            body += e.ToString() +  "<br>";
+                                            foreach (var file in okFilesForSubDirList)
+                                            {
+                                                body += file.Name + "<br> ";
+                                            }
+                                            body += "SFTPkonto: " + folderName + "</br>";
+
+                                            SendEmail(subject, body, mailRecipients);
                                         }
                                         catch (Exception e)
                                         {
                                             //Todo - send mail?
-                                            ErrorManager.WriteToErrorLog("SFTPWatcher", "Upload approved files", e.ToString(),
-                                                e.HResult, folder);
+                                            Console.WriteLine("Sending email-alert. Upload files aborted.");
+                                            Console.ReadLine();
+                                            var mailRecipients = new List<string>();
+                                            mailRecipients.Add(_mailSender);
+                                            string subject = "SFTP-leverans gick ej att ladda upp.";
+                                            string body = "Hej! </br>";
+                                            body += "Fel inträffade när leveransen skulle sparas. <br>";
+                                            body += e.ToString() + "<br>";
+                                            foreach (var file in okFilesForSubDirList)
+                                            {
+                                                body += file.Name + "<br> ";
+                                            }
+                                            body += "SFTPkonto: " + folderName + "</br>";
+
+                                            SendEmail(subject, body, mailRecipients);
                                         }
                                     }
                                     else
@@ -145,31 +181,66 @@ namespace SFTPFileHandler
 
                                         if (sortedFilesList[0].CreationTime.AddMinutes(_timeToWaitForCompleteDelivery) <  DateTime.Now)
                                         {
-                                            //TODO - email
-                                            Console.WriteLine("Sending email. Not complete delivery.");
-                                            Console.ReadLine();
-                                            //TODO - move files to other area
+                                            try
+                                            {
+                                                //TODO - email, ta bort ReadLine
+                                                Console.WriteLine("Sending email. Not complete delivery.");
+                                                Console.ReadLine();
+                                                var mailRecipients = _portalService.HamtaEpostadresserForSFTPKonto(ftpAccount.Id);
+                                                string subject = "SFTP-leverans ej komplett";
+                                                string body = "Hej! </br>";
+                                                body += "Leveransen är ej komplett. <br>";
+                                                foreach (var file in sortedFilesList)
+                                                {
+                                                    body += file.Name + "<br> ";
+                                                }
+                                                body += "SFTPkonto: " + folderName + "</br>";
+                                                body += "Vid frågor kontakta Socialstyrelsen, e-post: inrapportering@socialstyrelsen.se eller telefon 010 222 2222. <br> ";
+
+                                                SendEmail(subject, body, mailRecipients);
+
+                                                var errorFilesArea = ConfigurationManager.AppSettings["notApprovedFilesFolder"];
+                                                String pathOnServer = Path.Combine(errorFilesArea);
+                                                //Kopiera filerna till fel-mappen 
+                                                foreach (var file in sortedFilesList)
+                                                {
+                                                    var fullPath = Path.Combine(pathOnServer, Path.GetFileName(file.Name));
+                                                    file.CopyTo(fullPath);
+                                                }
+                                                //Ta sen bort filerna från ursprungliga mappen
+                                                foreach (var file in sortedFilesList)
+                                                {
+                                                    file.Delete();
+                                                }
+                                            }
+                                            catch (Exception e)
+                                            {
+                                                Console.WriteLine(e);
+                                                //Send email
+                                                var mailRecipients = new List<string>();
+                                                mailRecipients.Add(_mailSender);
+                                                ErrorManager.WriteToErrorLog("SFTPWatcher", "Moving not approved files aborted", e.ToString(), e.HResult, folderName);
+
+                                                string subject = "Ett fel inträffade när ej godkända filer skulle flyttas.";
+                                                string body = "Hej! </br>";
+                                                body += "Fel inträffade när ej godkända filer skulle flyttas. <br>";
+                                                body += e.ToString() + "<br>";
+                                                foreach (var file in okFilesForSubDirList)
+                                                {
+                                                    body += file.Name + "<br> ";
+                                                }
+                                                body += "SFTPkonto: " + folderName + "</br>";
+
+                                                SendEmail(subject, body, mailRecipients);
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
                     }
-
                 }
             }
-        }
-
-        public static List<String> GetAllFiles(String folderPath)
-        {
-            return Directory.GetFiles(folderPath, "*.*", SearchOption.TopDirectoryOnly).ToList();
-        }
-
-        private string GetFilenameFromPath(string filePath)
-        {
-            var lastSlashPos = filePath.LastIndexOf("\\");
-            var fileName = filePath.Substring(lastSlashPos + 1);
-            return fileName;
         }
 
         private string GetFolderNameFromPath(string folderPath)
@@ -177,13 +248,6 @@ namespace SFTPFileHandler
             var lastSlashPos = folderPath.LastIndexOf("\\");
             var folderName = folderPath.Substring(lastSlashPos + 1);
             return folderName;
-        }
-
-        public string GetFilenameStart(string fileName)
-        {
-            var firstUnderscorePos = fileName.IndexOf("_");
-            var fileNameStart = fileName.Substring(0, firstUnderscorePos);
-            return fileNameStart;
         }
 
         private bool CompleteDelivery(RegisterFilkrav filkrav, List<FileInfo> fileList)
@@ -227,20 +291,89 @@ namespace SFTPFileHandler
             return complete;
         }
 
+        public void SendEmail(string subject, string bodytext, List<string> mailRecipients)
+        {
+            try
+            {
+                string currentDate = DateTime.Now.ToString("yyyyMMdd");
 
+                MailMessage msg = new MailMessage();
+                MailAddress fromMail = new MailAddress(_mailSender);
+                msg.From = fromMail;
 
+                foreach (var address in mailRecipients)
+                {
+                    msg.To.Add(address);
+                }
 
+                //TODO för test, använd min epostadress
+                msg.To.Add("marie.ahlin@socialstyrelsen.se");
 
+                msg.Subject = subject;
+                msg.Body = bodytext;
+                msg.BodyEncoding = System.Text.Encoding.UTF8;
+                msg.IsBodyHtml = true;
+                //client.Send(msg);
+                _smtpClient.SendAsync(msg, "notification");
+                //Wait try to prevent to spam the server if many emails.. did run in to async problem else during testing.
+                System.Threading.Thread.Sleep(8000);
 
-        ////TODO - dummyobject i väntan på databastabell
-        //public class FtpAccoutnt
+                Log("Mail till : " + mailRecipients + ". Rubrik: " + subject);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("SFTPWatcher", "Send Email", e.ToString(),e.HResult, mailRecipients[0]);
+            }
+
+            //_smtpClient.SendCompleted += new SendCompletedEventHandler(SendCompletedCallback);
+        }
+
+        //private static void SendCompletedCallback(object sender, AsyncCompletedEventArgs e)
         //{
-        //    public int Id { get; set; }
-        //    public int OrganisationsId { get; set; }
-        //    public string Name { get; set; }
+        //    // Get the unique identifier for this asynchronous operation.
+        //    var token = (string)e.UserState;
 
+        //    if (e.Cancelled)
+        //    {
+        //        Console.WriteLine(e.Cancelled.ToString());
+        //        // Logger.Log(Logger.Level.Info," Send canceled. " +  token);
+        //    }
+        //    if (e.Error != null)
+        //    {
+        //        Console.WriteLine(e.Error.ToString());
+        //        ErrorManager.WriteToErrorLog("SFTPWatcher", "Error sending email.", e.ToString());
+        //        //Logger.Log(Logger.Level.Error, " Send failed. " + e.Error.ToString());
+        //    }
+        //    else
+        //    {
+        //        Console.WriteLine("Sent mail successfully.");
+        //        // Logger.Log(Logger.Level.Info, " Sent notification successfully.");
+        //    }
         //}
 
+        // <summary>
+        // Logs a message to either the console or a file
+        // </summary>
+        // <param name="message">The message</param>
+        private static void Log(string message)
+        {
+
+            if (_mailLogEnabled)
+            {
+                lock (_mailLogLock)
+                {
+                    try
+                    {
+                        File.AppendAllText(_mailLogPath, DateTime.Now.ToString("[yyyy-MM-dd HH:mm:ss]") + " " + message + Environment.NewLine);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Couldn't log '" + message + "' to file log '" + _mailLogPath + "'" + Environment.NewLine + ex.ToString());
+                    }
+                }
+            }
+        }
 
     }
 }

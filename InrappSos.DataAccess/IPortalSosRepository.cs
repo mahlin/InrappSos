@@ -111,6 +111,9 @@ namespace InrappSos.DataAccess
         ArendeStatus GetCaseStatus(int casestatusId);
 
         IEnumerable<ApplicationUser> GetContactPersonsForOrg(int orgId);
+
+        IEnumerable<ApplicationUser> GetContactPersonsForSFTPAccount(int sftpAccountId);
+
         IEnumerable<ApplicationUser> GetContactPersonsForOrgAndSubdir(int orgId, int subdirId);
 
         //IEnumerable<AppUserAdmin> GetAdminUsers();

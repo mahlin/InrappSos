@@ -87,6 +87,10 @@ namespace InrappSos.ApplicationService.Interface
 
         IEnumerable<ApplicationUser> HamtaKontaktpersonerForOrg(int orgId);
 
+        IEnumerable<ApplicationUser> HamtaKontaktpersonerForSFTPKonto(int sftpKontoId);
+
+        List<string> HamtaEpostadresserForSFTPKonto(int sftpKontoId);
+
         IEnumerable<UndantagEpostadress> HamtaPrivataEpostadresserForOrg(int orgId);
 
         IEnumerable<UndantagForvantadfil> HamtaUndantagnaForvantadeFilerForOrg(int orgId);

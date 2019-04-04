@@ -2010,6 +2010,16 @@ namespace InrappSos.DataAccess
                 Slussmapp = delReg.Slussmapp
             };
 
+            //Orgtyper som registret kan rapporteras för
+            regInfo.Organisationstyper = new List<KeyValuePair<int,string>>();
+            var orgTypeIdsForSubDir = GetOrgTypesIdsForSubDir(delReg.Id);
+            foreach (var orgtypeId in orgTypeIdsForSubDir)
+            {
+                var orgtype = GetOrgtype(orgtypeId);
+                KeyValuePair<int, string> keyValuePair =
+                    new KeyValuePair<int, string>(orgtype.Id, orgtype.Typnamn);
+                regInfo.Organisationstyper.Add(keyValuePair);
+            }
 
             var filkravList = new List<RegisterFilkrav>();
             var i = 1;

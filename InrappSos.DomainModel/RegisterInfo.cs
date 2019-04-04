@@ -15,6 +15,7 @@ namespace InrappSos.DomainModel
         public string InfoText { get; set; }
         public string Slussmapp { get; set; }
         public bool RapporterarPerEnhet { get; set; } = false;
+        public List<KeyValuePair<int,string>> Organisationstyper { get; set; }
         public List<KeyValuePair<string, string>> Organisationsenheter { get; set; }
         public List<KeyValuePair<string, string>> Orgenheter { get; set; }
         public List<RegisterFilkrav> Filkrav { get; set; }

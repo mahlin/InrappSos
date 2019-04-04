@@ -1,4 +1,5 @@
 ﻿var $ = jQuery;
+var validFileCode = "";
 
 $(document).ready(function () {
 
@@ -72,6 +73,7 @@ $(document).on('submit', '#updateHistoryForm', function () {
 $(document).on('change','#ddlRegister',
     function() {
         var selectedRegister = $('#ddlRegister').val();
+        var x = $("#GiltigKommunKod").val();
 
         $('#fileupload').fileupload(
             'option',
@@ -87,6 +89,28 @@ $(document).on('change','#ddlRegister',
         
         registerLista.forEach(function (register, index) {
             if (selectedRegister === register.Id.toString()) {
+                //Set validFileCode
+                var foundKommun = false;
+                var foundLandsting = false;
+                register.Organisationstyper.forEach(function (unit, ix) {
+                    var x = unit.Value;
+                    var y = unit.Key;
+                    if (unit.Value === "Kommun") {
+                        foundKommun = true;
+                    }
+                    else if (unit.Value === "Landsting") {
+                        foundLandsting = true;
+                    }
+                });
+                if (foundKommun) {
+                    validFileCode = $("#GiltigKommunKod").val();
+                }
+                else if (foundLandsting) {
+                    validFileCode = $("#GiltigLandstingsKod").val();
+                }
+                else
+                    validFileCode = $("#GiltigInrapporteringsKod").val();
+
                 if (register.Filkrav.length === 0) {
                     var info = "<b>Det finns ingen pågående insamling av de valda uppgifterna.</b><br>" + register.InfoText ;
                     $('#registerInfo').html(info); 
@@ -201,9 +225,18 @@ $(document).on('change','#ddlRegister',
                 if ($('#ddlPerioder').length > 0) {
                     $('#ingetAttRapportera').show(); 
                 }
-                //$('.fileinput-button')
-                //    .prop('disabled', false)
-                //    .parent().removeClass('disabled');
+                //Set validFileCode
+                registerLista.forEach(function(register, index) {
+                    if (selectedRegister === register.Id.toString()) {
+                        register.Orgenheter.forEach(function (unit, ix) {
+                            var x = unit.Value;
+                            var y = unit.Key;
+                            if (unit.Key === $("#SelectedUnitId").val()) {
+                                validFileCode = unit.Value;
+                            }
+                        });
+                    }
+                });
             }
         });
 

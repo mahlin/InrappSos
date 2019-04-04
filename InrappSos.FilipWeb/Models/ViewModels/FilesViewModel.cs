@@ -24,6 +24,8 @@ namespace InrappSos.FilipWeb.Models.ViewModels
         public List<RegisterInfo> RegisterList { get; set; }
         public List<FilloggDetaljDTO> HistorikLista { get; set; }
         public string GiltigKommunKod { get; set; }
+        public string GiltigLandstingsKod { get; set; }
+        public string GiltigInrapporteringsKod { get; set; }
         public string OrganisationsNamn { get; set; }
         public string StartUrl { get; set; }
 

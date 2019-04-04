@@ -52,6 +52,14 @@ function CheckKommunKodInFileName(regexMatch) {
     return false;
 }
 
+//Ny 20190403 - alla filnamn kontrolleras mot validFileCode
+function CheckFileCodeInFileName(regexMatch) {
+    var filkod = (regexMatch[1]);
+    if (validFileCode === filkod)
+        return true;
+    return false;
+}
+
 function CheckFilkodInFileName(selectedOrgUnitId, regexMatch) {
     var filkod = (regexMatch[1]);
     if (selectedOrgUnitId === filkod)
@@ -309,11 +317,12 @@ function getTableRows() {
                     if (regexMatch === null) {
                         file.error = settings.i18n('incorrectFileName');
                     }
-                    else if ((currRegister === 'CAN' || currRegister === 'OV_' || currRegister === 'SV_') && !CheckFilkodInFileName(selectedOrgUnitId, regexMatch)) {
+                    else if (!CheckFileCodeInFileName(regexMatch)) {
+                    //else if ((currRegister === 'CAN' || currRegister === 'OV_' || currRegister === 'SV_') && !CheckFilkodInFileName(selectedOrgUnitId, regexMatch)) {
                     //else if ((currRegister === 'CAN' || currRegister === 'OV_') && !CheckFilkodInFileName(data.selectedRegister, selectedOrgUnitId, regexMatch)) {
                         file.error = settings.i18n('incorrectFilkodInFileName');
-                    } else if ((currRegister !== 'LVM' && currRegister !== 'CAN' && currRegister !== 'OV_' && currRegister !== 'SV_') && !CheckKommunKodInFileName(regexMatch)) {
-                        file.error = settings.i18n('incorrectKommunKodInFileName');
+                    //} else if ((currRegister !== 'LVM' && currRegister !== 'CAN' && currRegister !== 'OV_' && currRegister !== 'SV_') && !CheckKommunKodInFileName(regexMatch)) {
+                    //    file.error = settings.i18n('incorrectKommunKodInFileName');
                     }
                     else if (!CheckPeriodInFileName(data.selectedRegister, regexMatch)) {
                         file.error = settings.i18n('incorrectPeriodInFileName');

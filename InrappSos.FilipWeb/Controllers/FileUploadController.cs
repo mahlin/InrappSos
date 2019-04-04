@@ -72,11 +72,13 @@ namespace InrappSos.FilipWeb.Controllers
                 //Hämta historiken för användarens organisation/kommun
                 var userId = User.Identity.GetUserId();
 
-                var kommunKodForUser = userOrg.Kommunkod;
+                //var kommunKodForUser = userOrg.Kommunkod;
                 var orgIdForUser = userOrg.Id;
 
                 _model.StartUrl = ConfigurationManager.AppSettings["StartUrl"];
-                _model.GiltigKommunKod = kommunKodForUser;
+                _model.GiltigKommunKod = userOrg.Kommunkod;
+                _model.GiltigLandstingsKod = userOrg.Landstingskod;
+                _model.GiltigInrapporteringsKod = userOrg.Inrapporteringskod;
                 _model.OrganisationsNamn = userOrg.Organisationsnamn;
 
                 var historyFileList = _portalService.HamtaTop10HistorikForOrganisationAndDelreg(orgIdForUser, valdaDelregisterInfoList).ToList();

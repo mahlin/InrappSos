@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using InrappSos.ApplicationService.Helpers;
+using Microsoft.AspNet.Identity;
+using Microsoft.Owin.Security;
 
 namespace InrappSos.FilipWeb
 {
@@ -38,6 +41,22 @@ namespace InrappSos.FilipWeb
             viewResult.ExecuteResult(cc);
             ctx.Server.ClearError();
             //ctx.Response.End();
+
+        }
+
+        protected void Session_start()
+        {
+            // starting a session and already authenticated means we have an old cookie
+            var existingUser = System.Web.HttpContext.Current.User;
+            if (existingUser != null && existingUser.Identity.Name != "")
+            {
+                // clear any existing cookies
+                IAuthenticationManager authMgr = System.Web.HttpContext.Current.GetOwinContext().Authentication;
+                authMgr.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+
+                // manually clear user from HttpContext so Authorize attr works
+                HttpContext.Current.User = new ClaimsPrincipal(new ClaimsIdentity());
+            }
 
         }
 

@@ -1,5 +1,6 @@
 ﻿var $ = jQuery;
 var validFileCode = "";
+var obligatoryRegister = true;
 
 $(document).ready(function () {
 
@@ -110,9 +111,9 @@ $(document).on('change','#ddlRegister',
                 }
                 else
                     validFileCode = $("#GiltigInrapporteringsKod").val();
-
+                var info = "";
                 if (register.Filkrav.length === 0) {
-                    var info = "<b>Det finns ingen pågående insamling av de valda uppgifterna.</b><br>" + register.InfoText ;
+                    info = "<b>Det finns ingen pågående insamling av de valda uppgifterna.</b><br>" + register.InfoText ;
                     $('#registerInfo').html(info); 
                     $('.fileinput-button').hide();
                     $('.start').hide();
@@ -131,22 +132,24 @@ $(document).on('change','#ddlRegister',
                     $('#parallellaForeskrifter').show();
                 } else {
                     $('.fileinput-button').show();
-                    $('#parallellaForeskrifter').hide
-                    if (register.Kortnamn == 'LVM' || register.Kortnamn == 'OJ2') {
-                        var info = register.InfoText + register.Filkrav[0].InfoText;
+                    $('#parallellaForeskrifter').hide();
+                    if (register.Kortnamn === 'LVM' || register.Kortnamn === 'OJ2') {
+                        info = register.InfoText + register.Filkrav[0].InfoText;
                     } else {
-                        var info = "<span style='color:red'>Notera att våra kontrollprogram inte accepterar <b>rubrikrad</b> i filerna. Kontrollera att dina filer inte innehåller rubrikrad innan uppladdning.</span><br>" + register.InfoText + register.Filkrav[0].InfoText;
+                        info = "<span style='color:red'>Notera att våra kontrollprogram inte accepterar <b>rubrikrad</b> i filerna. Kontrollera att dina filer inte innehåller rubrikrad innan uppladdning.</span><br>" + register.InfoText + register.Filkrav[0].InfoText;
                     }
                     register.SelectedFilkrav = register.Filkrav[0].Id;
                     $('#registerInfo').html(info);
 
                     // No2 - Check if obligatory for this org to report for this register
                     if (!register.Filkrav[0].ForvantadeFiler[0].Obligatorisk) {
+                        obligatoryRegister = false;
                         var periodLista = register.Filkrav[0].Perioder;
                         addSelect("select-container", register.Filkrav[0].Perioder);
                         $('#ingetAttRapporteraBtn').attr("disabled", "disabled");
                         $('#ingetAttRapportera').show();
                     } else {
+                        obligatoryRegister = true;
                         $('#ingetAttRapportera').hide();
                     }
                     // No3 - Check if organisation is supposed to leave files per unit
@@ -222,7 +225,7 @@ $(document).on('change','#ddlRegister',
                 $('#fileinputButton').removeClass('disabled');
                 $('#filesExplorerOpener').prop('disabled', false);
                 $('#filesExplorerOpener').removeClass('disabled');
-                if ($('#ddlPerioder').length > 0) {
+                if ($('#ddlPerioder').length > 0 && !obligatoryRegister) {
                     $('#ingetAttRapportera').show(); 
                 }
                 //Set validFileCode

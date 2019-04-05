@@ -91,32 +91,36 @@
         registerLista.forEach(function (register, index) {
             if (selectedRegister === register.Id.toString()) {
                 if (register.DelregisterList.length !== 0) {
-                    var vals = {};
+                    var vals = [];
                     register.DelregisterList.forEach(function (delregister, index) {
                         if (delregister.ForvantadeLeveranserList.length !== 0) {
                             delregister.ForvantadeLeveranserList.forEach(function (unit, index) {
                                 //Ta bara med senaste period och bakåt i tiden
                                 if (unit.Period.length === 4) {
                                     //Årsperiod
-                                    if (parseInt(unit.Period) <= parseInt(latestPeriodYear)) {
+                                    if (parseInt(unit.Period) < parseInt(latestPeriodYear)) {
                                         vals[unit.Period] = unit.Period;
                                     }
                                 } else if (unit.Period.length === 6) {
                                     //Månadsperiod 
-                                    if (parseInt(unit.Period) <= parseInt(latestPeriodMonth)) {
+                                    if (parseInt(unit.Period) < parseInt(latestPeriodMonth)) {
                                         vals[unit.Period] = unit.Period;
                                     }
                                 }
                             });
                         }
+                        //Sortera perioderna fallande
+                        vals.sort(function(a, b) { return b - a });
                         //Populera period-dropdown
                         var $ddlPeriod = $("#ddlPeriod");
                         $ddlPeriod.empty();
                         $ddlPeriod.append("<option value=0> - Välj period - </option>");
-                        $.each(vals,
-                            function (index, value) {
-                                $ddlPeriod.append("<option value=" + index + " >" + value + "</option>");
-                            });
+                        for (var key in vals){
+                            if (typeof vals[key] !== 'function') {
+                                $ddlPeriod.append("<option value=" + key + " >" + vals[key] + "</option>");
+                                //alert("Key is " + key + ", value is" + vals[key]);
+                            }
+                        }
                         $ddlPeriod.removeAttr('readonly');
                     });
                 }
@@ -139,23 +143,29 @@
                                     //Ta bara med senaste period och bakåt i tiden
                                     if (unit.Period.length === 4) {
                                         //Årsperiod
-                                        if (parseInt(unit.Period) <= parseInt(latestPeriodYear)) {
+                                        if (parseInt(unit.Period) < parseInt(latestPeriodYear)) {
                                             vals[unit.Period] = unit.Period;
                                         }
                                     } else if (unit.Period.length === 6) {
                                         //Månadsperiod 
-                                        if (parseInt(unit.Period) <= parseInt(latestPeriodMonth)) {
+                                        if (parseInt(unit.Period) < parseInt(latestPeriodMonth)) {
                                             vals[unit.Period] = unit.Period;
                                         }
                                     }
                                 });
+                                //Sortera perioderna fallande
+                                vals.sort(function (a, b) { return b - a });
+
                                 var $ddlPeriod = $("#ddlPeriod");
                                 $ddlPeriod.empty();
                                 $ddlPeriod.append("<option avlue=0> - Välj period - </option>");
-                                $.each(vals,
-                                    function (index, value) {
-                                        $ddlPeriod.append("<option value=" + index + " >" + value + "</option>");
-                                    });
+
+                                for (var key in vals){
+                                    if (typeof vals[key] !== 'function') {
+                                        $ddlPeriod.append("<option value=" + key + " >" + vals[key] + "</option>");
+                                        //alert("Key is " + key + ", value is" + vals[key]);
+                                    }
+                                }
                                 $ddlPeriod.removeAttr('readonly');
                             }
                         }

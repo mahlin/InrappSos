@@ -1483,7 +1483,9 @@ namespace InrappSos.AstridWeb.Controllers
                         };
                         forvLevListDTO.Add(forvlevDTO);
                     }
-                    delregDTO.ForvantadeLeveranserList = forvLevListDTO;
+                    //Sort periods falling
+                    var sortedForvLevListDTO = forvLevListDTO.OrderByDescending(x => x.Period).ToList();
+                    delregDTO.ForvantadeLeveranserList = sortedForvLevListDTO;
                     delregListDTO.Add(delregDTO);
                 }
                 registerDTO.DelregisterList = delregListDTO;

@@ -167,7 +167,12 @@
 
             @Html.HiddenFor(m => m.SelectedOrganisationId)
             <div style="font-size: 1.2em; padding-left: 20px; padding-bottom: 20px;"><b>@Model.Organisation.Organisationsnamn</b></div>
-            @Html.ActionLink("Skapa ny uppgiftsskyldighet", "CreateReportObligation", "Organisation", new { selectedOrganisationId = Model.SelectedOrganisationId}, new { style = "padding-left:20px;" })
+            <div class="row">
+                <div class="col-md-8">
+                    @Html.ActionLink("Skapa ny uppgiftsskyldighet", "CreateReportObligation", "Organisation", new {selectedOrganisationId = Model.SelectedOrganisationId}, new {style = "padding-left:20px;"})
+                </div>
+                @Html.ActionLink("Till organisationssidan", "GetOrganisation", "Organisation", new {selectedOrganisationId = Model.SelectedOrganisationId }, null)
+            </div>
 
             <div id="gridContent" style="font-family: Arial; padding: 20px;">
                 @{

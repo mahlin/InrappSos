@@ -14,12 +14,25 @@
     });
 
     $(document).ready(function () {
+        if ($('#VisaInaktiva').val().toUpperCase() === 'TRUE') {
+            $('#chbxInaktiva').prop('checked', true);
+        } else {
+            $('#chbxInaktiva').prop('checked', false);
+        }
+
         //Göm kolumnen med dropdown/Roller om ej edit-mode
         $('#usersTable tr th:eq(0)').hide();
         $('#usersTable tr th:eq(11)').hide();
         $("#usersTable tbody tr").each(function (i, row) {
             $(row).find('td:eq(0)').hide();
             $(row).find('td:eq(11)').hide();
+            if (!$('#chbxInaktiva').is(':checked')) {
+                var x = $(row).find("#ContactAktivTom").length;
+                var y = $(row).find("#ContactAktivTom").val();
+                if ($(row).find("#ContactAktivTom").val() !== "") {
+                    $(row).hide();
+                }  
+            }
         });
 
         var modalConfirm = function test(callback) {
@@ -57,6 +70,26 @@
         });
     });
 
+
+    $(document).on('change', '#chbxInaktiva', function () {
+        if ($('#chbxInaktiva').is(':checked')) {
+            $('#VisaInaktiva').val(true);
+        } else {
+            $('#VisaInaktiva').val(false);
+        }
+
+        $("#usersTable tbody tr").each(function (i, row) {
+            var $actualRow = $(row);
+            if ($('#chbxInaktiva').is(':checked')) {
+                $actualRow.show();
+            } else {
+                if ($actualRow.find("#ContactAktivTom").val() !== "") {
+                    $actualRow.hide();
+                }
+            }
+        });
+    });
+
     $(function () {
         $("#searchText").focus();
     });
@@ -85,7 +118,6 @@
     }
 
     $(function () {
-
         //Multiselect
         $('[id*=ddlRoleList]').multiselect({
             onInitialized: function () {
@@ -296,6 +328,7 @@
         {
             @Html.HiddenFor(m => m.SelectedContactId)
             @Html.HiddenFor(m => m.SelectedOrganisationId)
+            @Html.HiddenFor(m => m.VisaInaktiva)
 
             if (Model.ContactPersons != null)
             {
@@ -318,6 +351,15 @@
             }
 
             <div style="font-size: 1.2em; padding-left: 20px; padding-bottom: 20px;"><b>@Model.Organisation.Organisationsnamn</b></div>
+            <div class="row" style="padding-left: 20px; margin-bottom: 0px;">
+                <div class="col-md-2" style="padding: 0px; margin-left: 10px;  margin-right: -45px; white-space: nowrap">
+                    @Html.LabelFor(m => m.VisaInaktiva)  
+                </div>
+                <div class="col-md-2" style="padding-left: 0;font-size:0.9em; margin-top: 3px; margin-left: -10px;">
+                    <div> @Html.CheckBoxFor(m => m.VisaInaktiva, new { id = "chbxInaktiva" })</div>
+                </div>
+            </div>
+
             <div id="gridContent" style="font-family: Arial; padding: 20px;">
 
                 @{
@@ -351,10 +393,10 @@
                                                     <input type="text" id="ContactAktivFrom" value="@( item.AktivFrom != null ? item.AktivFrom.ToString("yyyy-MM-dd") : item.AktivFrom)" class="edit-mode form-control" /></text>, style: "col2Width"),
                                                     grid.Column("AktivTom", "Aktiv t.o.m", format: @<text><span class="display-mode"><label id="lblAktivTom">@( item.AktivTom != null ? item.AktivTom.ToString("yyyy-MM-dd") : item.AktivTom)</label></span>
                                                     <input type="text" id="ContactAktivTom" value="@( item.AktivTom != null ? item.AktivTom.ToString("yyyy-MM-dd") : item.AktivTom)" class="edit-mode form-control" /></text>, style: "col2Width"),
-                                                    grid.Column("Status", "Status", format: @<text><span class="display-mode col1Width"><label id="lblStatus">@item.Status</label></span>
-                                                    <input type="text" id="ContactStatus" value="@item.Status" class="edit-mode form-control" /></text>, style: "col1Width"),
-                                                    grid.Column("Valda delregister", "Valda delregister", format: @<text><span class="display-mode col350Width" style="display: inline-block;">@item.ValdaDelregister</span><label id="lblValdaDelreg" class="edit-mode col350Width">@item.ValdaDelregister</label></text>, style: "col350Width"),
-                                                    grid.Column("Roller", "Roller", format: @<text><label id="lblRoller" class="longColumnText" style="width: 200px;">@item.StringOfRoles</label></text>, style: "col3Width"),
+                                                    grid.Column("Status", "Status", format: @<text><span class="display-mode colMinWidth"><label id="lblStatus">@item.Status</label></span>
+                                                    <input type="text" id="ContactStatus" value="@item.Status" class="edit-mode form-control" /></text>, style: "colMinWidth"),
+                                                    grid.Column("Valda delregister", "Valda delregister", format: @<text><span class="display-mode col3Width" style="display: inline-block;">@item.ValdaDelregister</span><label id="lblValdaDelreg" class="edit-mode col3Width">@item.ValdaDelregister</label></text>, style: "col3Width"),
+                                                    grid.Column("Roller", "Roller", format: @<text><label id="lblRoller" class="longColumnText" style="width: 100px;">@item.StringOfRoles</label></text>, style: "col3Width"),
                                                     grid.Column("Roller", format: @item => Html.DropDownListFor(m => m.Roller, new SelectList(@item.ListOfRoles, "Id", "Name"), new { id = "ddlRoleList", @class = "form-control edit-mode ddl", multiple = "multiple", style = "min-width:100px !important" })),
                                                     grid.Column(null, format: @<text>
                                                         <button class="edit-user display-mode btn btn-default">Ändra</button>

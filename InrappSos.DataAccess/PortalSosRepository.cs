@@ -407,6 +407,7 @@ namespace InrappSos.DataAccess
         public IEnumerable<ApplicationUser> GetContactPersonsForOrg(int orgId)
         {
             var contacts = DbContext.Users.Where(x => x.OrganisationId == orgId).ToList();
+            //var contacts = DbContext.Users.Where(x => x.OrganisationId == orgId).ToList().OrderBy(x => x.AktivTom);
             return contacts;
         }
 

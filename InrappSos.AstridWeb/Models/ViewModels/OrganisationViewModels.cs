@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Permissions;
@@ -47,6 +48,8 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public List<ArendeViewModel> Arenden { get; set; }
             public List<IdentityRoleViewModel> Roller { get; set; }
             public string Origin { get; set; }
+            [DisplayName("Visa även inaktiva")]
+            public bool VisaInaktiva { get; set; }
 
         }
 

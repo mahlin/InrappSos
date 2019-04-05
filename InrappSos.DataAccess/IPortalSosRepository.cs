@@ -244,6 +244,8 @@ namespace InrappSos.DataAccess
 
         AdmForeskrift GetForeskriftByFileReq(int fileReqId);
 
+        AdmForeskrift GetForeskriftById(int foreskriftsId);
+
         IEnumerable<LevereradFil> GetFilerForLeveransId(int leveransId);
 
         IEnumerable<Rapporteringsresultat> GetReportResultForSubdirAndPeriod(int delRegId, string period);

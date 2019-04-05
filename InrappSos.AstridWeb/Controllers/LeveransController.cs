@@ -214,7 +214,8 @@ namespace InrappSos.AstridWeb.Controllers
                 if (dirId != 0)
                 {
                     var register = _portalSosService.HamtaRegisterMedId(dirId);
-                    var forvFilList = _portalSosService.HamtaForvantadeFilerForRegister(register.Id);
+                    var forvFilList = _portalSosService.HamtaAktivaForvantadeFilerForRegister(register.Id);
+
                     //Lägg över i modellen
                     model.ForvantadeFiler = ConvertForvFilToViewModel(forvFilList.ToList());
                     // Ladda drop down lists. 
@@ -255,7 +256,7 @@ namespace InrappSos.AstridWeb.Controllers
                 if (dirId != 0)
                 {
                     var register = _portalSosService.HamtaRegisterMedId(dirId);
-                    var filkravList = _portalSosService.HamtaFilkravForRegister(register.Id);
+                    var filkravList = _portalSosService.HamtaAktivaFilkravForRegister(register.Id);
                     //Lägg över i modellen
                     model.Filkrav = ConvertFilkravToViewModel(filkravList.ToList());
                     // Ladda drop down lists. 
@@ -295,7 +296,8 @@ namespace InrappSos.AstridWeb.Controllers
             try
             {
                 var forvFilViewList = new List<LeveransViewModels.AdmForvantadfilViewModel>();
-                var forvFiler = _portalSosService.HamtaAllaForvantadeFiler();
+
+                var forvFiler = _portalSosService.HamtaAllaAktivaForvantadeFiler();
 
                 foreach (var forvFil in forvFiler)
                 {
@@ -344,9 +346,8 @@ namespace InrappSos.AstridWeb.Controllers
             var model = new LeveransViewModels.LeveransViewModel();
             try
             {
-                var filkravViewList = new List<LeveransViewModels.AdmFilkravViewModel>();
-                var filkravList = _portalSosService.HamtaAllaFilkrav();
-               
+                var filkravList = _portalSosService.HamtaAllaAktivaFilkrav();
+
                 //Lägg över i modellen
                 model.Filkrav = ConvertFilkravToViewModel(filkravList.ToList());
 

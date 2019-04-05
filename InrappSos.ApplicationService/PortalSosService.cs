@@ -623,6 +623,36 @@ namespace InrappSos.ApplicationService
             return allaFilmaskStarter;
         }
 
+        public IEnumerable<AdmFilkrav> HamtaAktivaFilkravForRegister(int regId)
+        {
+            var aktivaFilkravList = new List<AdmFilkrav>();
+            var filkravList = _portalSosRepository.GetFileRequirementsForDirectory(regId);
+            //Check if active föreskrift
+            foreach (var filkrav in filkravList)
+            {
+                if (filkrav.ForeskriftsId != null)
+                {
+                    var foreskrift = _portalSosRepository.GetForeskriftById(filkrav.ForeskriftsId.GetValueOrDefault());
+                    if (foreskrift.GiltigTom != null)
+                    {
+                        if (foreskrift.GiltigTom >= DateTime.Now)
+                        {
+                            aktivaFilkravList.Add(filkrav);
+                        }
+                    }
+                    else
+                    {
+                        aktivaFilkravList.Add(filkrav);
+                    }
+                }
+                else
+                {
+                    aktivaFilkravList.Add(filkrav);
+                }
+            }
+            return aktivaFilkravList;
+        }
+
         public AdmFilkrav HamtaFilkravById(int filkravsId)
         {
             var filkrav = _portalSosRepository.GetFileRequirementById(filkravsId);
@@ -866,10 +896,70 @@ namespace InrappSos.ApplicationService
             return forvFilList;
         }
 
+        public IEnumerable<AdmForvantadfil> HamtaAllaAktivaForvantadeFiler()
+        {
+            var aktivaForvFilList = new List<AdmForvantadfil>();
+            var forvFilList = _portalSosRepository.GetAllExpectedFiles();
+            //Check if active föreskrift
+            foreach (var forvFil in forvFilList)
+            {
+                if (forvFil.ForeskriftsId != null)
+                {
+                    var foreskrift = _portalSosRepository.GetForeskriftById(forvFil.ForeskriftsId.GetValueOrDefault());
+                    if (foreskrift.GiltigTom != null)
+                    {
+                        if (foreskrift.GiltigTom >= DateTime.Now)
+                        {
+                            aktivaForvFilList.Add(forvFil);
+                        }
+                    }
+                    else
+                    {
+                        aktivaForvFilList.Add(forvFil);
+                    }
+                }
+                else
+                {
+                    aktivaForvFilList.Add(forvFil);
+                }
+            }
+            return aktivaForvFilList;
+        }
+
         public IEnumerable<AdmFilkrav> HamtaAllaFilkrav()
         {
             var filkravList = _portalSosRepository.GetAllFileRequirements();
             return filkravList;
+        }
+
+        public IEnumerable<AdmFilkrav> HamtaAllaAktivaFilkrav()
+        {
+            var aktivaFilkravList = new List<AdmFilkrav> ();
+            var filkravList = _portalSosRepository.GetAllFileRequirements();
+            //Check if active föreskrift
+            foreach (var filkrav in filkravList)
+            {
+                if (filkrav.ForeskriftsId != null)
+                {
+                    var foreskrift = _portalSosRepository.GetForeskriftById(filkrav.ForeskriftsId.GetValueOrDefault());
+                    if (foreskrift.GiltigTom != null)
+                    {
+                        if (foreskrift.GiltigTom >= DateTime.Now)
+                        {
+                            aktivaFilkravList.Add(filkrav);
+                        }
+                    }
+                    else
+                    {
+                        aktivaFilkravList.Add(filkrav);
+                    }
+                }
+                else
+                {
+                    aktivaFilkravList.Add(filkrav);
+                }
+            }
+            return aktivaFilkravList;
         }
 
         public IEnumerable<AdmInsamlingsfrekvens> HamtaAllaInsamlingsfrekvenser()
@@ -923,6 +1013,36 @@ namespace InrappSos.ApplicationService
         {
             var forvantadeFiler = _portalSosRepository.GetExpectedFilesForDirectory(regId);
             return forvantadeFiler;
+        }
+
+        public IEnumerable<AdmForvantadfil> HamtaAktivaForvantadeFilerForRegister(int regId)
+        {
+            var activeForvantadeFiler = new List<AdmForvantadfil>();
+            var forvantadeFiler = _portalSosRepository.GetExpectedFilesForDirectory(regId);
+            //Check if active föreskrift
+            foreach (var forvFil in forvantadeFiler)
+            {
+                if (forvFil.ForeskriftsId != null)
+                {
+                    var foreskrift = _portalSosRepository.GetForeskriftById(forvFil.ForeskriftsId.GetValueOrDefault());
+                    if (foreskrift.GiltigTom != null)
+                    {
+                        if (foreskrift.GiltigTom >= DateTime.Now)
+                        {
+                            activeForvantadeFiler.Add(forvFil);
+                        }
+                    }
+                    else
+                    {
+                        activeForvantadeFiler.Add(forvFil);
+                    }
+                }
+                else
+                {
+                    activeForvantadeFiler.Add(forvFil);
+                }
+            }
+            return activeForvantadeFiler;
         }
 
         public IEnumerable<AdmForvantadfil> HamtaForvantadFil(int filkravId)

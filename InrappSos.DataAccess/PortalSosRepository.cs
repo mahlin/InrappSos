@@ -268,6 +268,12 @@ namespace InrappSos.DataAccess
             return period;
         }
 
+        public AdmForeskrift GetForeskriftById(int foreskriftsId)
+        {
+            var foreskrift = DbContext.AdmForeskrift.SingleOrDefault(x => x.Id == foreskriftsId);
+            return foreskrift;
+        }
+
         public IEnumerable<LevereradFil> GetFilerForLeveransId(int leveransId)
         {
             

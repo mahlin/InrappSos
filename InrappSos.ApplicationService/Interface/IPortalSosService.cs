@@ -156,9 +156,14 @@ namespace InrappSos.ApplicationService.Interface
 
         IEnumerable<AdmForvantadfil> HamtaAllaForvantadeFiler();
 
+        IEnumerable<AdmForvantadfil> HamtaAllaAktivaForvantadeFiler();
+
         IEnumerable<AdmFilkrav> HamtaAllaFilkrav();
 
+        IEnumerable<AdmFilkrav> HamtaAllaAktivaFilkrav();
+
         IEnumerable<AdmForvantadfil> HamtaForvantadeFilerForRegister(int regId);
+        IEnumerable<AdmForvantadfil> HamtaAktivaForvantadeFilerForRegister(int regId);
 
         IEnumerable<AdmForvantadfil> HamtaForvantadFil(int filkravId);
 
@@ -176,6 +181,8 @@ namespace InrappSos.ApplicationService.Interface
         List<string> HamtaGiltigaFilkoderForSFTPKonto(int sftpAccountId);
 
         IEnumerable<AdmFilkrav> HamtaFilkravForRegister(int regId);
+
+        IEnumerable<AdmFilkrav> HamtaAktivaFilkravForRegister(int regId);
 
         AdmFilkrav HamtaFilkravById(int filkravsId);
 

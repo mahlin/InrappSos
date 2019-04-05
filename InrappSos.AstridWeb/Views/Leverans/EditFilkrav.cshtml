@@ -210,10 +210,10 @@
 
         @Html.ActionLink("Skapa nytt filkrav", "CreateFilkrav", "Leverans", new { selectedRegId = Model.SelectedRegisterId }, null)
 
-    <div id="gridContent" style="font-family: Arial; padding: 20px;">
+    <div id="gridContent" style="font-family: Arial; padding: 0px;">
         @{
         ViewBag.Title = "Administrera filkrav";
-        var grid = new WebGrid(source: Model.Filkrav, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "filkravGrid");
+        var grid = new WebGrid(source: Model.Filkrav, canPage: true, rowsPerPage: 15, ajaxUpdateContainerId: "filkravGrid");
         grid.Pager(WebGridPagerModes.All);
         }
 
@@ -230,33 +230,32 @@
                             grid.Column("Id", format: @<text><span class="display-mode">@item.ID</span><label id="FilkravId" class="edit-mode colMinWidth">@item.Id</label></text>, style: "colMinWidth"),
                             grid.Column("DelregisterKortnamn", "Delregister", format: @<text><span class="display-mode">@item.DelregisterKortnamn</span>
                                         <label id="Delregister" class="edit-mode col1Width">@item.DelregisterKortnamn</label></text>, style: "col1Width"),
-                            grid.Column("Namn", "Namn", format: @<text><span class="display-mode"><label id="lblNamn" style="width: 200px;">@item.Namn </label></span>
+                            grid.Column("Namn", "Namn", format: @<text><span class="display-mode"><label id="lblNamn" style="width: 150px;">@item.Namn </label></span>
                                     <input type="text" id="Namn" value="@item.Namn" class="edit-mode form-control" style="width: 400px !important;" /></text>, style: "col5Width"),
-                            grid.Column("Insamlingsfrekvens", "Insamlingsfrekvens", format: @<text><span class="display-mode"><label id="lblInsamlingsfrekvens">@item.Insamlingsfrekvens</label></span></text>, style: "col1Width"),
+                            grid.Column("Insamlingsfrekvens", "Insamlings- frekvens", format: @<text><span class="display-mode"><label id="lblInsamlingsfrekvens" style="width: 50px;">@item.Insamlingsfrekvens</label></span></text>, style: "colMinWidth"),
                             grid.Column("Insamlingsfrekvens", format: @item => Html.DropDownListFor(m => m.SelectedInsamlingsfrekvensId, ViewBag.InsamlingsfrekvensList as SelectList, " - Välj -", new { id = "ddlInsamlingsfrekvens", @class = "form-control edit-mode", style = "min-width:100px !important" })),
-                            grid.Column("Uppgiftsstart", "Uppgiftsstart", format: @<text><span class="display-mode"><label id="lblUppgiftsstart">@item.Uppgiftsstartdag</label></span>
-                                <input type="text" id="Uppgiftsstartdag" value="@item.Uppgiftsstartdag" class="edit-mode form-control" /></text>, style: "col2Width"),
-                             grid.Column("Uppgiftsslut", "Uppgiftsslut", format: @<text><span class="display-mode"><label id="lblUppgiftsslut">@item.Uppgiftslutdag</label></span>
-                                <input type="text" id="Uppgiftslutdag" value="@item.Uppgiftslutdag" class="edit-mode form-control" />
-                            </text>, style: "col2Width"),
-                                grid.Column("Rapporteringsstart", "Rapporteringsstart", format: @<text>
+                            grid.Column("Uppgiftsstart", "Uppgifts- start", format: @<text><span class="display-mode"><label id="lblUppgiftsstart" style="width: 50px;">@item.Uppgiftsstartdag</label></span>
+                                <input type="text" id="Uppgiftsstartdag" value="@item.Uppgiftsstartdag" class="edit-mode form-control" /></text>, style: "colMinWidth"),
+                             grid.Column("Uppgiftsslut", "Uppgifts- slut", format: @<text><span class="display-mode"><label id="lblUppgiftsslut" style="width: 50px;">@item.Uppgiftslutdag</label></span>
+                                <input type="text" id="Uppgiftslutdag" value="@item.Uppgiftslutdag" class="edit-mode form-control" /></text>, style: "colMinWidth"),
+                                grid.Column("Rapporteringsstart", "Rapporterings- start", format: @<text>
                                 <span class="display-mode">
                                     <label id="lblRapporteringsstart">@item.Rapporteringsstartdag</label>
                                 </span>
                                 <input type="text" id="Rapporteringsstartdag" value="@item.Rapporteringsstartdag" class="edit-mode form-control" />
-                            </text>, style: "col2Width"),
-                                        grid.Column("Rapporteringsslut", "Rapporteringsslut", format: @<text>
+                            </text>, style: "colMinWidth"),
+                                        grid.Column("Rapporteringsslut", "Rapporterings- slut", format: @<text>
                                         <span class="display-mode">
                                             <label id="lblRapporteringsslut">@item.Rapporteringsslutdag</label>
                                         </span>
                                         <input type="text" id="Rapporteringsslutdag" value="@item.Rapporteringsslutdag" class="edit-mode form-control" />
-                            </text>, style: "col2Width"),
+                            </text>, style: "colMinWidth"),
                                 grid.Column("Rapportering senast", "Rapportering senast", format: @<text>
                                 <span class="display-mode">
                                     <label id="lblRapporteringsenast">@item.RapporteringSenastdag</label>
                                 </span>
                                 <input type="text" id="RapporteringSenastdag" value="@item.RapporteringSenastdag" class="edit-mode form-control" />
-                            </text>, style: "col2Width"),
+                            </text>, style: "colMinWidth"),
 
                                         grid.Column("Påminnelse 1", "Påminnelse 1", format: @<text>
                                         <span class="display-mode">
@@ -284,7 +283,7 @@
                             </text>, style: "colMinWidth"),
                                         grid.Column("Uppgifter antal månader", "Uppgifter antal månader", format: @<text>
                                         <span class="display-mode">
-                                            <label id="lblUppgifterAntalmanader">@item.UppgifterAntalmanader </label>
+                                            <label id="lblUppgifterAntalmanader" style="width: 50px;">@item.UppgifterAntalmanader </label>
                                         </span>
                                         <input type="text" id="UppgifterAntalmanader" value="@item.UppgifterAntalmanader" class="edit-mode form-control" />
                             </text>, style: "colMinWidth"),

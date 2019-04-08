@@ -97,6 +97,7 @@ namespace InrappSos.ApplicationService.Interface
         IEnumerable<Arende> HamtaArendenForOrg(int orgId);
         IEnumerable<Organisationsenhet> HamtaOrgEnheterForOrg(int orgId);
         Organisationsenhet HamtaOrganisationsenhetMedEnhetskod(string kod, int orgId);
+        Organisationsenhet HamtaOrganisationsenhetMedFilkod(string kod, int orgId);
 
         IEnumerable<AdmUppgiftsskyldighet> HamtaUppgiftsskyldighetForOrg(int orgId);
         AdmUppgiftsskyldighet HamtaUppgiftsskyldighetForOrganisationOchRegister(int orgId, int delregid);

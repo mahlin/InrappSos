@@ -129,6 +129,8 @@ namespace InrappSos.DataAccess
         int GetOrganisationsenhetsId(string orgUnitCode, int orgId);
         Organisationsenhet GetOrganisationUnitByCode(string code, int orgId);
 
+        Organisationsenhet GetOrganisationUnitByFileCode(string code, int orgId);
+
         IEnumerable<AdmUppgiftsskyldighet> GetReportObligationInformationForOrg(int orgId);
 
         AdmUppgiftsskyldighet GetReportObligationInformationForOrgAndSubDir(int orgId, int subdirId);

@@ -504,6 +504,12 @@ namespace InrappSos.DataAccess
             return orgUnit;
         }
 
+        public Organisationsenhet GetOrganisationUnitByFileCode(string code, int orgId)
+        {
+            var orgUnit = DbContext.Organisationsenhet.SingleOrDefault(x => x.Filkod == code && x.OrganisationsId == orgId);
+            return orgUnit;
+        }
+
         public IEnumerable<AdmUppgiftsskyldighet> GetReportObligationInformationForOrg(int orgId)
         {
             var tmp = DbContext.AdmUppgiftsskyldighet.Where(x => x.OrganisationId == orgId).ToList();

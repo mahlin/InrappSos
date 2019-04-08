@@ -445,6 +445,12 @@ namespace InrappSos.ApplicationService
             return orgenhet;
         }
 
+        public Organisationsenhet HamtaOrganisationsenhetMedFilkod(string kod, int orgId)
+        {
+            var orgenhet = _portalSosRepository.GetOrganisationUnitByFileCode(kod, orgId);
+            return orgenhet;
+        }
+
         public IEnumerable<AdmUppgiftsskyldighet> HamtaUppgiftsskyldighetForOrg(int orgId)
         {
             var uppgiftsskyldigheter = _portalSosRepository.GetReportObligationInformationForOrg(orgId);
@@ -1236,7 +1242,7 @@ namespace InrappSos.ApplicationService
                 foreach (var enhetsuppgiftsskyldighet in enhetsUppgiftsskyldighetList)
                 {
                     if (uppgiftskyldighetIdnForOrgOchRegisterList.Contains(enhetsuppgiftsskyldighet.UppgiftsskyldighetId))
-                        filkoder.Add(orgenhet.Enhetskod);
+                        filkoder.Add(orgenhet.Filkod);
                 }
                 
             }
@@ -1755,6 +1761,7 @@ namespace InrappSos.ApplicationService
                     sftpKontoRegisterList.Add(register);
                 }
             }
+            sftpKontoRegisterList = HamtaOrgenheter(sftpKontoRegisterList, sftpKonto.OrganisationsId);
 
             return sftpKontoRegisterList;
         }

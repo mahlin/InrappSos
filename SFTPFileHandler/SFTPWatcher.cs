@@ -23,7 +23,7 @@ namespace SFTPFileHandler
         private static SmtpClient _smtpClient;
         private string _mailSender;
         private static bool _mailLogEnabled =bool.Parse(ConfigurationManager.AppSettings["MailLogEnabled"]);
-        private static string _mailLogPath = ConfigurationManager.AppSettings["SFTPMailLogFile"];
+        private static string _mailLogPath = ConfigurationManager.AppSettings["SFTPWatcherMailLogFile"];
         private static readonly object _mailLogLock = new object();
 
 
@@ -68,13 +68,23 @@ namespace SFTPFileHandler
 
                     if (filesInFolder.Count > 0)
                     {
-                        var okFileCodes = _portalService.HamtaGiltigaFilkoderForSFTPKonto(ftpAccount.Id);
-
-                        foreach (var delregInfo in delregisterInfoList)
-                        {
+                       foreach (var delregInfo in delregisterInfoList)
+                       {
+                           var okFileCodes = new List<string>();
+                            if (delregInfo.RapporterarPerEnhet)
+                            {
+                                foreach (var orgenhet in delregInfo.Orgenheter)
+                                {
+                                    okFileCodes.Add(orgenhet.Value);
+                                }
+                            }
+                            else
+                            {
+                                okFileCodes.Add(GetOrgCodeForOrg(ftpAccount.OrganisationsId, delregInfo));
+                            }
                             var okFilesForSubDirList = new List<FileInfo>();
                             var period = String.Empty;
-                            var fileCode = String.Empty;
+                            var unitCode = String.Empty;
                             var okFile = false;
                             //If relevant file exists in folder, save file to list
                             foreach (var filkrav in delregInfo.Filkrav)
@@ -92,23 +102,23 @@ namespace SFTPFileHandler
                                             //TODO - för alla register? Special för PAR?
                                             if (okFileCodes.Contains(fileCodeInFileName))
                                             {
-                                                fileCode = fileCodeInFileName;
+                                                if (delregInfo.RapporterarPerEnhet)
+                                                {
+                                                    //Get orgunitid
+                                                    unitCode = _portalService.HamtaOrganisationsenhetMedFilkod(fileCodeInFileName, ftpAccount.OrganisationsId).Enhetskod;
+                                                }
                                                 okFile = true;
+                                                var periodInFileName = match.Groups[2].Value;
+                                                if (!_portalService.HamtaGiltigaPerioderForDelregister(delregInfo.Id).Contains(periodInFileName))
+                                                {
+                                                    okFile = false;
+                                                }
+                                                else
+                                                {
+                                                    period = periodInFileName;
+                                                }
                                             }
-                                            else
-                                            {
-                                                okFile = false;
-                                            }
-                                            var periodInFileName = match.Groups[2].Value;
-                                            if (_portalService.HamtaGiltigaPerioderForDelregister(delregInfo.Id).Contains(periodInFileName))
-                                            {
-                                                period = periodInFileName;
-                                                okFile = true;
-                                            }
-                                            else
-                                            {
-                                                okFile = false;
-                                            }
+                                            
                                             if (okFile)
                                                 okFilesForSubDirList.Add(file);
                                         }
@@ -122,7 +132,7 @@ namespace SFTPFileHandler
                                         {
                                             var resultList = new List<ViewDataUploadFilesResult>();
                                             //If complete delivery of approved files, tag and upload
-                                            filesHelper.UploadSFTPFilesAndShowResults(okFilesForSubDirList, resultList, ftpAccount, delregInfo.Id, fileCode, period, delregisterInfoList);
+                                            filesHelper.UploadSFTPFilesAndShowResults(okFilesForSubDirList, resultList, ftpAccount, delregInfo.Id, unitCode, period, delregisterInfoList);
 
                                             //Delete files from incoming filearea
                                             foreach (var file in okFilesForSubDirList)
@@ -241,6 +251,38 @@ namespace SFTPFileHandler
                     }
                 }
             }
+        }
+
+        private string GetOrgCodeForOrg(int orgId, RegisterInfo delregInfo)
+        {
+            var orgCodeList = new List<string>();
+            var org = _portalService.HamtaOrganisation(orgId);
+            var orgtypeListForOrg = _portalService.HamtaOrgtyperForOrganisation(orgId);
+            var orgCode = String.Empty;
+
+            //Compare organisations orgtypes with orgtypes for current subdir
+            foreach (var subDirOrgtype in delregInfo.Organisationstyper)
+            {
+                foreach (var orgOrgtype in orgtypeListForOrg)
+                {
+                    if (subDirOrgtype.Value == orgOrgtype.Typnamn)
+                    {
+                        if (orgOrgtype.Typnamn == "Kommun")
+                        {
+                            orgCode = org.Kommunkod;
+                        }
+                        else if (orgOrgtype.Typnamn == "Landsting")
+                        {
+                            orgCode = org.Landstingskod;
+                        }
+                        else
+                        {
+                            orgCode = org.Inrapporteringskod;
+                        }
+                    }
+                }
+            }
+            return orgCode;
         }
 
         private string GetFolderNameFromPath(string folderPath)

@@ -33,12 +33,14 @@ namespace InrappSos.AstridWeb.Controllers
 
         [Authorize]
         // GET: Leverans
-        public ActionResult Index(bool filterPgnde = false, int regId = 0)
+        public ActionResult Index(bool filterPgnde = false, int regId = 0, int forvLevId = 0)
         {
 
             var model = new LeveransViewModels.LeveransViewModel();
             try
             {
+
+                model.SelectedForvLevId = forvLevId;
                 var tmpPagaende = Request.QueryString["filterPagaende"];
                 var filterPagaende = false;
 
@@ -143,10 +145,11 @@ namespace InrappSos.AstridWeb.Controllers
 
         // GET
         [Authorize]
-        public ActionResult GetDirectorysExpectedDeliveries(LeveransViewModels.LeveransViewModel model, bool filterPgnde = false, int regId = 0)
+        public ActionResult GetDirectorysExpectedDeliveries(LeveransViewModels.LeveransViewModel model, bool filterPgnde = false, int regId = 0, int forvLevId = 0)
         {
             try
             {
+                model.SelectedForvLevId = forvLevId;
                 var tmpPagaende = Request.QueryString["filterPagaende"];
                 var filterPagaende = false;
 
@@ -182,7 +185,7 @@ namespace InrappSos.AstridWeb.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("Index", new { filterPgnde = filterPagaende });
+                    return RedirectToAction("Index", new { filterPgnde = filterPagaende, forvLevId = forvLevId });
                 }
             }
             catch (Exception e)
@@ -699,7 +702,7 @@ namespace InrappSos.AstridWeb.Controllers
 
         [HttpPost]
         [Authorize]
-        public ActionResult UpdateForvantadLeverans(LeveransViewModels.AdmForvantadleveransViewModel forvLevModel, string regId = "0")
+        public ActionResult UpdateForvantadLeverans(LeveransViewModels.AdmForvantadleveransViewModel forvLevModel, bool filterPgnde = false, string regId = "0")
         {
             if (ModelState.IsValid)
             {
@@ -722,7 +725,7 @@ namespace InrappSos.AstridWeb.Controllers
 
                 }
             }
-            return RedirectToAction("GetDirectorysExpectedDeliveries", new { regId = regId});
+            return RedirectToAction("GetDirectorysExpectedDeliveries", new { filterPgnde = filterPgnde, regId = regId, forvLevId = forvLevModel.Id});
 
         }
 

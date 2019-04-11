@@ -26,6 +26,7 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public int SelectedDelregisterId { get; set; }
             public int SelectedFilkravId { get; set; }
             public int SelectedInsamlingsfrekvensId { get; set; }
+            public int SelectedForvLevId { get; set; }
             [DisplayName("Visa endast pågående")]
             public bool FilterPagaende{ get; set; }
             [Display(Name = "År")]

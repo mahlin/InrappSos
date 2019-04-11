@@ -7,26 +7,116 @@
 }
 
 <script>
-    var forvantadeLeveranserLista = @Html.Raw(Json.Encode(Model.ForvantadeLeveranser));
+    @*var forvantadeLeveranserLista = @Html.Raw(Json.Encode(Model.ForvantadeLeveranser));*@
 </script>
 
 <script type="text/javascript">
-
+    var forvantadeLeveranserLista = @Html.Raw(Json.Encode(Model.ForvantadeLeveranser));
     $(document).ready(function () {
         //Sätt fast header och scroll om fler än 10 rader i listan
         if (forvantadeLeveranserLista.length > 10) {
             $("#GridHeader").html("<table id='headerTable'>" + $('#gridContent table thead').html() + "</table>");
             $("#GridHeader table tr:first").append("<th style='width:12px;' ></th>");
-            $("#GridBody").html("<table>" + $('#gridContent table tbody').html() + "</table>");
+            $("#GridBody").html("<table id='bodyTable'>" + $('#gridContent table tbody').html() + "</table>");
             $("#gridContent").hide();
             $('#GridHeader tr th:eq(0)').hide();
             $('#GridHeader tr th:eq(1)').hide();
             $('#GridHeader tr th:eq(2)').hide();
 
+            var scrollRowIndex = 0;
             $("#GridBody tr").each(function (i, row) {
                 setBackgroundColors(i, row);
+                //if ($('#SelectedForvLevId').val() !== 0) {
+                //    var selectedForvLevId = parseInt($('#SelectedForvLevId').val());
+                //    if (row.Id === selectedForvLevId) {
+                //        row.addClass('scrollHere');
+                //    }
+                //}
             });
+            //alert("forvLevId: " + $('#SelectedForvLevId').val());
+            //if ($('#SelectedForvLevId').val() !== 0) {
+            //    var selectedForvLevId = parseInt($('#SelectedForvLevId').val());
+            //    forvantadeLeveranserLista.forEach(function (forvLev, index) {
+            //        if (forvLev.Id === selectedForvLevId) {
+            //            scrollRowIndex = index;
+            //        }
+            //    }); 
+            //}
+            //alert("scrollRowIndex: " + scrollRowIndex);
             setFixedTableHeaderWidths();
+
+
+            //var container = $('#pageContainer');
+            //var element = $('#scrolla');
+
+            //element.focus();
+            //element.css('color', '#FA9D9D');
+
+            //location.hash = "#scrollaHit";
+
+            //scrollTo('scrollaHit');
+
+            //function scrollTo(hash) {
+            //    location.hash = "#" + hash;
+            //}
+
+            //container.animate({
+            //    scrollTop: container.scrollTop = container.scrollTop() + element.offset().top - container.offset().top
+            //}, {
+            //    duration: 1000,
+            //    specialEasing: {
+            //        width: 'linear',
+            //        height: 'easeOutBounce'
+            //    },
+            //    complete: function (e) {
+            //        console.log("animation completed");
+            //    }
+            //});
+
+            //var o = $('#scrolla').focus().offset().top
+            //$w = $(window);
+            //$w.scrollTop(o - ($w.height() / 2));
+            //if ($('#SelectedForvLevId').val() !== 0) {
+            //    $('.scrollHere').focus();
+            //    //var posArray = $('.scrollHere').positionedOffset();
+            //    $('GridBody').scrollTop = 300;
+            //}
+
+            ////var index = $scope.$eval("(detailedData|filter:{id:'" + $scope.selectedId + "'})[0]").index;
+            //var $target = $('#bodyTable');
+            //var height = $('#bodyTable tr:nth-child(2)').height();
+            //$target.animate({
+            //    scrollTop: ((height || 43) * 100)
+            //}, 500);
+
+            //forvantadeLeveranserLista.SelectedIndex = scrollRowIndex;
+            //var row1 = document.getElementById("bodyTable").rows[scrollRowIndex];
+            //document.getElementById("bodyTable").rows[30].cells[6].focus();
+            //var x = document.getElementById("bodyTable");
+            //var rows = document.getElementById("bodyTable tr");
+            //var tmpRows = $('#bodyTable tr');
+            //tmpRows.each(function (i) {
+            //    //if ($(this).find('.'
+            //    var y = $(this).val();
+            //    //alert("this: " + y);
+            //        var x = 1;
+            //});
+            //var y = $('#ForvantadeLeveranser_' + 20 + '__Id');
+            //var grid = document.getElementById('forvLevTable');
+            //grid[20].focus();
+            //var pos = $('#ForvantadeLeveranser_' + 20 + '__Id').focus().offset().top, $win = $(window);
+            //$win.scrollTop(pos - ($win.height() / 2));
+            //alert("Förv.levId: " + $('#SelectedForvLevId').val());
+            //$("#gridContent table tbody tr:eq(7)).Focus();
+            //var w = $(window);
+            //var tableRow = $("td").filter(function() {
+            //    return $(this).text() === $('#SelectedForvLevId').val();
+            //}).closest("tr");
+            //var x = document.getElementsByTagName("tr")[index].id;
+            //var row = $('#Id').find('tr').eq($('#SelectedForvLevId').val());
+            //if (tableRow.length){
+            //    w.scrollTop(tableRow.offset().top - (w.height()/2) );
+            //}
         } else {
             $("#GridBody").hide();
             $('#gridContent tr th:eq(0)').hide();
@@ -187,6 +277,7 @@
         $('.edit-user, .cancel-user').on('click',
             function () {
                 var tr = $(this).parents('tr:first');
+                $('#SelectedForvLevId').val(tr.find("#Id").html());
                 tr.find('.edit-mode, .display-mode').toggle();
             });
         $('.save-user').on('click',
@@ -222,17 +313,45 @@
                     "Paminnelse3": forvLevPaminnelse3
                 };
                 var regId = $("#SelectedRegisterId").val();
+                var filterPagande = $("#FilterPagaende").val();
                 //Posting AdmForvantadleverans object to controller's Update action method
                 $.ajax({
                     url: '/Leverans/UpdateForvantadLeverans',
                     data: JSON.stringify({
                         forvLevModel: admForvantadLev,
-                        regId: regId
+                        filterPgnde: filterPagande,
+                        regId: regId,
+                        forvLevId: forvLevId  
                     }),
                     type: 'POST',
                     contentType: 'application/json; charset=utf-8',
-                    success: function(data) {
-                        location.reload();
+                    success: function (data) {
+                        //alert("Regid: " + regId + ", levid: " + forvLevId);
+                        //Fulfix för att rensa url:en mellan postbacks
+                        var cleanUrl = "";
+                        var url = window.location.href; 
+                        var paramStart = url.indexOf("?");
+                        //var paramIndex = url.indexOf("filterPgnde=");
+                        //var page = url.substring(paramIndex, $(this).attr('href').length);
+                        if (paramStart !== -1) {
+                            cleanUrl = url.substring(0, paramStart);
+                        } else {
+                            cleanUrl = url;
+                        }
+                        var newUrl = cleanUrl + '?filterPgnde=' + filterPagande + '&regId=' + regId + '&forvLevId=' + forvLevId;
+                        window.location.href = newUrl;
+                        //$(this).attr('href', cleanUrl);
+                        //var newUrl = $(this).attr('href') + "?selectedOrganisationId=" + $("#SelectedOrganisationId").val() + "&" + page;
+
+                        //var url = window.location.href;    
+                        //if (url.indexOf('?') > -1) {
+                        //    url += '&filterPgnde=' + filterPagande + '&regId=' + regId + '&forvLevId=' + forvLevId;
+                        //}else{
+                        //    url += '?filterPgnde=' + filterPagande + '&regId=' + regId + '&forvLevId=' + forvLevId;
+                        //}
+                        //alert("url: " + url + "cleanUrl: " + cleanUrl);
+                        //window.location.href = url;
+                        //location.reload();
                         //$("#pageContainer").html(data);
                         //tr.find('.edit-mode, .display-mode').toggle();
                         //$('#footer').hide();
@@ -300,6 +419,7 @@
                 @using (Html.BeginForm("GetDirectorysExpectedDeliveries", "Leverans", new { ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
                 {
                     @Html.HiddenFor(m => m.SelectedRegisterId)
+                    @Html.HiddenFor(m => m.SelectedForvLevId)
                     @Html.HiddenFor(m => m.FilterPagaende)
 
                     <div class="row">
@@ -330,19 +450,20 @@
     @if (Model != null)
     {
         @Html.HiddenFor(m => m.SelectedRegisterId)
+        @Html.HiddenFor(m => m.SelectedForvLevId)
         @Html.HiddenFor(m => m.FilterPagaende)
 
-             <div style = "padding-left: 4px;">
-                 @Html.ActionLink("Skapa ny förväntad leverans", "CreateForvantadLeverans", "Leverans", new { filterPgnde = Model.FilterPagaende, selectedRegId = Model.SelectedRegisterId }, null)
-             </div>
+        <div style="padding-left: 4px;">
+            @Html.ActionLink("Skapa ny förväntad leverans", "CreateForvantadLeverans", "Leverans", new { filterPgnde = Model.FilterPagaende, selectedRegId = Model.SelectedRegisterId }, null)
+        </div>
 
 
-             <div style = "padding-left: 4px;">
-                 @Html.ActionLink("Skapa förväntade leveranser (gäller f.n. endast månadsleveranser)", "CreateForvantadeLeveranser", "Leverans", new { filterPgnde = Model.FilterPagaende, selectedRegId = Model.SelectedRegisterId }, null)
-             </div>
+        <div style="padding-left: 4px;">
+            @Html.ActionLink("Skapa förväntade leveranser (gäller f.n. endast månadsleveranser)", "CreateForvantadeLeveranser", "Leverans", new { filterPgnde = Model.FilterPagaende, selectedRegId = Model.SelectedRegisterId }, null)
+        </div>
 
 
-        <div id ="gridContent" style="font-family: Arial; padding-top: 20px;" >
+        <div id="gridContent" style="font-family: Arial; padding-top: 20px;">
             @{
                 ViewBag.Title = "Administrera förväntade leveranser";
                 var grid = new WebGrid(source: Model.ForvantadeLeveranser, canPage: false, ajaxUpdateCallback: "webGridUpdated");
@@ -368,28 +489,28 @@
 
 
                     grid.Column("Period", "Period", format: @<text><span class="display-mode"><label id="lblPeriod">@item.Period </label></span>
-                                                                <input type="text" id="Period" value="@item.Period" class="edit-mode form-control" style="width:70px;"/></text>, style: "col70Width"),
+                                                                <input type="text" id="Period" value="@item.Period" class="edit-mode form-control" style="width:70px;" /></text>, style: "col70Width"),
 
                     grid.Column("Uppgiftsstart", "Uppgiftsstart", format: @<text><span class="display-mode">
                                                                                   <label id="lblUppgiftsstart">@( item.Uppgiftsstart != null ? item.Uppgiftsstart.ToString("yyyy-MM-dd") : item.Uppgiftsstart)</label>
                                                                               </span>
-                                                                              <input type="text" id="Uppgiftsstart" value="@( item.Uppgiftsstart != null ? item.Uppgiftsstart.ToString("yyyy-MM-dd") : item.Uppgiftsstart)" class="edit-mode form-control"  style="width:100px;"/></text>, style: "col70Width"),
+                                                                              <input type="text" id="Uppgiftsstart" value="@( item.Uppgiftsstart != null ? item.Uppgiftsstart.ToString("yyyy-MM-dd") : item.Uppgiftsstart)" class="edit-mode form-control" style="width:100px;" /></text>, style: "col70Width"),
                     grid.Column("Uppgiftsslut", "Uppgiftsslut", format: @<text><span class="display-mode">
                                                                                 <label id="lblUppgiftsslut">@( item.Uppgiftsslut != null ? item.Uppgiftsslut.ToString("yyyy-MM-dd") : item.Uppgiftsslut)</label>
                                                                             </span>
-                                                                            <input type="text" id="Uppgiftsslut" value="@( item.Uppgiftsslut != null ? item.Uppgiftsslut.ToString("yyyy-MM-dd") : item.Uppgiftsslut)" class="edit-mode form-control"  style="width:100px;"/></text>, style: "col70Width"),
+                                                                            <input type="text" id="Uppgiftsslut" value="@( item.Uppgiftsslut != null ? item.Uppgiftsslut.ToString("yyyy-MM-dd") : item.Uppgiftsslut)" class="edit-mode form-control" style="width:100px;" /></text>, style: "col70Width"),
                     grid.Column("Rapporteringsstart", "Rapp.start", format: @<text><span class="display-mode">
-                                                                                            <label id="lblRapporteringsstart">@( item.Rapporteringsstart != null ? item.Rapporteringsstart.ToString("yyyy-MM-dd") : item.Rapporteringsstart)</label>
-                                                                                        </span>
-                                                                                        <input type="text" id="Rapporteringsstart" value="@( item.Rapporteringsstart != null ? item.Rapporteringsstart.ToString("yyyy-MM-dd") : item.Rapporteringsstart)" class="edit-mode form-control" style="width:100px;"/></text>, style: "col70Width"),
+                                                                                    <label id="lblRapporteringsstart">@( item.Rapporteringsstart != null ? item.Rapporteringsstart.ToString("yyyy-MM-dd") : item.Rapporteringsstart)</label>
+                                                                                </span>
+                                                                                <input type="text" id="Rapporteringsstart" value="@( item.Rapporteringsstart != null ? item.Rapporteringsstart.ToString("yyyy-MM-dd") : item.Rapporteringsstart)" class="edit-mode form-control" style="width:100px;" /></text>, style: "col70Width"),
                     grid.Column("Rapporteringsslut", "Rapp.slut", format: @<text><span class="display-mode">
-                                                                                          <label id="lblRapporteringsslut">@( item.Rapporteringsslut != null ? item.Rapporteringsslut.ToString("yyyy-MM-dd") : item.Rapporteringsslut)</label>
-                                                                                      </span>
-                                                                                      <input type="text" id="Rapporteringsslut" value="@( item.Rapporteringsslut != null ? item.Rapporteringsslut.ToString("yyyy-MM-dd") : item.Rapporteringsslut)" class="edit-mode form-control"  style="width:100px;" /></text>, style: "col70Width"),
+                                                                                  <label id="lblRapporteringsslut">@( item.Rapporteringsslut != null ? item.Rapporteringsslut.ToString("yyyy-MM-dd") : item.Rapporteringsslut)</label>
+                                                                              </span>
+                                                                              <input type="text" id="Rapporteringsslut" value="@( item.Rapporteringsslut != null ? item.Rapporteringsslut.ToString("yyyy-MM-dd") : item.Rapporteringsslut)" class="edit-mode form-control" style="width:100px;" /></text>, style: "col70Width"),
                     grid.Column("Rapporteringsenast", "Rapp.senast", format: @<text><span class="display-mode">
-                                                                                            <label id="lblRapporteringsenast">@( item.Rapporteringsenast != null ? item.Rapporteringsenast.ToString("yyyy-MM-dd") : item.Rapporteringsenast)</label>
-                                                                                        </span>
-                                                                                        <input type="text" id="Rapporteringsenast" value="@( item.Rapporteringsenast != null ? item.Rapporteringsenast.ToString("yyyy-MM-dd") : item.Rapporteringsenast)" class="edit-mode form-control"  style="width:100px;" /></text>, style: "col70Width"),
+                                                                                     <label id="lblRapporteringsenast">@( item.Rapporteringsenast != null ? item.Rapporteringsenast.ToString("yyyy-MM-dd") : item.Rapporteringsenast)</label>
+                                                                                 </span>
+                                                                                 <input type="text" id="Rapporteringsenast" value="@( item.Rapporteringsenast != null ? item.Rapporteringsenast.ToString("yyyy-MM-dd") : item.Rapporteringsenast)" class="edit-mode form-control" style="width:100px;" /></text>, style: "col70Width"),
 
                     grid.Column("Paminnelse1", "Paminnelse1", format: @<text><span class="display-mode">
                                                                               <label id="lblPaminnelse1">@( item.Paminnelse1 != null ? item.Paminnelse1.ToString("yyyy-MM-dd") : item.Paminnelse1)</label>
@@ -406,20 +527,26 @@
                                                                           <input type="text" id="Paminnelse3" value="@( item.Paminnelse3 != null ? item.Paminnelse3.ToString("yyyy-MM-dd") : item.Paminnelse3)" class="edit-mode form-control" /></text>, style: "col70Width"),
 
                     grid.Column(null, format: @<text><span>
-                                                  <button class="edit-user display-mode btn btn-default">Ändra</button>
-                                                  <button class="save-user edit-mode btn btn-default">Spara</button>
-                                                  <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
+                                                      <button class="edit-user display-mode btn btn-default">Ändra</button>
+                                                      <button class="save-user edit-mode btn btn-default">Spara</button>
+                                                      <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
                                                   </span>
                                                </text>, style: "col2Width", canSort: false)))
         </div>
 
-        <div id="Outer" >
+        <div id="Outer">
             <div id="GridHeader"></div>
             <div id="GridBody"></div>
         </div>
 
     }
 </div>
+@*<div id="scrolla" class="scrolla" style="padding-top: 500px;">
+    <br/><br /><br /><br /><br /><br />
+    scrolla hit
+    <a name="scrollaHit"></a>
+    <a href="#"></a>
+</div>*@
 
 <script type="text/javascript">
     //function webGridUpdated(data) {

@@ -14,7 +14,7 @@ namespace SFTPFileHandler
         {
             var sftpWatcher = new SFTPWatcher();
 
-            sftpWatcher.CheckFiles();
+            sftpWatcher.CheckFolders();
 
             //För test
             Console.ReadLine();

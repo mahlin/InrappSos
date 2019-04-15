@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
+using System.Data.Entity.Infrastructure;
+using System.Data.Entity.Migrations.Sql;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
@@ -44,212 +46,254 @@ namespace SFTPFileHandler
             _mailLogPath = _mailLogPath.Replace(".txt", "_" + DateTime.Now.ToString("yyyyMMdd") + ".txt");
         }
 
-        public void CheckFiles()
+        public void CheckFolders()
         {
             string _fileareaPath = ConfigurationManager.AppSettings["FileAreaPath"];
-            //var relevantFileNameStarts = _portalService.HamtaGodkandaFilnamnsStarter();
+
+            System.IO.DirectoryInfo dir = new System.IO.DirectoryInfo(@"\\\\DESKTOP-Q22BLMK\TestSFTP\some-file-that-exists.txt");
+            int count = dir.GetFiles().Length;
+            //var _remoteName = @"\\DESKTOP-Q22BLMK\";
+            //FileInfo myFile = new FileInfo(@"\\DESKTOP-Q22BLMK\some-file-that-exists.txt");
+            //bool exists = myFile.Exists;
+            //FileInfo myFile1 = new FileInfo(@"\\DESKTOP-Q22BLMK\C\TestSFTP\some-file-that-exists.txt");
+            //bool exists1 = myFile1.Exists;
+            //FileInfo myFile2 = new FileInfo((@"\\DESKTOP-Q22BLMK\C\some-file-that-exists.txt");
+            //bool exists2 = myFile2.Exists;
 
             var directoriesInFileArea = Directory.GetDirectories(_fileareaPath);
 
             //Check if registered ftpaccount before handling files
             foreach (var folder in directoriesInFileArea)
             {
-                var folderName = GetFolderNameFromPath(folder);
-                //folderName equals sftpAccountName
-                var ftpAccount = _portalService.HamtaFtpKontoByName(folderName);
+                CheckFiles(folder);
+            }
+        }
 
-                if (ftpAccount != null)
+        private void CheckFiles(string folder)
+        {
+            var folderName = GetFolderNameFromPath(folder);
+            //folderName equals sftpAccountName
+            var ftpAccount = _portalService.HamtaFtpKontoByName(folderName);
+
+            if (ftpAccount != null)
+            {
+                DirectoryInfo dir = new DirectoryInfo(folder);
+
+                //Get info about registers relevant for current sftpaccount
+                var delregisterInfoList = _portalService.HamtaRelevantaDelregisterForSFTPKonto(ftpAccount);
+                List<FileInfo> filesInFolder = dir.GetFiles().OrderByDescending(p => p.CreationTime).ToList();
+
+                if (filesInFolder.Count > 0)
                 {
-                    DirectoryInfo dir = new DirectoryInfo(folder);
-
-                    //Get info about registers relevant for current sftpaccount
-                    var  delregisterInfoList = _portalService.HamtaRelevantaDelregisterForSFTPKonto(ftpAccount);
-                    List<FileInfo> filesInFolder = dir.GetFiles().OrderByDescending(p => p.CreationTime).ToList();
-
-                    if (filesInFolder.Count > 0)
+                    var inCorrectFilenamnList = new List<FileInfo>();
+                    foreach (var delregInfo in delregisterInfoList)
                     {
-                       foreach (var delregInfo in delregisterInfoList)
-                       {
-                           var okFileCodes = new List<string>();
-                            if (delregInfo.RapporterarPerEnhet)
+                        var okFileCodes = new List<string>();
+                        if (delregInfo.RapporterarPerEnhet)
+                        {
+                            foreach (var orgenhet in delregInfo.Orgenheter)
                             {
-                                foreach (var orgenhet in delregInfo.Orgenheter)
-                                {
-                                    okFileCodes.Add(orgenhet.Value);
-                                }
+                                okFileCodes.Add(orgenhet.Value);
                             }
-                            else
+                        }
+                        else
+                        {
+                            okFileCodes.Add(GetOrgCodeForOrg(ftpAccount.OrganisationsId, delregInfo));
+                        }
+                        var okFilesForSubDirList = new List<FileInfo>();
+                        var period = String.Empty;
+                        var unitCode = String.Empty;
+                        var okFile = false;
+
+                        //If relevant file exists in folder, save file to list
+                        foreach (var filkrav in delregInfo.Filkrav)
+                        {
+                            foreach (var forvantadfil in filkrav.ForvantadeFiler)
                             {
-                                okFileCodes.Add(GetOrgCodeForOrg(ftpAccount.OrganisationsId, delregInfo));
-                            }
-                            var okFilesForSubDirList = new List<FileInfo>();
-                            var period = String.Empty;
-                            var unitCode = String.Empty;
-                            var okFile = false;
-                            //If relevant file exists in folder, save file to list
-                            foreach (var filkrav in delregInfo.Filkrav)
-                            {
-                                foreach (var forvantadfil in filkrav.ForvantadeFiler)
+                                Regex expression = new Regex(forvantadfil.Regexp, RegexOptions.IgnoreCase);
+                                foreach (var file in filesInFolder)
                                 {
-                                    Regex expression = new Regex(forvantadfil.Regexp, RegexOptions.IgnoreCase);
-                                    foreach (var file in filesInFolder)
+                                    Match match = expression.Match(file.Name);
+                                    //If correct filename, check fileCode and period
+                                    if (match.Success)
                                     {
-                                        Match match = expression.Match(file.Name);
-                                        //If correct filename, check fileCode and period
-                                        if (match.Success)
+                                        //Remove from errorlist if saved there
+                                        inCorrectFilenamnList.Remove(file);
+                                        var fileCodeInFileName = match.Groups[1].Value;
+                                        //TODO - för alla register? Special för PAR?
+                                        if (okFileCodes.Contains(fileCodeInFileName))
                                         {
-                                            var fileCodeInFileName = match.Groups[1].Value;
-                                            //TODO - för alla register? Special för PAR?
-                                            if (okFileCodes.Contains(fileCodeInFileName))
+                                            if (delregInfo.RapporterarPerEnhet)
                                             {
-                                                if (delregInfo.RapporterarPerEnhet)
-                                                {
-                                                    //Get orgunitid
-                                                    unitCode = _portalService.HamtaOrganisationsenhetMedFilkod(fileCodeInFileName, ftpAccount.OrganisationsId).Enhetskod;
-                                                }
-                                                okFile = true;
-                                                var periodInFileName = match.Groups[2].Value;
-                                                if (!_portalService.HamtaGiltigaPerioderForDelregister(delregInfo.Id).Contains(periodInFileName))
-                                                {
-                                                    okFile = false;
-                                                }
-                                                else
-                                                {
-                                                    period = periodInFileName;
-                                                }
+                                                //Get orgunitid
+                                                unitCode = _portalService
+                                                    .HamtaOrganisationsenhetMedFilkod(fileCodeInFileName,
+                                                        ftpAccount.OrganisationsId).Enhetskod;
                                             }
-                                            
-                                            if (okFile)
-                                                okFilesForSubDirList.Add(file);
-                                        }
-                                    }
-                                }
-                                if (okFilesForSubDirList.Count > 0)
-                                {
-                                    if (CompleteDelivery(filkrav, okFilesForSubDirList))
-                                    {
-                                        try
-                                        {
-                                            var resultList = new List<ViewDataUploadFilesResult>();
-                                            //If complete delivery of approved files, tag and upload
-                                            filesHelper.UploadSFTPFilesAndShowResults(okFilesForSubDirList, resultList, ftpAccount, delregInfo.Id, unitCode, period, delregisterInfoList);
-
-                                            //Delete files from incoming filearea
-                                            foreach (var file in okFilesForSubDirList)
+                                            okFile = true;
+                                            var periodInFileName = match.Groups[2].Value;
+                                            if (!_portalService.HamtaGiltigaPerioderForDelregister(delregInfo.Id)
+                                                .Contains(periodInFileName))
                                             {
-                                                file.Delete();
+                                                okFile = false;
+                                            }
+                                            else
+                                            {
+                                                period = periodInFileName;
                                             }
                                         }
-                                        catch (ApplicationException e)
-                                        {
-                                            ErrorManager.WriteToErrorLog("SFTPWatcher", "Upload approved files", e.ToString(),
-                                                e.HResult, folder);
-                                            //TODO - email, ta bort ReadLine
-                                            Console.WriteLine("Sending email-alert. Upload files aborted.");
-                                            Console.ReadLine();
-                                            var mailRecipients = new List<string>();
-                                            mailRecipients.Add(_mailSender);
-                                            string subject = "SFTP-leverans gick ej att ladda upp.";
-                                            string body = "Hej! </br>";
-                                            body += "Fel inträffade när leveransen skulle sparas. <br>";
-                                            body += e.ToString() +  "<br>";
-                                            foreach (var file in okFilesForSubDirList)
-                                            {
-                                                body += file.Name + "<br> ";
-                                            }
-                                            body += "SFTPkonto: " + folderName + "</br>";
-
-                                            SendEmail(subject, body, mailRecipients);
-                                        }
-                                        catch (Exception e)
-                                        {
-                                            //Todo - send mail?
-                                            Console.WriteLine("Sending email-alert. Upload files aborted.");
-                                            Console.ReadLine();
-                                            var mailRecipients = new List<string>();
-                                            mailRecipients.Add(_mailSender);
-                                            string subject = "SFTP-leverans gick ej att ladda upp.";
-                                            string body = "Hej! </br>";
-                                            body += "Fel inträffade när leveransen skulle sparas. <br>";
-                                            body += e.ToString() + "<br>";
-                                            foreach (var file in okFilesForSubDirList)
-                                            {
-                                                body += file.Name + "<br> ";
-                                            }
-                                            body += "SFTPkonto: " + folderName + "</br>";
-
-                                            SendEmail(subject, body, mailRecipients);
-                                        }
+                                        if (okFile)
+                                            okFilesForSubDirList.Add(file);
                                     }
                                     else
                                     {
-                                        //If not complete, check if enough time elapsed
-                                        var sortedFilesList = okFilesForSubDirList.OrderByDescending(p => p.CreationTime).ToList();
-                                        //Check youngest file
-                                        var tmp = sortedFilesList[0].CreationTime.AddMinutes(_timeToWaitForCompleteDelivery);
-                                        var tmp2 = sortedFilesList[0].CreationTime;
-
-                                        if (sortedFilesList[0].CreationTime.AddMinutes(_timeToWaitForCompleteDelivery) <  DateTime.Now)
+                                        //save to errorlist if file not already saved there
+                                        IEnumerable<FileInfo> result = from fileInList in inCorrectFilenamnList where fileInList.Name == file.Name select file;
+                                        if (!result.Any())
                                         {
-                                            try
-                                            {
-                                                //TODO - email, ta bort ReadLine
-                                                Console.WriteLine("Sending email. Not complete delivery.");
-                                                Console.ReadLine();
-                                                var mailRecipients = _portalService.HamtaEpostadresserForSFTPKonto(ftpAccount.Id);
-                                                string subject = "SFTP-leverans ej komplett";
-                                                string body = "Hej! </br>";
-                                                body += "Leveransen är ej komplett. <br>";
-                                                foreach (var file in sortedFilesList)
-                                                {
-                                                    body += file.Name + "<br> ";
-                                                }
-                                                body += "SFTPkonto: " + folderName + "</br>";
-                                                body += "Vid frågor kontakta Socialstyrelsen, e-post: inrapportering@socialstyrelsen.se eller telefon 010 222 2222. <br> ";
+                                            inCorrectFilenamnList.Add(file);
+                                        }
+                                    }
+                                }
+                            }
+                            if (okFilesForSubDirList.Count > 0)
+                            {
+                                if (CompleteDelivery(filkrav, okFilesForSubDirList))
+                                {
+                                    try
+                                    {
+                                        var resultList = new List<ViewDataUploadFilesResult>();
+                                        //If complete delivery of approved files, tag and upload
+                                        filesHelper.UploadSFTPFilesAndShowResults(okFilesForSubDirList, resultList, ftpAccount, delregInfo.Id, unitCode, period, delregisterInfoList);
 
-                                                SendEmail(subject, body, mailRecipients);
-
-                                                var errorFilesArea = ConfigurationManager.AppSettings["notApprovedFilesFolder"];
-                                                String pathOnServer = Path.Combine(errorFilesArea);
-                                                //Kopiera filerna till fel-mappen 
-                                                foreach (var file in sortedFilesList)
-                                                {
-                                                    var fullPath = Path.Combine(pathOnServer, Path.GetFileName(file.Name));
-                                                    file.CopyTo(fullPath);
-                                                }
-                                                //Ta sen bort filerna från ursprungliga mappen
-                                                foreach (var file in sortedFilesList)
-                                                {
-                                                    file.Delete();
-                                                }
-                                            }
-                                            catch (Exception e)
-                                            {
-                                                Console.WriteLine(e);
-                                                //Send email
-                                                var mailRecipients = new List<string>();
-                                                mailRecipients.Add(_mailSender);
-                                                ErrorManager.WriteToErrorLog("SFTPWatcher", "Moving not approved files aborted", e.ToString(), e.HResult, folderName);
-
-                                                string subject = "Ett fel inträffade när ej godkända filer skulle flyttas.";
-                                                string body = "Hej! </br>";
-                                                body += "Fel inträffade när ej godkända filer skulle flyttas. <br>";
-                                                body += e.ToString() + "<br>";
-                                                foreach (var file in okFilesForSubDirList)
-                                                {
-                                                    body += file.Name + "<br> ";
-                                                }
-                                                body += "SFTPkonto: " + folderName + "</br>";
-
-                                                SendEmail(subject, body, mailRecipients);
-                                            }
+                                        //Delete files from incoming filearea
+                                        foreach (var file in okFilesForSubDirList)
+                                        {
+                                            file.Delete();
+                                        }
+                                    }
+                                    catch (ApplicationException e)
+                                    {
+                                        ErrorManager.WriteToErrorLog("SFTPWatcher", "Upload approved files", e.ToString(),
+                                            e.HResult, folder);
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        //Todo - send mail?
+                                        Console.WriteLine("Sending email-alert. Upload files aborted.");
+                                    }
+                                }
+                                else
+                                {
+                                    //If not complete, check if enough time elapsed
+                                    var sortedFilesList = okFilesForSubDirList.OrderByDescending(p => p.CreationTime).ToList();
+                                    //Check youngest file
+                                    if (sortedFilesList[0].CreationTime.AddMinutes(_timeToWaitForCompleteDelivery) < DateTime.Now)
+                                    {
+                                        //Not complete delivery - email user and remove files
+                                        try
+                                        {
+                                            IncompleteDeliveryHandler(ftpAccount, sortedFilesList, folderName);
+                                        }
+                                        catch (System.Net.Mail.SmtpException e)
+                                        {
+                                            Console.WriteLine(e);
+                                            //throw new ArgumentException(e.Message);
+                                            ErrorManager.WriteToErrorLog("SFTPWatcher", "SendEmail/Incomplete delivery", e.ToString(), e.HResult, folderName);
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            Console.WriteLine(e);
+                                            ErrorManager.WriteToErrorLog("SFTPWatcher", "Moving not approved files aborted", e.ToString(), e.HResult, folderName);
                                         }
                                     }
                                 }
                             }
                         }
                     }
+                    //If any files incorrect - email user and move file
+                    if (inCorrectFilenamnList.Any())
+                    {
+                        try
+                        {
+                            IncorrectFilesHandler(ftpAccount, inCorrectFilenamnList, folderName);
+                        }
+                        catch (System.Net.Mail.SmtpException e)
+                        {
+                            Console.WriteLine(e);
+                            //throw new ArgumentException(e.Message);
+                            ErrorManager.WriteToErrorLog("SFTPWatcher", "SendEmail/Not correct filenamne", e.ToString(), e.HResult, folderName);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e);
+                            ErrorManager.WriteToErrorLog("SFTPWatcher", "Not correct filenamne", e.ToString(), e.HResult, folderName);
+                        }
+                    }
                 }
+            }
+        }
+
+
+        private void IncompleteDeliveryHandler(SFTPkonto ftpAccount, List<FileInfo> sortedFilesList, string folderName)
+        {
+            //TODO - email, ta bort ReadLine
+            Console.WriteLine("Sending email. Not complete delivery.");
+            var mailRecipients = _portalService.HamtaEpostadresserForSFTPKonto(ftpAccount.Id);
+            string subject = "SFTP-leverans ej komplett";
+            string body = "Hej! </br>";
+            body += "Leveransen är ej komplett. <br>";
+            foreach (var file in sortedFilesList)
+            {
+                body += file.Name + "<br> ";
+            }
+            body += "SFTPkonto: " + folderName + "</br>";
+            body += "Vid frågor kontakta Socialstyrelsen, e-post: inrapportering@socialstyrelsen.se eller telefon 010 222 2222. <br> ";
+
+            SendEmail(subject, body, mailRecipients);
+
+            var errorFilesArea = ConfigurationManager.AppSettings["notApprovedFilesFolder"];
+            String pathOnServer = Path.Combine(errorFilesArea);
+            //Kopiera filerna till fel-mappen 
+            foreach (var file in sortedFilesList)
+            {
+                var fullPath = Path.Combine(pathOnServer, Path.GetFileName(file.Name));
+                file.CopyTo(fullPath);
+            }
+            //Ta sen bort filerna från ursprungliga mappen
+            foreach (var file in sortedFilesList)
+            {
+                file.Delete();
+            }
+        }
+
+        private void IncorrectFilesHandler(SFTPkonto ftpAccount, List<FileInfo> incorrectFilesList, string folderName)
+        {
+            //Incorrect filename - move file and email user
+            Console.WriteLine("Sending email. Not correct filenamne.");
+            var mailRecipients = _portalService.HamtaEpostadresserForSFTPKonto(ftpAccount.Id);
+            string subject = "SFTP-leverans - fil med felaktigt filnamn";
+            string body = "Hej! </br>";
+            body += "Leveransen innehåller fil med felatigt filnamn:  <br>";
+            foreach (var incorrectFile in incorrectFilesList)
+            {
+                body += incorrectFile.Name + "<br> ";
+            }
+            body += "SFTPkonto: " + folderName + "</br>";
+            body += "Vid frågor kontakta Socialstyrelsen, e-post: inrapportering@socialstyrelsen.se eller telefon 010 222 2222. <br> ";
+
+            SendEmail(subject, body, mailRecipients);
+            var errorFilesArea = ConfigurationManager.AppSettings["notApprovedFilesFolder"];
+            String pathOnServer = Path.Combine(errorFilesArea);
+            //Kopiera filerna till det aktuella kontots fel-mapp 
+            var fullPathDir = Path.Combine(pathOnServer, folderName);
+            Directory.CreateDirectory(fullPathDir);
+            foreach (var incorrectFile in incorrectFilesList)
+            {
+                var pathToCopyTo = Path.Combine(fullPathDir, Path.GetFileName(incorrectFile.Name));
+                incorrectFile.CopyTo(pathToCopyTo);
+                //Ta sen bort filen från ursprungliga mappen
+                incorrectFile.Delete();
             }
         }
 
@@ -333,40 +377,37 @@ namespace SFTPFileHandler
             return complete;
         }
 
-        public void SendEmail(string subject, string bodytext, List<string> mailRecipients)
+        private void SendEmail(string subject, string bodytext, List<string> mailRecipients)
         {
-            try
+
+            string currentDate = DateTime.Now.ToString("yyyyMMdd");
+            var recipientsStr = mailRecipients.Aggregate((a, b) => a + ", " + b);
+
+            MailMessage msg = new MailMessage();
+            MailAddress fromMail = new MailAddress(_mailSender);
+            msg.From = fromMail;
+
+            foreach (var address in mailRecipients)
             {
-                string currentDate = DateTime.Now.ToString("yyyyMMdd");
-
-                MailMessage msg = new MailMessage();
-                MailAddress fromMail = new MailAddress(_mailSender);
-                msg.From = fromMail;
-
-                foreach (var address in mailRecipients)
-                {
-                    msg.To.Add(address);
-                }
-
-                //TODO för test, använd min epostadress
-                msg.To.Add("marie.ahlin@socialstyrelsen.se");
-
-                msg.Subject = subject;
-                msg.Body = bodytext;
-                msg.BodyEncoding = System.Text.Encoding.UTF8;
-                msg.IsBodyHtml = true;
-                //client.Send(msg);
-                _smtpClient.SendAsync(msg, "notification");
-                //Wait try to prevent to spam the server if many emails.. did run in to async problem else during testing.
-                System.Threading.Thread.Sleep(8000);
-
-                Log("Mail till : " + mailRecipients + ". Rubrik: " + subject);
+                msg.To.Add(address);
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                ErrorManager.WriteToErrorLog("SFTPWatcher", "Send Email", e.ToString(),e.HResult, mailRecipients[0]);
-            }
+
+            //TODO för test, använd min epostadress
+            //msg.To.Add("marie.ahlin@socialstyrelsen.se");
+
+            msg.Subject = subject;
+            msg.Body = bodytext;
+            msg.BodyEncoding = System.Text.Encoding.UTF8;
+            msg.IsBodyHtml = true;
+
+            _smtpClient.Send(msg);
+
+            // _smtpClient.SendAsync(msg, "notification");
+            //Wait try to prevent to spam the server if many emails.. did run in to async problem else during testing.
+            //System.Threading.Thread.Sleep(8000);
+
+            //Logga att mailet skickats
+            Log("Mail till : " + recipientsStr + ". Rubrik: " + subject);
 
             //_smtpClient.SendCompleted += new SendCompletedEventHandler(SendCompletedCallback);
         }

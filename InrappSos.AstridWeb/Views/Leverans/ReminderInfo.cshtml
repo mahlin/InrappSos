@@ -91,7 +91,8 @@
         registerLista.forEach(function (register, index) {
             if (selectedRegister === register.Id.toString()) {
                 if (register.DelregisterList.length !== 0) {
-                    var vals = [];
+                    var perioderArr = [{}];
+                    var periodInt = 0;
                     register.DelregisterList.forEach(function (delregister, index) {
                         if (delregister.ForvantadeLeveranserList.length !== 0) {
                             delregister.ForvantadeLeveranserList.forEach(function (unit, index) {
@@ -99,27 +100,31 @@
                                 if (unit.Period.length === 4) {
                                     //Årsperiod
                                     if (parseInt(unit.Period) < parseInt(latestPeriodYear)) {
-                                        vals[unit.Period] = unit.Period;
+                                        var i = perioderArr.findIndex(x => x.value === unit.Period);
+                                        if (i <= -1) {
+                                            periodInt = parseInt(unit.Period);
+                                            perioderArr.push({ key: periodInt, value: unit.Period });
+                                        }
                                     }
                                 } else if (unit.Period.length === 6) {
                                     //Månadsperiod 
                                     if (parseInt(unit.Period) < parseInt(latestPeriodMonth)) {
-                                        vals[unit.Period] = unit.Period;
+                                        var i = perioderArr.findIndex(x => x.value === unit.Period);
+                                        if (i <= -1) {
+                                            periodInt = parseInt(unit.Period);
+                                            perioderArr.push({ key: periodInt, value: unit.Period });
+                                        }
                                     }
                                 }
                             });
                         }
-                        //Sortera perioderna fallande
-                        vals.sort(function(a, b) { return b - a });
                         //Populera period-dropdown
                         var $ddlPeriod = $("#ddlPeriod");
                         $ddlPeriod.empty();
                         $ddlPeriod.append("<option value=0> - Välj period - </option>");
-                        for (var key in vals){
-                            if (typeof vals[key] !== 'function') {
-                                $ddlPeriod.append("<option value=" + key + " >" + vals[key] + "</option>");
-                                //alert("Key is " + key + ", value is" + vals[key]);
-                            }
+
+                        for (i = 1; i < perioderArr.length; i++) { 
+                            $ddlPeriod.append("<option value=" + perioderArr[i].key + " >" + perioderArr[i].value + "</option>");
                         }
                         $ddlPeriod.removeAttr('readonly');
                     });
@@ -138,33 +143,36 @@
                         if (selectedDelregister === delregister.Id.toString()) {
                             if (delregister.ForvantadeLeveranserList.length !== 0) {
                                 //Populera period-dropdown
-                                var vals = {};
+                                var perioderArr = [{}];
+                                var periodInt = 0;
                                 delregister.ForvantadeLeveranserList.forEach(function (unit, index) {
                                     //Ta bara med senaste period och bakåt i tiden
                                     if (unit.Period.length === 4) {
                                         //Årsperiod
                                         if (parseInt(unit.Period) < parseInt(latestPeriodYear)) {
-                                            vals[unit.Period] = unit.Period;
+                                            var i = perioderArr.findIndex(x => x.value === unit.Period);
+                                            if (i <= -1) {
+                                                periodInt = parseInt(unit.Period);
+                                                perioderArr.push({ key: periodInt, value: unit.Period });
+                                            }
                                         }
                                     } else if (unit.Period.length === 6) {
                                         //Månadsperiod 
                                         if (parseInt(unit.Period) < parseInt(latestPeriodMonth)) {
-                                            vals[unit.Period] = unit.Period;
+                                            var i = perioderArr.findIndex(x => x.value === unit.Period);
+                                            if (i <= -1) {
+                                                periodInt = parseInt(unit.Period);
+                                                perioderArr.push({ key: periodInt, value: unit.Period });
+                                            }
                                         }
                                     }
                                 });
-                                //Sortera perioderna fallande
-                                vals.sort(function (a, b) { return b - a });
-
                                 var $ddlPeriod = $("#ddlPeriod");
                                 $ddlPeriod.empty();
                                 $ddlPeriod.append("<option avlue=0> - Välj period - </option>");
 
-                                for (var key in vals){
-                                    if (typeof vals[key] !== 'function') {
-                                        $ddlPeriod.append("<option value=" + key + " >" + vals[key] + "</option>");
-                                        //alert("Key is " + key + ", value is" + vals[key]);
-                                    }
+                                for (i = 1; i < perioderArr.length; i++) { 
+                                    $ddlPeriod.append("<option value=" + perioderArr[i].key + " >" + perioderArr[i].value + "</option>");
                                 }
                                 $ddlPeriod.removeAttr('readonly');
                             }

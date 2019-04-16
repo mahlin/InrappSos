@@ -174,7 +174,7 @@ namespace InrappSos.ApplicationService.Helpers
                 orgenhetsId = _portalSosRepository.GetOrganisationsenhetsId(selectedUnitId, orgId);
             }
 
-            var levId = _portalSosRepository.GetNewLeveransId(userId, userName, orgId, selectedRegisterId, orgenhetsId, forvantadLevId, "Levererad");
+            var levId = _portalSosRepository.GetNewLeveransId(userId, userName, orgId, selectedRegisterId, orgenhetsId, forvantadLevId, "Levererad",0);
             var hash = GetHashAddOn(orgKod, levId);
             var headers = httpRequest.Headers;
 
@@ -228,7 +228,6 @@ namespace InrappSos.ApplicationService.Helpers
             var orgtypeListForOrg = _portalSosService.HamtaOrgtyperForOrganisation(ftpAccount.OrganisationsId);
             var orgtypeListForSubDir = _portalSosService.HamtaOrgtyperForDelregister(selectedRegisterId);
 
-            //Todo - hur ska detta hanteras? Jmfr FUCtrl/Upload
             //Compare organisations orgtypes with orgtypes for current subdir
             foreach (var subDirOrgtype in orgtypeListForSubDir)
             {
@@ -269,7 +268,7 @@ namespace InrappSos.ApplicationService.Helpers
                 orgenhetsId = _portalSosRepository.GetOrganisationsenhetsId(selectedUnitId, ftpAccount.OrganisationsId);
             }
 
-            var levId = _portalSosRepository.GetNewLeveransId(user.Id, user.Namn, ftpAccount.OrganisationsId, selectedRegisterId, orgenhetsId, forvantadLevId, "Levererad");
+            var levId = _portalSosRepository.GetNewLeveransId(user.Id, user.Namn, ftpAccount.OrganisationsId, selectedRegisterId, orgenhetsId, forvantadLevId, "Levererad", ftpAccount.Id);
             var hash = GetHashAddOn(orgCode, levId);
 
             var regId = _portalSosRepository.GetSubDirectoryById(selectedRegisterId).RegisterId;

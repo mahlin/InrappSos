@@ -50,8 +50,8 @@ namespace SFTPFileHandler
         {
             string _fileareaPath = ConfigurationManager.AppSettings["FileAreaPath"];
 
-            System.IO.DirectoryInfo dir = new System.IO.DirectoryInfo(@"\\\\DESKTOP-Q22BLMK\TestSFTP\some-file-that-exists.txt");
-            int count = dir.GetFiles().Length;
+            //System.IO.DirectoryInfo dir = new System.IO.DirectoryInfo(@"\\\\DESKTOP-Q22BLMK\TestSFTP\some-file-that-exists.txt");
+            //int count = dir.GetFiles().Length;
             //var _remoteName = @"\\DESKTOP-Q22BLMK\";
             //FileInfo myFile = new FileInfo(@"\\DESKTOP-Q22BLMK\some-file-that-exists.txt");
             //bool exists = myFile.Exists;
@@ -181,6 +181,8 @@ namespace SFTPFileHandler
                                     {
                                         //Todo - send mail?
                                         Console.WriteLine("Sending email-alert. Upload files aborted.");
+                                        ErrorManager.WriteToErrorLog("SFTPWatcher", "Upload approved files", e.ToString(),
+                                            e.HResult, folder);
                                     }
                                 }
                                 else

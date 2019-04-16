@@ -65,7 +65,7 @@ namespace InrappSos.DataAccess
 
         IEnumerable<int> GetLeveransIdnForOrganisation(int orgId);
 
-        int GetNewLeveransId(string userId, string userName, int orgId, int regId, int orgenhetsId, int forvLevId, string status);
+        int GetNewLeveransId(string userId, string userName, int orgId, int regId, int orgenhetsId, int forvLevId, string status, int sftpAccountId);
 
         Aterkoppling GetAterkopplingForLeverans(int levId);
 

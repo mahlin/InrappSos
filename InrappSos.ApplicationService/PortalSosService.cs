@@ -1005,7 +1005,7 @@ namespace InrappSos.ApplicationService
         }
         public int HamtaNyttLeveransId(string userId, string userName, int orgId, int registerId, int orgenhetsId, int forvLevId, string status)
         {
-            var levId = _portalSosRepository.GetNewLeveransId(userId, userName, orgId, registerId, orgenhetsId, forvLevId, status);
+            var levId = _portalSosRepository.GetNewLeveransId(userId, userName, orgId, registerId, orgenhetsId, forvLevId, status,0);
             return levId;
         }
 

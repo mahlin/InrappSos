@@ -548,7 +548,7 @@ namespace InrappSos.DataAccess
             return kommunkod;
         }
 
-        public int GetNewLeveransId(string userId, string userName, int orgId, int regId, int orgenhetsId, int forvLevId, string status)
+        public int GetNewLeveransId(string userId, string userName, int orgId, int regId, int orgenhetsId, int forvLevId, string status, int sftpkontoId = 0)
         {
             var dbStatus = "Levererad";
             if (!String.IsNullOrEmpty(status))
@@ -572,6 +572,10 @@ namespace InrappSos.DataAccess
             if (orgenhetsId != 0)
             {
                 leverans.OrganisationsenhetsId = orgenhetsId;
+            }
+            if (sftpkontoId != 0)
+            {
+                leverans.SFTPkontoId = sftpkontoId;
             }
 
 

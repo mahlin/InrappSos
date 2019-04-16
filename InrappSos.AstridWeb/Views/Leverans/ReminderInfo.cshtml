@@ -187,19 +187,19 @@
         $("#ddlDelregister").focus();
     });
 
-    $(function () {
-        $('th a, tfoot a').click(function () {
-            var newUrl = $(this).attr('href') +
-                "&regId=" +
-                $("#SelectedRegisterId").val() +
-                "&delregId=" +
-                $("#SelectedDelregisterId").val() +
-                "&period=" +
-                $("#SelectedPeriod").val();
-            $('form').attr('action', newUrl).submit();
-            return false;
-        });
-    });
+    //$(function () {
+    //    $('th a, tfoot a').click(function () {
+    //        var newUrl = $(this).attr('href') +
+    //            "&regId=" +
+    //            $("#SelectedRegisterId").val() +
+    //            "&delregId=" +
+    //            $("#SelectedDelregisterId").val() +
+    //            "&period=" +
+    //            $("#SelectedPeriod").val();
+    //        $('form').attr('action', newUrl).submit();
+    //        return false;
+    //    });
+    //});
 
     function setDelregDrop(selectedRegister) {
         //Hämta delregister för valt register
@@ -264,7 +264,7 @@
         });
 
     $(document).on('change', '#ddlPeriod', function () {
-        var x = $('#ddlPeriod').val();
+        //var x = $('#ddlPeriod').val();
         $("#SelectedPeriod").val($('#ddlPeriod').val());
         if ($('#ddlPeriod').val() !== "0") {
             $("#btnSearch").removeAttr('disabled');

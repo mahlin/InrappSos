@@ -113,45 +113,56 @@ namespace SFTPFileHandler
                                 Regex expression = new Regex(forvantadfil.Regexp, RegexOptions.IgnoreCase);
                                 foreach (var file in filesInFolder)
                                 {
-                                    Match match = expression.Match(file.Name);
-                                    //If correct filename, check fileCode and period
-                                    if (match.Success)
+                                    //om fil redan godkänd behöver den inte mappas
+                                    IEnumerable<FileInfo> res = from fileInList in okFilesForSubDirList
+                                        where fileInList.Name == file.Name
+                                        select file;
+                                    if (!res.Any())
                                     {
-                                        //Remove from errorlist if saved there
-                                        inCorrectFilenamnList.Remove(file);
-                                        var fileCodeInFileName = match.Groups[1].Value;
-                                        //TODO - för alla register? Special för PAR?
-                                        if (okFileCodes.Contains(fileCodeInFileName))
+                                        Match match = expression.Match(file.Name);
+                                        //If correct filename, check fileCode and period
+                                        if (match.Success)
                                         {
-                                            if (delregInfo.RapporterarPerEnhet)
+                                            //Remove from errorlist if saved there
+                                            inCorrectFilenamnList.Remove(file);
+                                            var fileCodeInFileName = match.Groups[1].Value;
+                                            //TODO - för alla register? Special för PAR?
+                                            if (okFileCodes.Contains(fileCodeInFileName))
                                             {
-                                                //Get orgunitid
-                                                unitCode = _portalService
-                                                    .HamtaOrganisationsenhetMedFilkod(fileCodeInFileName,
-                                                        ftpAccount.OrganisationsId).Enhetskod;
+                                                if (delregInfo.RapporterarPerEnhet)
+                                                {
+                                                    //Get orgunitid
+                                                    unitCode = _portalService
+                                                        .HamtaOrganisationsenhetMedFilkod(fileCodeInFileName,
+                                                            ftpAccount.OrganisationsId).Enhetskod;
+                                                }
+                                                okFile = true;
+                                                var periodInFileName = match.Groups[2].Value;
+                                                if (!_portalService.HamtaGiltigaPerioderForDelregister(delregInfo.Id)
+                                                    .Contains(periodInFileName))
+                                                {
+                                                    okFile = false;
+                                                }
+                                                else
+                                                {
+                                                    period = periodInFileName;
+                                                }
                                             }
-                                            okFile = true;
-                                            var periodInFileName = match.Groups[2].Value;
-                                            if (!_portalService.HamtaGiltigaPerioderForDelregister(delregInfo.Id)
-                                                .Contains(periodInFileName))
+                                            if (okFile)
                                             {
-                                                okFile = false;
-                                            }
-                                            else
-                                            {
-                                                period = periodInFileName;
+                                                okFilesForSubDirList.Add(file);
                                             }
                                         }
-                                        if (okFile)
-                                            okFilesForSubDirList.Add(file);
-                                    }
-                                    else
-                                    {
-                                        //save to errorlist if file not already saved there
-                                        IEnumerable<FileInfo> result = from fileInList in inCorrectFilenamnList where fileInList.Name == file.Name select file;
-                                        if (!result.Any())
+                                        else
                                         {
-                                            inCorrectFilenamnList.Add(file);
+                                            //save to errorlist if file not already saved there
+                                            IEnumerable<FileInfo> result = from fileInList in inCorrectFilenamnList
+                                                where fileInList.Name == file.Name
+                                                select file;
+                                            if (!result.Any())
+                                            {
+                                                inCorrectFilenamnList.Add(file);
+                                            }
                                         }
                                     }
                                 }
@@ -241,7 +252,17 @@ namespace SFTPFileHandler
         {
             //TODO - email, ta bort ReadLine
             Console.WriteLine("Sending email. Not complete delivery.");
-            var mailRecipients = _portalService.HamtaEpostadresserForSFTPKonto(ftpAccount.Id);
+            var mailRecipients = new List<string>();
+            var userEmails = _portalService.HamtaEpostadresserForSFTPKonto(ftpAccount.Id);
+            //Om inga epostadresser finns kopplade till kontot, använd organisationens epostadress
+            if (userEmails.Any())
+            {
+                mailRecipients = userEmails;
+            }
+            else
+            {
+                mailRecipients.Add(_portalService.HamtaOrganisation(ftpAccount.OrganisationsId).EpostAdress);
+            }
             string subject = "SFTP-leverans ej komplett";
             string body = "Hej! </br>";
             body += "Leveransen är ej komplett. <br>";
@@ -273,7 +294,17 @@ namespace SFTPFileHandler
         {
             //Incorrect filename - move file and email user
             Console.WriteLine("Sending email. Not correct filenamne.");
-            var mailRecipients = _portalService.HamtaEpostadresserForSFTPKonto(ftpAccount.Id);
+            var mailRecipients = new List<string>();
+            var userEmails = _portalService.HamtaEpostadresserForSFTPKonto(ftpAccount.Id);
+            //Om inga epostadresser finns kopplade till kontot, använd organisationens epostadress
+            if (userEmails.Any())
+            {
+                mailRecipients = userEmails;
+            }
+            else
+            {
+                mailRecipients.Add(_portalService.HamtaOrganisation(ftpAccount.OrganisationsId).EpostAdress);
+            }
             string subject = "SFTP-leverans - fil med felaktigt filnamn";
             string body = "Hej! </br>";
             body += "Leveransen innehåller fil med felatigt filnamn:  <br>";

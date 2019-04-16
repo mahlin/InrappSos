@@ -108,6 +108,10 @@ $(document).on('change','#ddlRegister',
                 }
                 else if (foundLandsting) {
                     validFileCode = $("#GiltigLandstingsKod").val();
+                    //Om org inte har Landsstingskod, hämta inrapporteringskod istället
+                    if (validFileCode === "") {
+                        validFileCode = $("#GiltigInrapporteringsKod").val();
+                    }
                 }
                 else
                     validFileCode = $("#GiltigInrapporteringsKod").val();

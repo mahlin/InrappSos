@@ -448,6 +448,8 @@
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Manage\ChangeChosenRegisters.cshtml" />
     <Content Include="Views\Home\Information.cshtml" />
+    <Content Include="Views\Shared\_LoginPartialWhenClosed.cshtml" />
+    <Content Include="Views\Account\LoginWhenClosed.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

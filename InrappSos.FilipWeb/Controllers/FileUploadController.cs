@@ -27,6 +27,7 @@ namespace InrappSos.FilipWeb.Controllers
         private readonly IPortalSosService _portalService;
         private FilesViewModel _model = new FilesViewModel();
         FilesHelper filesHelper;
+        private GeneralHelper _generalHelper;
         //String tempPath = "~/somefiles/";
         //String serverMapPath = "~/UppladdadeRegisterfiler/";
 
@@ -43,6 +44,7 @@ namespace InrappSos.FilipWeb.Controllers
         {
             filesHelper = new FilesHelper(StorageRoot);
             //filesHelper = new FilesHelper(DeleteURL, DeleteType, StorageRoot, UrlBase, tempPath, serverMapPath);
+            _generalHelper = new GeneralHelper();
 
             _portalService =
                 new PortalSosService(new PortalSosRepository(new InrappSosDbContext()));
@@ -56,8 +58,19 @@ namespace InrappSos.FilipWeb.Controllers
                 //Kolla om öppet, annars visa stängt-sida
                 if (!_portalService.IsOpen())
                 {
-                    ViewBag.Text = _portalService.HamtaInfoText("Stangtsida").Text;
-                    return View("Closed");
+                    //Om användaren tillhör en test-organisation så ska hen släppas in även om portalen är stängd (#335)
+                    //var tmp = User;
+                    //var testTeamUser = UserManager.FindByNameAsync(User.Identity.GetUserName());
+                    //var testTeamUserOrg = _portalService.HamtaOrgForAnvandare(User.Identity.GetUserId());
+                    //var testOrg = IsTestOrg(testTeamUserOrg.Id);
+                    var testOrg = _generalHelper.IsTestUser(User.Identity.GetUserId());
+                    if (!testOrg)
+                    {
+                        ViewBag.Text = _portalService.HamtaInfoText("Stangtsida").Text;
+                        return View("Closed");
+                    }
+                    //ViewBag.Text = _portalService.HamtaInfoText("Stangtsida").Text;
+                    //return View("Closed");
                 }
                 var userOrg = _portalService.HamtaOrgForAnvandare(User.Identity.GetUserId());
                 //Hämta info om valbara register

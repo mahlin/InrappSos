@@ -28,12 +28,14 @@ namespace InrappSos.FilipWeb.Controllers
         private ApplicationUserManager _userManager;
         private CustomIdentityResultErrorDescriber _errorDecsriber;
         private readonly IPortalSosService _portalService;
+        GeneralHelper _generalHelper;
 
         public AccountController()
         {
             _errorDecsriber = new CustomIdentityResultErrorDescriber();
             _portalService =
                 new PortalSosService(new PortalSosRepository(new InrappSosDbContext()));
+            _generalHelper = new GeneralHelper();
         }
 
         public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
@@ -43,6 +45,7 @@ namespace InrappSos.FilipWeb.Controllers
             _errorDecsriber = new CustomIdentityResultErrorDescriber();
             _portalService =
                 new PortalSosService(new PortalSosRepository(new InrappSosDbContext()));
+            _generalHelper = new GeneralHelper();
         }
 
         public ApplicationSignInManager SignInManager
@@ -73,13 +76,14 @@ namespace InrappSos.FilipWeb.Controllers
             var str = _portalService.ClosedComingWeek();
             if (str != String.Empty)
                 ViewBag.AvvikandeOppettider = "Avvikande öppettider<br/>" + str;
-            //Kolla om öppet, annars visa stängt-sida
+
+            ViewBag.ReturnUrl = returnUrl;
+
             if (!_portalService.IsOpen())
             {
-                ViewBag.Text = _portalService.HamtaInfoText("Stangtsida").Text;
-                return View("Closed");
+                return View("LoginWhenClosed");
             }
-            ViewBag.ReturnUrl = returnUrl;
+            
             return View();
         }
 
@@ -99,8 +103,21 @@ namespace InrappSos.FilipWeb.Controllers
                 //Kolla om öppet, annars visa stängt-sida
                 if (!_portalService.IsOpen())
                 {
-                    ViewBag.Text = _portalService.HamtaInfoText("Stangtsida").Text;
-                    return View("Closed");
+                    //Om användaren tillhör en test-organisation så ska hen släppas in även om portalen är stängd (#335)
+                    var testTeamUser = await UserManager.FindByNameAsync(model.Email);
+                    if (testTeamUser == null)
+                    {
+                        ModelState.AddModelError("", "Felaktigt användarnamn eller pinkod.");
+                        return View(model);
+                    }
+                    var testOrg = _generalHelper.IsTestUser(testTeamUser.Id);
+                    //var testTeamUserOrg = _portalService.HamtaOrgForAnvandare(testTeamUser.Id);
+                    //var testOrg = _generalHelper.IsTestOrg(testTeamUserOrg.Id);
+                    if (!testOrg)
+                    {
+                        ViewBag.Text = _portalService.HamtaInfoText("Stangtsida").Text;
+                        return View("Closed");
+                    }
                 }
                 //Add this to check if the email was confirmed.
                 var user = await UserManager.FindByNameAsync(model.Email);
@@ -920,6 +937,7 @@ namespace InrappSos.FilipWeb.Controllers
             return View();
         }
 
+
         internal class ChallengeResult : HttpUnauthorizedResult
         {
             public ChallengeResult(string provider, string redirectUri)
@@ -947,6 +965,9 @@ namespace InrappSos.FilipWeb.Controllers
                 }
                 context.HttpContext.GetOwinContext().Authentication.Challenge(properties, LoginProvider);
             }
+
+
+
         }
         #endregion
     }

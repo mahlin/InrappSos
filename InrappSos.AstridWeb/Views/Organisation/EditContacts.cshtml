@@ -1,10 +1,8 @@
 ﻿@model InrappSos.AstridWeb.Models.ViewModels.OrganisationViewModels.OrganisationViewModel
-@*<script src="~/Scripts/jquery-1.10.2.min.js"></script>*@
 
 <link href="~/Scripts//bootstrap-multiselect/dist/css/bootstrap-multiselect.css" rel="stylesheet" type="text/css" />
 <script src="~/Scripts/bootstrap-multiselect/dist/js/bootstrap-multiselect.js" type="text/javascript"></script>
 
-@*<script src="@Url.Content("~/Scripts/custom.js")" type="text/javascript"></script>*@
 <script type="text/javascript">
 
     var users = @Html.Raw(Json.Encode(Model.ContactPersons));
@@ -93,22 +91,6 @@
     $(function () {
         $("#searchText").focus();
     });
-
-    //$(function () {
-    //    $('th a, tfoot a').click(function () {
-    //        //if querystring already contains selectedOrganisationId, remove it
-    //        var index = $(this).attr('href').indexOf("&selectedOrganisationId=");
-    //        if (index >= 0) {
-    //            var cleanUrl = $(this).attr('href').substring(0, index);
-    //            $(this).attr('href', cleanUrl);
-    //        }
-    //        var newUrl = $(this).attr('href') +
-    //            "&selectedOrganisationId=" +
-    //            $("#SelectedOrganisationId").val();
-    //        $('form').attr('action', newUrl).submit();
-    //        return false;
-    //    });
-    //});
 
     function deleteContact(id, name) {
         $('#SelectedContactId').val(id);
@@ -210,6 +192,7 @@
                     listOfRoles = user.ListOfRoles;
                 }
             });
+            var visaInaktiva = $('#VisaInaktiva').val();
 
             //Creating ApplicationUser JSON object
             var applicationUser =
@@ -226,6 +209,8 @@
             //Posting ApplicationUser object to controller's Update action method
             $.ajax({
                 url: '/Organisation/UpdateOrganisationsContact',
+                url: '/Organisation/UpdateOrganisationsContact?visaInaktiva=' + visaInaktiva,
+
                 data: JSON.stringify(applicationUser),
                 type: 'POST',
                 contentType: 'application/json; charset=utf-8',

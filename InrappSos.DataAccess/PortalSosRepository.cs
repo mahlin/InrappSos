@@ -417,6 +417,29 @@ namespace InrappSos.DataAccess
             return contacts;
         }
 
+        public IEnumerable<ApplicationUser> GetActiveContactPersonsForOrg(int orgId)
+        {
+            var today = DateTime.Now.Date;
+            var activeContacts = new List<ApplicationUser>();
+            var contacts = DbContext.Users.Where(x => x.OrganisationId == orgId).ToList();
+
+            foreach (var contact in contacts)
+            {
+                var tmp = contact.AktivTom;
+               if (contact.AktivTom == null) 
+                    activeContacts.Add(contact);
+               else if (contact.AktivTom >= DateTime.Now.Date)
+                    activeContacts.Add(contact);
+            }
+            return activeContacts;
+        }
+
+        public IEnumerable<SFTPkonto> GetSFTPAccountsForOrg(int orgId)
+        {
+            var accounts = DbContext.SFTPkonto.Where(x => x.OrganisationsId == orgId).ToList();
+            return accounts;
+        }
+
         public IEnumerable<ApplicationUser> GetContactPersonsForSFTPAccount(int sftpAccountId)
         {
             var contactsList = new List<ApplicationUser>();
@@ -1268,6 +1291,23 @@ namespace InrappSos.DataAccess
 
             return org.Id;
         }
+
+        public int CreateSFTPAccount(SFTPkonto account, ICollection<KontaktpersonSFTPkonto> contacts)
+        {
+            DbContext.SFTPkonto.Add(account);
+            DbContext.SaveChanges();
+
+            //Insert contacts
+            foreach (var contact in contacts)
+            {
+                contact.SFTPkontoId = account.Id;
+                DbContext.KontaktpersonSFTPkonto.Add(contact);
+            }
+            DbContext.SaveChanges();
+
+            return account.Id;
+        }
+
         public void CreateOrgUnit(Organisationsenhet orgUnit)
         {
             DbContext.Organisationsenhet.Add(orgUnit);
@@ -1445,6 +1485,44 @@ namespace InrappSos.DataAccess
             usrDb.AndradDatum = user.AndradDatum;
             usrDb.AndradAv = user.AndradAv;
             DbContext.SaveChanges();
+        }
+
+        public void UpdateSFTPAccount(SFTPkonto account)
+        {
+            var accountDb = DbContext.SFTPkonto.Where(u => u.Id == account.Id).Select(u => u).SingleOrDefault();
+            accountDb.RegisterId = account.RegisterId;
+            accountDb.Kontonamn = account.Kontonamn;
+            accountDb.AndradDatum = account.AndradDatum;
+            accountDb.AndradAv = account.AndradAv;
+
+            //delete prevoious contacts
+            var y = DbContext.KontaktpersonSFTPkonto.Where(x => x.SFTPkontoId == account.Id).ToList();
+            foreach (var item in y)
+            {
+                DbContext.KontaktpersonSFTPkonto.Remove(item);
+                DbContext.SaveChanges();
+            }
+            var tmp = DbContext.KontaktpersonSFTPkonto.Where(x => x.SFTPkontoId == account.Id).ToList();
+            DbContext.KontaktpersonSFTPkonto.RemoveRange(tmp);
+            DbContext.SaveChanges();
+
+            //Insert new contacts
+            foreach (var contact in account.KontaktpersonSFTPkonto)
+            {
+                var contactDB = new KontaktpersonSFTPkonto
+                {
+                    ApplicationUserId = contact.ApplicationUserId,
+                    SFTPkontoId = contact.SFTPkontoId,
+                    SkapadAv = account.AndradAv,
+                    SkapadDatum = account.AndradDatum,
+                    AndradAv = account.AndradAv,
+                    AndradDatum = account.AndradDatum
+                };
+                DbContext.KontaktpersonSFTPkonto.Add(contactDB);
+            }
+            DbContext.SaveChanges();
+
+
         }
 
         public void UpdateChosenRegistersForUser(string userId, string userName, List<RegisterInfo> registerList)

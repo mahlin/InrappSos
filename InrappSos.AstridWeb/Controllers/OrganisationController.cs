@@ -107,6 +107,8 @@ namespace InrappSos.AstridWeb.Controllers
                             return RedirectToAction("GetOrganisationsExceptionsExpectedFiles", new { selectedOrganisationId = orgList[0][0].Id });
                         case "cases":
                             return RedirectToAction("GetOrganisationsCases", new { selectedOrganisationId = orgList[0][0].Id });
+                        case "sftpAccounts":
+                            return RedirectToAction("GetOrganisationsSFTPAccounts", new { selectedOrganisationId = orgList[0][0].Id });
 
 
                         default:
@@ -214,7 +216,7 @@ namespace InrappSos.AstridWeb.Controllers
 
         // GET
         [Authorize]
-        public ActionResult GetOrganisationsContacts(int selectedOrganisationId = 0)
+        public ActionResult GetOrganisationsContacts(int selectedOrganisationId = 0, bool visaInaktiva = false)
         {
             var model = new OrganisationViewModels.OrganisationViewModel();
 
@@ -224,6 +226,7 @@ namespace InrappSos.AstridWeb.Controllers
                 {
                     model.SelectedOrganisationId = selectedOrganisationId;
                 }
+                model.VisaInaktiva = visaInaktiva;
                 model.Organisation = _portalSosService.HamtaOrganisation(model.SelectedOrganisationId);
                 model.Kommunkod = model.Organisation.Kommunkod;
                 var contacts = _portalSosService.HamtaKontaktpersonerForOrg(model.Organisation.Id);
@@ -257,6 +260,59 @@ namespace InrappSos.AstridWeb.Controllers
                 return View("CustomError", errorModel);
             }
             return View("EditContacts", model);
+        }
+
+        // GET
+        [Authorize]
+        public ActionResult GetSFTPAccounts()
+        {
+            var model = new OrganisationViewModels.OrganisationViewModel();
+            model.SFTPAccounts = new List<OrganisationViewModels.SFTPkontoViewModel>();
+            model.SearchResult = new List<List<Organisation>>();
+            return View("EditSFTPAccounts", model);
+        }
+
+        // GET
+        [Authorize]
+        public ActionResult GetOrganisationsSFTPAccounts(int selectedOrganisationId = 0)
+        {
+            var model = new OrganisationViewModels.OrganisationViewModel();
+
+            try
+            {
+                if (selectedOrganisationId != 0)
+                {
+                    model.SelectedOrganisationId = selectedOrganisationId;
+                }
+                model.Organisation = _portalSosService.HamtaOrganisation(model.SelectedOrganisationId);
+                model.Kommunkod = model.Organisation.Kommunkod;
+                var accounts = _portalSosService.HamtaSFTPkontonForOrg(model.Organisation.Id);
+                var contactsForOrg = _portalSosService.HamtaKontaktpersonerForOrg(model.Organisation.Id).ToList();
+                model.SFTPAccounts = ConvertAccountToViewModel(accounts, contactsForOrg);
+                //Dropdownlist for registers
+                var registerList = _portalSosService.HamtaRegisterEjKoppladeTillSFTPKontoForOrg(selectedOrganisationId);
+                ViewBag.RegisterList = CreateRegisterDropDownList(registerList);
+                model.SelectedRegisterId = 0;
+
+                model.SearchResult = new List<List<Organisation>>();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("OrganisationController", "GetOrganisationsSFTPAccounts", e.ToString(), e.HResult,
+                    User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade vid hämtning av SFTP-konton för organisation.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                if (e.Message == "Sequence contains no elements")
+                {
+                    errorModel.Information = "Ingen organisation kunde hittas.";
+                }
+                return View("CustomError", errorModel);
+            }
+            return View("EditSFTPACcounts", model);
         }
 
 
@@ -602,7 +658,7 @@ namespace InrappSos.AstridWeb.Controllers
 
         [HttpPost]
         [Authorize]
-        public ActionResult UpdateOrganisationsContact(OrganisationViewModels.ApplicationUserViewModel user)
+        public ActionResult UpdateOrganisationsContact(OrganisationViewModels.ApplicationUserViewModel user, bool visaInaktiva)
         {
             var org = new Organisation();
             try
@@ -649,9 +705,44 @@ namespace InrappSos.AstridWeb.Controllers
                 };
                 return View("CustomError", errorModel);
             }
-            return RedirectToAction("GetOrganisationsContacts", new { selectedOrganisationId = org.Id });
+            return RedirectToAction("GetOrganisationsContacts", new { selectedOrganisationId = org.Id, visaInaktiva });
 
         }
+
+
+
+
+        [HttpPost]
+        [Authorize]
+        public ActionResult UpdateOrganisationSFTPAccount(OrganisationViewModels.SFTPkontoViewModel account)
+        {
+            //var org = new Organisation();
+            try
+            {
+                //org = _portalSosService.HamtaOrgForAnvandare(user.ID);
+                if (ModelState.IsValid)
+                {
+                    var userName = User.Identity.GetUserName();
+                    var accountToUpdate = ConvertViewModelToSFTPkonto(account);
+                    accountToUpdate.KontaktpersonSFTPkonto = ConvertContactsForSFTPAccountList(account.Id, account.ListOfContacts, userName, false);
+                    _portalSosService.UppdateraSFTPKonto(accountToUpdate, userName);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("OrganisationController", "UpdateOrganisationSFTPAccount", e.ToString(), e.HResult,
+                    User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade vid uppdatering av SFTP-konto.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
+            }
+            return RedirectToAction("GetOrganisationsSFTPAccounts", new { selectedOrganisationId = account.OrganisationsId });
+        }
+
 
         [HttpPost]
         [Authorize]
@@ -931,7 +1022,6 @@ namespace InrappSos.AstridWeb.Controllers
                     var userName = User.Identity.GetUserName();
                     var orgtyperForOrg = ConvertOrgTypesForOrgList(model.Organisation.Id, model.OrgtypesForOrgList, userName, true);
                     orgId = _portalSosService.SkapaOrganisation(model.Organisation, orgtyperForOrg, userName);
-                    //kommunkod = _portalSosService.HamtaKommunkodForOrg(orgId);
                 }
                 catch (Exception e)
                 {
@@ -948,6 +1038,75 @@ namespace InrappSos.AstridWeb.Controllers
             }
 
             return View(model);
+        }
+
+        [Authorize]
+        public ActionResult CreateOrganisationSFTPAccount(int selectedOrganisationId = 0)
+        {
+            var model = new OrganisationViewModels.SFTPkontoViewModel();
+            try
+            {
+                model.OrganisationsId = selectedOrganisationId;
+                //Aktiva kontaktpersoner för org
+                var activeContactsForOrg = _portalSosService.HamtaAktivaKontaktpersonerForOrg(selectedOrganisationId).ToList();
+                model.ListOfContacts = ConvertContactsForOrgToDropdownList(activeContactsForOrg);
+                model.StringOfChosenContacts = "";
+
+                //Skapa lista över register. Visa bara de register som ännu ej kopplats till ett sftp-konto för aktuell organisation 
+                var registerList = _portalSosService.HamtaRegisterEjKoppladeTillSFTPKontoForOrg(selectedOrganisationId);
+                ViewBag.RegisterList = CreateRegisterDropDownList(registerList);
+                model.RegisterId = 0;
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("OrganisationController", "CreateOrganisationSFTPAccount", e.ToString(), e.HResult, User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade när nytt SFTP-konto skulle skapas.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
+            }
+
+            return View(model);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public ActionResult CreateOrganisationSFTPAccount(OrganisationViewModels.SFTPkontoViewModel accountVM, int selectedOrganisationId = 0)
+        {
+            var accountId = 0;
+            var org = new Organisation();
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var userName = User.Identity.GetUserName();
+                    var contacts = ConvertContactsForSFTPAccountList(accountVM.Id, accountVM.ListOfContacts, userName, true);
+                    var account = ConvertViewModelToSFTPkonto(accountVM);
+                    account.OrganisationsId = selectedOrganisationId;
+                    accountId = _portalSosService.SkapaSFTPkonto(account, contacts, userName);
+
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    ErrorManager.WriteToErrorLog("OrganisationController", "CreateOrganisationSFTPAccount", e.ToString(), e.HResult, User.Identity.Name);
+                    var errorModel = new CustomErrorPageModel
+                    {
+                        Information = "Ett fel inträffade när nytt SFTP-konto skulle sparas.",
+                        ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                    };
+                    return View("CustomError", errorModel);
+                }
+                return RedirectToAction("GetOrganisationsSFTPAccounts", new { selectedOrganisationId });
+            }
+
+            return View();
         }
 
         [Authorize]
@@ -1015,7 +1174,7 @@ namespace InrappSos.AstridWeb.Controllers
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
-                    ErrorManager.WriteToErrorLog("OrganisationController", "CreateOrganisationUnit", e.ToString(), e.HResult, User.Identity.Name);
+                    ErrorManager.WriteToErrorLog("OrganisationController", "CreatePrivateEmailAdress", e.ToString(), e.HResult, User.Identity.Name);
                     var errorModel = new CustomErrorPageModel
                     {
                         Information = "Ett fel inträffade när ny privat epostadress skulle sparas.",
@@ -1467,6 +1626,67 @@ namespace InrappSos.AstridWeb.Controllers
             return contactPersonsView;
         }
 
+        private List<OrganisationViewModels.SFTPkontoViewModel> ConvertAccountToViewModel(IEnumerable<SFTPkonto> accounts, List<ApplicationUser> contacts)
+        {
+            var sftpAccountsView = new List<OrganisationViewModels.SFTPkontoViewModel>();
+
+            var okToDelete = false;
+
+            foreach (var account in accounts)
+            {
+                var contactsVMList = new List<OrganisationViewModels.ContactViewModel>();
+
+                var accountView = new OrganisationViewModels.SFTPkontoViewModel
+                {
+                    Id = account.Id,
+                    OrganisationsId = account.OrganisationsId,
+                    Kontonamn = account.Kontonamn,
+                    RegisterId = account.RegisterId,
+                    RegisterNamn = _portalSosService.HamtaRegisterMedId(account.RegisterId).Kortnamn,
+                    SkapadDatum = account.SkapadDatum,
+                    SkapadAv = account.SkapadAv,
+                    AndradDatum = account.AndradDatum,
+                    AndradAv = account.AndradAv,
+                    ChosenContacts = _portalSosService.HamtaEpostadresserForSFTPKonto(account.Id)
+                };
+
+                //Skapa lista över kontakter och markera valda kontakter för aktuellt konto
+                foreach (var contact in contacts)
+                {
+                    var contactVm = new OrganisationViewModels.ContactViewModel
+                    {
+                        Id = contact.Id,
+                        Email = contact.Email
+                    };
+
+                    if (accountView.ChosenContacts.Contains(contact.Email))
+                    {
+                        contactVm.Selected = true;
+                    }
+                    contactsVMList.Add(contactVm);
+                }
+
+                //Skapa kommaseparerad textsträng över kontots kontaktpersoner 
+                var contactsStr = String.Empty;
+                foreach (var contact in accountView.ChosenContacts)
+                {
+                    if (contactsStr.IsEmpty())
+                    {
+                        contactsStr = contact;
+                    }
+                    else
+                    {
+                        contactsStr = contactsStr + ", " + contact;
+                    }
+                }
+
+                accountView.StringOfChosenContacts = contactsStr;
+                accountView.ListOfContacts = contactsVMList;
+                sftpAccountsView.Add(accountView);
+            }
+            return sftpAccountsView;
+        }
+
         private AdmUppgiftsskyldighet ConvertViewModelToAdmUppgiftsskyldighet(OrganisationViewModels.ReportObligationsViewModel admUppgskylldighetView)
         {
             var uppgSkyldighet = new AdmUppgiftsskyldighet()
@@ -1720,6 +1940,35 @@ namespace InrappSos.AstridWeb.Controllers
             return orgtypesList;
         }
 
+        private ICollection<KontaktpersonSFTPkonto> ConvertContactsForSFTPAccountList(int accountId, List<OrganisationViewModels.ContactViewModel> contactsForAccountList, string userName, bool create)
+        {
+            var contactsList = new List<KontaktpersonSFTPkonto>();
+            if (contactsForAccountList != null)
+            {
+                foreach (var contact in contactsForAccountList)
+                {
+                    if (contact.Selected)
+                    {
+                        var contactForAccount = new KontaktpersonSFTPkonto()
+                        {
+                            ApplicationUserId = contact.Id,
+                            SFTPkontoId = accountId,
+                            AndradAv = userName,
+                            AndradDatum = DateTime.Now
+                        };
+                        if (create)
+                        {
+                            contactForAccount.SkapadAv = userName;
+                            contactForAccount.SkapadDatum = DateTime.Now;
+                        }
+                        contactsList.Add(contactForAccount);
+                    }
+                }
+            }
+
+            return contactsList;
+        }
+
         private UndantagEpostadress ConvertPrivEmailAdressVMToDb(OrganisationViewModels.UndantagEpostadressViewModel privEmailAdressVM)
         {
             var privEmail = new UndantagEpostadress
@@ -1932,6 +2181,19 @@ namespace InrappSos.AstridWeb.Controllers
             return user;
         }
 
+        private SFTPkonto ConvertViewModelToSFTPkonto(OrganisationViewModels.SFTPkontoViewModel account)
+        {
+            var konto = new SFTPkonto()
+            {
+                Id = account.Id,
+                OrganisationsId = account.OrganisationsId,
+                Kontonamn  = account.Kontonamn,
+                RegisterId = account.RegisterId
+            };
+
+            return konto;
+        }
+
         private List<OrganisationViewModels.UndantagForvantadfilViewModel> CreateExceptionList(List<UndantagForvantadfil> uList, List<AdmForvantadfilDTO> forvFilList, int orgId)
         {
             var undantagsList = new List<OrganisationViewModels.UndantagForvantadfilViewModel>();
@@ -1959,6 +2221,67 @@ namespace InrappSos.AstridWeb.Controllers
         }
 
 
+        /// <summary>  
+        /// Create list for delregister-dropdown  
+        /// </summary>  
+        /// <returns>Return delregister for drop down list.</returns>  
+        private IEnumerable<SelectListItem> CreateRegisterDropDownList(IEnumerable<AdmRegister> registerList)
+        {
+            SelectList lstobj = null;
 
+            var list = registerList
+                .Select(p =>
+                    new SelectListItem
+                    {
+                        Value = p.Id.ToString(),
+                        Text = p.Kortnamn
+                    });
+
+            // Setting.  
+            lstobj = new SelectList(list, "Value", "Text");
+
+            return lstobj;
+        }
+
+        private List<OrganisationViewModels.ContactViewModel> ConvertContactsForOrgToDropdownList(List<ApplicationUser> orgContactsList)
+        {
+            var listOfContacts = new List<OrganisationViewModels.ContactViewModel>();
+
+            foreach (var orgContact in orgContactsList)
+            {
+                var contact = new OrganisationViewModels.ContactViewModel
+                {
+                    Id = orgContact.Id,
+                    Email = orgContact.Email,
+                    Selected = false
+                };
+                listOfContacts.Add(contact);
+            }
+            return listOfContacts;
+        }
+
+
+        /// <summary>  
+        /// Create list for delregister-dropdown  
+        /// </summary>  
+        /// <returns>Return delregister for drop down list.</returns>  
+        private IEnumerable<SelectListItem> CreateRegisterDropDownList(IEnumerable<RegisterInfo> registerList)
+        {
+            SelectList lstobj = null;
+
+            var list = registerList
+                .Select(p =>
+                    new SelectListItem
+                    {
+                        Value = p.Id.ToString(),
+                        Text = p.Kortnamn
+                    });
+
+            // Setting.  
+            lstobj = new SelectList(list, "Value", "Text");
+
+            return lstobj;
+        }
     }
 }
+

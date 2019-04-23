@@ -376,6 +376,18 @@ namespace InrappSos.ApplicationService
             return contacts;
         }
 
+        public IEnumerable<ApplicationUser> HamtaAktivaKontaktpersonerForOrg(int orgId)
+        {
+            var activeContacts = _portalSosRepository.GetActiveContactPersonsForOrg(orgId);
+            return activeContacts;
+        }
+
+        public IEnumerable<SFTPkonto> HamtaSFTPkontonForOrg(int orgId)
+        {
+            var accounts = _portalSosRepository.GetSFTPAccountsForOrg(orgId);
+            return accounts;
+        }
+
         public IEnumerable<ApplicationUser> HamtaKontaktpersonerForSFTPKonto(int sftpKontoId)
         {
             var contacts = _portalSosRepository.GetContactPersonsForSFTPAccount(sftpKontoId);
@@ -1498,6 +1510,30 @@ namespace InrappSos.ApplicationService
             return regList;
         }
 
+        public IEnumerable<AdmRegister> HamtaRegisterEjKoppladeTillSFTPKontoForOrg(int orgId)
+        {
+            var ledigaRegister = new List<AdmRegister>();
+            var allaregForOrg = HamtaRegisterForOrg(orgId);
+            var sftpKontonForOrg = HamtaSFTPkontonForOrg(orgId);
+
+            foreach (var reg in allaregForOrg)
+            {
+                if (sftpKontonForOrg.Any())
+                {
+                    if (!sftpKontonForOrg.Select(x => x.RegisterId).Contains(reg.Id))
+                    {
+                        ledigaRegister.Add(reg);
+                    }
+                }
+                else
+                {
+                    ledigaRegister.Add(reg);
+                }
+
+            }
+            return ledigaRegister;
+        }
+
         public IEnumerable<string> HamtaDelregistersPerioderForAr(int delregId, int ar)
         {
             var perioder = _portalSosRepository.GetSubDirectoysPeriodsForAYear(delregId, ar);
@@ -1895,6 +1931,18 @@ namespace InrappSos.ApplicationService
             return orgId;
         }
 
+        public int SkapaSFTPkonto(SFTPkonto account, ICollection<KontaktpersonSFTPkonto> contacts, string userName)
+        {
+            //Sätt datum och användare
+            account.SkapadDatum = DateTime.Now;
+            account.SkapadAv = userName;
+            account.AndradDatum = DateTime.Now;
+            account.AndradAv = userName;
+
+            var accountId = _portalSosRepository.CreateSFTPAccount(account, contacts);
+            return accountId;
+        }
+
         public void SkapaOrganisationsenhet(Organisationsenhet orgUnit, string userName)
         {
             //Sätt datum och användare
@@ -2197,6 +2245,13 @@ namespace InrappSos.ApplicationService
                 user.PhoneNumberConfirmed = false;
             }
             _portalSosRepository.UpdateContactPerson(user);
+        }
+
+        public void UppdateraSFTPKonto(SFTPkonto account, string userName)
+        {
+            account.AndradDatum = DateTime.Now;
+            account.AndradAv = userName;
+            _portalSosRepository.UpdateSFTPAccount(account);
         }
 
         public void UppdateraNamnForAnvandare(string userId, string userName)

@@ -24,13 +24,18 @@ namespace InrappSos.AstridWeb.Models.ViewModels
 
             public List<ApplicationUserViewModel> ContactPersons { get; set; }
 
+            public List<SFTPkontoViewModel> SFTPAccounts { get; set; }
+
             public string SelectedContactId { get; set; }
+            public int SelectedAccountId { get; set; }
 
             public string SelectedCountyCode { get; set; }
             public int SelectedOrganisationId { get; set; }
             public int SelectedOrgTypId { get; set; }
             public int SelectedArendetypId { get; set; }
             public int SelectedArendestatusId { get; set; }
+
+            public int SelectedRegisterId { get; set; }
 
             public string ChosenOrganisationTypesNames { get; set; }
             public List<OrganisationstypDTO> OrgtypesForOrgList { get; set; }
@@ -135,7 +140,29 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public DateTime AndradDatum { get; set; }
             public string AndradAv { get; set; }
             public bool OkToDelete { get; set; }
+        }
 
+        public class SFTPkontoViewModel
+        {
+            public int Id { get; set; }
+            public string Kontonamn { get; set; }
+            public int OrganisationsId { get; set; }
+            public int RegisterId { get; set; }
+            public string RegisterNamn { get; set; }
+            public DateTime SkapadDatum { get; set; }
+            public string SkapadAv { get; set; }
+            public DateTime AndradDatum { get; set; }
+            public string AndradAv { get; set; }
+            public List<string> ChosenContacts { get; set; }
+            public string StringOfChosenContacts { get; set; }
+            public List<ContactViewModel> ListOfContacts { get; set; }
+        }
+
+        public class ContactViewModel
+        {
+            public string Id { get; set; }
+            public string Email { get; set; }
+            public bool Selected { get; set; } = false;
         }
 
         public class UndantagEpostadressViewModel

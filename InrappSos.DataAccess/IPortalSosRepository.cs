@@ -112,6 +112,10 @@ namespace InrappSos.DataAccess
 
         IEnumerable<ApplicationUser> GetContactPersonsForOrg(int orgId);
 
+        IEnumerable<ApplicationUser> GetActiveContactPersonsForOrg(int orgId);
+
+        IEnumerable<SFTPkonto> GetSFTPAccountsForOrg(int orgId);
+
         IEnumerable<ApplicationUser> GetContactPersonsForSFTPAccount(int sftpAccountId);
 
         IEnumerable<ApplicationUser> GetContactPersonsForOrgAndSubdir(int orgId, int subdirId);
@@ -318,6 +322,8 @@ namespace InrappSos.DataAccess
 
         int CreateOrganisation(Organisation org, ICollection<Organisationstyp> orgtyperForOrg);
 
+        int CreateSFTPAccount(SFTPkonto account, ICollection<KontaktpersonSFTPkonto> contacts);
+
         void CreateOrgUnit(Organisationsenhet orgUnit);
 
         void CreatePrivateEmail(UndantagEpostadress privEmail);
@@ -354,6 +360,8 @@ namespace InrappSos.DataAccess
         void UpdateOrganisation(Organisation org);
 
         void UpdateContactPerson(ApplicationUser user);
+
+        void UpdateSFTPAccount(SFTPkonto account);
         void UpdateContactNumberForUser(string userId, string number);
 
         void UpdateActiveFromForUser(string userId);

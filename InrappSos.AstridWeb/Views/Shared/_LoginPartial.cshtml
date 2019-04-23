@@ -79,15 +79,17 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Organisation <span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li>@Html.ActionLink("Organisation", "Index", "Organisation")</li>
-                        <li>@Html.ActionLink("Skapa ny organisation", "CreateOrganisation", "Organisation")</li>
-                        <li>@Html.ActionLink("Organisationstyp", "GetOrganisationTypes", "Organisation")</li>
-                        <li>@Html.ActionLink("Kontaktpersoner", "GetContacts", "Organisation")</li>
-                        <li>@Html.ActionLink("Privata epostadresser", "GetPrivateEmailAdresses", "Organisation")</li>
-                        <li>@Html.ActionLink("Ärenden", "GetCases", "Organisation")</li>
-                        <li>@Html.ActionLink("Organisationsenheter", "GetOrgUnits", "Organisation")</li>
-                        <li>@Html.ActionLink("Uppgiftsskyldighet", "GetReportObligations", "Organisation")</li>
                         <li>@Html.ActionLink("Enhetsuppgiftsskyldighet", "GetUnitReportObligations", "Organisation")</li>
+                        <li>@Html.ActionLink("Kontaktpersoner", "GetContacts", "Organisation")</li>
+                        <li>@Html.ActionLink("Organisationsenheter", "GetOrgUnits", "Organisation")</li>
+                        <li>@Html.ActionLink("Organisationstyp", "GetOrganisationTypes", "Organisation")</li>
+                        <li>@Html.ActionLink("Privata epostadresser", "GetPrivateEmailAdresses", "Organisation")</li>
+                        <li>@Html.ActionLink("Skapa ny organisation", "CreateOrganisation", "Organisation")</li>
+                        <li>@Html.ActionLink("SFTP-konton", "GetSFTPAccounts", "Organisation")</li>
                         <li>@Html.ActionLink("Undantag av förväntad fil", "GetExceptionsExpectedFiles", "Organisation")</li>
+                        <li>@Html.ActionLink("Uppgiftsskyldighet", "GetReportObligations", "Organisation")</li>
+                        <li>@Html.ActionLink("Ärenden", "GetCases", "Organisation")</li>
+
                         @*<li><a href="#">Something else here</a></li>
         <li role="separator" class="divider"></li>
         <li><a href="#">Separated link</a></li>

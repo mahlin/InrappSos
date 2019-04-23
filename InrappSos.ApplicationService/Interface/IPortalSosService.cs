@@ -87,6 +87,10 @@ namespace InrappSos.ApplicationService.Interface
 
         IEnumerable<ApplicationUser> HamtaKontaktpersonerForOrg(int orgId);
 
+        IEnumerable<ApplicationUser> HamtaAktivaKontaktpersonerForOrg(int orgId);
+
+        IEnumerable<SFTPkonto> HamtaSFTPkontonForOrg(int orgId);
+
         IEnumerable<ApplicationUser> HamtaKontaktpersonerForSFTPKonto(int sftpKontoId);
 
         List<string> HamtaEpostadresserForSFTPKonto(int sftpKontoId);
@@ -250,6 +254,8 @@ namespace InrappSos.ApplicationService.Interface
 
         IEnumerable<AdmRegister> HamtaRegisterForOrg(int orgId);
 
+        IEnumerable<AdmRegister> HamtaRegisterEjKoppladeTillSFTPKontoForOrg(int orgId);
+
         IEnumerable<string> HamtaDelregistersPerioderForAr(int delregId, int ar);
 
         List<int> HamtaValbaraAr(int delregId);
@@ -294,6 +300,8 @@ namespace InrappSos.ApplicationService.Interface
 
         int SkapaOrganisation(Organisation org, ICollection<Organisationstyp> orgtyperForOrg, string userName);
 
+        int SkapaSFTPkonto(SFTPkonto account, ICollection<KontaktpersonSFTPkonto> contacts, string userName);
+
         void SkapaOrganisationsenhet(Organisationsenhet orgUnit, string userName);
 
         void SkapaPrivatEpostadress(UndantagEpostadress privEmail, string userName);
@@ -337,6 +345,7 @@ namespace InrappSos.ApplicationService.Interface
         void UppdateraOrganisation(Organisation org, string userName);
 
         void UppdateraKontaktperson(ApplicationUser user, string userName);
+        void UppdateraSFTPKonto(SFTPkonto account, string userName);
         void UppdateraNamnForAnvandare(string userId, string userName);
         void UppdateraKontaktnummerForAnvandare(string userId, string tfnnr);
 

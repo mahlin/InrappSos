@@ -264,6 +264,10 @@ namespace InrappSos.DataAccess
                 .HasRequired(c => c.ApplicationUser)
                 .WithMany(d => d.KontaktpersonSFTPkonto)
                 .HasForeignKey(c => c.ApplicationUserId);
+            modelBuilder.Entity<KontaktpersonSFTPkonto>()
+                .HasRequired(c => c.SFTPkonto)
+                .WithMany(d => d.KontaktpersonSFTPkonto)
+                .HasForeignKey(c => c.SFTPkontoId);
             modelBuilder.Entity<KontaktpersonSFTPkonto>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
             modelBuilder.Entity<KontaktpersonSFTPkonto>().Property(e => e.SkapadAv).HasColumnName("skapadav");
             modelBuilder.Entity<KontaktpersonSFTPkonto>().Property(e => e.AndradDatum).HasColumnName("andraddatum");

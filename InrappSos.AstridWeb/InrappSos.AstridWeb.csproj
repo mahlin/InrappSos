@@ -333,6 +333,8 @@
     <Content Include="Views\Register\_EditSelectedRegulation.cshtml" />
     <Content Include="Views\Organisation\EditExceptionsExpectedFiles.cshtml" />
     <Content Include="Views\Register\EditSubDirectoriesOrgtypes.cshtml" />
+    <Content Include="Views\Organisation\EditSFTPAccounts.cshtml" />
+    <Content Include="Views\Organisation\CreateOrganisationSFTPAccount.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

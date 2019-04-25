@@ -79,6 +79,7 @@
     <Compile Include="Helpers\FileLogWriter.cs" />
     <Compile Include="Helpers\FilesHelper.cs" />
     <Compile Include="Helpers\GeneralHelper.cs" />
+    <Compile Include="Helpers\MailHelper.cs" />
     <Compile Include="Interface\IPortalSosService.cs" />
     <Compile Include="PortalSosService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

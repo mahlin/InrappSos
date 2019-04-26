@@ -12,6 +12,8 @@ namespace InrappSos.DomainModel
         public string Beskrivning { get; set; }
         public string Kortnamn { get; set; }
         public bool Inrapporteringsportal { get; set; }
+        public bool GrupperaRegister { get; set; } = false;
+        public bool GrupperaKontaktpersoner { get; set; } = false;
         public DateTime SkapadDatum { get; set; }
         public string SkapadAv { get; set; }
         public DateTime AndradDatum { get; set; }

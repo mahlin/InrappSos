@@ -45,6 +45,22 @@
             </div>
             
             <div class="form-group">
+                @Html.LabelFor(model => model.GrupperaRegister, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.GrupperaRegister, new { htmlAttributes = new { @class = "checkbox" } })
+                    @Html.ValidationMessageFor(model => model.GrupperaRegister, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            
+            <div class="form-group">
+                @Html.LabelFor(model => model.GrupperaKontaktpersoner, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.GrupperaKontaktpersoner, new { htmlAttributes = new { @class = "checkbox" } })
+                    @Html.ValidationMessageFor(model => model.GrupperaKontaktpersoner, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            
+            <div class="form-group">
                 <div class="col-md-offset-2 col-md-10">
                     <input type="submit" value="Spara" class="btn btn-default" />
                 </div>

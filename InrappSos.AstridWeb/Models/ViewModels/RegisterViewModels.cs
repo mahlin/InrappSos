@@ -36,6 +36,10 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public string Beskrivning { get; set; }
             public string Kortnamn { get; set; }
             public bool Inrapporteringsportal { get; set; }
+            [DisplayName("Gruppera register")]
+            public bool GrupperaRegister { get; set; } = false;
+            [DisplayName("Gruppera kontaktpersoner")]
+            public bool GrupperaKontaktpersoner { get; set; } = false;
 
         }
 

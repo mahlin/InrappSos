@@ -1797,6 +1797,8 @@ namespace InrappSos.DataAccess
             registerToUpdate.Beskrivning = directory.Beskrivning;
             registerToUpdate.Kortnamn = directory.Kortnamn;
             registerToUpdate.Inrapporteringsportal = directory.Inrapporteringsportal;
+            registerToUpdate.GrupperaRegister = directory.GrupperaRegister;
+            registerToUpdate.GrupperaKontaktpersoner = directory.GrupperaKontaktpersoner;
             registerToUpdate.AndradAv = directory.AndradAv;
             registerToUpdate.AndradDatum = directory.AndradDatum;
 

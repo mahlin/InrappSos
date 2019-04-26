@@ -48,6 +48,8 @@ namespace InrappSos.AstridWeb.Controllers
                     registerView.Kortnamn = register.Kortnamn;
                     registerView.Registernamn = register.Registernamn;
                     registerView.Inrapporteringsportal = register.Inrapporteringsportal;
+                    registerView.GrupperaRegister = register.GrupperaRegister;
+                    registerView.GrupperaKontaktpersoner = register.GrupperaKontaktpersoner;
 
                     registerViewList.Add(registerView);
                 }
@@ -421,7 +423,9 @@ namespace InrappSos.AstridWeb.Controllers
                         Registernamn = model.Registernamn,
                         Beskrivning = model.Beskrivning,
                         Kortnamn = model.Kortnamn,
-                        Inrapporteringsportal = model.Inrapporteringsportal
+                        Inrapporteringsportal = model.Inrapporteringsportal,
+                        GrupperaRegister = model.GrupperaRegister,
+                        GrupperaKontaktpersoner = model.GrupperaKontaktpersoner
                     };
                     _portalSosService.SkapaRegister(register, userName);
                 }

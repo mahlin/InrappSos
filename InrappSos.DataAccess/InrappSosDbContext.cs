@@ -171,6 +171,8 @@ namespace InrappSos.DataAccess
             modelBuilder.Entity<AdmRegister>().Property(e => e.Beskrivning).HasColumnName("beskrivning");
             modelBuilder.Entity<AdmRegister>().Property(e => e.Kortnamn).HasColumnName("kortnamn");
             modelBuilder.Entity<AdmRegister>().Property(e => e.Inrapporteringsportal).HasColumnName("inrapporteringsportal");
+            modelBuilder.Entity<AdmRegister>().Property(e => e.GrupperaRegister).HasColumnName("grupperaregister");
+            modelBuilder.Entity<AdmRegister>().Property(e => e.GrupperaKontaktpersoner).HasColumnName("grupperakontaktpersoner");
             modelBuilder.Entity<AdmRegister>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
             modelBuilder.Entity<AdmRegister>().Property(e => e.SkapadAv).HasColumnName("skapadav");
             modelBuilder.Entity<AdmRegister>().Property(e => e.AndradDatum).HasColumnName("andraddatum");

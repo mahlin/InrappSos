@@ -45,6 +45,19 @@
                 } else {
                     regForPortal = false;
                 }
+                var grpReg;
+                if (tr.find("#GrupperaRegister").is(':checked')) {
+                    grpReg = true;
+                } else {
+                    grpReg = false;
+                }
+
+                var grpContacts;
+                if (tr.find("#GrupperaKontaktpersoner").is(':checked')) {
+                    grpContacts = true;
+                } else {
+                    grpContacts = false;
+                }
 
                 //Creating AdmRegister JSON object
                 var register =
@@ -53,7 +66,9 @@
                     "Registernamn": regName,
                     "Beskrivning": regDescription,
                     "Kortnamn": regShortName,
-                    "Inrapporteringsportal": regForPortal
+                    "Inrapporteringsportal": regForPortal,
+                    "GrupperaRegister": grpReg,
+                    "GrupperaKontaktpersoner": grpContacts
                 };
                 //Posting AdmRegister object to controller's Update action method
                 $.ajax({
@@ -80,11 +95,15 @@
                 var regDescription = tr.find("#RegisterDecsription").val();
                 var regShortName = tr.find("#RegisterShortName").val();
                 var regForPortal = tr.find("#RegisterForPortal").val();
+                var grpReg = tr.find('#GrupperaRegister').val();
+                var grpContacst = tr.find('#GrupperaKontaktpersoner').val();
 
                 tr.find("#lblName").text(regName);
                 tr.find("#lblDescription").text(regDescription);
                 tr.find("#lblShortName").text(regShortName);
                 tr.find("#lblForPortal").text(regForPortal);
+                tr.find("#lblGrpReg").text(grpReg);
+                tr.find("#lblGrpContacts").text(grpContacst);
             });
     });
 </script>
@@ -129,6 +148,12 @@
                             grid.Column("Inrapporteringsportal", "Inrapporteringsportal", format: @<text>
                                 <span class="display-mode"><input id="lblForPortal" class="checkbox" name="select" type="checkbox" disabled @(item.Inrapporteringsportal ? "checked='checked'" : "") value="@item.Inrapporteringsportal"/></span>
                                 <input id="RegisterForPortal" class="edit-mode checkbox" name="select" type="checkbox" @(item.Inrapporteringsportal ? "checked='checked'" : "") value="@item.Inrapporteringsportal"/></text>, style: "colMinWidth centered"),
+                            grid.Column("GrupperaRegister", "Gruppera register", format: @<text>
+                                <span class="display-mode"><input id="lblGrpReg" class="checkbox" name="select" type="checkbox" disabled @(item.GrupperaRegister ? "checked='checked'" : "") value="@item.GrupperaRegister"/></span>
+                                <input id="GrupperaRegister" class="edit-mode checkbox" name="select" type="checkbox" @(item.GrupperaRegister ? "checked='checked'" : "") value="@item.GrupperaRegister"/></text>, style: "colMinWidth centered"),
+                            grid.Column("GrupperaKontaktpersoner", "Gruppera kontaktpersoner", format: @<text>
+                                <span class="display-mode"><input id="lblGrpContacts" class="checkbox" name="select" type="checkbox" disabled @(item.GrupperaKontaktpersoner ? "checked='checked'" : "") value="@item.GrupperaKontaktpersoner"/></span>
+                                <input id="GrupperaKontaktpersoner" class="edit-mode checkbox" name="select" type="checkbox" @(item.GrupperaKontaktpersoner ? "checked='checked'" : "") value="@item.GrupperaKontaktpersoner"/></text>, style: "colMinWidth centered"),
 
 
 

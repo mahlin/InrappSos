@@ -4,14 +4,15 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <title>@ViewBag.Title - ASTRID</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/jquery")
-    
+
     @if (ConfigurationManager.AppSettings["Env"] == "Utv")
     {
-        <link href="@Url.Content("~/Content/NavBarDev.css")" rel="stylesheet" type="text/css"/>
+        <link href="@Url.Content("~/Content/NavBarDev.css")" rel="stylesheet" type="text/css" />
     }
     else if (ConfigurationManager.AppSettings["Env"] == "Prod")
     {

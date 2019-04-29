@@ -269,7 +269,7 @@ namespace SFTPFileHandler
             string subject = "SFTP-kontot saknar registrerad kontaktperson";
             string body = "Hej! <br>";
             body += "Vi har mottagit en filleverans via SFTP för ett konto som saknar registrerad kontaktperson och kan då ej hantera filerna. <br>";
-            body += "Registera kontaktperson via www.filip.se och gör sedan om leveransen. <br>";
+            body += "Registera kontaktperson via https://filip.socialstyrelsen.se och gör sedan om leveransen. <br>";
             body += "Berörda filer: <br>";
             foreach (var file in filesInFolder)
             {
@@ -277,7 +277,7 @@ namespace SFTPFileHandler
             }
 
             body += "SFTPkonto: " + folderName + "<br><br>";
-            body += "Vid frågor kontakta Socialstyrelsen, e-post: inrapportering@socialstyrelsen.se eller telefon 010 222 2222. <br> ";
+            body += "Vid frågor kontakta Socialstyrelsen, e-post: inrapportering@socialstyrelsen.se eller telefon 075-247 45 40 under våra telefontider måndag 13-15, tisdag 9-11, torsdag 13.15. <br> ";
 
             _mailHelper.SendEmail(subject, body, mailRecipients, _mailSender);
             //SendEmail(subject, body, mailRecipients);
@@ -319,7 +319,7 @@ namespace SFTPFileHandler
                 body += file.Name + "<br> ";
             }
             body += "SFTPkonto: " + folderName + "<br><br>";
-            body += "Vid frågor kontakta Socialstyrelsen, e-post: inrapportering@socialstyrelsen.se eller telefon 010 222 2222. <br> ";
+            body += "Vid frågor kontakta Socialstyrelsen, e-post: inrapportering@socialstyrelsen.se eller telefon 075-247 45 40 under våra telefontider måndag 13-15, tisdag 9-11, torsdag 13.15. <br> ";
 
             _mailHelper.SendEmail(subject, body, mailRecipients, _mailSender);
             //SendEmail(subject, body, mailRecipients);
@@ -362,7 +362,7 @@ namespace SFTPFileHandler
                 body += incorrectFile.Name + "<br> ";
             }
             body += "SFTPkonto: " + folderName + "<br><br>";
-            body += "Vid frågor kontakta Socialstyrelsen, e-post: inrapportering@socialstyrelsen.se eller telefon 010 222 2222. <br> ";
+            body += "Vid frågor kontakta Socialstyrelsen, e-post: inrapportering@socialstyrelsen.se eller telefon 075-247 45 40 under våra telefontider måndag 13-15, tisdag 9-11, torsdag 13.15. <br> ";
 
             _mailHelper.SendEmail(subject, body, mailRecipients, _mailSender);
 
@@ -460,87 +460,6 @@ namespace SFTPFileHandler
 
             return complete;
         }
-
-        //private void SendEmail(string subject, string bodytext, List<string> mailRecipients)
-        //{
-
-        //    string currentDate = DateTime.Now.ToString("yyyyMMdd");
-        //    var recipientsStr = mailRecipients.Aggregate((a, b) => a + ", " + b);
-
-        //    MailMessage msg = new MailMessage();
-        //    MailAddress fromMail = new MailAddress(_mailSender);
-        //    msg.From = fromMail;
-
-        //    foreach (var address in mailRecipients)
-        //    {
-        //        msg.To.Add(address);
-        //    }
-
-        //    //TODO för test, använd min epostadress
-        //    //msg.To.Add("marie.ahlin@socialstyrelsen.se");
-
-        //    msg.Subject = subject;
-        //    msg.Body = bodytext;
-        //    msg.BodyEncoding = System.Text.Encoding.UTF8;
-        //    msg.IsBodyHtml = true;
-
-        //    _smtpClient.Send(msg);
-
-        //    // _smtpClient.SendAsync(msg, "notification");
-        //    //Wait try to prevent to spam the server if many emails.. did run in to async problem else during testing.
-        //    //System.Threading.Thread.Sleep(8000);
-
-        //    //Logga att mailet skickats
-        //    Log("Mail till : " + recipientsStr + ". Rubrik: " + subject);
-
-        //    //_smtpClient.SendCompleted += new SendCompletedEventHandler(SendCompletedCallback);
-        //}
-
-        //private static void SendCompletedCallback(object sender, AsyncCompletedEventArgs e)
-        //{
-        //    // Get the unique identifier for this asynchronous operation.
-        //    var token = (string)e.UserState;
-
-        //    if (e.Cancelled)
-        //    {
-        //        Console.WriteLine(e.Cancelled.ToString());
-        //        // Logger.Log(Logger.Level.Info," Send canceled. " +  token);
-        //    }
-        //    if (e.Error != null)
-        //    {
-        //        Console.WriteLine(e.Error.ToString());
-        //        ErrorManager.WriteToErrorLog("SFTPWatcher", "Error sending email.", e.ToString());
-        //        //Logger.Log(Logger.Level.Error, " Send failed. " + e.Error.ToString());
-        //    }
-        //    else
-        //    {
-        //        Console.WriteLine("Sent mail successfully.");
-        //        // Logger.Log(Logger.Level.Info, " Sent notification successfully.");
-        //    }
-        //}
-
-        // <summary>
-        // Logs a message to either the console or a file
-        // </summary>
-        // <param name="message">The message</param>
-        //private static void Log(string message)
-        //{
-
-        //    if (_mailLogEnabled)
-        //    {
-        //        lock (_mailLogLock)
-        //        {
-        //            try
-        //            {
-        //                File.AppendAllText(_mailLogPath, DateTime.Now.ToString("[yyyy-MM-dd HH:mm:ss]") + " " + message + Environment.NewLine);
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                Console.WriteLine("Couldn't log '" + message + "' to file log '" + _mailLogPath + "'" + Environment.NewLine + ex.ToString());
-        //            }
-        //        }
-        //    }
-        //}
 
     }
 }

@@ -290,8 +290,7 @@
                     <div id="gridContent" style="font-family: Arial; padding: 20px;">
                         @{
                             ViewBag.Title = "Administrera Astrid-användare";
-                            var grid = new WebGrid(source: Model.AdminUsers, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "adminUsersGrid");
-                            grid.Pager(WebGridPagerModes.All);
+                            var grid = new WebGrid(source: Model.AdminUsers, canPage: false, rowsPerPage: 10, ajaxUpdateContainerId: "adminUsersGrid");
                         }
 
                         @grid.GetHtml(htmlAttributes: new { id = "adminUsersTable" },

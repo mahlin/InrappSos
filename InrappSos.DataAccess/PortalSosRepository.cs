@@ -34,7 +34,7 @@ namespace InrappSos.DataAccess
         //************************ Metoder för AstridDB *****************************************************************//
         public IEnumerable<AppUserAdmin> GetAdminUsers()
         {
-            var adminUsers = AstridDbContext.Users.ToList();
+            var adminUsers = AstridDbContext.Users.OrderBy(x => x.Email).ToList();
             return adminUsers;
         }
 

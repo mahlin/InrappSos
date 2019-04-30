@@ -283,11 +283,13 @@ namespace SFTPFileHandler
             //SendEmail(subject, body, mailRecipients);
             var errorFilesArea = ConfigurationManager.AppSettings["notApprovedFilesFolder"];
             String pathOnServer = Path.Combine(errorFilesArea);
+            var fullPathDir = Path.Combine(pathOnServer, folderName);
+
             //Kopiera filerna till fel-mappen 
             foreach (var file in filesInFolder)
             {
-                var fullPath = Path.Combine(pathOnServer, Path.GetFileName(file.Name));
-                file.CopyTo(fullPath);
+                //Kopiera filen till det aktuella kontots fel-mapp 
+                WriteFileToErrorFolder(fullPathDir, file);
             }
             //Ta sen bort filerna från ursprungliga mappen
             foreach (var file in filesInFolder)
@@ -322,15 +324,16 @@ namespace SFTPFileHandler
             body += "Vid frågor kontakta Socialstyrelsen, e-post: inrapportering@socialstyrelsen.se eller telefon 075-247 45 40 under våra telefontider måndag 13-15, tisdag 9-11, torsdag 13.15. <br> ";
 
             _mailHelper.SendEmail(subject, body, mailRecipients, _mailSender);
-            //SendEmail(subject, body, mailRecipients);
 
             var errorFilesArea = ConfigurationManager.AppSettings["notApprovedFilesFolder"];
             String pathOnServer = Path.Combine(errorFilesArea);
+            var fullPathDir = Path.Combine(pathOnServer, folderName);
+
             //Kopiera filerna till fel-mappen 
             foreach (var file in sortedFilesList)
             {
-                var fullPath = Path.Combine(pathOnServer, Path.GetFileName(file.Name));
-                file.CopyTo(fullPath);
+                //Kopiera filen till det aktuella kontots fel-mapp 
+                WriteFileToErrorFolder(fullPathDir, file);
             }
             //Ta sen bort filerna från ursprungliga mappen
             foreach (var file in sortedFilesList)
@@ -369,16 +372,26 @@ namespace SFTPFileHandler
             //SendEmail(subject, body, mailRecipients);
             var errorFilesArea = ConfigurationManager.AppSettings["notApprovedFilesFolder"];
             String pathOnServer = Path.Combine(errorFilesArea);
-            //Kopiera filerna till det aktuella kontots fel-mapp 
             var fullPathDir = Path.Combine(pathOnServer, folderName);
-            Directory.CreateDirectory(fullPathDir);
             foreach (var incorrectFile in incorrectFilesList)
             {
-                var pathToCopyTo = Path.Combine(fullPathDir, Path.GetFileName(incorrectFile.Name));
-                incorrectFile.CopyTo(pathToCopyTo);
+                //Kopiera filen till det aktuella kontots fel-mapp 
+                WriteFileToErrorFolder(fullPathDir, incorrectFile);
                 //Ta sen bort filen från ursprungliga mappen
                 incorrectFile.Delete();
             }
+        }
+
+
+        private void WriteFileToErrorFolder(string fullPathDir, FileInfo incorrectFile)
+        {
+            Directory.CreateDirectory(fullPathDir);
+            //Tag file with date and time so it becomes unique in folder
+            var tag = DateTime.Now.ToString("_yyyyMMdd" + "T" + "HHmmss");
+            var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(incorrectFile.Name);
+            var extension = Path.GetExtension(incorrectFile.Name);
+            var pathToCopyTo = Path.Combine(fullPathDir, Path.GetFileName(fileNameWithoutExtension + tag + extension));
+            incorrectFile.CopyTo(pathToCopyTo);
         }
 
         private string GetOrgCodeForOrg(int orgId, RegisterInfo delregInfo)

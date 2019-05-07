@@ -516,6 +516,10 @@ namespace InrappSos.DataAccess
                             activeUnitRepObligations.Add(orgUnitRepOligation);
                         }
                     }
+                    else
+                    {
+                        activeUnitRepObligations.Add(orgUnitRepOligation);
+                    }
                 }
             }
             var orgUnits = new List<Organisationsenhet>();

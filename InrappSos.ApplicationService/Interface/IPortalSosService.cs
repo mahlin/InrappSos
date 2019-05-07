@@ -274,6 +274,8 @@ namespace InrappSos.ApplicationService.Interface
 
         string HamtaSammanlagdStatusForPeriod(IEnumerable<FilloggDetaljDTO> historikLista);
 
+        string KontrolleraOmKomplettaEnhetsleveranser(int orgId, LeveransStatusDTO leveransStatusObj);
+
         //IEnumerable<RegisterInfo> HamtaValdaRegistersForAnvandare(string userId, int orgId);
 
         List<RegisterInfo> HamtaValdaDelregisterForAnvandare(string userId, int orgId);

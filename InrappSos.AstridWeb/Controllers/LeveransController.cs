@@ -659,55 +659,9 @@ namespace InrappSos.AstridWeb.Controllers
                         if (leveransStatus.HistorikLista.Any())
                         {
                             leveransStatus.Status = _portalSosService.HamtaSammanlagdStatusForPeriod(leveransStatus.HistorikLista);
-                            var enhetSaknas = false;
 
-                            //kan org rapportera per enhet för aktuellt delregister? => kontrollera att alla enheter rapporterat (#180)
-                            foreach (var delreg in register.AdmDelregister)
-                            {
-                                var orgEnhetsList = new List<Organisationsenhet>();
-                                var uppgiftsskyldighet = _portalSosService.HamtaUppgiftsskyldighetForOrganisationOchRegister(org.Id,delreg.Id);
-                                if (uppgiftsskyldighet != null)
-                                {
-                                    if (uppgiftsskyldighet.RapporterarPerEnhet && uppgiftsskyldighet.SkyldigFrom <= periodDate)
-                                    {
-                                        if (uppgiftsskyldighet.SkyldigTom == null)
-                                        {
-                                            orgEnhetsList = _portalSosService.HamtaOrganisationsenheterMedUppgSkyldighetInomPerioden(uppgiftsskyldighet.Id, period).ToList();
-                                            if (orgEnhetsList.Any())
-                                            {
-                                                foreach (var orgenhet in orgEnhetsList)
-                                                {
-                                                    if (leveransStatus.HistorikLista.All(hist => hist.RegisterKortnamn == delreg.Kortnamn) && leveransStatus.HistorikLista.All(hist => hist.Enhetskod != orgenhet.Enhetskod))
-                                                    {
-                                                        enhetSaknas = true;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if (uppgiftsskyldighet.SkyldigTom.Value >= periodDate)
-                                            {
-                                                orgEnhetsList = _portalSosService.HamtaOrganisationsenheterMedUppgSkyldighetInomPerioden(uppgiftsskyldighet.Id, period).ToList();
-                                                if (orgEnhetsList.Any())
-                                                {
-                                                    foreach (var orgenhet in orgEnhetsList)
-                                                    {
-                                                        if (leveransStatus.HistorikLista.All(hist => hist.RegisterKortnamn == delreg.Kortnamn) && leveransStatus.HistorikLista.All(hist => hist.Enhetskod != orgenhet.Enhetskod))
-                                                        {
-                                                            enhetSaknas = true;
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            if (enhetSaknas)
-                            {
-                                leveransStatus.Status = "error";
-                            }
+                            //kan org rapportera per enhet för registrets delregister? => kontrollera att alla enheter rapporterat (#180)
+                            leveransStatus.Status = _portalSosService.KontrolleraOmKomplettaEnhetsleveranser(org.Id, leveransStatus);
                         }
                         else
                         {
@@ -719,8 +673,8 @@ namespace InrappSos.AstridWeb.Controllers
                             {
                                 leveransStatus.Status = "notStarted";
                             }
-
                         }
+
 
                         //Lägg hela DTO-objektet i regLev.Leveranser
                         regLev.Leveranser.Add(leveransStatus);

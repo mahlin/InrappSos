@@ -1682,7 +1682,6 @@ namespace InrappSos.ApplicationService
                 }
 
 
-
                 if (rad.Leveransstatus.Trim() == "Inget att rapportera" || rad.Leveransstatus == "Leveransen är godkänd")
                 {
                     ok = true;
@@ -1708,6 +1707,44 @@ namespace InrappSos.ApplicationService
             else if (ok && !error && !warning)
                 status = "ok";
 
+            return status;
+        }
+
+        public string KontrolleraOmKomplettaEnhetsleveranser(int orgId, LeveransStatusDTO leveransStatusObj)
+        {
+            var status = leveransStatusObj.Status;
+            var year = leveransStatusObj.Period.Substring(0, 4);
+            var month = leveransStatusObj.Period.Substring(4, 2);
+            var periodDate = new DateTime(Convert.ToInt32(year), Convert.ToInt32(month), 1);
+
+            var delRegisterList = _portalSosRepository.GetSubdirsForDirectory(leveransStatusObj.RegisterId);
+            foreach (var delReg in delRegisterList)
+            {
+                var uppgiftsskyldighet = _portalSosRepository.GetUppgiftsskyldighetForOrganisationAndRegister(orgId, delReg.Id);
+                if (uppgiftsskyldighet != null)
+                {
+                    if (uppgiftsskyldighet.RapporterarPerEnhet && uppgiftsskyldighet.SkyldigFrom <= periodDate) //Rapporterar organisationen detta register per enhet?
+                    {
+                        if (uppgiftsskyldighet.SkyldigTom == null)
+                        {
+                            var orgEnhetsList = _portalSosRepository
+                                .GetOrgUnitsByRepOblWithInPeriod(uppgiftsskyldighet.Id, leveransStatusObj.Period)
+                                .ToList();
+                            if (orgEnhetsList.Any()) //Kontrollera att alla oganisationsenheter har levererat fil
+                            {
+                                foreach (var orgenhet in orgEnhetsList)
+                                {
+                                    var xList = leveransStatusObj.HistorikLista.Where(hist =>hist.RegisterKortnamn == delReg.Kortnamn).ToList();
+                                    if (xList.All(x => x.Enhetskod != orgenhet.Enhetskod))
+                                    {
+                                        status = "error";
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             return status;
         }
 

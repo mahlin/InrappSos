@@ -603,6 +603,7 @@ namespace InrappSos.AstridWeb.Controllers
                 //hämta historik före resp register och period inom valt år
                 foreach (var register in admRegList)
                 {
+                    var delregList = _portalSosService.HamtaDelRegisterForRegister(register.Id);
                     var periodsForRegister = new List<string>();
                     var regLev = new RegisterLeveransDTO
                     {
@@ -634,6 +635,9 @@ namespace InrappSos.AstridWeb.Controllers
                     var i = 0;
                     foreach (var period in periodsForRegister)
                     {
+                        var year = period.Substring(0, 4);
+                        var month = period.Substring(4, 2);
+                        var periodDate = new DateTime(Convert.ToInt32(year), Convert.ToInt32(month), 1);
                         i++;
                         var leveransStatus = new LeveransStatusDTO();
                         leveransStatus.Id = register.Id * 100 + i; //Behöver unikt id för togglingen i vyn
@@ -655,6 +659,55 @@ namespace InrappSos.AstridWeb.Controllers
                         if (leveransStatus.HistorikLista.Any())
                         {
                             leveransStatus.Status = _portalSosService.HamtaSammanlagdStatusForPeriod(leveransStatus.HistorikLista);
+                            var enhetSaknas = false;
+
+                            //kan org rapportera per enhet för aktuellt delregister? => kontrollera att alla enheter rapporterat (#180)
+                            foreach (var delreg in register.AdmDelregister)
+                            {
+                                var orgEnhetsList = new List<Organisationsenhet>();
+                                var uppgiftsskyldighet = _portalSosService.HamtaUppgiftsskyldighetForOrganisationOchRegister(org.Id,delreg.Id);
+                                if (uppgiftsskyldighet != null)
+                                {
+                                    if (uppgiftsskyldighet.RapporterarPerEnhet && uppgiftsskyldighet.SkyldigFrom <= periodDate)
+                                    {
+                                        if (uppgiftsskyldighet.SkyldigTom == null)
+                                        {
+                                            orgEnhetsList = _portalSosService.HamtaOrganisationsenheterMedUppgSkyldighetInomPerioden(uppgiftsskyldighet.Id, period).ToList();
+                                            if (orgEnhetsList.Any())
+                                            {
+                                                foreach (var orgenhet in orgEnhetsList)
+                                                {
+                                                    if (leveransStatus.HistorikLista.All(hist => hist.RegisterKortnamn == delreg.Kortnamn) && leveransStatus.HistorikLista.All(hist => hist.Enhetskod != orgenhet.Enhetskod))
+                                                    {
+                                                        enhetSaknas = true;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (uppgiftsskyldighet.SkyldigTom.Value >= periodDate)
+                                            {
+                                                orgEnhetsList = _portalSosService.HamtaOrganisationsenheterMedUppgSkyldighetInomPerioden(uppgiftsskyldighet.Id, period).ToList();
+                                                if (orgEnhetsList.Any())
+                                                {
+                                                    foreach (var orgenhet in orgEnhetsList)
+                                                    {
+                                                        if (leveransStatus.HistorikLista.All(hist => hist.RegisterKortnamn == delreg.Kortnamn) && leveransStatus.HistorikLista.All(hist => hist.Enhetskod != orgenhet.Enhetskod))
+                                                        {
+                                                            enhetSaknas = true;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (enhetSaknas)
+                            {
+                                leveransStatus.Status = "error";
+                            }
                         }
                         else
                         {

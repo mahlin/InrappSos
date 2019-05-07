@@ -100,6 +100,10 @@ namespace InrappSos.ApplicationService.Interface
         IEnumerable<UndantagForvantadfil> HamtaUndantagnaForvantadeFilerForOrg(int orgId);
         IEnumerable<Arende> HamtaArendenForOrg(int orgId);
         IEnumerable<Organisationsenhet> HamtaOrgEnheterForOrg(int orgId);
+
+        IEnumerable<Organisationsenhet> HamtaOrganisationsenheterMedUppgSkyldighetsId(int uppgSkyldighetsid);
+
+        IEnumerable<Organisationsenhet> HamtaOrganisationsenheterMedUppgSkyldighetInomPerioden(int uppgSkyldighetsid, string period);
         Organisationsenhet HamtaOrganisationsenhetMedEnhetskod(string kod, int orgId);
         Organisationsenhet HamtaOrganisationsenhetMedFilkod(string kod, int orgId);
 

@@ -451,6 +451,19 @@ namespace InrappSos.ApplicationService
             var orgEnheter = _portalSosRepository.GetOrgUnitsForOrg(orgId);
             return orgEnheter;
         }
+
+        public IEnumerable<Organisationsenhet> HamtaOrganisationsenheterMedUppgSkyldighetsId(int uppgSkyldighetsid)
+        {
+            var orgEnheter = _portalSosRepository.GetOrgUnitsByRepOblId(uppgSkyldighetsid);
+            return orgEnheter;
+        }
+
+        public IEnumerable<Organisationsenhet> HamtaOrganisationsenheterMedUppgSkyldighetInomPerioden(int uppgSkyldighetsid, string period)
+        {
+            var orgEnheter = _portalSosRepository.GetOrgUnitsByRepOblWithInPeriod(uppgSkyldighetsid, period);
+            return orgEnheter;
+        }
+
         public Organisationsenhet HamtaOrganisationsenhetMedEnhetskod(string kod, int orgId)
         {
             var orgenhet = _portalSosRepository.GetOrganisationUnitByCode(kod, orgId);
@@ -1589,6 +1602,11 @@ namespace InrappSos.ApplicationService
 
             foreach (var delregister in delregisterLista)
             {
+
+                if (delregister.RegisterId == 16 && periodForReg == "201904")
+                {
+                    var x = 1;
+                }
                 //Hämta forvantadleveransid för delregister och period
                 var forvLevId = _portalSosRepository.GetExpextedDeliveryIdForSubDirAndPeriod(delregister.Id, periodForReg);
 
@@ -1602,6 +1620,7 @@ namespace InrappSos.ApplicationService
                         var orgEnhetsList = _portalSosRepository.GetOrgUnitsForOrg(orgId);
                         foreach (var orgenhet in orgEnhetsList)
                         {
+                            //
                             senasteLeverans =
                                 _portalSosRepository.GetLatestDeliveryForOrganisationSubDirectoryPeriodAndOrgUnit(orgId, delregister.Id, forvLevId, orgenhet.Id);
                             if (senasteLeverans != null)
@@ -1644,12 +1663,9 @@ namespace InrappSos.ApplicationService
             bool sol1 = false;
             bool sol2 = false;
 
-
-
             foreach (var rad in historikLista)
             {
-                if (rad.RegisterKortnamn == "EKB-Månad")
-                {
+                if (rad.RegisterKortnamn == "EKB-Månad"){
                     ekbMan = true;
                 }
                 else if (rad.RegisterKortnamn == "EKB-AO")
@@ -1664,6 +1680,8 @@ namespace InrappSos.ApplicationService
                 {
                     sol2 = true;
                 }
+
+
 
                 if (rad.Leveransstatus.Trim() == "Inget att rapportera" || rad.Leveransstatus == "Leveransen är godkänd")
                 {

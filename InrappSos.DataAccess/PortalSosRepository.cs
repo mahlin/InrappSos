@@ -480,6 +480,56 @@ namespace InrappSos.DataAccess
             return orgUnits;
         }
 
+        public IEnumerable<Organisationsenhet> GetOrgUnitsByRepOblId(int repOblId)
+        {
+            var orgUnitRepOligations = DbContext.AdmEnhetsUppgiftsskyldighet.Where(x => x.UppgiftsskyldighetId == repOblId).ToList();
+            var orgUnits = new List<Organisationsenhet>();
+            foreach (var orgUnitRepObligation in orgUnitRepOligations)
+            {
+                var orgUnit = DbContext.Organisationsenhet.SingleOrDefault(x => x.Id == orgUnitRepObligation.OrganisationsenhetsId);
+                if (orgUnit != null)
+                {
+                    orgUnits.Add(orgUnit);
+                }
+            }
+
+            return orgUnits;
+        }
+
+        public IEnumerable<Organisationsenhet> GetOrgUnitsByRepOblWithInPeriod(int repOblId, string period)
+        {
+            var orgUnitRepOligations = DbContext.AdmEnhetsUppgiftsskyldighet.Where(x => x.UppgiftsskyldighetId == repOblId).ToList();
+            var year = period.Substring(0, 4);
+            var month = period.Substring(4, 2);
+            var periodDate = new DateTime(Convert.ToInt32(year), Convert.ToInt32(month), 1);
+            var activeUnitRepObligations = new List<AdmEnhetsUppgiftsskyldighet>();
+            //var from = 
+            //Check if still active reportobligation
+            foreach (var orgUnitRepOligation in orgUnitRepOligations)
+            {
+                if (orgUnitRepOligation.SkyldigFrom <= periodDate)
+                {
+                    if (orgUnitRepOligation.SkyldigTom != null)
+                    {
+                        if (orgUnitRepOligation.SkyldigTom.Value >= periodDate)
+                        {
+                            activeUnitRepObligations.Add(orgUnitRepOligation);
+                        }
+                    }
+                }
+            }
+            var orgUnits = new List<Organisationsenhet>();
+            foreach (var orgUnitRepObligation in activeUnitRepObligations)
+            {
+                var orgUnit = DbContext.Organisationsenhet.SingleOrDefault(x => x.Id == orgUnitRepObligation.OrganisationsenhetsId);
+                if (orgUnit != null)
+                {
+                    orgUnits.Add(orgUnit);
+                }
+            }
+            return orgUnits;
+        }
+
         public List<int> GetOrgTypesIdsForOrg(int orgId)
         {
             var orgTypesIdsForOrg = DbContext.Organisationstyp.Where(x => x.OrganisationsId == orgId).Select(x => x.OrganisationstypId).ToList();

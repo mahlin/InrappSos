@@ -124,6 +124,10 @@ namespace InrappSos.DataAccess
 
         IEnumerable<Organisationsenhet> GetOrgUnitsForOrg(int orgId);
 
+        IEnumerable<Organisationsenhet> GetOrgUnitsByRepOblId(int repOblId);
+
+        IEnumerable<Organisationsenhet> GetOrgUnitsByRepOblWithInPeriod(int repOblId, string period);
+
         List<int> GetOrgTypesIdsForOrg(int orgId);
 
         List<int> GetOrgTypesIdsForSubDir(int subdirId);

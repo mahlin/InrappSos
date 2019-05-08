@@ -2000,6 +2000,17 @@ namespace InrappSos.DataAccess
             DbContext.SaveChanges();
         }
 
+        public List<List<ApplicationUser>> SearchContact(string[] searchString)
+        {
+            var contactList = new List<List<ApplicationUser>>();
+
+            foreach (string word in searchString)
+            {
+                contactList.Add(DbContext.Users.Where(x => x.Namn.Contains(word) || x.Email.Contains(word)).ToList());
+            }
+            return contactList;
+        }
+
         public void SaveChosenRegistersForUser(string userId, string userName, List<RegisterInfo> registerList)
         {
             foreach (var register in registerList)

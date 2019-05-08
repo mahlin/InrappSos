@@ -42,6 +42,8 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             
             public List<List<Organisation>> SearchResult { get; set; }
 
+            public List<List<ApplicationUserViewModel>> ContactSearchResult { get; set; }
+
             public List<Organisationsenhet> OrgUnits { get; set; }
 
             public  List<ReportObligationsViewModel> ReportObligations { get; set; }
@@ -123,6 +125,7 @@ namespace InrappSos.AstridWeb.Models.ViewModels
         {
             public string ID { get; set; }
             public int OrganisationId { get; set; }
+            public string OrganisationsNamn { get; set; }
             public string Namn { get; set; }
             public DateTime? AktivFrom { get; set; }
             public DateTime? AktivTom { get; set; }

@@ -1362,6 +1362,14 @@ namespace InrappSos.ApplicationService
 
         }
 
+        public List<List<ApplicationUser>> SokKontaktperson(string sokStr)
+        {
+            string[] searchstring = sokStr.Split(' ');
+            var contactList = _portalSosRepository.SearchContact(searchstring);
+            return contactList;
+
+        }
+
         public IEnumerable<FilloggDetaljDTO> FiltreraHistorikForAnvandare(string userId, List<RegisterInfo> valdaDelregisterList, List<FilloggDetaljDTO> historikForOrganisation)
         {
             var historikForAnvandareList = new List<FilloggDetaljDTO>();

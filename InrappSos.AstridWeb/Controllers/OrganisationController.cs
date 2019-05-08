@@ -69,6 +69,7 @@ namespace InrappSos.AstridWeb.Controllers
             var model = new OrganisationViewModels.OrganisationViewModel();
             model.OrgtypesForOrgList = new List<OrganisationstypDTO>();
             model.SearchResult = new List<List<Organisation>>();
+            model.ContactSearchResult = new List<List<OrganisationViewModels.ApplicationUserViewModel>>();
             return View(model);
         }
 
@@ -121,6 +122,7 @@ namespace InrappSos.AstridWeb.Controllers
                     }
                 }
                 model.SearchResult = orgList;
+                model.ContactSearchResult = new List<List<OrganisationViewModels.ApplicationUserViewModel>>();
             }
             catch (Exception e)
             {
@@ -141,7 +143,73 @@ namespace InrappSos.AstridWeb.Controllers
             }
             return View("Index", model);
         }
-        
+
+
+
+        [Authorize]
+        // GET: Contact
+        public ActionResult SearchContact(string searchText, string origin)
+        {
+            var model = new OrganisationViewModels.OrganisationViewModel();
+            var searchResultContactVMList = new List<List<OrganisationViewModels.ApplicationUserViewModel>>();
+
+            try
+            {
+                var searchResultContactList = _portalSosService.SokKontaktperson(searchText);
+                model.Origin = origin;
+
+                //Om endats en träff, hämta datat direkt
+                if (searchResultContactList.Count == 1 && searchResultContactList[0].Count == 1)
+                {
+                    switch (origin)
+                    {
+                        case "contacts":
+                            return RedirectToAction("GetOrganisationsContacts", new { selectedOrganisationId = searchResultContactList[0][0].OrganisationId });
+                        default:
+                            var errorModel = new CustomErrorPageModel
+                            {
+                                Information = "Felaktig avsändare till sökfunktionen.",
+                                ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                            };
+                            return View("CustomError", errorModel);
+                    }
+                }
+                else //konvertera till VM och komplettera med organisationsnamn
+                {
+                    foreach (var item in searchResultContactList)
+                    {
+                        var contactListVM = new List<OrganisationViewModels.ApplicationUserViewModel>();
+                        foreach (var contact in item)
+                        {
+                            contactListVM.Add(ConvertApplicationUserToVM(contact));
+                        }
+                        searchResultContactVMList.Add(contactListVM);
+                    }
+                    
+                }
+                model.ContactSearchResult = searchResultContactVMList;
+                model.SearchResult = new List<List<Organisation>>();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("OrganisationController", "SearchContact", e.ToString(), e.HResult, User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade vid sökning efter kontaktperson.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                if (e.Message == "Sequence contains no elements")
+                {
+                    errorModel.Information = "Ingen kontaktperson kunde hittas.";
+                }
+
+                return View("CustomError", errorModel);
+
+            }
+            return View("EditContacts", model);
+        }
+
 
         [Authorize]
         // GET: Organisation
@@ -210,6 +278,7 @@ namespace InrappSos.AstridWeb.Controllers
             var model = new OrganisationViewModels.OrganisationViewModel();
             model.ContactPersons = new List<OrganisationViewModels.ApplicationUserViewModel>();
             model.SearchResult = new List<List<Organisation>>();
+            model.ContactSearchResult = new List<List<OrganisationViewModels.ApplicationUserViewModel>>();
             return View("EditContacts", model);
         }
 
@@ -242,6 +311,7 @@ namespace InrappSos.AstridWeb.Controllers
                 model.Roller = ConvertRolesToVM(roller);
                 ViewBag.RolesList = CreateRolesDropDownList(roller);
                 model.SearchResult = new List<List<Organisation>>();
+                model.ContactSearchResult = new List<List<OrganisationViewModels.ApplicationUserViewModel>>();
             }
             catch (Exception e)
             {
@@ -2160,6 +2230,20 @@ namespace InrappSos.AstridWeb.Controllers
             lstobj = new SelectList(list, "Value", "Text");
 
             return lstobj;
+        }
+
+        private OrganisationViewModels.ApplicationUserViewModel ConvertApplicationUserToVM(ApplicationUser user)
+        {
+            var userVM= new OrganisationViewModels.ApplicationUserViewModel()
+            {
+                ID = user.Id,
+                OrganisationId = user.OrganisationId,
+                OrganisationsNamn = _portalSosService.HamtaOrganisation(user.OrganisationId).Organisationsnamn,
+                Namn = user.Namn,
+                Email = user.Email,
+            };
+
+            return userVM;
         }
 
         private ApplicationUser ConvertViewModelToApplicationUser(OrganisationViewModels.ApplicationUserViewModel userVM)

@@ -335,6 +335,7 @@
     <Content Include="Views\Register\EditSubDirectoriesOrgtypes.cshtml" />
     <Content Include="Views\Organisation\EditSFTPAccounts.cshtml" />
     <Content Include="Views\Organisation\CreateOrganisationSFTPAccount.cshtml" />
+    <Content Include="Views\Organisation\_ContactSearchResult.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

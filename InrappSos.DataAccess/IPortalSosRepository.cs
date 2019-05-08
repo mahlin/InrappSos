@@ -426,6 +426,9 @@ namespace InrappSos.DataAccess
         void SaveToLoginLog(string userid, string userName);
 
         List<List<Organisation>> SearchOrganisation(string[] searchString);
+
+        List<List<ApplicationUser>> SearchContact(string[] searchString);
+
         void SaveChosenRegistersForUser(string userId, string userName, List<RegisterInfo> registerList);
 
         void SaveExceptionExpectedFile(UndantagForvantadfil exception);

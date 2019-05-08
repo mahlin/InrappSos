@@ -1,0 +1,24 @@
+﻿@using System.Collections
+@using InrappSos.AstridWeb.Models.ViewModels
+@using InrappSos.DomainModel
+@model InrappSos.AstridWeb.Models.ViewModels.OrganisationViewModels.OrganisationViewModel
+
+<h4>Sökresultat</h4>
+
+@foreach (var item in Model.ContactSearchResult)
+{
+    foreach (OrganisationViewModels.ApplicationUserViewModel user in item as IEnumerable) //casting to IEnumerable will let you iterate
+    {
+        switch (Model.Origin)
+        {
+            case "contacts":
+                @Html.ActionLink(user.Email + " - " + user.OrganisationsNamn, "GetOrganisationsContacts", "Organisation", new { selectedOrganisationId = user.OrganisationId}, new {@class = "btn"})<br/>
+                break;
+            default:
+                break;;
+        }
+    }
+}
+
+
+

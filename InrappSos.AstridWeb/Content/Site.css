@@ -199,6 +199,12 @@ textarea {
     padding: 3px 7px 2px;
 }
 
+.col110Width {
+    width: 110px;
+    margin: -5px;
+    padding: 3px 7px 2px;
+}
+
 .col150Width {
     width: 150px;
     margin: -5px;

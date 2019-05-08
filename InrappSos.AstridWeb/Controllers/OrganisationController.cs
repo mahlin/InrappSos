@@ -2101,6 +2101,7 @@ namespace InrappSos.AstridWeb.Controllers
                 Arendenr = arendeVM.Arendenr,
                 ArendetypId = arendeVM.ArendetypId,
                 ArendestatusId = arendeVM.ArendestatusId,
+                AnsvarigEpost = arendeVM.AnsvarigEpost,
                 Rapportorer = arendeVM.Rapportorer,
                 StartDatum = arendeVM.StartDatum,
                 SlutDatum = arendeVM.SlutDatum
@@ -2132,6 +2133,8 @@ namespace InrappSos.AstridWeb.Controllers
                 //Hämta ärendestatus, klartext
                 arendeVM.Arendestatus = _portalSosService.HamtaArendestatus(arendeDb.ArendestatusId).ArendeStatusNamn;
                 arendeVM.SelectedArendestatusId = arendeDb.ArendestatusId;
+
+                arendeVM.AnsvarigEpost = arendeDb.AnsvarigEpost;
                 //Hämta rapportörers epostadress
                 arendeVM.Rapportorer = _portalSosService.HamtaArendesRapportorer(arendeVM.OrganisationsId, arendeDb.Id);
 

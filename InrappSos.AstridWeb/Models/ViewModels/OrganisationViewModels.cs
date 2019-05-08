@@ -221,6 +221,8 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public DateTime? SlutDatum { get; set; }
             public int SelectedArendetypId { get; set; }
             public int SelectedArendestatusId { get; set; }
+            [Display(Name = "Ansvarigs epost")]
+            public string AnsvarigEpost { get; set; }
             [Display(Name = "Rapportörer")]
             public string Rapportorer { get; set; }
 

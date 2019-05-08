@@ -142,6 +142,9 @@ namespace InrappSos.FilipWeb.Controllers
                         if (leveransStatus.HistorikLista.Any())
                         {
                             leveransStatus.Status = _portalService.HamtaSammanlagdStatusForPeriod(leveransStatus.HistorikLista);
+                            //kan org rapportera per enhet för registrets delregister? => kontrollera att alla enheter rapporterat (#180)
+                            leveransStatus.Status = _portalService.KontrolleraOmKomplettaEnhetsleveranser(userOrg.Id, leveransStatus);
+
                         }
                         else
                         {

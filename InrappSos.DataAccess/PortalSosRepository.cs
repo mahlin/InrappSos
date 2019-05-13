@@ -589,8 +589,6 @@ namespace InrappSos.DataAccess
 
         public IEnumerable<AdmUppgiftsskyldighet> GetReportObligationInformationForOrg(int orgId)
         {
-            var tmp = DbContext.AdmUppgiftsskyldighet.Where(x => x.OrganisationId == orgId).ToList();
-            
             var reportObligationInfo = DbContext.AdmUppgiftsskyldighet.Where(x => x.OrganisationId == orgId).Include(x => x.AdmDelregister).ToList();
             return reportObligationInfo;
         }
@@ -790,6 +788,21 @@ namespace InrappSos.DataAccess
         {
             var subDirectories = DbContext.AdmDelregister.Where(x => x.RegisterId == dirId).ToList();
             return subDirectories;
+        }
+
+        //public IEnumerable<AdmDelregister> GetSubDirectoriesWithIncludesForDirectory(int dirId)
+        //{
+        //    var subDirectories = DbContext.AdmDelregister.Where(x => x.RegisterId == dirId)
+        //        .Include(x => x.AdmForvantadleverans)
+        //        .Include(x => x.AdmUppgiftsskyldighet)
+        //        .ToList();
+        //    return subDirectories;
+        //}
+
+        public IEnumerable<AdmDelregister> GetSubDirectoriesWithIncludesForDirectory(int regId)
+        {
+            var reg = DbContext.AdmDelregister.Where(x => x.RegisterId == regId).Include(x => x.AdmUppgiftsskyldighet).Include(x => x.AdmForvantadleverans).ToList();
+            return reg;
         }
 
         public IEnumerable<AdmDelregister> GetSubDirsObligatedForOrg(int orgId)

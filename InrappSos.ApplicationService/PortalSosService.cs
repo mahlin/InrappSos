@@ -810,6 +810,13 @@ namespace InrappSos.ApplicationService
             return subDirectories;
         }
 
+        public IEnumerable<AdmDelregister> HamtaDelRegisterMedUndertabellerForRegister(int regId)
+        {
+            var subDirectories = _portalSosRepository.GetSubDirectoriesWithIncludesForDirectory(regId);
+            return subDirectories;
+        }
+
+
         public IEnumerable<AdmForeskrift> HamtaForeskrifterForRegister(int regId)
         {
             var foreskrifter = _portalSosRepository.GetRegulationsForDirectory(regId);
@@ -1561,6 +1568,16 @@ namespace InrappSos.ApplicationService
             return perioder;
         }
 
+        public IEnumerable<string> HamtaDelregistersPerioderForAr(AdmDelregister delreg, int ar)
+        {
+            var dateFrom = new DateTime(ar, 01, 01);
+            var dateTom = new DateTime(ar, 12, 31).Date;
+            var periods = delreg.AdmForvantadleverans
+                .Where(x => x.DelregisterId == delreg.Id && x.Uppgiftsstart >= dateFrom && x.Uppgiftsslut <= dateTom)
+                .Select(x => x.Period).ToList();
+            return periods;
+        }
+
         public List<int> HamtaValbaraAr(int delregId)
         {
             var arsLista = new List<int>();
@@ -1576,10 +1593,42 @@ namespace InrappSos.ApplicationService
             return arsLista;
         }
 
+        public List<int> HamtaValbaraAr(AdmDelregister delreg)
+        {
+            var arsLista = new List<int>();
+            var uppgiftsstartLista = delreg.AdmForvantadleverans.Where(x => x.DelregisterId == delreg.Id)
+                .Select(x => x.Uppgiftsstart).ToList();
+
+            foreach (var uppgiftsstart in uppgiftsstartLista)
+            {
+                var year = uppgiftsstart.Year;
+                if (!arsLista.Contains(year))
+                    arsLista.Add(year);
+            }
+
+            return arsLista;
+        }
+
         public DateTime HamtaRapporteringsstartForRegisterOchPeriod(int regId, string period)
         {
             var rappStart = _portalSosRepository.GetReportstartForRegisterAndPeriod(regId, period);
             return rappStart;
+        }
+
+        public AdmForvantadleverans HamtaForvLevForRegisterOchPeriod(AdmRegister reg, string period)
+        {
+            var firstSubDirForReg = reg.AdmDelregister.FirstOrDefault(x => x.RegisterId == reg.Id);
+            var forvlev = firstSubDirForReg.AdmForvantadleverans.FirstOrDefault(x => x.DelregisterId == firstSubDirForReg.Id && x.Period == period);
+
+            return forvlev;
+        }
+
+        //TODO - special för EKB-År. Lös på annat sätt.
+        public AdmForvantadleverans HamtaForvLevForRegisterOchPeriodSpecial(AdmRegister reg, string period)
+        {
+            var delReg = reg.AdmDelregister.FirstOrDefault(x => x.RegisterId == reg.Id && x.Kortnamn == "EKB-År");
+            var forvLev = delReg.AdmForvantadleverans.FirstOrDefault(x => x.DelregisterId == delReg.Id && x.Period == period);
+            return forvLev;
         }
 
         public DateTime HamtaSenasteRapporteringForRegisterOchPeriod(int regId, string period)
@@ -1601,26 +1650,19 @@ namespace InrappSos.ApplicationService
             return rappSenast;
         }
 
-        public IEnumerable<FilloggDetaljDTO> HamtaHistorikForOrganisationRegisterPeriod(int orgId, int regId, string periodForReg)
+        public IEnumerable<FilloggDetaljDTO> HamtaHistorikForOrganisationRegisterPeriod(int orgId, List<AdmDelregister> delregisterList, string periodForReg)
         {
             var historikLista = new List<FilloggDetaljDTO>();
             var sorteradHistorikLista = new List<FilloggDetaljDTO>();
-            var delregisterLista = _portalSosRepository.GetSubdirsForDirectory(regId);
-            //var forvLevId = _portalSosRepository.get
 
-            foreach (var delregister in delregisterLista)
+            foreach (var delregister in delregisterList)
             {
-
-                if (delregister.RegisterId == 16 && periodForReg == "201904")
-                {
-                    var x = 1;
-                }
-                //Hämta forvantadleveransid för delregister och period
-                var forvLevId = _portalSosRepository.GetExpextedDeliveryIdForSubDirAndPeriod(delregister.Id, periodForReg);
+                //Forvantadleveransid för delregister och period
+                var forvLevId = delregister.AdmForvantadleverans.Where(x => x.Period == periodForReg).Select(x => x.Id).SingleOrDefault();
 
                 var senasteLeverans = new Leverans();
-                //kan org rapportera per enhet för aktuellt delregister? => hämta senaste leverans per enhet
-                var uppgiftsskyldighet = _portalSosRepository.GetUppgiftsskyldighetForOrganisationAndRegister(orgId, delregister.Id);
+                //kan org rapportera per enhet för aktuellt delregister och period? => hämta senaste leverans per enhet
+                var uppgiftsskyldighet = delregister.AdmUppgiftsskyldighet.SingleOrDefault(x => x.OrganisationId == orgId);
                 if (uppgiftsskyldighet != null)
                 {
                     if (uppgiftsskyldighet.RapporterarPerEnhet)
@@ -1718,17 +1760,17 @@ namespace InrappSos.ApplicationService
             return status;
         }
 
-        public string KontrolleraOmKomplettaEnhetsleveranser(int orgId, LeveransStatusDTO leveransStatusObj)
+        public string KontrolleraOmKomplettaEnhetsleveranser(int orgId, LeveransStatusDTO leveransStatusObj, List<AdmDelregister> delregisterList)
         {
             var status = leveransStatusObj.Status;
             var year = leveransStatusObj.Period.Substring(0, 4);
             var month = leveransStatusObj.Period.Substring(4, 2);
             var periodDate = new DateTime(Convert.ToInt32(year), Convert.ToInt32(month), 1);
+            var orgenheterForRegister = new List<Organisationsenhet>();
 
-            var delRegisterList = _portalSosRepository.GetSubdirsForDirectory(leveransStatusObj.RegisterId);
-            foreach (var delReg in delRegisterList)
+            foreach (var delregister in delregisterList)
             {
-                var uppgiftsskyldighet = _portalSosRepository.GetUppgiftsskyldighetForOrganisationAndRegister(orgId, delReg.Id);
+                var uppgiftsskyldighet = delregister.AdmUppgiftsskyldighet.SingleOrDefault(x => x.OrganisationId == orgId);
                 if (uppgiftsskyldighet != null)
                 {
                     if (uppgiftsskyldighet.RapporterarPerEnhet && uppgiftsskyldighet.SkyldigFrom <= periodDate) //Rapporterar organisationen detta register per enhet?
@@ -1742,7 +1784,7 @@ namespace InrappSos.ApplicationService
                             {
                                 foreach (var orgenhet in orgEnhetsList)
                                 {
-                                    var xList = leveransStatusObj.HistorikLista.Where(hist =>hist.RegisterKortnamn == delReg.Kortnamn).ToList();
+                                    var xList = leveransStatusObj.HistorikLista.Where(hist =>hist.RegisterKortnamn == delregister.Kortnamn).ToList();
                                     if (xList.All(x => x.Enhetskod != orgenhet.Enhetskod))
                                     {
                                         status = "error";

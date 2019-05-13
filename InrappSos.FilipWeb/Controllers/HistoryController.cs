@@ -96,9 +96,11 @@ namespace InrappSos.FilipWeb.Controllers
                         RegisterKortnamn = register.Kortnamn,
                         Leveranser = new List<LeveransStatusDTO>()
                     };
+                    var delregList = _portalService.HamtaDelRegisterMedUndertabellerForRegister(register.Id).ToList();
+
 
                     //För att hitta giltiga perioder för valt år måste vi ner på registrets delregister
-                    foreach (var delregister in register.AdmDelregister)
+                    foreach (var delregister in delregList)
                     {
                         var delregPerioder = _portalService.HamtaDelregistersPerioderForAr(delregister.Id, chosenYear);
                         //för varje period för delregistret, spara i lista med perioder för registret
@@ -138,12 +140,12 @@ namespace InrappSos.FilipWeb.Controllers
                             leveransStatus.Rapporteringsstart = _portalService.HamtaRapporteringsstartForRegisterOchPeriod(register.Id, period);
                             leveransStatus.Rapporteringssenast = _portalService.HamtaSenasteRapporteringForRegisterOchPeriod(register.Id, period);
                         }
-                        leveransStatus.HistorikLista = _portalService.HamtaHistorikForOrganisationRegisterPeriod(userOrg.Id, register.Id, period).ToList();
+                        leveransStatus.HistorikLista = _portalService.HamtaHistorikForOrganisationRegisterPeriod(userOrg.Id, delregList, period).ToList();
                         if (leveransStatus.HistorikLista.Any())
                         {
                             leveransStatus.Status = _portalService.HamtaSammanlagdStatusForPeriod(leveransStatus.HistorikLista);
                             //kan org rapportera per enhet för registrets delregister? => kontrollera att alla enheter rapporterat (#180)
-                            leveransStatus.Status = _portalService.KontrolleraOmKomplettaEnhetsleveranser(userOrg.Id, leveransStatus);
+                            leveransStatus.Status = _portalService.KontrolleraOmKomplettaEnhetsleveranser(userOrg.Id, leveransStatus, delregList);
 
                         }
                         else

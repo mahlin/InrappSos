@@ -191,6 +191,7 @@ namespace InrappSos.DataAccess
         IEnumerable<AdmDelregister> GetSubDirectories();
 
         IEnumerable<AdmDelregister> GetSubDirectoriesForDirectory(int dirId);
+        IEnumerable<AdmDelregister> GetSubDirectoriesWithIncludesForDirectory(int dirId);
 
         IEnumerable<AdmDelregister> GetSubDirsObligatedForOrg(int orgId);
 

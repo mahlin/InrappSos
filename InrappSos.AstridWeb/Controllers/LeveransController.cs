@@ -586,7 +586,7 @@ namespace InrappSos.AstridWeb.Controllers
             var model = new LeveransViewModels.LeveransViewModel();
             model.LeveransListaRegister = new List<RegisterLeveransDTO>();
             var selectableYearsForUser = new List<int>();
-
+            
             try
             {
                 if (chosenYear == 0)
@@ -603,7 +603,6 @@ namespace InrappSos.AstridWeb.Controllers
                 //hämta historik före resp register och period inom valt år
                 foreach (var register in admRegList)
                 {
-                    var delregList = _portalSosService.HamtaDelRegisterForRegister(register.Id);
                     var periodsForRegister = new List<string>();
                     var regLev = new RegisterLeveransDTO
                     {
@@ -611,10 +610,12 @@ namespace InrappSos.AstridWeb.Controllers
                         Leveranser = new List<LeveransStatusDTO>()
                     };
 
+                    var delregList = _portalSosService.HamtaDelRegisterMedUndertabellerForRegister(register.Id).ToList();
+
                     //För att hitta giltiga perioder för valt år måste vi ner på registrets delregister
-                    foreach (var delregister in register.AdmDelregister)
+                    foreach (var delregister in delregList)
                     {
-                        var delregPerioder = _portalSosService.HamtaDelregistersPerioderForAr(delregister.Id, chosenYear);
+                        var delregPerioder = _portalSosService.HamtaDelregistersPerioderForAr(delregister, chosenYear);
                         //för varje period för delregistret, spara i lista med perioder för registret
                         foreach (var period in delregPerioder)
                         {
@@ -645,23 +646,25 @@ namespace InrappSos.AstridWeb.Controllers
                         leveransStatus.RegisterKortnamn = register.Kortnamn;
                         leveransStatus.Period = period;
                         //TODO - fulfix. Refactor this. Special för EKB-År
+                        var forvLev = new AdmForvantadleverans();
                         if (register.Kortnamn == "EKB" && period.Length == 4)
                         {
-                            leveransStatus.Rapporteringsstart = _portalSosService.HamtaRapporteringsstartForRegisterOchPeriodSpecial(register.Id, period);
-                            leveransStatus.Rapporteringssenast = _portalSosService.HamtaSenasteRapporteringForRegisterOchPeriodSpecial(register.Id, period);
+                            forvLev = _portalSosService.HamtaForvLevForRegisterOchPeriodSpecial(register, period);
                         }
                         else
                         {
-                            leveransStatus.Rapporteringsstart = _portalSosService.HamtaRapporteringsstartForRegisterOchPeriod(register.Id, period);
-                            leveransStatus.Rapporteringssenast = _portalSosService.HamtaSenasteRapporteringForRegisterOchPeriod(register.Id, period);
+                            forvLev = _portalSosService.HamtaForvLevForRegisterOchPeriod(register, period);
                         }
-                        leveransStatus.HistorikLista = _portalSosService.HamtaHistorikForOrganisationRegisterPeriod(org.Id, register.Id, period).ToList();
+                        leveransStatus.Rapporteringsstart = forvLev.Rapporteringsstart;
+                        leveransStatus.Rapporteringssenast = forvLev.Rapporteringsenast;
+
+                        leveransStatus.HistorikLista = _portalSosService.HamtaHistorikForOrganisationRegisterPeriod(org.Id, delregList, period).ToList();
                         if (leveransStatus.HistorikLista.Any())
                         {
                             leveransStatus.Status = _portalSosService.HamtaSammanlagdStatusForPeriod(leveransStatus.HistorikLista);
 
                             //kan org rapportera per enhet för registrets delregister? => kontrollera att alla enheter rapporterat (#180)
-                            leveransStatus.Status = _portalSosService.KontrolleraOmKomplettaEnhetsleveranser(org.Id, leveransStatus);
+                            leveransStatus.Status = _portalSosService.KontrolleraOmKomplettaEnhetsleveranser(org.Id, leveransStatus, delregList);
                         }
                         else
                         {

@@ -156,6 +156,8 @@ namespace InrappSos.ApplicationService.Interface
 
         IEnumerable<AdmDelregister> HamtaDelRegisterForRegister(int regId);
 
+        IEnumerable<AdmDelregister> HamtaDelRegisterMedUndertabellerForRegister(int regId);
+
         IEnumerable<AdmForeskrift> HamtaForeskrifterForRegister(int regId);
 
         AdmDelregister HamtaDelRegisterForUppgiftsskyldighet(int uppgSkId);
@@ -264,19 +266,28 @@ namespace InrappSos.ApplicationService.Interface
 
         IEnumerable<string> HamtaDelregistersPerioderForAr(int delregId, int ar);
 
+        IEnumerable<string> HamtaDelregistersPerioderForAr(AdmDelregister delreg, int ar);
+
         List<int> HamtaValbaraAr(int delregId);
+
+        List<int> HamtaValbaraAr(AdmDelregister delreg);
+
         DateTime HamtaRapporteringsstartForRegisterOchPeriod(int regId, string period);
+
+        AdmForvantadleverans HamtaForvLevForRegisterOchPeriod(AdmRegister reg, string period);
+
+        AdmForvantadleverans HamtaForvLevForRegisterOchPeriodSpecial(AdmRegister reg, string period);
 
         DateTime HamtaRapporteringsstartForRegisterOchPeriodSpecial(int regId, string period);
         DateTime HamtaSenasteRapporteringForRegisterOchPeriodSpecial(int regId, string period);
 
         DateTime HamtaSenasteRapporteringForRegisterOchPeriod(int regId, string period);
 
-        IEnumerable<FilloggDetaljDTO> HamtaHistorikForOrganisationRegisterPeriod(int orgId, int regId, string periodForReg);
+        IEnumerable<FilloggDetaljDTO> HamtaHistorikForOrganisationRegisterPeriod(int orgId, List<AdmDelregister> delregisterList, string periodForReg);
 
         string HamtaSammanlagdStatusForPeriod(IEnumerable<FilloggDetaljDTO> historikLista);
 
-        string KontrolleraOmKomplettaEnhetsleveranser(int orgId, LeveransStatusDTO leveransStatusObj);
+        string KontrolleraOmKomplettaEnhetsleveranser(int orgId, LeveransStatusDTO leveransStatusObj, List<AdmDelregister> delregisterList);
 
         //IEnumerable<RegisterInfo> HamtaValdaRegistersForAnvandare(string userId, int orgId);
 

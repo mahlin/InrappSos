@@ -283,7 +283,7 @@
                                     grid.Column("Registernamn", "Register", format: @<text><span class="display-mode"><label id="lblRegister" style="width: 50px;">@item.Registernamn</label></span></text>, style: "colMinWidth"),
                                     grid.Column("Registernamn", format: @item => Html.DropDownListFor(m => m.SelectedRegisterId, ViewBag.RegisterList as SelectList, " - Välj -", new { id = "ddlRegister", @class = "form-control edit-mode", style = "min-width:100px !important" })),
 
-                                    grid.Column("Kontakter", "Kontakter", format: @<text><label id="lblContacts" class="longColumnText" style="width: 200px;display: inline-block;">@item.StringOfChosenContacts</label></text>, style: "col3Width"),
+                                    grid.Column("Kontakter", "Kontakter", format: @<text><label id="lblContacts" style="display: inline-block;">@item.StringOfChosenContacts</label></text>, style: "col3Width"),
                                     grid.Column("Kontakter", format: @item => Html.DropDownListFor(m => m.ContactPersons, new SelectList(@item.ListOfContacts, "Id", "Email"), new { id = "ddlContactList", @class = "form-control edit-mode ddl", multiple = "multiple", style = "min-width:100px !important" })),
 
                                     grid.Column(null, format: @<text>

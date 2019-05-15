@@ -682,13 +682,26 @@ namespace InrappSos.FilipWeb.Controllers
                     // Don't reveal that the user does not exist or is not confirmed
                     return View("ForgotPasswordConfirmation");
                 }
-
-                // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
-                // Send an email with this link
-                 string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
-                 var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                //TODO - mail
-                 await UserManager.SendEmailAsync(user.Id, "Återställ pinkod", "Vänligen återställ din pinkod genom att klicka <a href=\"" + callbackUrl + "\">här</a>");
+                try
+                {
+                    // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
+                    // Send an email with this link
+                    string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
+                    var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                    //TODO - mail
+                    await UserManager.SendEmailAsync(user.Id, "Återställ pinkod", "Vänligen återställ din pinkod genom att klicka <a href=\"" + callbackUrl + "\">här</a>");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    ErrorManager.WriteToErrorLog("AccountController", "ForgotPassword", e.ToString(), e.HResult, model.Email);
+                    var errorModel = new CustomErrorPageModel
+                    {
+                        Information = "Ett fel inträffade när epostmeddelande skulle skickas.",
+                        ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                    };
+                    return View("CustomError", errorModel);
+                }
 
                 return RedirectToAction("ForgotPasswordConfirmation", "Account");
             }

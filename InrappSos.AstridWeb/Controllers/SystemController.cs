@@ -7,24 +7,26 @@ using System.Web.Mvc;
 using System.Web.WebPages;
 using InrappSos.ApplicationService;
 using InrappSos.ApplicationService.DTOModel;
+using InrappSos.ApplicationService.Helpers;
 using InrappSos.ApplicationService.Interface;
 using InrappSos.DataAccess;
 using InrappSos.DomainModel;
-using InrappSos.AstridWeb.Helpers;
 using InrappSos.AstridWeb.Models;
 using InrappSos.AstridWeb.Models.ViewModels;
 using Microsoft.AspNet.Identity;
+using ErrorManager = InrappSos.AstridWeb.Helpers.ErrorManager;
 
 namespace InrappSos.AstridWeb.Controllers
 {
     public class SystemController : Controller
     {
         private readonly IPortalSosService _portalSosService;
+        FilesHelper _filesHelper;
 
         public SystemController()
         {
             _portalSosService = new PortalSosService(new PortalSosRepository(new InrappSosDbContext(), new InrappSosAstridDbContext()));
-
+            _filesHelper = new FilesHelper();
         }
 
         // GET: System
@@ -127,6 +129,32 @@ namespace InrappSos.AstridWeb.Controllers
             return View("EditInfoTexts", model);
         }
 
+        // GET: InformationTexts
+        [Authorize]
+        [ValidateInput(false)]
+        public ActionResult GetDocuments()
+        {
+            var model = new SystemViewModels.SystemViewModel();
+            try
+            {
+                model.Mallar = _filesHelper.GetAllFilesFromDb();
+                //model.SelectedInfo = selectedInfoType;
+                //model.SelectedInfoText = selectedText;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("SystemController", "GetDocuments", e.ToString(), e.HResult, User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade vid hämtning av mallar.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
+
+            }
+            return View("EditDocuments", model);
+        }
 
         // GET: OpeningHours (AdmKonfiguration)
         [Authorize]
@@ -358,6 +386,41 @@ namespace InrappSos.AstridWeb.Controllers
             }
             return RedirectToAction("GetInformationTexts");
         }
+
+
+        [HttpPost]
+        [Authorize]
+        public ActionResult UpdateDocument(SystemViewModels.SystemViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var userName = User.Identity.GetUserName();
+
+                    AdmDokument dok = new AdmDokument()
+                    {
+                        Id = model.SelectedDocumentId,
+                        //Text = model.SelectedInfoText
+                    };
+                    _filesHelper.UpdateFile(dok, userName);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    ErrorManager.WriteToErrorLog("SystemController", "UpdateDocument", e.ToString(), e.HResult,
+                        User.Identity.Name);
+                    var errorModel = new CustomErrorPageModel
+                    {
+                        Information = "Ett fel inträffade vid uppdatering av mall.",
+                        ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                    };
+                    return View("CustomError", errorModel);
+                }
+            }
+            return RedirectToAction("GetDocuments");
+        }
+
 
         // GET
         [Authorize]
@@ -629,6 +692,50 @@ namespace InrappSos.AstridWeb.Controllers
             }
 
             return RedirectToAction("GetFAQs", new {faqCatId = model.SelectedFAQ.FAQkategoriId });
+        }
+
+        // GET
+        [Authorize]
+        public ActionResult AddDocument()
+        {
+            return View();
+        }
+
+
+        // POST
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public ActionResult AddDocument(SystemViewModels.InfoTextViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var userName = User.Identity.GetUserName();
+                    var infoText = new AdmInformation
+                    {
+                        Informationstyp = model.Informationstyp,
+                        Text = model.Text,
+                    };
+                    infoText.Text = model.Text;
+                    _portalSosService.SkapaInformationsText(infoText, userName);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    ErrorManager.WriteToErrorLog("SystemController", "AddDocument", e.ToString(), e.HResult, User.Identity.Name);
+                    var errorModel = new CustomErrorPageModel
+                    {
+                        Information = "Ett fel inträffade när ny mall skulle sparas.",
+                        ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                    };
+                    return View("CustomError", errorModel);
+                }
+                return RedirectToAction("GetInformationTexts");
+            }
+
+            return View();
         }
 
 

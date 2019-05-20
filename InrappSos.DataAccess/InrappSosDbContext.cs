@@ -641,6 +641,17 @@ namespace InrappSos.DataAccess
             modelBuilder.Entity<UndantagForvantadfil>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
             modelBuilder.Entity<UndantagForvantadfil>().Property(e => e.AndradAv).HasColumnName("andradav");
 
+            //AdmDokument
+            modelBuilder.Entity<AdmDokument>().Property(e => e.Id).HasColumnName("filid");
+            modelBuilder.Entity<AdmDokument>().Property(e => e.Filnamn).HasColumnName("filnamn");
+            modelBuilder.Entity<AdmDokument>().Property(e => e.Filtyp).HasColumnName("filtyp");
+            modelBuilder.Entity<AdmDokument>().Property(e => e.Suffix).HasColumnName("suffix");
+            modelBuilder.Entity<AdmDokument>().Property(e => e.Fil).HasColumnName("fil");
+            modelBuilder.Entity<AdmDokument>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
+            modelBuilder.Entity<AdmDokument>().Property(e => e.SkapadAv).HasColumnName("skapadav");
+            modelBuilder.Entity<AdmDokument>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
+            modelBuilder.Entity<AdmDokument>().Property(e => e.AndradAv).HasColumnName("andradav");
+
         }
 
 
@@ -682,6 +693,7 @@ namespace InrappSos.DataAccess
         public DbSet<UndantagForvantadfil> UndantagForvantadfil { get; set; }
         public DbSet<SFTPkonto> SFTPkonto { get; set; }
         public DbSet<KontaktpersonSFTPkonto> KontaktpersonSFTPkonto { get; set; }
+        public DbSet<AdmDokument> AdmDokument { get; set; }
 
     }
 }

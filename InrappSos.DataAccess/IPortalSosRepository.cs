@@ -218,6 +218,17 @@ namespace InrappSos.DataAccess
 
         IEnumerable<AdmForvantadleverans> GetExpectedDeliveriesForDirectory(int dirId);
         IEnumerable<AdmForvantadleverans> GetExpectedDeliveriesForSubDirectory(int subdirId);
+
+        AdmDokument GetFile(int fileId);
+
+        IEnumerable<AdmDokument> GetAllFiles();
+
+        void SaveFile(AdmDokument file);
+
+        void UpdateFile(AdmDokument file);
+
+        void DeleteFile(AdmDokument file);
+
         IEnumerable<AdmFilkrav> GetFileRequirementsForDirectory(int dirId);
 
         AdmFilkrav GetFileRequirementById(int fileReqId);

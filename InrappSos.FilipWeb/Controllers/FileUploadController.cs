@@ -116,19 +116,19 @@ namespace InrappSos.FilipWeb.Controllers
             return View(_model);
         }
 
-        public ActionResult Show()
-        {
-            JsonFiles ListOfFiles = filesHelper.GetFileList();
+        //public ActionResult Show()
+        //{
+        //    JsonFiles ListOfFiles = filesHelper.GetFileList();
 
 
-            var model = new FilesViewModel()
-            {
-                Files = ListOfFiles.files,
-                //HistorikLista = historyFileList.ToList()
-            };
+        //    var model = new FilesViewModel()
+        //    {
+        //        Files = ListOfFiles.files,
+        //        //HistorikLista = historyFileList.ToList()
+        //    };
 
-            return View(model);
-        }
+        //    return View(model);
+        //}
 
         public ActionResult Edit()
         {
@@ -314,17 +314,18 @@ namespace InrappSos.FilipWeb.Controllers
 
 
 
-        public JsonResult GetFileList()
-        {
-            var list=filesHelper.GetFileList();
-            return Json(list,JsonRequestBehavior.AllowGet);
-        }
-        [HttpGet]
-        public JsonResult DeleteFile(string file)
-        {
-            filesHelper.DeleteFile(file);
-            return Json("OK", JsonRequestBehavior.AllowGet);
-        }
+        //public JsonResult GetFileList()
+        //{
+        //    var list=filesHelper.GetFileList();
+        //    return Json(list,JsonRequestBehavior.AllowGet);
+        //}
+
+        //[HttpGet]
+        //public JsonResult DeleteFile(string file)
+        //{
+        //    filesHelper.DeleteFile(file);
+        //    return Json("OK", JsonRequestBehavior.AllowGet);
+        //}
 
         public void AddRegisterListToViewBag(int kommunKod)
         {

@@ -29,6 +29,8 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             [AllowHtml]
             public string SelectedInfoText { get; set; }
             public int SelectedInfoId { get; set; }
+
+            public int SelectedDocumentId { get; set; }
             public int SelectedHolidayId { get; set; }
 
             public int SelectedSpecialDayId { get; set; }
@@ -36,6 +38,7 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public FAQViewModel SelectedFAQ { get; set; }
 
             public IEnumerable<AdmInformation> InfoPages { get; set; }
+            public IEnumerable<AdmDokument> Mallar { get; set; }
 
             public IEnumerable<AdmHelgdagViewModel> Holidays { get; set; }
 

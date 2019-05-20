@@ -65,6 +65,7 @@
     <Compile Include="AdmInsamlingsfrekvens.cs" />
     <Compile Include="AdmKonfiguration.cs" />
     <Compile Include="AdmKontaktpersonstyp.cs" />
+    <Compile Include="AdmDokument.cs" />
     <Compile Include="KontaktpersonSFTPkonto.cs" />
     <Compile Include="SFTPkonto.cs" />
     <Compile Include="AdmOrganisationstyp.cs" />

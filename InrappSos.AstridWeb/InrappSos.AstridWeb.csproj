@@ -235,6 +235,22 @@
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery-ui-1.11.4.js" />
     <Content Include="Scripts\jquery-ui-1.11.4.min.js" />
+    <Content Include="Scripts\jQuery.FileUpload\canvas-to-blob.min.js" />
+    <Content Include="Scripts\jQuery.FileUpload\cors\jquery.postmessage-transport.js" />
+    <Content Include="Scripts\jQuery.FileUpload\cors\jquery.xdr-transport.js" />
+    <Content Include="Scripts\jQuery.FileUpload\jquery.fileupload-angular.js" />
+    <Content Include="Scripts\jQuery.FileUpload\jquery.fileupload-audio.js" />
+    <Content Include="Scripts\jQuery.FileUpload\jquery.fileupload-image.js" />
+    <Content Include="Scripts\jQuery.FileUpload\jquery.fileupload-jquery-ui.js" />
+    <Content Include="Scripts\jQuery.FileUpload\jquery.fileupload-process.js" />
+    <Content Include="Scripts\jQuery.FileUpload\jquery.fileupload-ui.js" />
+    <Content Include="Scripts\jQuery.FileUpload\jquery.fileupload-validate.js" />
+    <Content Include="Scripts\jQuery.FileUpload\jquery.fileupload-video.js" />
+    <Content Include="Scripts\jQuery.FileUpload\jquery.fileupload.js" />
+    <Content Include="Scripts\jQuery.FileUpload\jquery.iframe-transport.js" />
+    <Content Include="Scripts\jQuery.FileUpload\load-image.all.min.js" />
+    <Content Include="Scripts\jQuery.FileUpload\tmpl.min.js" />
+    <Content Include="Scripts\jQuery.FileUpload\vendor\jquery.ui.widget.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
@@ -336,6 +352,9 @@
     <Content Include="Views\Organisation\EditSFTPAccounts.cshtml" />
     <Content Include="Views\Organisation\CreateOrganisationSFTPAccount.cshtml" />
     <Content Include="Views\Organisation\_ContactSearchResult.cshtml" />
+    <Content Include="Views\System\EditDocuments.cshtml" />
+    <Content Include="Views\System\AddDocument.cshtml" />
+    <Content Include="Views\System\_Files.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

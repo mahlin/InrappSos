@@ -941,6 +941,46 @@ namespace InrappSos.DataAccess
             return expectedDeliveriesList;
         }
 
+        public AdmDokument GetFile(int fileId)
+        {
+            var file = DbContext.AdmDokument.SingleOrDefault(x => x.Id == fileId);
+            return file;
+        }
+
+        public IEnumerable<AdmDokument> GetAllFiles()
+        {
+            var fileList = DbContext.AdmDokument.ToList();
+            return fileList;
+        }
+
+        public void SaveFile(AdmDokument file)
+        {
+            DbContext.AdmDokument.Add(file);
+            DbContext.SaveChanges();
+        }
+
+        public void UpdateFile(AdmDokument file)
+        {
+            var fileFromDb = DbContext.AdmDokument.SingleOrDefault(x => x.Id == file.Id);
+            if (fileFromDb != null)
+            {
+                fileFromDb.Fil = file.Fil;
+                fileFromDb.AndradAv = file.AndradAv;
+                fileFromDb.AndradDatum = file.AndradDatum;
+                DbContext.SaveChanges();
+            }
+        }
+
+        public void DeleteFile(AdmDokument file)
+        {
+            var fileToDelete = DbContext.AdmDokument.SingleOrDefault(x => x.Id == file.Id);
+            if (fileToDelete != null)
+            {
+                DbContext.AdmDokument.Remove(fileToDelete);
+                DbContext.SaveChanges();
+            }
+        }
+
         public IEnumerable<AdmForvantadfil> GetExpectedFile(int fileReq)
         {
             var expectedFiles = DbContext.AdmForvantadfil.Where(x => x.FilkravId == fileReq).ToList();

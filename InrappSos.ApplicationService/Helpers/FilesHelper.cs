@@ -26,6 +26,12 @@ namespace InrappSos.ApplicationService.Helpers
         //ex:"~/Files/something/";
         String serverMapPath = null;
 
+        public FilesHelper()
+        {
+            _portalSosRepository = new PortalSosRepository(db);
+            _portalSosService = new PortalSosService(_portalSosRepository);
+        }
+
         public FilesHelper(String DeleteURL, String DeleteType, String StorageRoot, String UrlBase, String tempPath, String serverMapPath)
         {
             this.DeleteURL = DeleteURL;
@@ -46,74 +52,76 @@ namespace InrappSos.ApplicationService.Helpers
 
         }
 
-        public void DeleteFiles(String pathToDelete)
-        {
+        //public void DeleteFiles(String pathToDelete)
+        //{
          
-            string path = HostingEnvironment.MapPath(pathToDelete);
+        //    string path = HostingEnvironment.MapPath(pathToDelete);
 
-            System.Diagnostics.Debug.WriteLine(path);
-            if (Directory.Exists(path))
-            {
-                DirectoryInfo di = new DirectoryInfo(path);
-                foreach (FileInfo fi in di.GetFiles())
-                {
-                    System.IO.File.Delete(fi.FullName);
-                    System.Diagnostics.Debug.WriteLine(fi.Name);
-                }
+        //    System.Diagnostics.Debug.WriteLine(path);
+        //    if (Directory.Exists(path))
+        //    {
+        //        DirectoryInfo di = new DirectoryInfo(path);
+        //        foreach (FileInfo fi in di.GetFiles())
+        //        {
+        //            System.IO.File.Delete(fi.FullName);
+        //            System.Diagnostics.Debug.WriteLine(fi.Name);
+        //        }
 
-                di.Delete(true);
-            }
-        }
+        //        di.Delete(true);
+        //    }
+        //}
 
-        public String DeleteFile(String file)
-        {
-            System.Diagnostics.Debug.WriteLine("DeleteFile");
-            //    var req = HttpContext.Current;
-            System.Diagnostics.Debug.WriteLine(file);
+        //public String DeleteFile(String file)
+        //{
+        //    System.Diagnostics.Debug.WriteLine("DeleteFile");
+        //    //    var req = HttpContext.Current;
+        //    System.Diagnostics.Debug.WriteLine(file);
  
-            String fullPath = Path.Combine(StorageRoot, file);
-            System.Diagnostics.Debug.WriteLine(fullPath);
-            System.Diagnostics.Debug.WriteLine(System.IO.File.Exists(fullPath));
-            String thumbPath = "/" + file + "80x80.jpg";
-            String partThumb1 = Path.Combine(StorageRoot, "thumbs");
-            String partThumb2 = Path.Combine(partThumb1, file + "80x80.jpg");
+        //    String fullPath = Path.Combine(StorageRoot, file);
+        //    System.Diagnostics.Debug.WriteLine(fullPath);
+        //    System.Diagnostics.Debug.WriteLine(System.IO.File.Exists(fullPath));
+        //    String thumbPath = "/" + file + "80x80.jpg";
+        //    String partThumb1 = Path.Combine(StorageRoot, "thumbs");
+        //    String partThumb2 = Path.Combine(partThumb1, file + "80x80.jpg");
 
-            System.Diagnostics.Debug.WriteLine(partThumb2);
-            System.Diagnostics.Debug.WriteLine(System.IO.File.Exists(partThumb2));
-            if (System.IO.File.Exists(fullPath))
-            {
-                //delete thumb 
-                if (System.IO.File.Exists(partThumb2))
-                {
-                    System.IO.File.Delete(partThumb2);
-                }
-                System.IO.File.Delete(fullPath);
-                String succesMessage = "Ok";
-                return succesMessage;
-            }
-            String failMessage = "Error Delete";
-            return failMessage;
-        }
-        public JsonFiles GetFileList()
-        {
+        //    System.Diagnostics.Debug.WriteLine(partThumb2);
+        //    System.Diagnostics.Debug.WriteLine(System.IO.File.Exists(partThumb2));
+        //    if (System.IO.File.Exists(fullPath))
+        //    {
+        //        //delete thumb 
+        //        if (System.IO.File.Exists(partThumb2))
+        //        {
+        //            System.IO.File.Delete(partThumb2);
+        //        }
+        //        System.IO.File.Delete(fullPath);
+        //        String succesMessage = "Ok";
+        //        return succesMessage;
+        //    }
+        //    String failMessage = "Error Delete";
+        //    return failMessage;
+        //}
 
-            var r = new List<ViewDataUploadFilesResult>();
+
+        //public JsonFiles GetFileList()
+        //{
+
+        //    var r = new List<ViewDataUploadFilesResult>();
        
-            String fullPath = Path.Combine(StorageRoot);
-            if (Directory.Exists(fullPath))
-            {
-                DirectoryInfo dir = new DirectoryInfo(fullPath);
-                foreach (FileInfo file in dir.GetFiles())
-                {
-                    int SizeInt = unchecked((int)file.Length);
-                    r.Add(UploadResult(file.Name,SizeInt,file.FullName));
-                }
+        //    String fullPath = Path.Combine(StorageRoot);
+        //    if (Directory.Exists(fullPath))
+        //    {
+        //        DirectoryInfo dir = new DirectoryInfo(fullPath);
+        //        foreach (FileInfo file in dir.GetFiles())
+        //        {
+        //            int SizeInt = unchecked((int)file.Length);
+        //            r.Add(UploadResult(file.Name,SizeInt,file.FullName));
+        //        }
 
-            }
-            JsonFiles files = new JsonFiles(r);
+        //    }
+        //    JsonFiles files = new JsonFiles(r);
 
-            return files;
-        }
+        //    return files;
+        //}
 
         public void UploadAndShowResults(HttpContextBase ContentBase, List<ViewDataUploadFilesResult> resultList, string userId, string userName, string orgKod, int selectedRegisterId, string selectedUnitId, string selectedPeriod, List<RegisterInfo> registerList)
         {
@@ -385,14 +393,14 @@ namespace InrappSos.ApplicationService.Helpers
             }
         }
 
-        public IEnumerable<FilloggDetaljDTO> HamtaFillogg(int leveransId)
-        {
-            var filloggar = _portalSosRepository.GetFilerForLeveransId(leveransId);
+        //public IEnumerable<FilloggDetaljDTO> HamtaFillogg(int leveransId)
+        //{
+        //    var filloggar = _portalSosRepository.GetFilerForLeveransId(leveransId);
 
-            return null;
+        //    return null;
 
-            //return filloggar.Select(FilloggDetaljDTO.)
-        }
+        //    //return filloggar.Select(FilloggDetaljDTO.)
+        //}
 
 
         private string GetHashAddOn(string orgKod, int levId)
@@ -422,21 +430,21 @@ namespace InrappSos.ApplicationService.Helpers
             return result;
         }
 
-        public ViewDataUploadFilesResult UploadResult(String FileName, int fileSize, String FileFullPath)
-        {
-            String getType = System.Web.MimeMapping.GetMimeMapping(FileFullPath);
-            var result = new ViewDataUploadFilesResult()
-            {
-                name = FileName,
-                size = fileSize,
-                type = getType,
-                url = UrlBase + FileName,
-                deleteUrl = DeleteURL + FileName,
-                thumbnailUrl = CheckThumb(getType, FileName),
-                deleteType = DeleteType
-            };
-            return result;
-        }
+        //public ViewDataUploadFilesResult UploadResult(String FileName, int fileSize, String FileFullPath)
+        //{
+        //    String getType = System.Web.MimeMapping.GetMimeMapping(FileFullPath);
+        //    var result = new ViewDataUploadFilesResult()
+        //    {
+        //        name = FileName,
+        //        size = fileSize,
+        //        type = getType,
+        //        url = UrlBase + FileName,
+        //        deleteUrl = DeleteURL + FileName,
+        //        thumbnailUrl = CheckThumb(getType, FileName),
+        //        deleteType = DeleteType
+        //    };
+        //    return result;
+        //}
 
         public String CheckThumb(String type,String FileName)
         {
@@ -470,24 +478,26 @@ namespace InrappSos.ApplicationService.Helpers
             }
            
         }
-        public List<String> FilesList()
-        {
 
-            List<String> Filess = new List<String>();
-            string path = HostingEnvironment.MapPath(serverMapPath);
-            System.Diagnostics.Debug.WriteLine(path);
-            if (Directory.Exists(path))
-            {
-                DirectoryInfo di = new DirectoryInfo(path);
-                foreach (FileInfo fi in di.GetFiles())
-                {
-                    Filess.Add(fi.Name);
-                    System.Diagnostics.Debug.WriteLine(fi.Name);
-                }
 
-            }
-            return Filess;
-        }
+        //public List<String> FilesList()
+        //{
+
+        //    List<String> Filess = new List<String>();
+        //    string path = HostingEnvironment.MapPath(serverMapPath);
+        //    System.Diagnostics.Debug.WriteLine(path);
+        //    if (Directory.Exists(path))
+        //    {
+        //        DirectoryInfo di = new DirectoryInfo(path);
+        //        foreach (FileInfo fi in di.GetFiles())
+        //        {
+        //            Filess.Add(fi.Name);
+        //            System.Diagnostics.Debug.WriteLine(fi.Name);
+        //        }
+
+        //    }
+        //    return Filess;
+        //}
 
         private void CreateAndUploadPARStatusFile(int levId, List<ViewDataUploadFilesResult> resultList )
         {
@@ -505,6 +515,45 @@ namespace InrappSos.ApplicationService.Helpers
                 }
             }
         }
+
+
+        //*************  Files in db  *******************//
+
+        public IEnumerable<AdmDokument> GetAllFilesFromDb()
+        {
+            var fileList = _portalSosRepository.GetAllFiles();
+            return fileList;
+        }
+
+        public AdmDokument GetFileFromDb(int fileId)
+        {
+            var file = _portalSosRepository.GetFile(fileId);
+            return file;
+        }
+
+        public void SaveFile(AdmDokument file, string userName)
+        {
+            //Sätt datum och användare
+            file.SkapadDatum = DateTime.Now;
+            file.SkapadAv = userName;
+            file.AndradDatum = DateTime.Now;
+            file.AndradAv = userName;
+            _portalSosRepository.SaveFile(file);
+        }
+
+        public void UpdateFile(AdmDokument file, string userName)
+        {
+            //Sätt datum och användare
+            file.AndradDatum = DateTime.Now;
+            file.AndradAv = userName;
+            _portalSosRepository.UpdateFile(file);
+        }
+
+        public void DeleteFile(AdmDokument file)
+        {
+            _portalSosRepository.DeleteFile(file);
+        }
+
     }
 
     public class ViewDataUploadFilesResult

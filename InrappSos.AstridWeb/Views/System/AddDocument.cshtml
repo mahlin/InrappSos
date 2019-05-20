@@ -1,0 +1,56 @@
+﻿@model InrappSos.AstridWeb.Models.ViewModels.SystemViewModels.InfoTextViewModel
+
+@{
+    ViewBag.Title = "Ladda upp dokument";
+}
+
+<script>
+    $(function () {
+        $("#txtTyp").focus();
+    });
+</script>
+
+@Html.Partial("_Files")
+
+@using (Html.BeginForm("AddDocument", "System", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal padding-top-55">
+        <h4>Ladda upp dokument</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        @*<div class="form-group">
+            @Html.LabelFor(model => model.Informationstyp, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Informationstyp, new { htmlAttributes = new { @class = "form-control", id = "txtTyp" } })
+                @Html.ValidationMessageFor(model => model.Informationstyp, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Text, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextAreaFor(model => model.Text, 10, 200, new { htmlAttributes = new { @class = "form-control", id = "informationText" } })
+                @Html.ValidationMessageFor(model => model.Text, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Spara" class="btn btn-default" />
+            </div>
+        </div>*@
+    </div>
+    <div>
+        @Html.ActionLink("Tillbaka", "GetDocuments", "System")
+
+    </div>
+}
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.CodeDom;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Entity;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
@@ -854,6 +856,46 @@ namespace InrappSos.DataAccess
         {
             var dirShortName = DbContext.AdmRegister.Where(x => x.Id == dirId).Select(x => x.Kortnamn).SingleOrDefault();
             return dirShortName;
+        }
+
+        public IEnumerable<LeveransstatusRapport> GetDeliveryStatusReport(int orgId, List<int> delregIdList, string period)
+        {
+            //create parameters to pass to the stored procedure  
+            //First input Parameter
+            var param1 = new SqlParameter
+            {
+                ParameterName = "@org",
+                SqlDbType = SqlDbType.Int,
+                Direction = ParameterDirection.Input,
+                Value = orgId
+            };
+
+            //Second input parameter
+            var param2 = new SqlParameter
+            {
+                ParameterName = "@per",
+                SqlDbType = SqlDbType.VarChar,
+                Direction = ParameterDirection.Input,
+                Value = "2019-04-01"
+            };
+
+            //third input parameter
+            var param3 = new SqlParameter
+            {
+                ParameterName = "@String",
+                SqlDbType = SqlDbType.VarChar,
+                Direction = ParameterDirection.Input,
+                Value = "12,13,14,31,35"
+            };
+
+            //compose the SQL
+            var SQLString = "EXEC [dbo].[leveransstatus_rapport] @org, @per, @String";
+
+            //Execute the stored procedure 
+            var rapport = DbContext.LeveransstatusRapport.SqlQuery(SQLString, param1, param2, param3).ToList();
+           // var tmp = DataContext.Employee.SqlQuery(SQLString, param1, param2, param3);
+
+            return rapport;
         }
 
         public IEnumerable<AdmForvantadfil> GetAllExpectedFiles()

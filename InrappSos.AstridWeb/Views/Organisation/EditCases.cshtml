@@ -68,7 +68,8 @@
             var tr = $(this).parents('tr:first');
             var id = tr.find("#Id").val();
             var arendetypId = tr.find('#ArendetypId').val();
-            var arendestatusId = tr.find('#ArendestatusId').val();
+            //var arendestatusId = tr.find('#ArendestatusId').val();
+            var arendestatusId = tr.find($('#ddlArendestatus').val());
             var arendeNamn = tr.find("#Arendenamn").val();
             var arendeNr = tr.find("#ArendeNr").val();
             var arendetyp = tr.find("#Arendetyp").val();
@@ -83,12 +84,12 @@
                 {
                     "Id": id,
                     "OrganisationsId": $('#SelectedOrganisationId').val(),
-                    "ArendetypId": arendetypId,
-                    "ArendestatusId": arendestatusId, 
+                    "ArendetypId": $('#SelectedArendetypId').val(),
+                    "ArendestatusId": $('#SelectedArendestatusId').val(), 
                     "Arendenamn": arendeNamn,
                     "Arendenr": arendeNr,
                     "Arendetyp": arendetyp,
-                    "Arendetatus": arendestatus,
+                    "Arendestatus": arendestatus,
                     "AnsvarigEpost": ansvarig,
                     "Rapportorer": rapportorer,
                     "StartDatum": startDatum,
@@ -186,6 +187,8 @@
         {
 
             @Html.HiddenFor(m => m.SelectedOrganisationId)
+            @Html.HiddenFor(m => m.SelectedArendetypId)
+            @Html.HiddenFor(m => m.SelectedArendestatusId)
 
             <div style="font-size: 1.2em; padding-left: 20px; padding-bottom: 20px;"><b>@Model.Organisation.Organisationsnamn</b></div>
 

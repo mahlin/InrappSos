@@ -651,7 +651,6 @@ namespace InrappSos.DataAccess
             modelBuilder.Entity<AdmDokument>().Property(e => e.SkapadAv).HasColumnName("skapadav");
             modelBuilder.Entity<AdmDokument>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
             modelBuilder.Entity<AdmDokument>().Property(e => e.AndradAv).HasColumnName("andradav");
-
         }
 
 
@@ -694,6 +693,7 @@ namespace InrappSos.DataAccess
         public DbSet<SFTPkonto> SFTPkonto { get; set; }
         public DbSet<KontaktpersonSFTPkonto> KontaktpersonSFTPkonto { get; set; }
         public DbSet<AdmDokument> AdmDokument { get; set; }
+        public DbSet<LeveransstatusRapport> LeveransstatusRapport { get; set; }
 
     }
 }

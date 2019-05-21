@@ -1655,6 +1655,10 @@ namespace InrappSos.ApplicationService
             var historikLista = new List<FilloggDetaljDTO>();
             var sorteradHistorikLista = new List<FilloggDetaljDTO>();
 
+            ////TODO - test. Ta bort
+            //var delregList = new List<int> {12, 13, 14, 31, 35};
+            //var tmp = _portalSosRepository.GetDeliveryStatusReport(orgId, delregList, periodForReg);
+
             foreach (var delregister in delregisterList)
             {
                 //Forvantadleveransid för delregister och period

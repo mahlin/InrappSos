@@ -45,7 +45,9 @@
     });
 
     $(document).on('change', '#ddlInsamlingsfrekvens', function () {
+        var x = $('#ddlInsamlingsfrekvens').val();
         $("#SelectedInsamlingsfrekvensId").val($('#ddlInsamlingsfrekvens').val());
+        var y = $("#SelectedInsamlingsfrekvensId").val();
     });
 
     //$(document).on('change','#ddlInsamlingsfrekvens',function() {

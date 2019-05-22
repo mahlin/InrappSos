@@ -22,12 +22,12 @@
         $("#searchText").focus();
     });
 
-    $(document).on('change','#ddlArendetyp',function() {
-        $("#SelectedArendetypId").val($('#ddlArendetyp').val());
+    $(document).on('change', '#ddlArendetyp', function () {
+        $("#SelectedArendetypId").val($(this).val());
     });
 
     $(document).on('change', '#ddlArendestatus', function () {
-        $("#SelectedArendestatusId").val($('#ddlArendestatus').val());
+        $("#SelectedArendestatusId").val($(this).val());
     });
 
 
@@ -67,9 +67,8 @@
         $('.save-user').on('click', function () {
             var tr = $(this).parents('tr:first');
             var id = tr.find("#Id").val();
-            var arendetypId = tr.find('#ArendetypId').val();
+            //var arendetypId = tr.find('#ArendetypId').val();
             //var arendestatusId = tr.find('#ArendestatusId').val();
-            var arendestatusId = tr.find($('#ddlArendestatus').val());
             var arendeNamn = tr.find("#Arendenamn").val();
             var arendeNr = tr.find("#ArendeNr").val();
             var arendetyp = tr.find("#Arendetyp").val();
@@ -84,6 +83,8 @@
                 {
                     "Id": id,
                     "OrganisationsId": $('#SelectedOrganisationId').val(),
+                    //"ArendetypId": arendetypId,
+                    //"ArendestatusId": arendestatusId,
                     "ArendetypId": $('#SelectedArendetypId').val(),
                     "ArendestatusId": $('#SelectedArendestatusId').val(), 
                     "Arendenamn": arendeNamn,

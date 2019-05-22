@@ -2155,6 +2155,7 @@ namespace InrappSos.AstridWeb.Controllers
                     });
             // Setting.  
             lstobj = new SelectList(list, "Value", "Text");
+            var y = lstobj.ToList();
             return lstobj;
         }
 
@@ -2170,6 +2171,7 @@ namespace InrappSos.AstridWeb.Controllers
                     });
             // Setting.  
             lstobj = new SelectList(list, "Value", "Text");
+            var y = lstobj.ToList();
             return lstobj;
         }
 

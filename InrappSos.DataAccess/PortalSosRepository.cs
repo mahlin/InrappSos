@@ -1748,11 +1748,19 @@ namespace InrappSos.DataAccess
             var arendeDb = DbContext.Arende.SingleOrDefault(x => x.Id == arende.Id);
             arendeDb.Arendenamn = arende.Arendenamn;
             arendeDb.Arendenr = arende.Arendenr;
-            arendeDb.ArendetypId = arende.ArendetypId;
-            arendeDb.ArendestatusId = arende.ArendestatusId;
             arendeDb.StartDatum = arende.StartDatum;
             arendeDb.SlutDatum = arende.SlutDatum;
             arendeDb.AnsvarigEpost = arende.AnsvarigEpost;
+
+            //If areandestatus and arendetyp changed, e.g. != 0, update theese as well
+            if (arende.ArendetypId != 0)
+            {
+                arendeDb.ArendetypId = arende.ArendetypId;
+            }
+            if (arende.ArendestatusId != 0)
+            {
+                arendeDb.ArendestatusId= arende.ArendestatusId;
+            }
             DbContext.SaveChanges();
         }
 

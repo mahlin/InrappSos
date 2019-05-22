@@ -877,7 +877,7 @@ namespace InrappSos.AstridWeb.Controllers
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                ErrorManager.WriteToErrorLog("OrganisationController", "UpdateOrganisationPrivateEmailAdress", e.ToString(), e.HResult,
+                ErrorManager.WriteToErrorLog("OrganisationController", "UpdateOrganisationCase", e.ToString(), e.HResult,
                     User.Identity.Name);
                 var errorModel = new CustomErrorPageModel
                 {

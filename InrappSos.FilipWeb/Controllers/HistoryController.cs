@@ -117,63 +117,57 @@ namespace InrappSos.FilipWeb.Controllers
                                 selectableYearsForUser.Add(year);
                         }
                     }
-                    //För varje (distinct) period i listan ovan spara i ett LeveransStatusDTO-objekt.
-                    //I detta objekt spara registerId och registernamn oxå
-                    //För varje period för registret hämta historik för alla delregister - spara som historiklista i LevereansStatusDTO-objekt
-                    var i = 0;
-                    foreach (var period in periodsForRegister)
-                    {
-                        i++;
-                        var leveransStatus = new LeveransStatusDTO();
-                        leveransStatus.Id = register.Id * 100 + i; //Behöver unikt id för togglingen i vyn
-                        leveransStatus.RegisterId = register.Id;
-                        leveransStatus.RegisterKortnamn = register.Kortnamn;
-                        leveransStatus.Period = period;
-                        //TODO - fulfix. Refactor this. Special för EKB-År
-                        if (register.Kortnamn == "EKB" && period.Length == 4)
-                        {
-                            leveransStatus.Rapporteringsstart = _portalService.HamtaRapporteringsstartForRegisterOchPeriodSpecial(register.Id, period);
-                            leveransStatus.Rapporteringssenast = _portalService.HamtaSenasteRapporteringForRegisterOchPeriodSpecial(register.Id, period);
-                        }
-                        else
-                        {
-                            leveransStatus.Rapporteringsstart = _portalService.HamtaRapporteringsstartForRegisterOchPeriod(register.Id, period);
-                            leveransStatus.Rapporteringssenast = _portalService.HamtaSenasteRapporteringForRegisterOchPeriod(register.Id, period);
-                        }
-                        leveransStatus.HistorikLista = _portalService.HamtaHistorikForOrganisationRegisterPeriod(userOrg.Id, delregList, period).ToList();
-                        if (leveransStatus.HistorikLista.Any())
-                        {
-                            leveransStatus.Status = _portalService.HamtaSammanlagdStatusForPeriod(leveransStatus.HistorikLista);
-                            //kan org rapportera per enhet för registrets delregister? => kontrollera att alla enheter rapporterat (#180)
-                            leveransStatus.Status = _portalService.KontrolleraOmKomplettaEnhetsleveranser(userOrg.Id, leveransStatus, delregList);
+                    //Förväntade leveranser för aktuella perioder
+                    var forvlevList = _portalService.HamtaForvLevForRegisterOchPerioder(delregList, periodsForRegister);
+                    var leveransStatusRapportList = _portalService.HamtaLeveransStatusRapporterForOrgDelregPerioder(userOrg.Id, delregList, periodsForRegister).ToList();
 
-                        }
-                        else
+                    if (leveransStatusRapportList != null)
+                    {
+                        //För varje (distinct) period i listan ovan spara i ett LeveransStatusDTO-objekt.
+                        //I detta objekt spara registerId och registernamn oxå
+                        //För varje period för registret hämta historik för alla delregister - spara som historiklista i LevereansStatusDTO-objekt
+                        var i = 0;
+                        foreach (var period in periodsForRegister)
                         {
-                            if (leveransStatus.Rapporteringsstart <= DateTime.Now)
+                            i++;
+                            var leveransStatus = new LeveransStatusDTO();
+                            leveransStatus.Id = register.Id * 100 + i; //Behöver unikt id för togglingen i vyn
+                            leveransStatus.RegisterId = register.Id;
+                            leveransStatus.RegisterKortnamn = register.Kortnamn;
+                            leveransStatus.Period = period;
+                            leveransStatus.Rapporteringsstart = forvlevList.FirstOrDefault(x => x.Period == period).Rapporteringsstart;
+                            leveransStatus.Rapporteringssenast = forvlevList.FirstOrDefault(x => x.Period == period).Rapporteringsenast;
+
+                            leveransStatus.HistorikLista = _portalService.HamtaHistorikForOrganisationRegisterPeriod(userOrg.Id, delregList, period, leveransStatusRapportList).ToList();
+                            if (leveransStatus.HistorikLista.Any())
                             {
-                                leveransStatus.Status = "error";
+                                leveransStatus.Status = _portalService.HamtaSammanlagdStatusForPeriod(leveransStatus.HistorikLista);
+                                //kan org rapportera per enhet för registrets delregister? => kontrollera att alla enheter rapporterat (#180)
+                                leveransStatus.Status = _portalService.KontrolleraOmKomplettaEnhetsleveranser(userOrg.Id, leveransStatus, delregList);
+
                             }
                             else
                             {
-                                leveransStatus.Status = "notStarted";
-                            }
-                            
-                        }
+                                if (leveransStatus.Rapporteringsstart <= DateTime.Now)
+                                {
+                                    leveransStatus.Status = "error";
+                                }
+                                else
+                                {
+                                    leveransStatus.Status = "notStarted";
+                                }
 
-                        //Lägg hela DTO-objektet i regLev.Leveranser
-                        regLev.Leveranser.Add(leveransStatus);
+                            }
+
+                            //Lägg hela DTO-objektet i regLev.Leveranser
+                            regLev.Leveranser.Add(leveransStatus);
+                        }
                     }
 
                     regLev.Leveranser = regLev.Leveranser.OrderBy(x => x.RegisterKortnamn).ThenBy(x => x.Period).ToList();
                     model.LeveransListaRegister.Add(regLev);
                     model.SelectableYears = selectableYearsForUser;
                 }
-
-                //// Ladda drop down lists. 
-                //var registerList = _portalAdminService.HamtaAllaRegisterForPortalen();
-                //this.ViewBag.RegisterList = CreateRegisterDropDownList(registerList);
-                ////model.SelectedFAQ.SelectedRegisterId = 0;
             }
             catch (Exception e)
             {

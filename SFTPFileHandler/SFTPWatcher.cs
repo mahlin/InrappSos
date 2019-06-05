@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
 using InrappSos.ApplicationService;
@@ -22,9 +24,6 @@ namespace SFTPFileHandler
         MailHelper _mailHelper;
         private static SmtpClient _smtpClient;
         private string _mailSender;
-        private static bool _mailLogEnabled =bool.Parse(ConfigurationManager.AppSettings["MailLogEnabled"]);
-        private static string _mailLogPath = ConfigurationManager.AppSettings["SFTPWatcherMailLogFile"];
-        private static readonly object _mailLogLock = new object();
 
 
         private string StorageRoot
@@ -42,30 +41,70 @@ namespace SFTPFileHandler
             _mailHelper = new MailHelper();
             _smtpClient = new SmtpClient(ConfigurationManager.AppSettings["MailServer"]);
             _mailSender = ConfigurationManager.AppSettings["MailSender"];
-            _mailLogPath = _mailLogPath.Replace(".txt", "_" + DateTime.Now.ToString("yyyyMMdd") + ".txt");
         }
 
         public void CheckFolders()
         {
-            string _fileareaPath = ConfigurationManager.AppSettings["FileAreaPath"];
+            string _fileareaPath;
 
-            //System.IO.DirectoryInfo dir = new System.IO.DirectoryInfo(@"\\\\DESKTOP-Q22BLMK\TestSFTP\some-file-that-exists.txt");
-            //int count = dir.GetFiles().Length;
-            //var _remoteName = @"\\DESKTOP-Q22BLMK\";
-            //FileInfo myFile = new FileInfo(@"\\DESKTOP-Q22BLMK\some-file-that-exists.txt");
-            //bool exists = myFile.Exists;
-            //FileInfo myFile1 = new FileInfo(@"\\DESKTOP-Q22BLMK\C\TestSFTP\some-file-that-exists.txt");
-            //bool exists1 = myFile1.Exists;
-            //FileInfo myFile2 = new FileInfo((@"\\DESKTOP-Q22BLMK\C\some-file-that-exists.txt");
-            //bool exists2 = myFile2.Exists;
-
-            var directoriesInFileArea = Directory.GetDirectories(_fileareaPath);
-
-            //Check if registered ftpaccount before handling files
-            foreach (var folder in directoriesInFileArea)
+            //Om utvecklingsmiljön
+            if (ConfigurationManager.AppSettings["Env"] == "Utv")
             {
-                CheckFiles(folder);
+                _fileareaPath = ConfigurationManager.AppSettings["UtvFileAreaPath"];
+                var directoriesInFileArea = Directory.GetDirectories(_fileareaPath);
+
+                foreach (var folder in directoriesInFileArea)
+                {
+                    CheckFiles(folder);
+                }
             }
+            else //KT,AT,Prod
+            {
+                 _fileareaPath = ConfigurationManager.AppSettings["NetworkPath"];
+                var credentials = new NetworkCredential(@ConfigurationManager.AppSettings["NetworkUser"], ConfigurationManager.AppSettings["NetworkPwd"]);
+                try
+                {
+                    using (new NetworkConnection(_fileareaPath, credentials))
+                    {
+                        var directoriesInFileArea = Directory.GetDirectories(_fileareaPath);
+                        foreach (var folder in directoriesInFileArea)
+                        {
+                            CheckFiles(folder);
+                        }
+
+                        //foreach (var dir in dirList)
+                        //{
+                        //    var lastSlashPos = dir.LastIndexOf("\\");
+                        //    var folderName = dir.Substring(lastSlashPos + 1);
+                        //    Console.WriteLine(folderName);
+                        //}
+                    }
+                }
+
+                catch (Win32Exception e)
+                {
+                    ErrorManager.WriteToErrorLog("SFTPWatcher", "NetworkConnection", e.ToString(),
+                        e.HResult);
+                    Console.WriteLine(e.Message);
+                    Console.ReadLine();
+                }
+                catch (Exception ex)
+                {
+                    ErrorManager.WriteToErrorLog("SFTPWatcher", "NetworkConnection", ex.ToString(),
+                        ex.HResult);
+                    Console.WriteLine(ex.Message);
+                    Console.ReadLine();
+                }
+            }
+            
+
+            //var directoriesInFileArea = Directory.GetDirectories(_fileareaPath);
+
+            ////Check if registered ftpaccount before handling files
+            //foreach (var folder in directoriesInFileArea)
+            //{
+            //    CheckFiles(folder);
+            //}
         }
 
         private void CheckFiles(string folder)
@@ -74,9 +113,9 @@ namespace SFTPFileHandler
             //folderName equals sftpAccountName
             var ftpAccount = _portalService.HamtaFtpKontoByName(folderName);
 
+            //Check if registered ftpaccount before handling files
             if (ftpAccount != null)
             {
-
                 DirectoryInfo dir = new DirectoryInfo(folder);
 
                 //Get info about registers relevant for current sftpaccount
@@ -345,7 +384,7 @@ namespace SFTPFileHandler
         private void IncorrectFilesHandler(SFTPkonto ftpAccount, List<FileInfo> incorrectFilesList, string folderName)
         {
             //Incorrect filename - move file and email user
-            Console.WriteLine("Sending email. Not correct filenamne.");
+            Console.WriteLine("Sending email. Not correct filename.");
             var mailRecipients = new List<string>();
             var userEmails = _portalService.HamtaEpostadresserForSFTPKonto(ftpAccount.Id);
             //Om inga epostadresser finns kopplade till kontot, använd organisationens epostadress

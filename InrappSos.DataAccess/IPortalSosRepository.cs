@@ -252,7 +252,7 @@ namespace InrappSos.DataAccess
 
         string GetDirectoryShortName(int dirId);
 
-        IEnumerable<LeveransstatusRapport> GetDeliveryStatusReport(int orgId, List<int> delregIdList, string period);
+        IEnumerable<Leverans> GetDeliveryStatusReport(int orgId, List<int> delregIdList, List<int> forvlevIdList);
 
         string GetSubDirectoryShortNameForExpectedFile(int filKravId);
 
@@ -291,6 +291,8 @@ namespace InrappSos.DataAccess
         int GetExpextedDeliveryIdForSubDirAndPeriod(int subDirId, string period);
 
         AdmForvantadleverans GetExpectedDeliveryBySubDirAndFileReqIdAndPeriod(int subDirId, int fileReqId, string period);
+
+        IEnumerable<AdmForvantadleverans> GetExpectedDeliveriesForSubdirsAndPeriods(List<int> subdirIds, List<string> periods);
 
         IEnumerable<AdmForvantadfil> GetExpectedFile(int fileReq);
 

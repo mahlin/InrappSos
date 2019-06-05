@@ -274,16 +274,14 @@ namespace InrappSos.ApplicationService.Interface
 
         DateTime HamtaRapporteringsstartForRegisterOchPeriod(int regId, string period);
 
-        AdmForvantadleverans HamtaForvLevForRegisterOchPeriod(AdmRegister reg, string period);
-
-        AdmForvantadleverans HamtaForvLevForRegisterOchPeriodSpecial(AdmRegister reg, string period);
+        IEnumerable<AdmForvantadleverans> HamtaForvLevForRegisterOchPerioder(List<AdmDelregister> delregList, List<string> perioder);
 
         DateTime HamtaRapporteringsstartForRegisterOchPeriodSpecial(int regId, string period);
         DateTime HamtaSenasteRapporteringForRegisterOchPeriodSpecial(int regId, string period);
 
         DateTime HamtaSenasteRapporteringForRegisterOchPeriod(int regId, string period);
 
-        IEnumerable<FilloggDetaljDTO> HamtaHistorikForOrganisationRegisterPeriod(int orgId, List<AdmDelregister> delregisterList, string periodForReg);
+        IEnumerable<FilloggDetaljDTO> HamtaHistorikForOrganisationRegisterPeriod(int orgId, List<AdmDelregister> delregisterList, string periodForReg, List<Leverans> levstatusRapportList);
 
         string HamtaSammanlagdStatusForPeriod(IEnumerable<FilloggDetaljDTO> historikLista);
 
@@ -294,7 +292,7 @@ namespace InrappSos.ApplicationService.Interface
         List<RegisterInfo> HamtaValdaDelregisterForAnvandare(string userId, int orgId);
 
         AdmDelregister HamtaValtDelRegisterMedFilnamnsstart(string filnamnsStart);
-
+  
         List<RegisterInfo> HamtaRelevantaDelregisterForSFTPKonto(SFTPkonto sftpKonto);
 
         IEnumerable<RegisterInfo> HamtaRegistersMedAnvandaresVal(string userId, int orgId);
@@ -306,6 +304,8 @@ namespace InrappSos.ApplicationService.Interface
         ArendeStatus HamtaArendestatus(int arendestatusId);
 
         string HamtaArendesRapportorer(int orgId, int arendeId);
+
+        IEnumerable<Leverans> HamtaLeveransStatusRapporterForOrgDelregPerioder( int orgId, List<AdmDelregister> delregisterList, List<string> periodsForRegister);
 
         void InaktiveraKontaktperson(string userId);
 

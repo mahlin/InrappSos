@@ -630,57 +630,50 @@ namespace InrappSos.AstridWeb.Controllers
                                 selectableYearsForUser.Add(year);
                         }
                     }
-                    //För varje (distinct) period i listan ovan spara i ett LeveransStatusDTO-objekt.
-                    //I detta objekt spara registerId och registernamn oxå
-                    //För varje period för registret hämta historik för alla delregister - spara som historiklista i LeveransStatusDTO-objekt
-                    var i = 0;
-                    foreach (var period in periodsForRegister)
+
+                    //Förväntade leveranser för aktuella perioder
+                    var forvlevList = _portalSosService.HamtaForvLevForRegisterOchPerioder(delregList, periodsForRegister);
+                    var leveransStatusRapportList = _portalSosService.HamtaLeveransStatusRapporterForOrgDelregPerioder(org.Id,delregList, periodsForRegister).ToList();
+
+                    if (leveransStatusRapportList != null)
                     {
-                        var year = period.Substring(0, 4);
-                        var month = period.Substring(4, 2);
-                        var periodDate = new DateTime(Convert.ToInt32(year), Convert.ToInt32(month), 1);
-                        i++;
-                        var leveransStatus = new LeveransStatusDTO();
-                        leveransStatus.Id = register.Id * 100 + i; //Behöver unikt id för togglingen i vyn
-                        leveransStatus.RegisterId = register.Id;
-                        leveransStatus.RegisterKortnamn = register.Kortnamn;
-                        leveransStatus.Period = period;
-                        //TODO - fulfix. Refactor this. Special för EKB-År
-                        var forvLev = new AdmForvantadleverans();
-                        if (register.Kortnamn == "EKB" && period.Length == 4)
+                        //För varje (distinct) period i listan ovan spara i ett LeveransStatusDTO-objekt.
+                        //I detta objekt spara registerId och registernamn oxå
+                        //För varje period för registret hämta historik för alla delregister - spara som historiklista i LeveransStatusDTO-objekt
+                        var i = 0;
+                        foreach (var period in periodsForRegister)
                         {
-                            forvLev = _portalSosService.HamtaForvLevForRegisterOchPeriodSpecial(register, period);
-                        }
-                        else
-                        {
-                            forvLev = _portalSosService.HamtaForvLevForRegisterOchPeriod(register, period);
-                        }
-                        leveransStatus.Rapporteringsstart = forvLev.Rapporteringsstart;
-                        leveransStatus.Rapporteringssenast = forvLev.Rapporteringsenast;
+                            i++;
+                            var leveransStatus = new LeveransStatusDTO();
+                            leveransStatus.Id = register.Id * 100 + i; //Behöver unikt id för togglingen i vyn
+                            leveransStatus.RegisterId = register.Id;
+                            leveransStatus.RegisterKortnamn = register.Kortnamn;
+                            leveransStatus.Period = period;
+                            leveransStatus.Rapporteringsstart = forvlevList.FirstOrDefault(x => x.Period == period).Rapporteringsstart;
+                            leveransStatus.Rapporteringssenast = forvlevList.FirstOrDefault(x => x.Period == period).Rapporteringsenast;
 
-                        leveransStatus.HistorikLista = _portalSosService.HamtaHistorikForOrganisationRegisterPeriod(org.Id, delregList, period).ToList();
-                        if (leveransStatus.HistorikLista.Any())
-                        {
-                            leveransStatus.Status = _portalSosService.HamtaSammanlagdStatusForPeriod(leveransStatus.HistorikLista);
-
-                            //kan org rapportera per enhet för registrets delregister? => kontrollera att alla enheter rapporterat (#180)
-                            leveransStatus.Status = _portalSosService.KontrolleraOmKomplettaEnhetsleveranser(org.Id, leveransStatus, delregList);
-                        }
-                        else
-                        {
-                            if (leveransStatus.Rapporteringsstart <= DateTime.Now)
+                            leveransStatus.HistorikLista = _portalSosService.HamtaHistorikForOrganisationRegisterPeriod(org.Id, delregList, period, leveransStatusRapportList.ToList()).ToList();
+                            if (leveransStatus.HistorikLista.Any())
                             {
-                                leveransStatus.Status = "error";
+                                leveransStatus.Status = _portalSosService.HamtaSammanlagdStatusForPeriod(leveransStatus.HistorikLista);
+
+                                //kan org rapportera per enhet för registrets delregister? => kontrollera att alla enheter rapporterat (#180)
+                                leveransStatus.Status = _portalSosService.KontrolleraOmKomplettaEnhetsleveranser(org.Id, leveransStatus, delregList);
                             }
                             else
                             {
-                                leveransStatus.Status = "notStarted";
+                                if (leveransStatus.Rapporteringsstart <= DateTime.Now)
+                                {
+                                    leveransStatus.Status = "error";
+                                }
+                                else
+                                {
+                                    leveransStatus.Status = "notStarted";
+                                }
                             }
+                            //Lägg hela DTO-objektet i regLev.Leveranser
+                            regLev.Leveranser.Add(leveransStatus);
                         }
-
-
-                        //Lägg hela DTO-objektet i regLev.Leveranser
-                        regLev.Leveranser.Add(leveransStatus);
                     }
 
                     regLev.Leveranser = regLev.Leveranser.OrderBy(x => x.RegisterKortnamn).ThenBy(x => x.Period).ToList();

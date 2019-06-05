@@ -3,6 +3,7 @@ using System.CodeDom;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Data.Entity.Core.Objects;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -502,7 +503,11 @@ namespace InrappSos.DataAccess
         {
             var orgUnitRepOligations = DbContext.AdmEnhetsUppgiftsskyldighet.Where(x => x.UppgiftsskyldighetId == repOblId).ToList();
             var year = period.Substring(0, 4);
-            var month = period.Substring(4, 2);
+            var month = "01";
+            if (period.Length == 6)
+            {
+                month = period.Substring(4, 2);
+            }
             var periodDate = new DateTime(Convert.ToInt32(year), Convert.ToInt32(month), 1);
             var activeUnitRepObligations = new List<AdmEnhetsUppgiftsskyldighet>();
             //var from = 
@@ -858,44 +863,238 @@ namespace InrappSos.DataAccess
             return dirShortName;
         }
 
-        public IEnumerable<LeveransstatusRapport> GetDeliveryStatusReport(int orgId, List<int> delregIdList, string period)
+        //public IEnumerable<LeveransstatusRapport> GetDeliveryStatusReport(int orgId, List<int> delregIdList, string period)
+        //{
+        //    //create parameters to pass to the stored procedure  
+        //    //First input Parameter
+        //    var param1 = new SqlParameter
+        //    {
+        //        ParameterName = "@org",
+        //        SqlDbType = SqlDbType.Int,
+        //        Direction = ParameterDirection.Input,
+        //        Value = orgId
+        //    };
+
+        //    //Second input parameter
+        //    var param2 = new SqlParameter
+        //    {
+        //        ParameterName = "@per",
+        //        SqlDbType = SqlDbType.VarChar,
+        //        Direction = ParameterDirection.Input,
+        //        Value = "2019-04-01"
+        //    };
+
+        //    //third input parameter
+        //    var param3 = new SqlParameter
+        //    {
+        //        ParameterName = "@String",
+        //        SqlDbType = SqlDbType.VarChar,
+        //        Direction = ParameterDirection.Input,
+        //        Value = "12,13,14,31,35"
+        //    };
+
+        //    //compose the SQL
+        //    var SQLString = "EXEC [dbo].[leveransstatus_rapport] @org, @per, @String";
+
+        //    //Execute the stored procedure 
+        //    var rapport = DbContext.LeveransstatusRapport.SqlQuery(SQLString, param1, param2, param3).ToList();
+        //    return rapport;
+        //}
+
+        //public IEnumerable<LeveransstatusRapport> GetDeliveryStatusReport2(int orgId, List<int> delregIdList, List<int> forvlevIdList)
+        //{
+        //    //TODO - ta bort
+        //    var rapport = new List<LeveransstatusRapport>();
+        //    //create parameters to pass to the stored procedure  
+        //    var delregIdStr = String.Empty;
+        //    var forvlevIdStr = String.Empty;
+        //    foreach (var id in delregIdList)
+        //    {
+        //        if (!String.IsNullOrEmpty(delregIdStr))
+        //        {
+        //            delregIdStr = delregIdStr + "," + id.ToString();
+        //        }
+        //        else
+        //        {
+        //            delregIdStr = id.ToString();
+        //        }
+        //    }
+        //    foreach (var id in forvlevIdList)
+        //    {
+        //        if (!String.IsNullOrEmpty(forvlevIdStr))
+        //        {
+        //            forvlevIdStr = forvlevIdStr + "," + id.ToString();
+        //        }
+        //        else
+        //        {
+        //            forvlevIdStr = id.ToString();
+        //        }
+        //    }
+
+        //    //var forvlevIdStr = forvlevIdList.ConvertAll(Convert.ToString);
+        //    //First input Parameter
+        //    var param1 = new SqlParameter
+        //    {
+        //        ParameterName = "@org",
+        //        SqlDbType = SqlDbType.Int,
+        //        Direction = ParameterDirection.Input,
+        //        Value = orgId
+        //    };
+
+        //    //Second input parameter
+        //    var param2 = new SqlParameter
+        //    {
+        //        ParameterName = "@String",
+        //        SqlDbType = SqlDbType.VarChar,
+        //        Direction = ParameterDirection.Input,
+        //        Value = "12"
+        //    };
+
+        //    //Third input parameter
+        //    var param3 = new SqlParameter
+        //    {
+        //        ParameterName = "@String2",
+        //        SqlDbType = SqlDbType.VarChar,
+        //        Direction = ParameterDirection.Input,
+        //        Value = "173"
+        //    };
+
+        //    ////compose the SQL
+        //    //var SQLString = "EXEC [dbo].[leveransRapport] @org, @String, @String2";
+
+        //    ////Execute the stored procedure 
+        //    //var rapport = DbContext.LeveransstatusRapport.SqlQuery(SQLString, param1, param2, param3).ToList();
+
+        //    //TODO - test
+        //    //var SQLStringA = "EXEC [dbo].[leveransRapportA] @org, @String, @String2";
+        //    //var rappA= DbContext.TestA.SqlQuery(SQLStringA, param1, param2, param3).ToList();
+
+        //    //var SQLStringA = "EXEC [dbo].[leveransRapportB] @org, @String, @String2";
+        //    //var rappA = DbContext.TestB.SqlQuery(SQLStringA, param1, param2, param3).ToList();
+
+        //    var dynamicSearchQuery =
+        //        "SELECT Leverans.leveransid, Organisationsenhet.enhetskod, admRegister.registerid, admRegister.kortnamn, Levereradfil.filnamn, Levereradfil.filstatus, Leverans.organisationsid, Leverans.organisationsenhetsid," +
+        //        "Leverans.kontaktpersonid, Leverans.delregisterid, admDelregister.kortnamn as DelregKortnamn," +
+        //        "Leverans.forvantadleveransid, Leverans.leveranstidpunkt, Leverans.leveransstatus, admForvantadleverans.period, admForvantadleverans.rapporteringsstart, admForvantadleverans.rapporteringsenast " +
+        //        "FROM(" +
+        //        "SELECT Max(Produktionsleveranser.leveransid) AS senasteleverans " +
+        //        "FROM(" +
+        //        "SELECT Leverans.leveransid, Leverans.organisationsid, Leverans.organisationsenhetsid, Leverans.delregisterid, Leverans.forvantadleveransid " +
+        //        "FROM Leverans WHERE(Leverans.organisationsid = 312 " +
+        //        "and Leverans.delregisterid IN(12) " +
+        //        "and Leverans.forvantadleveransid IN(173))) as produktionsleveranser " +
+        //        "GROUP BY Produktionsleveranser.organisationsid, Produktionsleveranser.organisationsenhetsid, Produktionsleveranser.delregisterid, Produktionsleveranser.forvantadleveransid) as t " +
+        //        "INNER JOIN Leverans ON senasteleverans = Leverans.leveransid " +
+        //        "LEFT JOIN Organisationsenhet ON Organisationsenhet.organisationsenhetsid = Leverans.organisationsenhetsid " +
+        //        "JOIN admDelregister ON admDelregister.delregisterid = Leverans.delregisterid " +
+        //        "JOIN admRegister ON admRegister.registerid = admDelregister.registerid " +
+        //        "JOIN Levereradfil ON Levereradfil.leveransid = Leverans.leveransid " +
+        //        "JOIN admForvantadleverans ON admForvantadleverans.forvantadleveransid = Leverans.forvantadleveransid";
+
+        //    var dynamicSearchQuery2 =
+        //        "SELECT Max(Produktionsleveranser.leveransid) AS SenasteLeverans " +
+        //        "FROM(" +
+        //        "SELECT Leverans.leveransid, Leverans.organisationsid, Leverans.organisationsenhetsid, Leverans.delregisterid, Leverans.forvantadleveransid " +
+        //        "FROM Leverans WHERE(Leverans.organisationsid = 312 " +
+        //        "and Leverans.delregisterid IN(12) " +
+        //        "and Leverans.forvantadleveransid IN(173))) as produktionsleveranser " +
+        //        "GROUP BY Produktionsleveranser.organisationsid, Produktionsleveranser.organisationsenhetsid, Produktionsleveranser.delregisterid, Produktionsleveranser.forvantadleveransid";
+
+        //    var dynamicSearchQuery4 =
+        //        "SELECT Leverans.leveransid, Leverans.organisationsid, Leverans.organisationsenhetsid," +
+        //        "Leverans.kontaktpersonid, Leverans.delregisterid, " +
+        //        "Leverans.forvantadleveransid, Leverans.leveranstidpunkt, Leverans.leveransstatus " +
+        //        "FROM(" +
+        //        "SELECT Max(Produktionsleveranser.leveransid) AS SenasteLeverans " +
+        //        "FROM(" +
+        //        "SELECT Leverans.leveransid, Leverans.organisationsid, Leverans.organisationsenhetsid, Leverans.delregisterid, Leverans.forvantadleveransid " +
+        //        "FROM Leverans WHERE(Leverans.organisationsid = 312 " +
+        //        "and Leverans.delregisterid IN(12) " +
+        //        "and Leverans.forvantadleveransid IN(173))) as produktionsleveranser " +
+        //        "GROUP BY Produktionsleveranser.organisationsid, Produktionsleveranser.organisationsenhetsid, Produktionsleveranser.delregisterid, Produktionsleveranser.forvantadleveransid) as t " +
+        //        "INNER JOIN Leverans ON Leverans.leveransid = t.senasteleverans";
+
+        //    var dynamicSearchQuery3 =
+        //        "SELECT Leverans.leveransid, Organisationsenhet.enhetskod, admRegister.registerid, admRegister.kortnamn, Levereradfil.filnamn, Levereradfil.filstatus, Leverans.organisationsid, Leverans.organisationsenhetsid," +
+        //        "Leverans.kontaktpersonid, Leverans.delregisterid, admDelregister.kortnamn as DelregKortnamn," +
+        //        "Leverans.forvantadleveransid, Leverans.leveranstidpunkt, Leverans.leveransstatus, admForvantadleverans.period, admForvantadleverans.rapporteringsstart, admForvantadleverans.rapporteringsenast " +
+        //        "FROM Leverans " +
+        //        "LEFT JOIN Organisationsenhet ON Organisationsenhet.organisationsenhetsid = Leverans.organisationsenhetsid " +
+        //        "JOIN admDelregister ON admDelregister.delregisterid = Leverans.delregisterid " +
+        //        "JOIN admRegister ON admRegister.registerid = admDelregister.registerid " +
+        //        "JOIN Levereradfil ON Levereradfil.leveransid = Leverans.leveransid " +
+        //        "JOIN admForvantadleverans ON admForvantadleverans.forvantadleveransid = Leverans.forvantadleveransid " +
+        //        "WHERE Leverans.leveransid IN (38742,38741)";
+
+        //    var idList = new List<int> {38742, 38741};
+
+        //    var test2 = DbContext.Leverans.Where(x => idList.Contains(x.Id))
+        //        .Include(x => x.AdmForvantadleverans)
+        //        .Include(x => x.LevereradeFiler)
+        //        .Include(x => x.Organisationsenhet)
+        //        .ToList();
+
+
+        //    var rappB = DbContext.TestD.SqlQuery(dynamicSearchQuery4).ToList();
+
+        //    //var SQLStringA = "EXEC [dbo].[leveransRapportE] @org, @String, @String2";
+        //    //var rappA = DbContext.TestE.SqlQuery(SQLStringA, param1, param2, param3).ToList();
+
+
+
+
+        //    return rapport;
+        //}
+
+        public IEnumerable<Leverans> GetDeliveryStatusReport(int orgId, List<int> delregIdList, List<int> forvlevIdList)
         {
-            //create parameters to pass to the stored procedure  
-            //First input Parameter
-            var param1 = new SqlParameter
+
+            var delregIdStr = String.Empty;
+            var forvlevIdStr = String.Empty;
+            foreach (var id in delregIdList)
             {
-                ParameterName = "@org",
-                SqlDbType = SqlDbType.Int,
-                Direction = ParameterDirection.Input,
-                Value = orgId
-            };
-
-            //Second input parameter
-            var param2 = new SqlParameter
+                if (!String.IsNullOrEmpty(delregIdStr))
+                {
+                    delregIdStr = delregIdStr + "," + id.ToString();
+                }
+                else
+                {
+                    delregIdStr = id.ToString();
+                }
+            }
+            foreach (var id in forvlevIdList)
             {
-                ParameterName = "@per",
-                SqlDbType = SqlDbType.VarChar,
-                Direction = ParameterDirection.Input,
-                Value = "2019-04-01"
-            };
+                if (!String.IsNullOrEmpty(forvlevIdStr))
+                {
+                    forvlevIdStr = forvlevIdStr + "," + id.ToString();
+                }
+                else
+                {
+                    forvlevIdStr = id.ToString();
+                }
+            }
 
-            //third input parameter
-            var param3 = new SqlParameter
-            {
-                ParameterName = "@String",
-                SqlDbType = SqlDbType.VarChar,
-                Direction = ParameterDirection.Input,
-                Value = "12,13,14,31,35"
-            };
 
-            //compose the SQL
-            var SQLString = "EXEC [dbo].[leveransstatus_rapport] @org, @per, @String";
+            var sqlLevIdn =
+                "SELECT Max(Produktionsleveranser.leveransid) AS Id " +
+                "FROM(" +
+                "SELECT Leverans.leveransid, Leverans.organisationsid, Leverans.organisationsenhetsid, Leverans.delregisterid, Leverans.forvantadleveransid " +
+                "FROM Leverans WHERE(Leverans.organisationsid = "+ orgId + " " +
+                "and Leverans.delregisterid IN(" + delregIdStr + ") " +
+                "and Leverans.forvantadleveransid IN(" + forvlevIdStr + "))) as produktionsleveranser " +
+                "GROUP BY Produktionsleveranser.organisationsid, Produktionsleveranser.organisationsenhetsid, Produktionsleveranser.delregisterid, Produktionsleveranser.forvantadleveransid";
 
-            //Execute the stored procedure 
-            var rapport = DbContext.LeveransstatusRapport.SqlQuery(SQLString, param1, param2, param3).ToList();
-           // var tmp = DataContext.Employee.SqlQuery(SQLString, param1, param2, param3);
+            var levIdList = DbContext.LevId.SqlQuery(sqlLevIdn).ToList();
 
-            return rapport;
+            var idList= levIdList.Select(x => x.Id).ToList();
+
+            var leveranser = DbContext.Leverans.Where(x => idList.Contains(x.Id))
+                .Include(x => x.AdmForvantadleverans)
+                .Include(x => x.LevereradeFiler)
+                .Include(x => x.Organisationsenhet)
+                .ToList();
+
+            return leveranser;
         }
 
         public IEnumerable<AdmForvantadfil> GetAllExpectedFiles()
@@ -1021,6 +1220,13 @@ namespace InrappSos.DataAccess
                 DbContext.AdmDokument.Remove(fileToDelete);
                 DbContext.SaveChanges();
             }
+        }
+
+        public IEnumerable<AdmForvantadleverans> GetExpectedDeliveriesForSubdirsAndPeriods(List<int> subdirIds, List<string> periods)
+        {
+            var forvlevList = DbContext.AdmForvantadleverans
+                .Where(x => subdirIds.Contains(x.DelregisterId) && periods.Contains(x.Period)).Distinct().ToList();
+            return forvlevList;
         }
 
         public IEnumerable<AdmForvantadfil> GetExpectedFile(int fileReq)

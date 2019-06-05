@@ -1614,21 +1614,16 @@ namespace InrappSos.ApplicationService
             var rappStart = _portalSosRepository.GetReportstartForRegisterAndPeriod(regId, period);
             return rappStart;
         }
-
-        public AdmForvantadleverans HamtaForvLevForRegisterOchPeriod(AdmRegister reg, string period)
+        
+        public IEnumerable<AdmForvantadleverans> HamtaForvLevForRegisterOchPerioder(List<AdmDelregister> delregList, List<string> perioder)
         {
-            var firstSubDirForReg = reg.AdmDelregister.FirstOrDefault(x => x.RegisterId == reg.Id);
-            var forvlev = firstSubDirForReg.AdmForvantadleverans.FirstOrDefault(x => x.DelregisterId == firstSubDirForReg.Id && x.Period == period);
-
-            return forvlev;
-        }
-
-        //TODO - special för EKB-År. Lös på annat sätt.
-        public AdmForvantadleverans HamtaForvLevForRegisterOchPeriodSpecial(AdmRegister reg, string period)
-        {
-            var delReg = reg.AdmDelregister.FirstOrDefault(x => x.RegisterId == reg.Id && x.Kortnamn == "EKB-År");
-            var forvLev = delReg.AdmForvantadleverans.FirstOrDefault(x => x.DelregisterId == delReg.Id && x.Period == period);
-            return forvLev;
+            var allForvlevsForReg = new List<AdmForvantadleverans>();
+            foreach (var delreg in delregList)
+            {
+                var forvlevs = delreg.AdmForvantadleverans.Where(x => perioder.Contains(x.Period)).ToList();
+                allForvlevsForReg.AddRange(forvlevs);
+            }
+            return allForvlevsForReg;
         }
 
         public DateTime HamtaSenasteRapporteringForRegisterOchPeriod(int regId, string period)
@@ -1650,14 +1645,71 @@ namespace InrappSos.ApplicationService
             return rappSenast;
         }
 
-        public IEnumerable<FilloggDetaljDTO> HamtaHistorikForOrganisationRegisterPeriod(int orgId, List<AdmDelregister> delregisterList, string periodForReg)
+        //public IEnumerable<FilloggDetaljDTO> HamtaHistorikForOrganisationRegisterPeriodOLD(int orgId, List<AdmDelregister> delregisterList, string periodForReg)
+        //{
+        //    var historikLista = new List<FilloggDetaljDTO>();
+        //    var sorteradHistorikLista = new List<FilloggDetaljDTO>();
+
+        //    ////Använd procedur för att hämta datat på en gång istället för inne i loopen nedan. För att förbättra prestanda
+        //    ////TODO - test. Ta bort
+        //    //var delregIdList = new List<int>();
+        //    //foreach (var delreg in delregisterList)
+        //    //{
+        //    //    delregIdList.Add(delreg.Id);
+        //    //}
+        //    //var tmp = _portalSosRepository.GetDeliveryStatusReport(orgId, delregIdList, periodForReg);
+
+        //    foreach (var delregister in delregisterList)
+        //    {
+        //        //Forvantadleveransid för delregister och period
+        //        var forvLevId = delregister.AdmForvantadleverans.Where(x => x.Period == periodForReg).Select(x => x.Id).SingleOrDefault();
+
+        //        var senasteLeverans = new Leverans();
+        //        //kan org rapportera per enhet för aktuellt delregister och period? => hämta senaste leverans per enhet
+        //        var uppgiftsskyldighet = delregister.AdmUppgiftsskyldighet.SingleOrDefault(x => x.OrganisationId == orgId);
+        //        if (uppgiftsskyldighet != null)
+        //        {
+        //            if (uppgiftsskyldighet.RapporterarPerEnhet)
+        //            {
+        //                var orgEnhetsList = _portalSosRepository.GetOrgUnitsForOrg(orgId);
+        //                foreach (var orgenhet in orgEnhetsList)
+        //                {
+        //                    //
+        //                    senasteLeverans =
+        //                        _portalSosRepository.GetLatestDeliveryForOrganisationSubDirectoryPeriodAndOrgUnit(orgId, delregister.Id, forvLevId, orgenhet.Id);
+        //                    if (senasteLeverans != null)
+        //                    {
+        //                        AddHistorikListItem(senasteLeverans, historikLista);
+        //                    }
+        //                }
+        //            }
+        //            else
+        //            {
+        //                senasteLeverans =
+        //                    _portalSosRepository.GetLatestDeliveryForOrganisationSubDirectoryAndPeriod(orgId, delregister.Id,
+        //                        forvLevId);
+        //                if (senasteLeverans != null)
+        //                {
+        //                    AddHistorikListItem(senasteLeverans, historikLista);
+        //                }
+
+        //            }
+        //        }
+                
+        //    }
+        //    if (historikLista.Count > 0)
+        //    {
+        //        sorteradHistorikLista = historikLista.OrderBy(x => x.Enhetskod).ThenBy(x => x.RegisterKortnamn).ThenByDescending(x => x.Id).ToList();
+        //    }
+
+        //    return sorteradHistorikLista;
+        //}
+
+
+        public IEnumerable<FilloggDetaljDTO> HamtaHistorikForOrganisationRegisterPeriod(int orgId, List<AdmDelregister> delregisterList, string periodForReg, List<Leverans> levstatusRapportList)
         {
             var historikLista = new List<FilloggDetaljDTO>();
             var sorteradHistorikLista = new List<FilloggDetaljDTO>();
-
-            ////TODO - test. Ta bort
-            //var delregList = new List<int> {12, 13, 14, 31, 35};
-            //var tmp = _portalSosRepository.GetDeliveryStatusReport(orgId, delregList, periodForReg);
 
             foreach (var delregister in delregisterList)
             {
@@ -1675,8 +1727,7 @@ namespace InrappSos.ApplicationService
                         foreach (var orgenhet in orgEnhetsList)
                         {
                             //
-                            senasteLeverans =
-                                _portalSosRepository.GetLatestDeliveryForOrganisationSubDirectoryPeriodAndOrgUnit(orgId, delregister.Id, forvLevId, orgenhet.Id);
+                            senasteLeverans = levstatusRapportList.Where(x => x.DelregisterId == delregister.Id && x.AdmForvantadleverans.Period == periodForReg && x.OrganisationsenhetsId == orgenhet.Id).OrderByDescending(x=> x.Id).FirstOrDefault();
                             if (senasteLeverans != null)
                             {
                                 AddHistorikListItem(senasteLeverans, historikLista);
@@ -1685,9 +1736,10 @@ namespace InrappSos.ApplicationService
                     }
                     else
                     {
-                        senasteLeverans =
-                            _portalSosRepository.GetLatestDeliveryForOrganisationSubDirectoryAndPeriod(orgId, delregister.Id,
-                                forvLevId);
+                        //senasteLeverans =
+                        //    _portalSosRepository.GetLatestDeliveryForOrganisationSubDirectoryAndPeriod(orgId, delregister.Id,
+                        //        forvLevId);
+                        senasteLeverans = levstatusRapportList.SingleOrDefault(x => x.DelregisterId == delregister.Id && x.AdmForvantadleverans.Period == periodForReg);
                         if (senasteLeverans != null)
                         {
                             AddHistorikListItem(senasteLeverans, historikLista);
@@ -1695,7 +1747,7 @@ namespace InrappSos.ApplicationService
 
                     }
                 }
-                
+
             }
             if (historikLista.Count > 0)
             {
@@ -1704,7 +1756,6 @@ namespace InrappSos.ApplicationService
 
             return sorteradHistorikLista;
         }
-
         //TODO - hårdkodat. Lös på annat sätt
         public string HamtaSammanlagdStatusForPeriod(IEnumerable<FilloggDetaljDTO> historikLista)
         {
@@ -1768,9 +1819,25 @@ namespace InrappSos.ApplicationService
         {
             var status = leveransStatusObj.Status;
             var year = leveransStatusObj.Period.Substring(0, 4);
-            var month = leveransStatusObj.Period.Substring(4, 2);
+            var month = "01";
+            if (leveransStatusObj.Period.Length == 6)
+            {
+                var monthTmp = leveransStatusObj.Period.Substring(4, 2);
+                //TODO - fulfix för HSL halvårsrapp. Används ej??
+                if (monthTmp == "H1") 
+                {
+                    month = "01";
+                }
+                else if (monthTmp == "H2")
+                {
+                    month = "07";
+                }
+                else
+                {
+                    month = leveransStatusObj.Period.Substring(4, 2);
+                }
+            }
             var periodDate = new DateTime(Convert.ToInt32(year), Convert.ToInt32(month), 1);
-            var orgenheterForRegister = new List<Organisationsenhet>();
 
             foreach (var delregister in delregisterList)
             {
@@ -1892,6 +1959,11 @@ namespace InrappSos.ApplicationService
             throw new NotImplementedException();
         }
 
+        public string HamtaForstaPeriod(List<string> periodsForRegister)
+        {
+            throw new NotImplementedException();
+        }
+
         public List<RegisterInfo> HamtaRelevantaDelregisterForSFTPKonto(SFTPkonto sftpKonto)
         {
             var registerList = _portalSosRepository.GetSubDirectoriesForDirectory(sftpKonto.RegisterId).ToList();
@@ -1981,6 +2053,27 @@ namespace InrappSos.ApplicationService
                 }
             }
             return rapportorsLista;
+        }
+
+        public IEnumerable<Leverans> HamtaLeveransStatusRapporterForOrgDelregPerioder(int orgId, List<AdmDelregister> delregisterList, List<string> periodsForRegister)
+        {
+            
+            var delregIdList = new List<int>();
+            var levStatusRappList = new List<Leverans>();
+
+            foreach (var delreg in delregisterList)
+            {
+                delregIdList.Add(delreg.Id);
+            }
+
+            var forvlevIdList = _portalSosRepository.GetExpectedDeliveriesForSubdirsAndPeriods(delregIdList, periodsForRegister).Select(x => x.Id).ToList();
+
+            if (forvlevIdList.Count != 0)
+            {
+                levStatusRappList = _portalSosRepository.GetDeliveryStatusReport(orgId, delregIdList, forvlevIdList).ToList();
+            }
+
+            return levStatusRappList;
         }
 
         public AdmUppgiftsskyldighet HamtaUppgiftsskyldighetForOrganisationOchRegister(int orgId, int delregid)
@@ -3505,7 +3598,7 @@ namespace InrappSos.ApplicationService
             return checkedForvLevList;
         }
 
-        private List<FilloggDetaljDTO> AddHistorikListItem(Leverans senasteLeverans, List<FilloggDetaljDTO> historikLista)
+        private List<FilloggDetaljDTO> AddHistorikListItemOLD(Leverans senasteLeverans, List<FilloggDetaljDTO> historikLista)
         {
             var filloggDetalj = new FilloggDetaljDTO();
             //Kolla om återkopplingsfil finns för aktuell leverans
@@ -3562,6 +3655,66 @@ namespace InrappSos.ApplicationService
                     {
                         //filloggDetalj.Leveransstatus = aterkoppling.Leveransstatus; //Skriv ej över leveransstatusen från återkopplingen. Beslut 20180912, ärende #128
                         filloggDetalj.Resultatfil = aterkoppling.Resultatfil;
+                    }
+                    historikLista.Add(filloggDetalj);
+                }
+            }
+            return historikLista;
+        }
+
+
+        private List<FilloggDetaljDTO> AddHistorikListItem(Leverans senasteLeverans, List<FilloggDetaljDTO> historikLista)
+        {
+            var filloggDetalj = new FilloggDetaljDTO();
+            //Kolla om återkopplingsfil finns för aktuell leverans
+            var aterkoppling = _portalSosRepository.GetAterkopplingForLeverans(senasteLeverans.Id);
+
+            var filer = _portalSosRepository.GetFilerForLeveransId(senasteLeverans.Id).ToList();
+            var registerKortnamn = _portalSosRepository.GetSubDirectoryShortName(senasteLeverans.DelregisterId);
+
+            if (!filer.Any())
+            {
+                filloggDetalj = new FilloggDetaljDTO();
+                filloggDetalj.Id = 0;
+                filloggDetalj.LeveransId = senasteLeverans.Id;
+                filloggDetalj.Filnamn = " - ";
+                filloggDetalj.Filstatus = " - ";
+                filloggDetalj.Kontaktperson = senasteLeverans.ApplicationUserId;
+                filloggDetalj.Leveransstatus = senasteLeverans.Leveransstatus;
+                filloggDetalj.Leveranstidpunkt = senasteLeverans.Leveranstidpunkt;
+                filloggDetalj.RegisterKortnamn = registerKortnamn;
+                filloggDetalj.Resultatfil = " - ";
+                filloggDetalj.Period = senasteLeverans.AdmForvantadleverans.Period;
+                if (aterkoppling != null)
+                {
+                    filloggDetalj.Leveransstatus = aterkoppling.Leveransstatus;
+                    filloggDetalj.Resultatfil = aterkoppling.Resultatfil;
+                }
+                if (senasteLeverans.Organisationsenhet != null)
+                {
+                    filloggDetalj.Enhetskod = senasteLeverans.Organisationsenhet.Enhetskod;
+                }
+                historikLista.Add(filloggDetalj);
+            }
+            else
+            {
+                foreach (var fil in filer)
+                {
+                    filloggDetalj = (FilloggDetaljDTO.FromFillogg(fil));
+                    filloggDetalj.Kontaktperson = senasteLeverans.ApplicationUserId;
+                    filloggDetalj.Leveransstatus = senasteLeverans.Leveransstatus;
+                    filloggDetalj.Leveranstidpunkt = senasteLeverans.Leveranstidpunkt;
+                    filloggDetalj.RegisterKortnamn = registerKortnamn;
+                    filloggDetalj.Resultatfil = "Ej kontrollerad";
+                    filloggDetalj.Period = senasteLeverans.AdmForvantadleverans.Period;
+                    if (aterkoppling != null)
+                    {
+                        //filloggDetalj.Leveransstatus = aterkoppling.Leveransstatus; //Skriv ej över leveransstatusen från återkopplingen. Beslut 20180912, ärende #128
+                        filloggDetalj.Resultatfil = aterkoppling.Resultatfil;
+                    }
+                    if (senasteLeverans.Organisationsenhet != null)
+                    {
+                        filloggDetalj.Enhetskod = senasteLeverans.Organisationsenhet.Enhetskod;
                     }
                     historikLista.Add(filloggDetalj);
                 }

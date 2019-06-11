@@ -398,7 +398,7 @@ namespace SFTPFileHandler
             }
             string subject = "SFTP-leverans - fil med felaktigt filnamn";
             string body = "Hej! <br>";
-            body += "Leveransen innehåller fil med felatigt filnamn:  <br>";
+            body += "Leveransen innehåller fil med felaktigt filnamn:  <br>";
             foreach (var incorrectFile in incorrectFilesList)
             {
                 body += incorrectFile.Name + "<br> ";

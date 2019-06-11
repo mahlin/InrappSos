@@ -230,7 +230,7 @@ namespace InrappSos.ApplicationService.Helpers
 
             //Kolla vilket register filen/filerna hör till och skapa mapp om det behövs
             var slussmapp = registerList.Where(x => x.Id == selectedRegisterId).Select(x => x.Slussmapp).Single();
-            var user = _portalSosRepository.GetUserBySFTPAccountId(ftpAccount.Id);
+            var user = _portalSosRepository.GetFirstUserForSFTPAccount(ftpAccount.Id);
             //Get orgcode
             var orgCode = String.Empty;
             var orgtypeListForOrg = _portalSosService.HamtaOrgtyperForOrganisation(ftpAccount.OrganisationsId);

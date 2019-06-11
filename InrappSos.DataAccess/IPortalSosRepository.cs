@@ -311,6 +311,8 @@ namespace InrappSos.DataAccess
 
         ApplicationUser GetUserBySFTPAccountId(int ftpAccountId);
 
+        ApplicationUser GetFirstUserForSFTPAccount(int ftpAccountId);
+
         SFTPkonto GetSFTPAccount(int ftpAccountId);
 
         string GetUserEmail(string userId);

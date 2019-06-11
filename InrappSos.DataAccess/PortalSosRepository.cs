@@ -1460,6 +1460,14 @@ namespace InrappSos.DataAccess
             return user;
         }
 
+        public ApplicationUser GetFirstUserForSFTPAccount(int ftpAccountId)
+        {
+            var userId = DbContext.KontaktpersonSFTPkonto.Where(x => x.SFTPkontoId == ftpAccountId)
+                .Select(x => x.ApplicationUserId).FirstOrDefault();
+            var user = DbContext.Users.SingleOrDefault(x => x.Id == userId);
+            return user;
+        }
+
         public SFTPkonto GetSFTPAccount(int ftpAccountId)
         {
             var sftpAccount = DbContext.SFTPkonto.SingleOrDefault(x => x.Id == ftpAccountId);

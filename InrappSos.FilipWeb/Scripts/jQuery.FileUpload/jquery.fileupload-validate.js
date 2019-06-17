@@ -271,12 +271,12 @@ function getTableRows() {
                 maxNumberOfFiles: 'Maximalt antal filer har överskridits',
                 acceptFileTypes: 'Felaktig filtyp',
                 maxFileSize: 'Filen är för stor',
-                minFileSize: ('Filen är tom'),
-                incorrectFileName: ('Felaktigt filnamn'),
-                incorrectKommunKodInFileName: ('Felaktig kommunkod i filnamnet'),
-                incorrectFilkodInFileName: ('Felaktig filkod i filnamnet'),
-                incorrectPeriodInFileName: ('Felaktig period i filnamnet'),
-                filetypAlreadySelected: ('En fil av denna typ är redan vald'),
+                minFileSize: 'Filen är tom',
+                incorrectFileName: 'Felaktigt filnamn',
+                incorrectKommunKodInFileName: 'Felaktig kommunkod i filnamnet',
+                incorrectFilkodInFileName: 'Felaktig filkod i filnamnet',
+                incorrectPeriodInFileName: 'Felaktig period i filnamnet',
+                filetypAlreadySelected: 'En fil av denna typ är redan vald'
             }
         },
 

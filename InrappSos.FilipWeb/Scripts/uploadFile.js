@@ -348,6 +348,7 @@ function checkIfDisabled(event) {
 function checkOkToUpload() {
     //Check if desired number of files reached and no errors found => enable upload
     var errorExists = false;
+    var filkravForSelectedRegister;
     for (var i = 0; i < filelist.length; i++) {
         if (filelist[i].error) {
             errorExists = true;
@@ -362,11 +363,13 @@ function checkOkToUpload() {
     var numberOfFilesForSelectedRegister = 0;
     var numberOfRequiredFilesForSelectedRegister = 0;
     var numberOfNotRequiredFilesForSelectedRegister = 0;
+
     //get number of required files for chosen register
     registerLista.forEach(function (register, index) {
         if (selectedRegister === register.Id.toString()) {
             register.Filkrav.forEach(function(filkrav, index) {
                 if (selectedFilkravId === filkrav.Id) {
+                    filkravForSelectedRegister = filkrav;
                     numberOfFilesForSelectedRegister = filkrav.AntalFiler;
                     numberOfRequiredFilesForSelectedRegister = filkrav.AntalObligatoriskaFiler;
                     numberOfNotRequiredFilesForSelectedRegister = filkrav.AntalEjObligatoriskaFiler;
@@ -374,6 +377,8 @@ function checkOkToUpload() {
             });
         }
     });
+
+
     if (!errorExists && filelist.length !== 0) {
         //Check if files to upload all are required
         antAddedRequiredFiles = 0;
@@ -397,8 +402,24 @@ function checkOkToUpload() {
                 $('#filesExplorerOpener').prop('disabled', false);
                 $('#filesExplorerOpener').removeClass('disabled');
             }
-            $('.start').prop('disabled', false);
-            $('.start').show(); 
+            //if right number of files, check that all files in upload have same period in filenamne (#374)
+            var ok = true;
+            if (antAddedRequiredFiles > 1) {
+                var regexMatch = GetRegExpMatch(filkravForSelectedRegister, filelist[0].name);
+                var periodInFirstFilename = (regexMatch[2]);
+                for (var index = 1; index < filelist.length; index++) {
+                    regexMatch = GetRegExpMatch(filkravForSelectedRegister, filelist[index].name);
+                    var periodInFilename = (regexMatch[2]);
+                    if (periodInFirstFilename !== periodInFilename) {
+                        ok = false;
+                        filelist[index].error ='Alla filer i en leverans måste ha samma period';
+                    }
+                }
+            }
+            if (ok) {
+                $('.start').prop('disabled', false);
+                $('.start').show();
+            }
         }
         else {
             $('.start').prop('disabled', true);
@@ -416,6 +437,20 @@ function checkOkToUpload() {
         $('#filesExplorerOpener').prop('disabled', false);
         $('#filesExplorerOpener').removeClass('disabled');
     }
+}
+
+function GetRegExpMatch(filkravForSelectedRegister, fileName) {
+    var regexMatch = null;
+    var tmp = null;
+    filkravForSelectedRegister.ForvantadeFiler.forEach(function (forvFil, idx) {
+        var expression = new RegExp(forvFil.Regexp, "i");
+        //Kolla om filnamn matchar regex
+        tmp = fileName.match(expression);
+        if (tmp !== null) {
+            regexMatch = tmp;
+        }
+    });
+    return regexMatch;
 }
 
 function IsRequiredFile(selectedRegister, fileName) {

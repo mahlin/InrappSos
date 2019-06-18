@@ -208,7 +208,6 @@
             };
             //Posting ApplicationUser object to controller's Update action method
             $.ajax({
-                url: '/Organisation/UpdateOrganisationsContact',
                 url: '/Organisation/UpdateOrganisationsContact?visaInaktiva=' + visaInaktiva,
 
                 data: JSON.stringify(applicationUser),

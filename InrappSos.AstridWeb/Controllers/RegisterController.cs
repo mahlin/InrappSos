@@ -189,37 +189,59 @@ namespace InrappSos.AstridWeb.Controllers
             return View("EditSubDirectories", model);
         }
 
+        //// GET
+        //[Authorize]
+        //public ActionResult GetAllSubDirectoriesOrgtypes()
+        //{
+        //    var model = new RegisterViewModels.RegisterViewModel();
+        //    try
+        //    {
+        //        var delregOrgtyper = _portalSosService.HamtaAllaDelRegistersOrganisationstyper();
+        //        var allaOrgtyper = _portalSosService.HamtaAllaOrganisationstyper();
+        //        model.DelRegistersOrganisationstyper =
+        //            ConvertAdmUppgiftsskyldighetOrganisationstypToVM(delregOrgtyper, allaOrgtyper);
+        //        model.RegisterShortName = "";
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Console.WriteLine(e);
+        //        ErrorManager.WriteToErrorLog("RegisterController", "GetAllSubDirectoriesOrgtypes", e.ToString(),
+        //            e.HResult,
+        //            User.Identity.Name);
+        //        var errorModel = new CustomErrorPageModel
+        //        {
+        //            Information = "Ett fel inträffade vid hämtning av delregisters organisationstyper",
+        //            ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+        //        };
+        //        return View("CustomError", errorModel);
+
+        //    }
+        //    return View("EditSubDirectoriesOrgtypes", model);
+        //}
+
         // GET
         [Authorize]
-        public ActionResult GetAllSubDirectoriesOrgtypes()
+        public ActionResult GetOrgtypesForSubDirectory(RegisterViewModels.RegisterViewModel model, int delregId = 0)
         {
-            var model = new RegisterViewModels.RegisterViewModel();
-            try
+            var subdirId = model.SelectedSubDirectoryId;
+            if (subdirId == 0 && delregId != 0)
             {
-                var delregOrgtyper = _portalSosService.HamtaAllaDelRegistersOrganisationstyper();
+                subdirId = delregId;
+            }
+
+            if (subdirId != 0)
+            {
+                var delregsOrgtyper = _portalSosService.HamtaDelRegistersOrganisationstyper(subdirId);
                 var allaOrgtyper = _portalSosService.HamtaAllaOrganisationstyper();
-                model.DelRegistersOrganisationstyper =
-                    ConvertAdmUppgiftsskyldighetOrganisationstypToVM(delregOrgtyper, allaOrgtyper);
-                model.RegisterShortName = "";
+                model.DelRegistersOrganisationstyper = ConvertAdmUppgiftsskyldighetOrganisationstypToVM(delregsOrgtyper, allaOrgtyper);
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                ErrorManager.WriteToErrorLog("RegisterController", "GetAllSubDirectoriesOrgtypes", e.ToString(),
-                    e.HResult,
-                    User.Identity.Name);
-                var errorModel = new CustomErrorPageModel
-                {
-                    Information = "Ett fel inträffade vid hämtning av delregisters organisationstyper",
-                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
-                };
-                return View("CustomError", errorModel);
 
-            }
-            return View("EditSubDirectoriesOrgtypes", model);
+            // Ladda drop down lists. 
+            var delregisterList = _portalSosService.HamtaAllaDelregisterForPortalen().ToList();
+            this.ViewBag.DelregisterList = CreateDelRegisterDropDownList(delregisterList);
+
+            return View("EditSubDirectorysOrgtypes", model);
         }
-
-
 
 
         // GET
@@ -320,23 +342,21 @@ namespace InrappSos.AstridWeb.Controllers
 
         [HttpPost]
         [Authorize]
-        public ActionResult UpdateSubdirOrgtypes(RegisterViewModels.AdmUppgiftsskyldighetOrganisationstypViewModel delRegisterOrgtypVM)
+        public ActionResult UpdateSubdirOrgtype(RegisterViewModels.AdmUppgiftsskyldighetOrganisationstypViewModel delRegisterOrgtypVM)
         {
-            var regShortName = "";
             if (ModelState.IsValid)
             {
                 try
                 {
                     var userName = User.Identity.GetUserName();
-                    var subdirOrgtypesToUpdate = ConvertViewModelToDb(delRegisterOrgtypVM);
-                    var listOfOrgtypes = ConvertViewModelToOrgtypesDb(delRegisterOrgtypVM.ListOfOrgtypes);
-                    _portalSosService.UppdateraUppgiftsskyldighetOrganisationstyp(subdirOrgtypesToUpdate, listOfOrgtypes, userName);
-                    
+                    var subdirOrgtypeToUpdate = ConvertViewModelToDTO(delRegisterOrgtypVM);
+                    _portalSosService.UppdateraUppgiftsskyldighetOrganisationstyp(subdirOrgtypeToUpdate, userName);
+
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
-                    ErrorManager.WriteToErrorLog("RegisterController", "UpdateSubdirOrgtypes", e.ToString(), e.HResult,
+                    ErrorManager.WriteToErrorLog("RegisterController", "UpdateSubdirOrgtype", e.ToString(), e.HResult,
                         User.Identity.Name);
                     var errorModel = new CustomErrorPageModel
                     {
@@ -347,11 +367,44 @@ namespace InrappSos.AstridWeb.Controllers
 
                 }
             }
-            return RedirectToAction("GetAllSubDirectoriesOrgtypes");
+
+            return RedirectToAction("GetOrgtypesForSubDirectory", new { delregId = delRegisterOrgtypVM.DelregisterId });
         }
 
+    //[HttpPost]
+        //[Authorize]
+        //public ActionResult UpdateSubdirOrgtypes(RegisterViewModels.AdmUppgiftsskyldighetOrganisationstypViewModel delRegisterOrgtypVM)
+        //{
+        //    var regShortName = "";
+        //    if (ModelState.IsValid)
+        //    {
+        //        try
+        //        {
+        //            var userName = User.Identity.GetUserName();
+        //            var subdirOrgtypesToUpdate = ConvertViewModelToDb(delRegisterOrgtypVM);
+        //            var listOfOrgtypes = ConvertViewModelToOrgtypesDb(delRegisterOrgtypVM.ListOfOrgtypes);
+        //            _portalSosService.UppdateraUppgiftsskyldighetOrganisationstyp(subdirOrgtypesToUpdate, listOfOrgtypes, userName);
 
-        
+        //        }
+        //        catch (Exception e)
+        //        {
+        //            Console.WriteLine(e);
+        //            ErrorManager.WriteToErrorLog("RegisterController", "UpdateSubdirOrgtypes", e.ToString(), e.HResult,
+        //                User.Identity.Name);
+        //            var errorModel = new CustomErrorPageModel
+        //            {
+        //                Information = "Ett fel inträffade vid uppdatering av uppgiftsskyldighet för delregister.",
+        //                ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+        //            };
+        //            return View("CustomError", errorModel);
+
+        //        }
+        //    }
+        //    return RedirectToAction("GetAllSubDirectoriesOrgtypes");
+        //}
+
+
+
 
         [HttpPost]
         [Authorize]
@@ -631,6 +684,24 @@ namespace InrappSos.AstridWeb.Controllers
             return lstobj;
         }
 
+        private IEnumerable<SelectListItem> CreateDelRegisterDropDownList(IEnumerable<AdmDelregister> delregisterList)
+        {
+            SelectList lstobj = null;
+
+            var list = delregisterList
+                .Select(p =>
+                    new SelectListItem
+                    {
+                        Value = p.Id.ToString(),
+                        Text = p.Kortnamn
+                    });
+
+            // Setting.  
+            lstobj = new SelectList(list, "Value", "Text");
+
+            return lstobj;
+        }
+
 
         private AdmForeskrift ConvertAdmForeskriftVMToNewAdmForeskrift(
             RegisterViewModels.AdmForeskriftViewModel foreskriftVM)
@@ -648,95 +719,89 @@ namespace InrappSos.AstridWeb.Controllers
             return foreskrift;
         }
 
-        private List<RegisterViewModels.AdmUppgiftsskyldighetOrganisationstypViewModel>ConvertAdmUppgiftsskyldighetOrganisationstypToVM(IEnumerable<AdmUppgiftsskyldighetOrganisationstyp> delregOrgtyper,IEnumerable<AdmOrganisationstyp> allaOrgtyper)
+        private List<RegisterViewModels.AdmUppgiftsskyldighetOrganisationstypViewModel> ConvertAdmUppgiftsskyldighetOrganisationstypToVM(IEnumerable<AdmUppgiftsskyldighetOrganisationstyp> delregOrgtyper, IEnumerable<AdmOrganisationstyp> allaOrgtyper)
         {
             var delregOrgtyperVM = new List<RegisterViewModels.AdmUppgiftsskyldighetOrganisationstypViewModel>();
 
-            foreach (var item in delregOrgtyper)
+            foreach (var orgtyp in allaOrgtyper)
             {
-                var orgtypVMList = new List<RegisterViewModels.OrganisationstypViewModel>();
-
-                var delregOrgtyp = new RegisterViewModels.AdmUppgiftsskyldighetOrganisationstypViewModel
+                var orgtypeVM = new RegisterViewModels.AdmUppgiftsskyldighetOrganisationstypViewModel()
                 {
-                    Id = item.Id,
-                    DelregisterId = item.DelregisterId,
-                    DelregisterKortnamn = _portalSosService.HamtaDelregister(item.DelregisterId).Kortnamn,
-                    OrganisationstypId = item.OrganisationstypId,
-                    OrganisationstypNamn = _portalSosService.HamtaOrganisationstyp(item.OrganisationstypId).Typnamn,
-                    Orgtyper = _portalSosService.HamtaOrganisationstyperForDelregister(item.DelregisterId), //Hämta namn på delregisters orgtyper
-                    SkyldigFrom = item.SkyldigFrom,
-                    SkyldigTom = item.SkyldigTom
+                    Id = orgtyp.Id,
+                    OrganisationstypNamn  = orgtyp.Typnamn,
+                    SkyldigFrom = null,
+                    SkyldigTom = null
+            };
 
-                };
-
-                //Skapa lista över orgtyper och markera valda orgtyper för aktuellt delregister
-                foreach (var orgtyp in allaOrgtyper)
+                foreach (var delregOrganisationstyp in delregOrgtyper)
                 {
-                    var orgtypVm = new RegisterViewModels.OrganisationstypViewModel
+                    if (delregOrganisationstyp.OrganisationstypId == orgtyp.Id)
                     {
-                        Id = orgtyp.Id,
-                        Name = orgtyp.Typnamn
-                    };
-
-                    if (delregOrgtyp.Orgtyper.Contains(orgtyp.Typnamn))
-                    {
-                        orgtypVm.Selected = true;
-                    }
-                    orgtypVMList.Add(orgtypVm);
-                }
-
-                //Skapa kommaseparerad textsträng över delregisters orgtyper
-                var orgtyperStr = String.Empty;
-                foreach (var orgtyp in delregOrgtyp.Orgtyper)
-                {
-                    if (orgtyperStr.IsEmpty())
-                    {
-                        orgtyperStr = orgtyp;
-                    }
-                    else
-                    {
-                        orgtyperStr = orgtyperStr + ", " + orgtyp;
+                        orgtypeVM.Selected = true;
+                        orgtypeVM.SkyldigFrom = delregOrganisationstyp.SkyldigFrom;
+                        orgtypeVM.SkyldigTom = delregOrganisationstyp.SkyldigTom;
                     }
                 }
-                delregOrgtyp.StringOfOrgtypes = orgtyperStr;
-                delregOrgtyp.ListOfOrgtypes = orgtypVMList;
-                delregOrgtyperVM.Add(delregOrgtyp);
-
-
+                delregOrgtyperVM.Add(orgtypeVM);
             }
+
             return delregOrgtyperVM;
         }
 
-        private AdmUppgiftsskyldighetOrganisationstyp ConvertViewModelToDb(RegisterViewModels.AdmUppgiftsskyldighetOrganisationstypViewModel subdirOrgtypesVM)
+        //private AdmUppgiftsskyldighetOrganisationstyp ConvertViewModelToDb(RegisterViewModels.AdmUppgiftsskyldighetOrganisationstypViewModel subdirOrgtypesVM)
+        //{
+        //    //DateTime tmpDate;
+        //    //DateTime? dateValue = DateTime.TryParse(subdirOrgtypesVM.SkyldigFrom, out tmpDate) ? tmpDate : (DateTime?)null;
+
+        //    object resultVal = subdirOrgtypesVM.SkyldigFrom.HasValue ? subdirOrgtypesVM.SkyldigFrom.Value : DateTime.MinValue; // or DBNull.Value
+
+
+        //    var subdirOrgtypes = new AdmUppgiftsskyldighetOrganisationstyp()
+        //    {
+        //        Id = subdirOrgtypesVM.Id,
+        //        DelregisterId = subdirOrgtypesVM.DelregisterId,
+        //        //SkyldigFrom = resultVal as DateTime,
+        //        //SkyldigFrom = subdirOrgtypesVM.SkyldigFrom,
+        //        SkyldigTom = subdirOrgtypesVM.SkyldigTom
+        //    };
+
+        //    return subdirOrgtypes;
+        //}
+
+        private AdmUppgiftsskyldighetOrganisationstypDTO ConvertViewModelToDTO(RegisterViewModels.AdmUppgiftsskyldighetOrganisationstypViewModel subdirOrgtype)
         {
-            var subdirOrgtypes = new AdmUppgiftsskyldighetOrganisationstyp()
+            var subdirOrgtypeDTO = new AdmUppgiftsskyldighetOrganisationstypDTO()
             {
-                Id = subdirOrgtypesVM.Id,
-                DelregisterId = subdirOrgtypesVM.DelregisterId,
-                SkyldigFrom = subdirOrgtypesVM.SkyldigFrom,
-                SkyldigTom = subdirOrgtypesVM.SkyldigTom
+                Id = subdirOrgtype.Id,
+                DelregisterId = subdirOrgtype.DelregisterId,
+                Selected = subdirOrgtype.Selected,
+                SkyldigTom = subdirOrgtype.SkyldigTom
             };
 
-            return subdirOrgtypes;
-        }
-
-
-        private List<OrganisationstypDTO> ConvertViewModelToOrgtypesDb(List<RegisterViewModels.OrganisationstypViewModel> listOfOrgTypesVM)
-        {
-            var listOfOrgtypes = new List<OrganisationstypDTO>();
-            foreach (var itemVM in listOfOrgTypesVM)
+            if (subdirOrgtype.SkyldigFrom != null)
             {
-                var orgtype = new OrganisationstypDTO
-                {
-                    Organisationstypid = itemVM.Id,
-                    Typnamn = itemVM.Name,
-                    Selected = itemVM.Selected
-                };
-                listOfOrgtypes.Add(orgtype);
+                subdirOrgtypeDTO.SkyldigFrom = subdirOrgtype.SkyldigFrom.Value;
             }
-
-            return listOfOrgtypes;
+            return subdirOrgtypeDTO;
         }
+
+
+        //private List<OrganisationstypDTO> ConvertViewModelToOrgtypesDb(List<RegisterViewModels.OrganisationstypViewModel> listOfOrgTypesVM)
+        //{
+        //    var listOfOrgtypes = new List<OrganisationstypDTO>();
+        //    foreach (var itemVM in listOfOrgTypesVM)
+        //    {
+        //        var orgtype = new OrganisationstypDTO
+        //        {
+        //            Organisationstypid = itemVM.Id,
+        //            Typnamn = itemVM.Name,
+        //            Selected = itemVM.Selected
+        //        };
+        //        listOfOrgtypes.Add(orgtype);
+        //    }
+
+        //    return listOfOrgtypes;
+        //}
     }
 
 }

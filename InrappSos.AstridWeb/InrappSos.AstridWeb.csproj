@@ -355,6 +355,7 @@
     <Content Include="Views\System\EditDocuments.cshtml" />
     <Content Include="Views\System\AddDocument.cshtml" />
     <Content Include="Views\System\_Files.cshtml" />
+    <Content Include="Views\Register\EditSubDirectorysOrgtypes.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

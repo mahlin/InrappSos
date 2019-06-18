@@ -152,6 +152,8 @@ namespace InrappSos.ApplicationService.Interface
 
         IEnumerable<AdmUppgiftsskyldighetOrganisationstyp> HamtaAllaDelRegistersOrganisationstyper();
 
+        IEnumerable<AdmUppgiftsskyldighetOrganisationstyp> HamtaDelRegistersOrganisationstyper(int delregId);
+
         List<string> HamtaOrganisationstyperForDelregister(int delregId);
 
         IEnumerable<AdmDelregister> HamtaDelRegisterForRegister(int regId);
@@ -386,6 +388,8 @@ namespace InrappSos.ApplicationService.Interface
         void UppdateraEnhetsUppgiftsskyldighet(AdmEnhetsUppgiftsskyldighet enhetsUppgSkyldighet, string userName);
 
         void UppdateraUppgiftsskyldighetOrganisationstyp(AdmUppgiftsskyldighetOrganisationstyp subdirOrgtypes, List<OrganisationstypDTO> listOfOrgtypes, string userName);
+
+        void UppdateraUppgiftsskyldighetOrganisationstyp(AdmUppgiftsskyldighetOrganisationstypDTO subdirOrgtype, string userName);
 
         void UppdateraFAQKategori(AdmFAQKategori faqKategori, string userName);
 

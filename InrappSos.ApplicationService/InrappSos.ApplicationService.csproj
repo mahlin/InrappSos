@@ -56,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DTOModel\AdmForvantadfilDTO.cs" />
+    <Compile Include="DTOModel\AdmUppgiftsskyldighetOrganisationstypDTO.cs" />
     <Compile Include="DTOModel\ArendeDTO.cs" />
     <Compile Include="DTOModel\DelregisterBasicDTO.cs" />
     <Compile Include="DTOModel\DeviatingOpeningHoursDTO.cs" />

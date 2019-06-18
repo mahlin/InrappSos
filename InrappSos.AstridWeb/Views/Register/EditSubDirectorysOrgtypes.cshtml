@@ -1,0 +1,153 @@
+﻿@using System.ServiceModel.Dispatcher
+@model InrappSos.AstridWeb.Models.ViewModels.RegisterViewModels.RegisterViewModel
+@{
+    ViewBag.Title = "DelregOrgTypes";
+}
+
+<script type="text/javascript">
+
+    $(document).on('change',
+        '#ddlDelregister',
+        function() {
+            $("#SelectedSubDirectoryId").val($('#ddlDelregister').val());
+        });
+
+
+    $(function() {
+        $('.edit-mode').hide();
+
+        $(' .cancel-user').on('click',
+            function() {
+                var tr = $(this).parents('tr:first');
+                tr.find('.edit-mode, .display-mode').toggle();
+            });
+        $('.edit-user').on('click',
+            function() {
+                var tr = $(this).parents('tr:first');
+                var orgtypeId = tr.find("#OrgTypeId").val();
+                $('#SelectedOrgTypeId').val(orgtypeId);
+                tr.find('.edit-mode, .display-mode').toggle();
+            });
+        $('.save-user').on('click',
+            function() {
+                var tr = $(this).parents('tr:first');
+                var orgtypeId = tr.find("#OrgTypeId").val();
+                var skyldigFrom = tr.find("#SkyldigFrom").val();
+                var skyldigTom = tr.find("#SkyldigTom").val();
+                var orgtypeSelected;
+                if (tr.find("#OrgtypeSelected").is(':checked')) {
+                    orgtypeSelected = true;
+                } else {
+                    orgtypeSelected = false;
+                }
+                //check that skyldigFrom set if selected is true
+                if (orgtypeId && skyldigFrom === "") {
+                    alert("Fältet Skyldig fr.o.m är obligatoriskt när organisationstypen väljs.");
+                } else {
+                    //Creating AdmUppgiftsskyldighetOrganisationstypVM JSON object
+                    var admUppgskhOrgType =
+                    {
+                        "Id": orgtypeId,
+                        "DelregisterId": $('#SelectedSubDirectoryId').val(),
+                        "Selected": orgtypeSelected,
+                        "SkyldigFrom": skyldigFrom,
+                        "SkyldigTom": skyldigTom,
+                    };
+                    //Posting AdmUppgiftsskyldighetOrganisationstypVM object to controller's Update action method
+                    $.ajax({
+                        url: '/Register/UpdateSubdirOrgtype',
+                        data: JSON.stringify(admUppgskhOrgType),
+                        type: 'POST',
+                        contentType: 'application/json; charset=utf-8',
+                        success: function(data) {
+                            location.reload();
+                            //$("#pageContainer").html(data);
+                            //tr.find('.edit-mode, .display-mode').toggle();
+                            //$('#footer').hide();
+                            //alert('Record updated Successfully!!');
+                        }
+                    });  
+                }
+            });
+
+        $('.edit-user').on('click',
+            function() {
+                var tr = $(this).parents('tr:first');
+                var skyldigFrom = tr.find("#SkyldigFrom").val();
+                var skyldigTom = tr.find("#SkyldigTom").val();
+
+                tr.find("#lblSkyldigFrom").text(skyldigFrom);
+                tr.find("#lblSkyldigTom").text(skyldigTom);
+            });
+    });
+
+
+</script>
+
+
+<div id="pageContainer">
+    <div class="row">
+        <div class="col-md-8 padding-top-55">
+            <h4>Administrera delregisters orgtyper</h4>
+            <br />
+            <section id="dirForm">
+                @using (Html.BeginForm("GetOrgtypesForSubDirectory", "Register", new { ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                {
+                    @Html.HiddenFor(m => m.SelectedSubDirectoryId)
+                    <div class="row">
+                        <div class="col-md-8 form-group" style="width: 225px !important; margin-left: 5px;">
+                            @Html.DropDownListFor(m => m.SelectedSubDirectoryId, ViewBag.DelregisterList as SelectList, " - Välj delegister -", new { id = "ddlDelregister", @class = "form-control", style = "max-width:150px !important" })
+                        </div>
+                        <div class="col-md-8" style="padding-left: 0px; margin-left: -10px;">
+                            <div><input type="submit" value="Visa" class="btn btn-default" /></div>
+                        </div>
+                    </div>
+                }
+            </section>
+        </div>
+    </div>
+
+
+    @* Om sökresultat för delreg finns, visa listan *@
+    @if (Model.DelRegistersOrganisationstyper?.Count > 0)
+    {
+        <section id="adminSubdirOrgtypesForm">
+            <br/><br/>
+            <hr/>
+            <div id="gridContent" style="font-family: Arial; padding: 20px;">
+                @{
+                    ViewBag.Title = "Administrera uppgiftsskyldighet per delregister";
+                    var grid = new WebGrid(source: Model.DelRegistersOrganisationstyper, canPage: false, rowsPerPage: 10, ajaxUpdateContainerId: "adminUsersGrid");
+                }
+
+                @grid.GetHtml(htmlAttributes: new {id = "subdirOrgtypesTable"},
+                    tableStyle: "webgrid-table900",
+                    headerStyle: "webgrid-header",
+                    footerStyle: "webgrid-footer",
+                    alternatingRowStyle: "webgrid-alternating-row",
+                    selectedRowStyle: "webgrid-selected-row",
+                    rowStyle: "webgrid-row-style",
+                    mode: WebGridPagerModes.All,
+                    columns: grid.Columns(
+                        grid.Column(null, null, format: @<input type="hidden" id="OrgTypeId" value="@item.Id" class="edit-mode form-control hide"/>, style: "colZeroWidth"),
+                        grid.Column("OrganisationstypNamn", "Organisationstyp", format: @<text><span class="display-mode col4Width">@item.OrganisationstypNamn</span><label id="Epost" class="edit-mode col3Width">@item.OrganisationstypNamn</label></text>, style: "col3Width"),
+                        grid.Column(null, format: @<text>
+                            <span class="display-mode"><input id="lblOrgtypeSelected" class="checkbox" name="select" type="checkbox" disabled @( item.Selected ? "checked='checked'" : "") value="@item.Selected" /></span>
+                            <input id="OrgtypeSelected" class="edit-mode checkbox" name="select" type="checkbox" @( item.Selected ? "checked='checked'" : "") value="@item.Selected" /></text>, style: "colMinWidth centered"),
+                        grid.Column("SkyldigFrom", "Skyldig fr.o.m", format: @<text><span class="display-mode"><label id="lblSkyldigFrom">@(item.SkyldigFrom != null ? item.SkyldigFrom.ToString("yyyy-MM-dd") : item.SkyldigFrom)</label></span>
+                            <input type="text" id="SkyldigFrom" value="@(item.SkyldigFrom != null ? item.SkyldigFrom.ToString("yyyy-MM-dd") : item.SkyldigFrom)" class="edit-mode form-control"/></text>, style: "col2Width"),
+                        grid.Column("SkyldigTom", "Skyldig t.o.m", format: @<text><span class="display-mode"><label id="lblSkyldigTom">@(item.SkyldigTom != null ? item.SkyldigTom.ToString("yyyy-MM-dd") : item.SkyldigTom)</label></span>
+                            <input type="text" id="SkyldigTom" value="@(item.SkyldigTom != null ? item.SkyldigTom.ToString("yyyy-MM-dd") : item.SkyldigTom)" class="edit-mode form-control"/></text>, style: "col2Width"),
+                        grid.Column(null, format: @<text>
+                                <button class="edit-user display-mode btn btn-default">Ändra</button>
+                                <button class="save-user edit-mode btn btn-default">Spara</button>
+                                <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
+                            </text>, style: "col3Width", canSort: false)))
+
+            </div>
+        </section>
+    }
+
+</div>
+
+

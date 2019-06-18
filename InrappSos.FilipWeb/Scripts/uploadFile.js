@@ -351,7 +351,14 @@ function checkOkToUpload() {
     var filkravForSelectedRegister;
     for (var i = 0; i < filelist.length; i++) {
         if (filelist[i].error) {
-            errorExists = true;
+            //TODO - refactor this
+            if (filelist[i].error !== 'Alla filer i en leverans måste ha samma period') {
+                errorExists = true;
+            } 
+            //else {
+            //    filelist[i].error = null;
+            //    $('.template-download').reload();
+            //}
         }
     }
     var selectedRegister = $('#ddlRegister').val();
@@ -412,7 +419,7 @@ function checkOkToUpload() {
                     var periodInFilename = (regexMatch[2]);
                     if (periodInFirstFilename !== periodInFilename) {
                         ok = false;
-                        filelist[index].error ='Alla filer i en leverans måste ha samma period';
+                        filelist[index].error = 'Alla filer i en leverans måste ha samma period';
                     }
                 }
             }

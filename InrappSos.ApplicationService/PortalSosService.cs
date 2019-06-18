@@ -792,6 +792,12 @@ namespace InrappSos.ApplicationService
             return delregOrgtyper;
         }
 
+        public IEnumerable<AdmUppgiftsskyldighetOrganisationstyp> HamtaDelRegistersOrganisationstyper(int delregId)
+        {
+            var delregOrgtyper = _portalSosRepository.GetOrgTypesForSubDir(delregId); 
+            return delregOrgtyper;
+        }
+
         public List<string> HamtaOrganisationstyperForDelregister(int delregId)
         {
             var orgtypNamnList = new List<string>();
@@ -2585,6 +2591,40 @@ namespace InrappSos.ApplicationService
                         _portalSosRepository.DeleteSubdirReportObligation(subdirOrgtypes);
                     }
                 }
+            }
+        }
+
+        public void UppdateraUppgiftsskyldighetOrganisationstyp(AdmUppgiftsskyldighetOrganisationstypDTO subdirOrgtype, string userName)
+        {
+            //check if already exists (update or delete), otherwise insert into db
+            var subdirOrgtypeDb = _portalSosRepository.GetReportObligationForSubDirAndOrgtype(subdirOrgtype.DelregisterId, subdirOrgtype.Id);
+               
+            if (subdirOrgtypeDb == null && subdirOrgtype.Selected) //Create
+            {
+                subdirOrgtypeDb = new AdmUppgiftsskyldighetOrganisationstyp();
+                subdirOrgtypeDb.DelregisterId = subdirOrgtype.DelregisterId;
+                subdirOrgtypeDb.OrganisationstypId = subdirOrgtype.Id;
+                subdirOrgtypeDb.SkyldigFrom = subdirOrgtype.SkyldigFrom;
+                subdirOrgtypeDb.SkyldigTom = subdirOrgtype.SkyldigTom;
+                subdirOrgtypeDb.AndradAv = userName;
+                subdirOrgtypeDb.AndradDatum = DateTime.Now;
+                subdirOrgtypeDb.SkapadAv = userName;
+                subdirOrgtypeDb.SkapadDatum = DateTime.Now;
+
+                 _portalSosRepository.CreateSubdirReportObligation(subdirOrgtypeDb);
+            }
+            else if (subdirOrgtypeDb != null && subdirOrgtype.Selected ) //Update
+            {
+                subdirOrgtypeDb.SkyldigFrom = subdirOrgtype.SkyldigFrom;
+                subdirOrgtypeDb.SkyldigTom = subdirOrgtype.SkyldigTom;
+                subdirOrgtypeDb.AndradAv = userName;
+                subdirOrgtypeDb.AndradDatum = DateTime.Now;
+                _portalSosRepository.UpdateSubdirReportObligation(subdirOrgtypeDb);
+            }
+            else if (subdirOrgtypeDb != null && !subdirOrgtype.Selected) //Delete
+            {
+                _portalSosRepository.DeleteSubdirReportObligation(subdirOrgtypeDb);
+
             }
         }
 

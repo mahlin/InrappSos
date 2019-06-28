@@ -400,7 +400,16 @@ namespace InrappSos.ApplicationService
             var contacts = _portalSosRepository.GetContactPersonsForSFTPAccount(sftpKontoId);
             foreach (var contact in contacts)
             {
-                emailadresses.Add(contact.Email);
+                //Check that contact is still active
+                if (contact.AktivTom == null)
+                {
+                    emailadresses.Add(contact.Email);
+                }
+                else if (contact.AktivTom >= DateTime.Now.Date)
+                {
+                    emailadresses.Add(contact.Email);
+                }
+                
             }
             return emailadresses;
         }

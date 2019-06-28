@@ -27,7 +27,7 @@ namespace SFTPFileHandler
             Console.WriteLine("********************************************************");
             Console.WriteLine("******************  SFTPFileHandler klar ***************");
             //För test
-            Console.ReadLine();
+            //Console.ReadLine();
         }
         
         //private static void TestB()

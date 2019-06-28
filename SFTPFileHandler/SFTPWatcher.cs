@@ -24,6 +24,7 @@ namespace SFTPFileHandler
         MailHelper _mailHelper;
         private static SmtpClient _smtpClient;
         private string _mailSender;
+        private string _mailRecieverSocialstyrelsen;
 
 
         private string StorageRoot
@@ -41,6 +42,7 @@ namespace SFTPFileHandler
             _mailHelper = new MailHelper();
             _smtpClient = new SmtpClient(ConfigurationManager.AppSettings["MailServer"]);
             _mailSender = ConfigurationManager.AppSettings["MailSender"];
+            _mailRecieverSocialstyrelsen = ConfigurationManager.AppSettings["MailRecieverSocialstyrelsen"];
         }
 
         public void CheckFolders()
@@ -181,7 +183,8 @@ namespace SFTPFileHandler
                                                     }
                                                     okFile = true;
                                                     var periodInFileName = match.Groups[2].Value;
-                                                    if (!_portalService.HamtaGiltigaPerioderForDelregister(delregInfo.Id)
+                                                    if (!_portalService
+                                                        .HamtaGiltigaPerioderForDelregister(delregInfo.Id)
                                                         .Contains(periodInFileName))
                                                     {
                                                         okFile = false;
@@ -218,7 +221,8 @@ namespace SFTPFileHandler
                                         {
                                             var resultList = new List<ViewDataUploadFilesResult>();
                                             //If complete delivery of approved files, tag and upload
-                                            _filesHelper.UploadSFTPFilesAndShowResults(okFilesForSubDirList, resultList, ftpAccount, delregInfo.Id, unitCode, period, delregisterInfoList);
+                                            _filesHelper.UploadSFTPFilesAndShowResults(okFilesForSubDirList, resultList,
+                                                ftpAccount, delregInfo.Id, unitCode, period, delregisterInfoList);
 
                                             //Delete files from incoming filearea
                                             foreach (var file in okFilesForSubDirList)
@@ -228,23 +232,27 @@ namespace SFTPFileHandler
                                         }
                                         catch (ApplicationException e)
                                         {
-                                            ErrorManager.WriteToErrorLog("SFTPWatcher", "Upload approved files", e.ToString(),
+                                            ErrorManager.WriteToErrorLog("SFTPWatcher", "Upload approved files",
+                                                e.ToString(),
                                                 e.HResult, folder);
                                         }
                                         catch (Exception e)
                                         {
                                             //Todo - send mail?
                                             Console.WriteLine("Sending email-alert. Upload files aborted.");
-                                            ErrorManager.WriteToErrorLog("SFTPWatcher", "Upload approved files", e.ToString(),
+                                            ErrorManager.WriteToErrorLog("SFTPWatcher", "Upload approved files",
+                                                e.ToString(),
                                                 e.HResult, folder);
                                         }
                                     }
                                     else
                                     {
                                         //If not complete, check if enough time elapsed
-                                        var sortedFilesList = okFilesForSubDirList.OrderByDescending(p => p.CreationTime).ToList();
+                                        var sortedFilesList = okFilesForSubDirList
+                                            .OrderByDescending(p => p.CreationTime).ToList();
                                         //Check youngest file
-                                        if (sortedFilesList[0].CreationTime.AddMinutes(_timeToWaitForCompleteDelivery) < DateTime.Now)
+                                        if (sortedFilesList[0].CreationTime.AddMinutes(_timeToWaitForCompleteDelivery) <
+                                            DateTime.Now)
                                         {
                                             //Not complete delivery - email user and remove files
                                             try
@@ -255,12 +263,16 @@ namespace SFTPFileHandler
                                             {
                                                 Console.WriteLine(e);
                                                 //throw new ArgumentException(e.Message);
-                                                ErrorManager.WriteToErrorLog("SFTPWatcher", "SendEmail/Incomplete delivery", e.ToString(), e.HResult, folderName);
+                                                ErrorManager.WriteToErrorLog("SFTPWatcher",
+                                                    "SendEmail/Incomplete delivery", e.ToString(), e.HResult,
+                                                    folderName);
                                             }
                                             catch (Exception e)
                                             {
                                                 Console.WriteLine(e);
-                                                ErrorManager.WriteToErrorLog("SFTPWatcher", "Moving not approved files aborted", e.ToString(), e.HResult, folderName);
+                                                ErrorManager.WriteToErrorLog("SFTPWatcher",
+                                                    "Moving not approved files aborted", e.ToString(), e.HResult,
+                                                    folderName);
                                             }
                                         }
                                     }
@@ -278,12 +290,14 @@ namespace SFTPFileHandler
                             {
                                 Console.WriteLine(e);
                                 //throw new ArgumentException(e.Message);
-                                ErrorManager.WriteToErrorLog("SFTPWatcher", "SendEmail/Not correct filenamne", e.ToString(), e.HResult, folderName);
+                                ErrorManager.WriteToErrorLog("SFTPWatcher", "SendEmail/Not correct filenamne",
+                                    e.ToString(), e.HResult, folderName);
                             }
                             catch (Exception e)
                             {
                                 Console.WriteLine(e);
-                                ErrorManager.WriteToErrorLog("SFTPWatcher", "Not correct filenamne", e.ToString(), e.HResult, folderName);
+                                ErrorManager.WriteToErrorLog("SFTPWatcher", "Not correct filenamne", e.ToString(),
+                                    e.HResult, folderName);
                             }
                         }
 
@@ -295,6 +309,42 @@ namespace SFTPFileHandler
                     }
                 }
             }
+            else
+            {
+                NotRegisteredSFTPAccount(folderName, folder);
+            }
+        }
+
+        private void NotRegisteredSFTPAccount(string folderName, string folder)
+        {
+            Console.WriteLine("Sending email. Not registered account.");
+
+            DirectoryInfo dir = new DirectoryInfo(folder);
+            List<FileInfo> filesInFolder = dir.GetFiles().OrderByDescending(p => p.CreationTime).ToList();
+
+            string subject = "SFTP-kontot är ej registrerat i Astrid";
+            string body = "Hej! <br>";
+            body += "Vi har mottagit en filleverans via SFTP för ett konto som ej finns registrerat i Astrid och kan då ej hantera filerna. <br>";
+            body += "SFTPkonto: " + folderName + "<br><br>";
+            body += "Berörda filer: <br>";
+            foreach (var file in filesInFolder)
+            {
+                body += file.Name + "<br> ";
+            }
+            
+            MailMessage msg = new MailMessage();
+            MailAddress toMail = new MailAddress(_mailRecieverSocialstyrelsen);
+            msg.To.Add(toMail);
+            MailAddress fromMail = new MailAddress(_mailSender);
+            msg.From = fromMail;
+
+            msg.Subject = subject;
+            msg.Body = body;
+            _mailHelper.SendEmail(msg);
+
+            MoveFilesToErrorFolderAndDeleteFilesFromInbox(folderName, filesInFolder);
+            dir.Delete();
+
         }
 
         private void NoRegisteredContactHandler(SFTPkonto ftpAccount, string folderName, string folder)
@@ -319,22 +369,24 @@ namespace SFTPFileHandler
             body += "Vid frågor kontakta Socialstyrelsen, e-post: inrapportering@socialstyrelsen.se eller telefon 075-247 45 40 under våra telefontider måndag 13-15, tisdag 9-11, torsdag 13.15. <br> ";
 
             _mailHelper.SendEmail(subject, body, mailRecipients, _mailSender);
-            //SendEmail(subject, body, mailRecipients);
-            var errorFilesArea = ConfigurationManager.AppSettings["notApprovedFilesFolder"];
-            String pathOnServer = Path.Combine(errorFilesArea);
-            var fullPathDir = Path.Combine(pathOnServer, folderName);
 
-            //Kopiera filerna till fel-mappen 
-            foreach (var file in filesInFolder)
-            {
-                //Kopiera filen till det aktuella kontots fel-mapp 
-                WriteFileToErrorFolder(fullPathDir, file);
-            }
-            //Ta sen bort filerna från ursprungliga mappen
-            foreach (var file in filesInFolder)
-            {
-                file.Delete();
-            }
+            MoveFilesToErrorFolderAndDeleteFilesFromInbox(folderName, filesInFolder);
+            ////SendEmail(subject, body, mailRecipients);
+            //var errorFilesArea = ConfigurationManager.AppSettings["notApprovedFilesFolder"];
+            //String pathOnServer = Path.Combine(errorFilesArea);
+            //var fullPathDir = Path.Combine(pathOnServer, folderName);
+
+            ////Kopiera filerna till fel-mappen 
+            //foreach (var file in filesInFolder)
+            //{
+            //    //Kopiera filen till det aktuella kontots fel-mapp 
+            //    WriteFileToErrorFolder(fullPathDir, file);
+            //}
+            ////Ta sen bort filerna från ursprungliga mappen
+            //foreach (var file in filesInFolder)
+            //{
+            //    file.Delete();
+            //}
         }
 
 
@@ -364,21 +416,23 @@ namespace SFTPFileHandler
 
             _mailHelper.SendEmail(subject, body, mailRecipients, _mailSender);
 
-            var errorFilesArea = ConfigurationManager.AppSettings["notApprovedFilesFolder"];
-            String pathOnServer = Path.Combine(errorFilesArea);
-            var fullPathDir = Path.Combine(pathOnServer, folderName);
+            MoveFilesToErrorFolderAndDeleteFilesFromInbox(folderName, sortedFilesList);
 
-            //Kopiera filerna till fel-mappen 
-            foreach (var file in sortedFilesList)
-            {
-                //Kopiera filen till det aktuella kontots fel-mapp 
-                WriteFileToErrorFolder(fullPathDir, file);
-            }
-            //Ta sen bort filerna från ursprungliga mappen
-            foreach (var file in sortedFilesList)
-            {
-                file.Delete();
-            }
+            //var errorFilesArea = ConfigurationManager.AppSettings["notApprovedFilesFolder"];
+            //String pathOnServer = Path.Combine(errorFilesArea);
+            //var fullPathDir = Path.Combine(pathOnServer, folderName);
+
+            ////Kopiera filerna till fel-mappen 
+            //foreach (var file in sortedFilesList)
+            //{
+            //    //Kopiera filen till det aktuella kontots fel-mapp 
+            //    WriteFileToErrorFolder(fullPathDir, file);
+            //}
+            ////Ta sen bort filerna från ursprungliga mappen
+            //foreach (var file in sortedFilesList)
+            //{
+            //    file.Delete();
+            //}
         }
 
         private void IncorrectFilesHandler(SFTPkonto ftpAccount, List<FileInfo> incorrectFilesList, string folderName)
@@ -408,17 +462,38 @@ namespace SFTPFileHandler
 
             _mailHelper.SendEmail(subject, body, mailRecipients, _mailSender);
 
+            MoveFilesToErrorFolderAndDeleteFilesFromInbox(folderName, incorrectFilesList);
+
             //SendEmail(subject, body, mailRecipients);
-            var errorFilesArea = ConfigurationManager.AppSettings["notApprovedFilesFolder"];
-            String pathOnServer = Path.Combine(errorFilesArea);
-            var fullPathDir = Path.Combine(pathOnServer, folderName);
-            foreach (var incorrectFile in incorrectFilesList)
-            {
-                //Kopiera filen till det aktuella kontots fel-mapp 
-                WriteFileToErrorFolder(fullPathDir, incorrectFile);
-                //Ta sen bort filen från ursprungliga mappen
-                incorrectFile.Delete();
-            }
+            //var errorFilesArea = ConfigurationManager.AppSettings["notApprovedFilesFolder"];
+            //String pathOnServer = Path.Combine(errorFilesArea);
+            //var fullPathDir = Path.Combine(pathOnServer, folderName);
+            //foreach (var incorrectFile in incorrectFilesList)
+            //{
+            //    //Kopiera filen till det aktuella kontots fel-mapp 
+            //    WriteFileToErrorFolder(fullPathDir, incorrectFile);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            //    //Ta sen bort filen från ursprungliga mappen
+            //    incorrectFile.Delete();
+            //}
         }
 
 
@@ -513,5 +588,23 @@ namespace SFTPFileHandler
             return complete;
         }
 
+        private void MoveFilesToErrorFolderAndDeleteFilesFromInbox(string folderName, List<FileInfo> filesInFolder )
+        {
+            var errorFilesArea = ConfigurationManager.AppSettings["notApprovedFilesFolder"];
+            String pathOnServer = Path.Combine(errorFilesArea);
+            var fullPathDir = Path.Combine(pathOnServer, folderName);
+
+            //Kopiera filerna till fel-mappen 
+            foreach (var file in filesInFolder)
+            {
+                //Kopiera filen till det aktuella kontots fel-mapp 
+                WriteFileToErrorFolder(fullPathDir, file);
+            }
+            //Ta sen bort filerna från ursprungliga mappen
+            foreach (var file in filesInFolder)
+            {
+                file.Delete();
+            }
+        }
     }
 }

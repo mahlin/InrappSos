@@ -350,7 +350,18 @@ namespace InrappSos.ApplicationService.Helpers
                     }
                     var fullPath = Path.Combine(pathOnServer, Path.GetFileName(extendedFileName));
                     file.CopyTo(fullPath);
-                    statuses.Add(UploadResult(file.Name, Convert.ToInt32(file.Length), file.Name, (extendedFileName), levId, i + 1));
+                    //TODO - Fix this? To handle large files - If file.length larger than an int can hold (2147483647), set it to dummy-value (9999)
+                    //Stop using file.length in statuses? Only presented in Filip upload-page, so for SFTP-files it will nerver show?
+                    var filelength = 0;
+                    if (file.Length > 2147483647)
+                    {
+                        filelength = 9999;
+                    }
+                    else
+                    {
+                        filelength = Convert.ToInt32(file.Length);
+                    }
+                    statuses.Add(UploadResult(file.Name, filelength, file.Name, (extendedFileName), levId, i + 1));
                 }
             }
         }
@@ -387,6 +398,15 @@ namespace InrappSos.ApplicationService.Helpers
                     }
                     var fullPath = Path.Combine(pathOnServer, Path.GetFileName(extendedFileName));
                     file.SaveAs(fullPath);
+                    var filelength = 0;
+                    if (file.ContentLength > 2147483647)
+                    {
+                        filelength = 9999;
+                    }
+                    else
+                    {
+                        filelength = Convert.ToInt32(file.ContentLength);
+                    }
 
                     statuses.Add(UploadResult(file.FileName, file.ContentLength, file.FileName, (extendedFileName), levId, i + 1));
                 }

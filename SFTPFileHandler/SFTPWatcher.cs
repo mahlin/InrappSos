@@ -26,6 +26,8 @@ namespace SFTPFileHandler
         private string _mailSender;
         private string _mailRecieverSocialstyrelsen;
         private List<FileInfo> _filesInFolder;
+        private List<FileInfo> _inCorrectFilenameList;
+        private List<FileInfo> _filesToExcludeFromCheckList;
         private SFTPkonto _ftpAccount;
         private string _folderName;
 
@@ -98,7 +100,7 @@ namespace SFTPFileHandler
 
         private void CheckFilesInFolder(string folder)
         {
-            var inCorrectFilenameList = new List<FileInfo>();
+            _inCorrectFilenameList = new List<FileInfo>();
             var incorrectPeriodList = new List<FileInfo>();
             var incorrectFileCodeList = new List<FileInfo>();
             _folderName = GetFolderNameFromPath(folder);
@@ -118,8 +120,8 @@ namespace SFTPFileHandler
                     if (userEmails.Any())
                     {
                         //Check files in folder
-                        CheckFiles(folder,inCorrectFilenameList, incorrectPeriodList, incorrectFileCodeList);
-                        HandleIncorrectFilenameList(inCorrectFilenameList);
+                        CheckFiles(folder, incorrectPeriodList, incorrectFileCodeList);
+                        HandleIncorrectFilenameList();
                     }
                     else
                     {
@@ -135,12 +137,14 @@ namespace SFTPFileHandler
         }
 
 
-        private void CheckFiles(string folder, List<FileInfo> inCorrectFilenameList,List<FileInfo> incorrectPeriodList, List<FileInfo> incorrectFileCodeList)
+        private void CheckFiles(string folder, List<FileInfo> incorrectPeriodList, List<FileInfo> incorrectFileCodeList)
         {
             if (_filesInFolder.Count > 0)
             {
+                _filesToExcludeFromCheckList = new List<FileInfo>();
                 //Get info about registers relevant for current sftpaccount
                 var delregisterInfoList = _portalService.HamtaRelevantaDelregisterForSFTPKonto(_ftpAccount);
+
 
                 foreach (var delregInfo in delregisterInfoList)
                 {
@@ -177,14 +181,20 @@ namespace SFTPFileHandler
                                 IEnumerable<FileInfo> errorPeriod = from fileInList in incorrectPeriodList
                                     where fileInList.Name == file.Name
                                     select file;
-                                if (!res.Any() && !errorPeriod.Any())
+                                //kontrollera om filen ska exluderas från check
+                                IEnumerable<FileInfo> excludedFile = from fileInList in _filesToExcludeFromCheckList
+                                    where fileInList.Name == file.Name
+                                    select file;
+                                
+
+                                if (!res.Any() && !errorPeriod.Any() && !excludedFile.Any())
                                 {
                                     Match match = expression.Match(file.Name);
                                     //If correct filename, check fileCode and period
                                     if (match.Success)
                                     {
                                         //Remove from errorlist if saved there
-                                        inCorrectFilenameList.Remove(file);
+                                        _inCorrectFilenameList.Remove(file);
                                         var fileCodeInFileName = match.Groups[1].Value;
                                         //TODO - för alla register? Special för PAR?
                                         if (okFileCodes.Contains(fileCodeInFileName))
@@ -208,19 +218,19 @@ namespace SFTPFileHandler
                                                 SaveToErrorList(file, incorrectPeriodList);
                                             }
                                         }
-                                        else //Incorrect filecode
+                                        else 
                                         {
                                             SaveToErrorList(file, incorrectFileCodeList);
                                         }
                                     }
                                     else
                                     {
-                                        SaveToErrorList(file, inCorrectFilenameList);
+                                        SaveToErrorList(file, _inCorrectFilenameList);
                                     }
                                 }
                             }
                         }
-                        HandleFileCheckResult(okFilesForSubDirList, filkrav, unitCode, delregInfo, period, delregisterInfoList, folder, inCorrectFilenameList,
+                        HandleFileCheckResult(okFilesForSubDirList, filkrav, unitCode, delregInfo, period, delregisterInfoList, folder,
                             incorrectFileCodeList, incorrectPeriodList);
                     }
                 }
@@ -242,7 +252,7 @@ namespace SFTPFileHandler
         }
 
         private void HandleFileCheckResult(List<FileInfo> okFilesForSubDirList, RegisterFilkrav filkrav, string unitCode, RegisterInfo delregInfo, string period, 
-            List<RegisterInfo> delregisterInfoList, string folder, List<FileInfo> inCorrectFilenameList, List<FileInfo> incorrectFileCodeList, List<FileInfo> incorrectPeriodList)
+            List<RegisterInfo> delregisterInfoList, string folder,  List<FileInfo> incorrectFileCodeList, List<FileInfo> incorrectPeriodList)
         {
             if (okFilesForSubDirList.Count > 0)
             {
@@ -267,8 +277,7 @@ namespace SFTPFileHandler
                         _filesInFolder = dir.GetFiles().OrderByDescending(p => p.CreationTime).ToList();
 
                         //Rekursivt anrop, hantera ev kvarvarande filer
-                        CheckFiles(folder, inCorrectFilenameList,
-                            incorrectPeriodList, incorrectFileCodeList);
+                        CheckFiles(folder,incorrectPeriodList, incorrectFileCodeList);
                     }
                     catch (ApplicationException e)
                     {
@@ -303,8 +312,7 @@ namespace SFTPFileHandler
                             _filesInFolder = dir.GetFiles().OrderByDescending(p => p.CreationTime).ToList();
 
                             //Rekursivt anrop, hantera ev kvarvarande filer
-                            CheckFiles(folder,inCorrectFilenameList,
-                                incorrectPeriodList, incorrectFileCodeList);
+                            CheckFiles(folder,incorrectPeriodList, incorrectFileCodeList);
 
                         }
                         catch (System.Net.Mail.SmtpException e)
@@ -323,9 +331,17 @@ namespace SFTPFileHandler
                                 _folderName);
                         }
                     }
-                    else //If not compelete delivery WITHIN TIMEINTERVAL, clear errorlists and try agin 
+                    //If not compelete delivery WITHIN TIMEINTERVAL => files can not be deleted from in-folder because there might come files to complete the delivery later. 
+                    //These files shall not be tested against another subdirectory because that will cause them to be handled as files with incorrect filenames.
+                    //Copy these files to exclude-list so that they will not be checked against another subdirectory in this execution.
+                    //clear errorlists.
+                    else
                     {
-                        inCorrectFilenameList.Clear();
+                        foreach (var file in okFilesForSubDirList)
+                        {
+                            _filesToExcludeFromCheckList.Add(file);
+                        }
+                        _inCorrectFilenameList.Clear();
                         incorrectFileCodeList.Clear();
                         incorrectPeriodList.Clear();
                     }
@@ -340,7 +356,7 @@ namespace SFTPFileHandler
             {
                 try
                 {
-                    IncorrectFileCodeHandler(incorrectFileCodeList, _folderName);
+                    IncorrectFileCodeHandler(incorrectFileCodeList);
                 }
                 catch (System.Net.Mail.SmtpException e)
                 {
@@ -360,7 +376,7 @@ namespace SFTPFileHandler
             {
                 try
                 {
-                    IncorrectPeriodHandler(incorrectPeriodList, _folderName);
+                    IncorrectPeriodHandler(incorrectPeriodList);
                 }
                 catch (System.Net.Mail.SmtpException e)
                 {
@@ -378,14 +394,14 @@ namespace SFTPFileHandler
             }
         }
 
-        private void HandleIncorrectFilenameList(List<FileInfo> inCorrectFilenameList)
+        private void HandleIncorrectFilenameList()
         {
             //If any files incorrect - email user and move file
-            if (inCorrectFilenameList.Any())
+            if (_inCorrectFilenameList.Any())
             {
                 try
                 {
-                    IncorrectFilesHandler(inCorrectFilenameList, _folderName);
+                    IncorrectFilenameHandler();
                 }
                 catch (System.Net.Mail.SmtpException e)
                 {
@@ -492,7 +508,7 @@ namespace SFTPFileHandler
 
         }
 
-        private void IncorrectFilesHandler(List<FileInfo> incorrectFilesList, string folderName)
+        private void IncorrectFilenameHandler()
         {
             //Incorrect filename - move file and email user
             Console.WriteLine("Sending email. Not correct filename.");
@@ -510,19 +526,19 @@ namespace SFTPFileHandler
             string subject = "SFTP-leverans - fil med felaktigt filnamn";
             string body = "Hej! <br>";
             body += "Leveransen innehåller fil med felaktigt filnamn:  <br>";
-            foreach (var incorrectFile in incorrectFilesList)
+            foreach (var incorrectFile in _inCorrectFilenameList)
             {
                 body += incorrectFile.Name + "<br> ";
             }
-            body += "SFTPkonto: " + folderName + "<br><br>";
+            body += "SFTPkonto: " + _folderName + "<br><br>";
             body += "Vid frågor kontakta Socialstyrelsen, e-post: inrapportering@socialstyrelsen.se eller telefon 075-247 45 40 under våra telefontider måndag 13-15, tisdag 9-11, torsdag 13.15. <br> ";
 
             _mailHelper.SendEmail(subject, body, mailRecipients, _mailSender);
 
-            MoveFilesToErrorFolderAndDeleteFilesFromInbox(incorrectFilesList);
+            MoveFilesToErrorFolderAndDeleteFilesFromInbox(_inCorrectFilenameList);
         }
 
-        private void IncorrectFileCodeHandler(List<FileInfo> incorrectFilesList, string folderName)
+        private void IncorrectFileCodeHandler(List<FileInfo> incorrectFilesList)
         {
             //Incorrect filename - move file and email user
             Console.WriteLine("Sending email. Not correct filecode.");
@@ -544,7 +560,7 @@ namespace SFTPFileHandler
             {
                 body += incorrectFile.Name + "<br> ";
             }
-            body += "SFTPkonto: " + folderName + "<br><br>";
+            body += "SFTPkonto: " + _folderName + "<br><br>";
             body += "Vid frågor kontakta Socialstyrelsen, e-post: inrapportering@socialstyrelsen.se eller telefon 075-247 45 40 under våra telefontider måndag 13-15, tisdag 9-11, torsdag 13.15. <br> ";
 
             _mailHelper.SendEmail(subject, body, mailRecipients, _mailSender);
@@ -552,7 +568,7 @@ namespace SFTPFileHandler
             MoveFilesToErrorFolderAndDeleteFilesFromInbox(incorrectFilesList);
         }
 
-        private void IncorrectPeriodHandler(List<FileInfo> incorrectPeriodList, string folderName)
+        private void IncorrectPeriodHandler(List<FileInfo> incorrectPeriodList)
         {
             //Incorrect filename - move file and email user
             Console.WriteLine("Sending email. Not correct period in filename.");
@@ -574,7 +590,7 @@ namespace SFTPFileHandler
             {
                 body += incorrectFile.Name + "<br> ";
             }
-            body += "SFTPkonto: " + folderName + "<br><br>";
+            body += "SFTPkonto: " + _folderName + "<br><br>";
             body += "Vid frågor kontakta Socialstyrelsen, e-post: inrapportering@socialstyrelsen.se eller telefon 075-247 45 40 under våra telefontider måndag 13-15, tisdag 9-11, torsdag 13.15. <br> ";
 
             _mailHelper.SendEmail(subject, body, mailRecipients, _mailSender);

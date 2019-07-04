@@ -253,6 +253,27 @@ namespace InrappSos.DataAccess
             return levIdnForOrg;
         }
 
+
+        public int SaveFiledropFile(string filename, string sosFilename, int caseId, string userId, string userName)
+        {
+            var filedrop = new DroppadFil()
+            {
+                ArendeId = caseId,
+                ApplicationUserId = userId,
+                Filnamn = filename,
+                NyttFilnamn = sosFilename,
+                SkapadDatum = DateTime.Now,
+                SkapadAv = userName,
+                AndradDatum = DateTime.Now,
+                AndradAv = userName
+            };
+
+            DbContext.DroppadFil.Add(filedrop);
+
+            DbContext.SaveChanges();
+            return filedrop.Id;
+        }
+
         public Aterkoppling GetAterkopplingForLeverans(int levId)
         {
             var aterkoppling = DbContext.Aterkoppling.FirstOrDefault(x => x.LeveransId == levId);
@@ -393,6 +414,12 @@ namespace InrappSos.DataAccess
         {
             var caseRepIds = DbContext.ArendeKontaktperson.Where(x => x.ArendeId == caseId).Select(x => x.ApplicationUserId).ToList();
             return caseRepIds;
+        }
+
+        public Arende GetCase(int caseId)
+        {
+            var arende = DbContext.Arende.SingleOrDefault(x => x.Id == caseId);
+            return arende;
         }
 
         public Arendetyp GetCaseType(int casetypeId)
@@ -666,7 +693,7 @@ namespace InrappSos.DataAccess
             DbContext.SaveChanges();
             return leverans.Id;
         }
-
+        
         public IEnumerable<AdmOrganisationstyp> GetAllOrgTypes()
         {
             var orgTypes = DbContext.AdmOrganisationstyp.OrderBy(x => x.Typnamn).ToList();
@@ -1440,6 +1467,19 @@ namespace InrappSos.DataAccess
             var userContactNumber = DbContext.Users.Where(u => u.Id == userId).Select(u => u.Kontaktnummer).SingleOrDefault();
             return userContactNumber;
         }
+
+        public IEnumerable<Arende> GetUserCases(string userId)
+        {
+            var userCases = new List<Arende>();
+            var casesIdsForUser = DbContext.ArendeKontaktperson.Where(x => x.ApplicationUserId == userId).Select(x => x.ArendeId).ToList();
+            foreach (var caseId in casesIdsForUser)
+            {
+                var arende = DbContext.Arende.SingleOrDefault(x => x.Id == caseId);
+                userCases.Add(arende);
+            }
+            return userCases;
+        }
+
         public string GetUserPhoneNumber(string userId)
         {
             var phoneNumber = DbContext.Users.Where(u => u.Id == userId).Select(u => u.PhoneNumber).SingleOrDefault();

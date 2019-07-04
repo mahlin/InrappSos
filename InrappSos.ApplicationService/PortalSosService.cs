@@ -223,6 +223,12 @@ namespace InrappSos.ApplicationService
             return contactNumber;
         }
 
+        public IEnumerable<Arende> HamtaAnvandaresArenden(string userId)
+        {
+            var userCases = _portalSosRepository.GetUserCases(userId);
+            return userCases;
+        }
+
         public string HamtaAnvandaresMobilnummer(string userId)
         {
             var phoneNumber = _portalSosRepository.GetUserPhoneNumber(userId);
@@ -2871,9 +2877,9 @@ namespace InrappSos.ApplicationService
             _portalSosRepository.UpdateInfoText(infoTextClosedpage);
         }
 
-        public void SparaTillDatabasFillogg(string userName, string ursprungligFilNamn, string nyttFilNamn, int leveransId, int sequenceNumber)
+        public void SparaTillDatabasFillogg(string userName, string ursprungligtFilNamn, string nyttFilNamn, int leveransId, int sequenceNumber)
         {
-            _portalSosRepository.SaveToFilelogg(userName, ursprungligFilNamn, nyttFilNamn, leveransId, sequenceNumber);
+            _portalSosRepository.SaveToFilelogg(userName, ursprungligtFilNamn, nyttFilNamn, leveransId, sequenceNumber);
         }
 
         public void SparaValdaRegistersForAnvandare(string userId, string userName, List<RegisterInfo> regIdList)

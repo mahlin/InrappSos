@@ -67,6 +67,8 @@ namespace InrappSos.DataAccess
 
         int GetNewLeveransId(string userId, string userName, int orgId, int regId, int orgenhetsId, int forvLevId, string status, int sftpAccountId);
 
+        int SaveFiledropFile(string filename, string sosFilename, int caseId, string userId, string userName);
+
         Aterkoppling GetAterkopplingForLeverans(int levId);
 
         Organisation GetOrganisation(int orgId);
@@ -104,7 +106,8 @@ namespace InrappSos.DataAccess
         IEnumerable<Arende> GetCasesForOrg(int orgId);
 
         IEnumerable<string> GetCaseReporterIds(int caseId);
-        
+
+        Arende GetCase(int caseId);
 
         Arendetyp GetCaseType(int casetypeId);
 
@@ -306,6 +309,8 @@ namespace InrappSos.DataAccess
         string GetUserPhoneNumber(string userId);
 
         string GetUserContactNumber(string userId);
+
+        IEnumerable<Arende> GetUserCases(string userId);
 
         ApplicationUser GetUserByEmail(string email);
 

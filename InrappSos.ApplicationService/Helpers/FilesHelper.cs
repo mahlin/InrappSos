@@ -219,8 +219,33 @@ namespace InrappSos.ApplicationService.Helpers
 
             //EncryptDecrypt.AES_Encrypt("C:\\Socialstyrelsen\\KrypteringTest\\testfil.txt", krypteradUtfil);
             //EncryptDecrypt.AES_Decrypt("C:\\Socialstyrelsen\\KrypteringTest\\krypteradUtfil.txt", dekrypteradUtfil);
-            //EncryptDecrypt.AES_Encrypt("C:\\Socialstyrelsen\\KrypteringTest\\Ekb_0330_201707_20170815T1011.txt", storKrypteradUtfil);
-            //EncryptDecrypt.AES_Decrypt("C:\\Socialstyrelsen\\KrypteringTest\\storKrypteradUtfil.txt", storDekrypteradUtfil);
+            //EncryptDecrypt.AES_Encrypt("C:\\Socialstyrelsen\\KrypteringTest\\Ekb_0330_201707_20170815T1011.txt", storKrypteradUtfil);            //EncryptDecrypt.AES_Decrypt("C:\\Socialstyrelsen\\KrypteringTest\\storKrypteradUtfil.txt", storDekrypteradUtfil);
+
+        }
+
+        public void UploadFileDropFilesAndShowResults(HttpContextBase ContentBase, List<ViewDataUploadFilesResult> resultList, int selectedCaseId, string userId, string userName)
+        {
+            var httpRequest = ContentBase.Request;
+
+            //Kolla vilken ärendetyp filen/filerna hör till och skapa mapp om det behövs
+            var arende = _portalSosRepository.GetCase(selectedCaseId);
+            var slussmapp = _portalSosRepository.GetCaseType(arende.ArendetypId).Slussmapp;
+
+            StorageRoot = StorageRoot + slussmapp + "\\" + arende.Arendenr + "\\";
+            String fullPath = Path.Combine(StorageRoot);
+            Directory.CreateDirectory(fullPath);
+
+            var headers = httpRequest.Headers;
+
+            //Kontrollera om chunked upload
+            if (string.IsNullOrEmpty(headers["X-File-Name"]))
+            {
+                UploadWholeFiledropFile(ContentBase, resultList, userId, userName, selectedCaseId);
+            }
+            else
+            {
+                UploadPartialFile(headers["X-File-Name"], ContentBase, resultList); //Ej implementerat/testa
+            }
 
         }
 
@@ -398,19 +423,61 @@ namespace InrappSos.ApplicationService.Helpers
                     }
                     var fullPath = Path.Combine(pathOnServer, Path.GetFileName(extendedFileName));
                     file.SaveAs(fullPath);
-                    var filelength = 0;
-                    if (file.ContentLength > 2147483647)
-                    {
-                        filelength = 9999;
-                    }
-                    else
-                    {
-                        filelength = Convert.ToInt32(file.ContentLength);
-                    }
-
                     statuses.Add(UploadResult(file.FileName, file.ContentLength, file.FileName, (extendedFileName), levId, i + 1));
                 }
             }
+        }
+
+        private void UploadWholeFiledropFile(HttpContextBase requestContext, List<ViewDataUploadFilesResult> statuses, string userId,string  userName, int selectedCaseId)
+        {
+            var extendedFileName = String.Empty;
+            var request = requestContext.Request;
+            for (int i = 0; i < request.Files.Count; i++)
+            {
+                var file = request.Files[i];
+                extendedFileName = file.FileName; //Om taggning ska göras framöver så ska hash läggas till extendedFilename
+
+                //Save to database
+                var filedropId = _portalSosRepository.SaveFiledropFile(file.FileName, file.FileName, selectedCaseId, userId, userName);
+
+                //TODO - check filename depending on chosen registertype
+                if (file.ContentLength > 0 && (Path.GetExtension(file.FileName).ToLower() == ".txt"
+                    || Path.GetExtension(file.FileName).ToLower() == ".xls"
+                    || Path.GetExtension(file.FileName).ToLower() == ".xlsx"))
+                {
+                    String pathOnServer = Path.Combine(StorageRoot);
+
+                    var fullPath = Path.Combine(pathOnServer, Path.GetFileName(extendedFileName));
+                    file.SaveAs(fullPath);
+                    statuses.Add(UploadResult(file.FileName, file.ContentLength, file.FileName, file.FileName, filedropId, i + 1));
+                }
+            }
+        }
+
+
+        private void UploadPartialFile(string fileName, HttpContextBase requestContext, List<ViewDataUploadFilesResult> statuses)
+        {
+            //TODO - partial upload
+            var request = requestContext.Request;
+            if (request.Files.Count != 1) throw new HttpRequestValidationException("Attempt to upload chunked file containing more than one fragment per request");
+            var file = request.Files[0];
+            var inputStream = file.InputStream;
+            String patchOnServer = Path.Combine(StorageRoot);
+            var fullName = Path.Combine(patchOnServer, Path.GetFileName(file.FileName));
+            using (var fs = new FileStream(fullName, FileMode.Append, FileAccess.Write))
+            {
+                var buffer = new byte[1024];
+
+                var l = inputStream.Read(buffer, 0, 1024);
+                while (l > 0)
+                {
+                    fs.Write(buffer, 0, l);
+                    l = inputStream.Read(buffer, 0, 1024);
+                }
+                fs.Flush();
+                fs.Close();
+            }
+            //statuses.Add(UploadResult(file.FileName, file.ContentLength, file.FileName));
         }
 
         //public IEnumerable<FilloggDetaljDTO> HamtaFillogg(int leveransId)

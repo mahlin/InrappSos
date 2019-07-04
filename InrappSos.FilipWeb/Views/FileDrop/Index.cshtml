@@ -1,0 +1,55 @@
+﻿@using System.Web.UI.WebControls
+@using InrappSos.ApplicationService.DTOModel
+@model InrappSos.FilipWeb.Models.ViewModels.FileDropViewModel
+
+<script src="@Url.Content("~/Scripts/fileDrop.js")" type="text/javascript"></script>
+
+<script>
+    var caseLista = @Html.Raw(Json.Encode(Model.CaseList));
+</script>
+
+@{
+    ViewBag.Title = "Välkommen att lämna filer för " + Html.Raw(Model.OrganisationsNamn);
+    var fileTableHeader = "Filer för uppladdning";
+}
+
+<!-- blueimp File Upload & Gallery styles -->
+@Styles.Render("~/Content/jQuery-File-Upload")
+
+
+<script>
+    var $form = null;
+    $(function () {
+
+        $form = $('#fileupload').fileupload({
+            dataType: 'json'
+        });
+
+    });
+    $('#fileupload').addClass('fileupload-processing');
+
+</script>
+
+<div class="padding-top-55">
+    <h4>@ViewBag.Title</h4>
+</div>
+
+<p>Välj filer att ladda upp</p>
+<section>
+    <div class="well bs-component">
+        <div class="row h-100">
+            <div class="col-md-6 form-group">
+                @Html.DropDownListFor(m => m.SelectedCaseId, ViewBag.CaseList as SelectList, " - Välj ärende -", new { id = "ddlCase", @class = "form-control ddl", style = "max-width:550px;" })
+            </div>
+            <div class="col-md-6" style="padding-left: 0px;font-size: 0.9em">
+                Om du inte hittar ditt ärende i listan, kontakta Socialstyrelsen, e-post: inrapportering@socialstyrelsen.se eller telefon 075-247 45 40 under våra telefontider måndag 13-15, tisdag 9-11, torsdag 13.15. <br>.
+            </div>
+        </div>
+    </div>
+</section>
+
+
+@Html.Partial("_Files")
+
+
+@Scripts.Render("~/bundles/jQuery-File-Upload")

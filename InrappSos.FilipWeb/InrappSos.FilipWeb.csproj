@@ -221,6 +221,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\FileDropController.cs" />
     <Compile Include="Controllers\FileUploadController.cs" />
     <Compile Include="Controllers\HistoryController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -233,6 +234,7 @@
     <Compile Include="Models\CustomIdentityResultErrorDescriber.cs" />
     <Compile Include="Models\HistoryViewModels.cs" />
     <Compile Include="Models\ViewModels\AboutViewModel.cs" />
+    <Compile Include="Models\ViewModels\FileDropViewModel.cs" />
     <Compile Include="Models\ViewModels\FilesViewModel.cs" />
     <Compile Include="Models\ViewModels\ManageViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -358,6 +360,7 @@
     <Content Include="Scripts\cldr\supplemental.js" />
     <Content Include="Scripts\cldr\unresolved.js" />
     <Content Include="Scripts\custom\custom.js" />
+    <Content Include="Scripts\fileDrop.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
@@ -452,6 +455,8 @@
     <Content Include="Views\Home\Information.cshtml" />
     <Content Include="Views\Shared\_LoginPartialWhenClosed.cshtml" />
     <Content Include="Views\Account\LoginWhenClosed.cshtml" />
+    <Content Include="Views\FileDrop\Index.cshtml" />
+    <Content Include="Views\FileDrop\_Files.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

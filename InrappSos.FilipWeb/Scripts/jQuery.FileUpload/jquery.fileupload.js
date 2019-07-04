@@ -899,7 +899,7 @@
                     } else {
                         //$("#thText").html("Uppladdade filer. Du kommer få en återkoppling på dina filer inom en timme.");
                         $("#thText").html("Uppladdade filer. Du kommer få en återkoppling på dina filer inom en timme.<br><span style='color:red;font-size:.8em'>OBS! För LVM (Tvångsvård enligt lagen om vård av missbrukare) och Cancerregistret sker manuell återkoppling inom 48 timmar.</span>");
-
+                        $("#thTextFildropp").html("Uppladdade filer");
                     }
                     //Efter uppladdning - byt rubrik, nollställ dropdown och dölj knapparna
                     $('#ddlRegister').val("");

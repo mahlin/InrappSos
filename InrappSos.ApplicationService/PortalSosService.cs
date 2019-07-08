@@ -1342,6 +1342,21 @@ namespace InrappSos.ApplicationService
             return sorteradHistorikLista;
         }
 
+        public IEnumerable<FildroppDetaljDTO> HamtaFildroppsHistorikForAnvandaresArenden(string userId)
+        {
+            var usersCases = _portalSosRepository.GetUserCases(userId);
+            var leveransList = new List<DroppadFil>();
+            foreach (var arende in usersCases)
+            {
+                leveransList.AddRange(_portalSosRepository.GetDroppedFilesForCase(arende.Id).ToList());
+            }
+            var historikLista = SkapaHistorikraderForDroppadeFiler(leveransList);
+
+            var sorteradHistorikLista = historikLista.OrderByDescending(x => x.AndradDatum).ToList();
+
+            return sorteradHistorikLista;
+        }
+
         public IEnumerable<FilloggDetaljDTO> HamtaTop10HistorikForOrganisation(int orgId)
         {
             var historikLista = new List<FilloggDetaljDTO>();
@@ -1475,6 +1490,29 @@ namespace InrappSos.ApplicationService
                         historikLista.Add(filloggDetalj);
                     }
                 }
+            }
+
+            return historikLista;
+        }
+
+
+        private List<FildroppDetaljDTO> SkapaHistorikraderForDroppadeFiler(IEnumerable<DroppadFil> leveransList)
+        {
+            var historikLista = new List<FildroppDetaljDTO>();
+
+            foreach (var leverans in leveransList)
+            {
+                var fildroppDetalj = new FildroppDetaljDTO();
+                var arende = _portalSosRepository.GetArendeById(leverans.ArendeId);
+
+                fildroppDetalj.Id = leverans.Id;
+                fildroppDetalj.ArendeId= leverans.ArendeId;
+                fildroppDetalj.Arendenummer = arende.Arendenr;
+                fildroppDetalj.Arendenamn = arende.Arendenamn;
+                fildroppDetalj.Filnamn = leverans.Filnamn;
+                fildroppDetalj.Kontaktperson = _portalSosRepository.GetUserById(leverans.ApplicationUserId).Email;
+                fildroppDetalj.AndradDatum = leverans.AndradDatum;
+                historikLista.Add(fildroppDetalj);
             }
 
             return historikLista;

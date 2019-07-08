@@ -45,7 +45,7 @@ $(document).ready(function () {
         var jqXHR = $('#fileupload').fileupload('send', { files: filelist })
             .success(function (result, textStatus, jqXHR) {
                 $("#filTabell tbody tr.template-upload").remove();
-                //$("#updateHistoryForm").submit();
+                $("#updateHistoryForm").submit();
             })
             .error(function (jqXHR, textStatus, errorThrown) {/* ... */ })
             .complete(function (result, textStatus, jqXHR) {
@@ -71,3 +71,19 @@ function checkOkToUpload() {
         $('.start').hide();
     }
 }
+
+$(document).on('submit', '#updateHistoryForm', function () {
+    $.ajax({ // create an AJAX call...'        
+        data: $(this).serialize(), // get the form data
+        cache: false,
+        type: 'post', // GET or POST
+        url: $('#StartUrl').val() + '/FileDrop/RefreshFilesHistory', // the file to call
+        success: function (response) { // on success..
+            $("#updateHistoryForm").html(response);
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            alert('error:' + errorThrown);
+        }
+    });
+    return false; // cancel original event to prevent form submitting
+});

@@ -878,6 +878,12 @@ namespace InrappSos.DataAccess
             return deliveredFiles;
         }
 
+        public IEnumerable<DroppadFil> GetDroppedFilesForCase(int caseId)
+        {
+            var deliveredFiles = DbContext.DroppadFil.Where(x => x.ArendeId == caseId).ToList();
+            return deliveredFiles;
+        }
+
         public IEnumerable<AdmForeskrift> GetAllRegulations()
         {
             var regulations = DbContext.AdmForeskrift.ToList();
@@ -1489,6 +1495,12 @@ namespace InrappSos.DataAccess
         public ApplicationUser GetUserByEmail(string email)
         {
             var user = DbContext.Users.SingleOrDefault(x => x.Email == email);
+            return user;
+        }
+
+        public ApplicationUser GetUserById(string userId)
+        {
+            var user = DbContext.Users.SingleOrDefault(x => x.Id == userId);
             return user;
         }
 

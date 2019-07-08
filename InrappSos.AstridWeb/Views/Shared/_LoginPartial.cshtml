@@ -144,7 +144,7 @@
                                  <a href="#" class="dropdown-submenu-toggle submenuX" data-toggle="dropdown">Användare/roller </a>
                                  <ul class="dropdown-menu">
                                      <li>@Html.ActionLink("Användare", "GetAstridUsers", "Admin")</li>
-                                     <li>@Html.ActionLink("Reg anv", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
+                                     <li>@Html.ActionLink("Registrera anvanvändare", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
                                      <li>@Html.ActionLink("Roller", "CRUDRoles", "Admin")</li>
                                  </ul>
                              </li>
@@ -164,7 +164,7 @@
                                      <li class="dropdown dropdown-submenu">
                                          <a href="#" class="dropdown-submenu-toggle submenuX" data-toggle="dropdown">Uppgiftsskyldighet </a>
                                          <ul class="dropdown-menu">
-                                             <li>@Html.ActionLink("Adm uppgiftsskyldighet för organisationstyp", "GetOrgtypesForSubDirectory", "Register")</li>
+                                             <li>@Html.ActionLink("Ange uppgiftsskyldighet för organisationstyp", "GetOrgtypesForSubDirectory", "Register")</li>
                                          </ul>
                                      </li>
                                  </ul>

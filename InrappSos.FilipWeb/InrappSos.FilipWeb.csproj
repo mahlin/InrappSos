@@ -457,6 +457,7 @@
     <Content Include="Views\Account\LoginWhenClosed.cshtml" />
     <Content Include="Views\FileDrop\Index.cshtml" />
     <Content Include="Views\FileDrop\_Files.cshtml" />
+    <Content Include="Views\FileDrop\_FilesHistory.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

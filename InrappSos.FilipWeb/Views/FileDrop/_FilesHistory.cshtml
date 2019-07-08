@@ -1,0 +1,52 @@
+﻿@using InrappSos.ApplicationService.DTOModel
+@model InrappSos.FilipWeb.Models.ViewModels.FileDropViewModel
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        var rows = $(".greenRow").closest('tr');
+        $(rows).css('background-color', 'rgba(130, 224, 170, 0.4)');
+    });
+
+</script>
+
+
+@using (Html.BeginForm("RefreshFilesHistory", "FileDrop", FormMethod.Post, new { @class = "form-horizontal", role = "form", id = "updateHistoryForm" }))
+{
+    @Html.HiddenFor(m => Model.OrganisationsNamn)
+    @Html.HiddenFor(m => Model.StartUrl)
+
+    <H4>Historik för @Html.Raw(Model.OrganisationsNamn) <span style="font-size: 0.7em"></span></H4>
+    <table class="table table-striped" id="historyTable" >
+        <thead>
+            <tr class="historyHeader" style="background-color: #f9f9f9;">
+                <th>Ärende</th>
+                <th>Filnamn</th>
+                <th>Uppgiftslämnare</th>
+                <th>Leveranstidpunkt</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.HistorikLista != null)
+            {
+                if (Model.HistorikLista.Count > 0)
+                { 
+                    int i = 0;
+                    while (i < 10 && i < Model.HistorikLista.Count)
+                    {
+            <tr>
+                <td>@Model.HistorikLista[i].Arendenummer - @Model.HistorikLista[i].Arendenamn</td>
+                <td>@Model.HistorikLista[i].Filnamn</td>
+                <td>@Model.HistorikLista[i].Kontaktperson</td>
+                <td>@Model.HistorikLista[i].AndradDatum</td>
+            </tr>
+                        i++;
+                    }
+                }
+            }
+        </tbody>
+    </table>
+}
+
+

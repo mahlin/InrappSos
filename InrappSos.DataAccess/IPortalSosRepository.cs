@@ -207,6 +207,8 @@ namespace InrappSos.DataAccess
 
         IEnumerable<LevereradFil> GetDeliveredFiles(int deliveryId);
 
+        IEnumerable<DroppadFil> GetDroppedFilesForCase(int caseId);
+
         IEnumerable<AdmForvantadfil> GetAllExpectedFiles();
 
         IEnumerable<AdmFilkrav> GetAllFileRequirements();
@@ -313,6 +315,8 @@ namespace InrappSos.DataAccess
         IEnumerable<Arende> GetUserCases(string userId);
 
         ApplicationUser GetUserByEmail(string email);
+
+        ApplicationUser GetUserById(string userId);
 
         ApplicationUser GetUserBySFTPAccountId(int ftpAccountId);
 

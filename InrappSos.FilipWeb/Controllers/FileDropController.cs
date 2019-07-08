@@ -6,6 +6,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using InrappSos.ApplicationService;
+using InrappSos.ApplicationService.DTOModel;
 using InrappSos.ApplicationService.Helpers;
 using InrappSos.ApplicationService.Interface;
 using InrappSos.DataAccess;
@@ -56,6 +57,11 @@ namespace InrappSos.FilipWeb.Controllers
                 }
                 var userOrg = _portalService.HamtaOrgForAnvandare(User.Identity.GetUserId());
                 _model.OrganisationsNamn = userOrg.Organisationsnamn;
+
+                //Hämta historik för användarens ärenden
+                var historyFileList = _portalService.HamtaFildroppsHistorikForAnvandaresArenden(User.Identity.GetUserId()).ToList();
+                _model.HistorikLista = historyFileList;
+
                 var usersCases = _portalService.HamtaAnvandaresArenden(User.Identity.GetUserId()).ToList();
                 // Ladda drop down list.  
                 ViewBag.CaseList = CreateCaseDropDownList(usersCases);
@@ -136,6 +142,17 @@ namespace InrappSos.FilipWeb.Controllers
         public ActionResult CustomError(CustomErrorPageModel model)
         {
             return View(model);
+        }
+
+        public ActionResult RefreshFilesHistory(FileDropViewModel model)
+        {
+            var userId = User.Identity.GetUserId();
+
+            List<FildroppDetaljDTO> historyFileList = _portalService.HamtaFildroppsHistorikForAnvandaresArenden(userId).ToList();
+
+            model.HistorikLista = historyFileList;
+
+            return PartialView("_FilesHistory", model);
         }
 
 

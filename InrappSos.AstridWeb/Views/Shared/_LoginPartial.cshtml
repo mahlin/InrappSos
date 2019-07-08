@@ -22,6 +22,11 @@
 
                 });
 
+            $('.submenuX').on('click',function (ev) {
+                //alert('Hej');
+                $(this).parent().siblings().removeClass('open');
+                });
+
             //$('.dropown-toggle').dropdown();
             //$('ul.dropdown-menu [data-toggle=dropdown]').on('click', function (event) {
             //    event.preventDefault(); 
@@ -31,6 +36,7 @@
             //    $(this).parent().toggleClass('open');
             //});
         });
+
     })(jQuery);
 </script>
 
@@ -66,46 +72,32 @@
                         </li>
                     </ul>
                 </li>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Register och delregister <span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li>@Html.ActionLink("Register", "Index", "Register")</li>
-                        <li>@Html.ActionLink("Delregister", "GetAllSubDirectories", "Register")</li>
-                        @*<li>@Html.ActionLink("Delregister/organisationstyp", "GetAllSubDirectoriesOrgtypes", "Register")</li>*@
-                        <li>@Html.ActionLink("Delregister/organisationstyp", "GetOrgtypesForSubDirectory", "Register")</li>
-                        <li>@Html.ActionLink("Föreskrifter", "GetAllRegulations", "Register")</li>
-                    </ul>
-                </li>
+
 
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Organisation <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li>@Html.ActionLink("Organisation", "Index", "Organisation")</li>
-                        <li>@Html.ActionLink("Enhetsuppgiftsskyldighet", "GetUnitReportObligations", "Organisation")</li>
-                        <li>@Html.ActionLink("Kontaktpersoner", "GetContacts", "Organisation")</li>
-                        <li>@Html.ActionLink("Organisationsenheter", "GetOrgUnits", "Organisation")</li>
-                        <li>@Html.ActionLink("Organisationstyp", "GetOrganisationTypes", "Organisation")</li>
-                        <li>@Html.ActionLink("Privata epostadresser", "GetPrivateEmailAdresses", "Organisation")</li>
+                        <li>@Html.ActionLink("Sök organisation", "Index", "Organisation")</li>
                         <li>@Html.ActionLink("Skapa ny organisation", "CreateOrganisation", "Organisation")</li>
+                        <li>@Html.ActionLink("Kontaktpersoner", "GetContacts", "Organisation")</li>
+                        <li>@Html.ActionLink("Uppgiftsskyldighet", "GetReportObligations", "Organisation")</li>
+                        <li class="dropdown dropdown-submenu">
+                            <a href="#" class="dropdown-submenu-toggle" data-toggle="dropdown">Organisationsenheter</a>
+                            <ul class="dropdown-menu">
+                                <li>@Html.ActionLink("Organisationsenheter", "GetOrgUnits", "Organisation")</li>
+                                <li>@Html.ActionLink("Enhetsuppgiftsskyldighet", "GetUnitReportObligations", "Organisation")</li>
+                            </ul>
+                        </li>
+                        <li>@Html.ActionLink("Privata epostadresser", "GetPrivateEmailAdresses", "Organisation")</li>
                         <li>@Html.ActionLink("SFTP-konton", "GetSFTPAccounts", "Organisation")</li>
                         <li>@Html.ActionLink("Undantag av förväntad fil", "GetExceptionsExpectedFiles", "Organisation")</li>
-                        <li>@Html.ActionLink("Uppgiftsskyldighet", "GetReportObligations", "Organisation")</li>
                         <li>@Html.ActionLink("Ärenden", "GetCases", "Organisation")</li>
-
-                        @*<li><a href="#">Something else here</a></li>
-        <li role="separator" class="divider"></li>
-        <li><a href="#">Separated link</a></li>
-        <li role="separator" class="divider"></li>
-        <li><a href="#">One more separated link</a></li>*@
                     </ul>
                 </li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Leverans <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li>@Html.ActionLink("Insamlingsfrekvenser", "GetInsamlingsfrekvens", "Leverans")</li>
-                        <li>@Html.ActionLink("Filkrav", "GetFilkrav", "Leverans")</li>
                         <li>@Html.ActionLink("Förväntad leverans", "Index", "Leverans")</li>
-                        <li>@Html.ActionLink("Förväntad fil", "GetForvantadeFiler", "Leverans")</li>
                         <li class="dropdown dropdown-submenu">
                             <a href="#" class="dropdown-submenu-toggle" data-toggle="dropdown">Leveranser</a>
                             <ul class="dropdown-menu">
@@ -113,8 +105,15 @@
                                 <li>@Html.ActionLink("Leveransstatus per organisation", "GetDeliveryStatus", "Leverans")</li>
                             </ul>
                         </li>
+
                         <li>@Html.ActionLink("Påminnelser", "GetReminderinfo", "Leverans")</li>
 
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Ärende <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li>@Html.ActionLink("Sök organisationn", "GetCases", "Organisation")</li>
                     </ul>
                 </li>
 
@@ -123,11 +122,53 @@
                 if (User.IsInRole("Admin"))
                  {
                      <li class="dropdown">
-                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin <span class="caret"></span></a>
+                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" >Admin <b class="caret"></b></a>
                          <ul class="dropdown-menu">
-                             <li>@Html.ActionLink("Användare", "GetAstridUsers", "Admin")</li>
-                             <li>@Html.ActionLink("Reg anv", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
-                             <li>@Html.ActionLink("Roller", "CRUDRoles", "Admin")</li>
+                             <li class="dropdown dropdown-submenu">
+                                 <a href="#" class="dropdown-submenu-toggle submenuX" data-toggle="dropdown">Grunddata </a>
+                                 <ul class="dropdown-menu">
+                                     <li>@Html.ActionLink("Organisationstyp", "GetOrganisationTypes", "Organisation")</li>
+                                     <li>@Html.ActionLink("Kontaktpersonstyp", "NotImplementedPage", "Home")</li>
+                                     <li class="dropdown dropdown-submenu">
+                                         <a href="#" class="dropdown-submenu-toggle" data-toggle="dropdown">Ärende </a>
+                                         <ul class="dropdown-menu">
+                                             <li>@Html.ActionLink("Ärendestyp", "Index", "Organisation")</li>
+                                             <li>@Html.ActionLink("Ärendestatus", "Index", "Organisation")</li>
+                                         </ul>
+                                     </li>
+                                     <li>@Html.ActionLink("Delregistertyp", "Index", "Organisation")</li>
+                                     <li>@Html.ActionLink("Insamlingsfrekvenser", "GetInsamlingsfrekvens", "Leverans")</li>
+                                 </ul>
+                             </li>
+                             <li class="dropdown dropdown-submenu">
+                                 <a href="#" class="dropdown-submenu-toggle submenuX" data-toggle="dropdown">Användare/roller </a>
+                                 <ul class="dropdown-menu">
+                                     <li>@Html.ActionLink("Användare", "GetAstridUsers", "Admin")</li>
+                                     <li>@Html.ActionLink("Reg anv", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
+                                     <li>@Html.ActionLink("Roller", "CRUDRoles", "Admin")</li>
+                                 </ul>
+                             </li>
+                             <li class="dropdown dropdown-submenu">
+                                 <a href="#" class="dropdown-submenu-toggle submenuX" data-toggle="dropdown">Register </a>
+                                 <ul class="dropdown-menu">
+                                     <li>@Html.ActionLink("Föreskrifter", "GetAllRegulations", "Register")</li>
+                                     <li>@Html.ActionLink("Register", "Index", "Register")</li>
+                                     <li>@Html.ActionLink("Delregister", "GetAllSubDirectories", "Register")</li>
+                                     <li class="dropdown dropdown-submenu">
+                                         <a href="#" class="dropdown-submenu-toggle" data-toggle="dropdown">Leveranskrav </a>
+                                         <ul class="dropdown-menu">
+                                             <li>@Html.ActionLink("Filkrav", "GetFilkrav", "Leverans")</li>
+                                             <li>@Html.ActionLink("Förväntad fil", "GetForvantadeFiler", "Leverans")</li>
+                                         </ul>
+                                     </li>
+                                     <li class="dropdown dropdown-submenu">
+                                         <a href="#" class="dropdown-submenu-toggle submenuX" data-toggle="dropdown">Uppgiftsskyldighet </a>
+                                         <ul class="dropdown-menu">
+                                             <li>@Html.ActionLink("Adm uppgiftsskyldighet för organisationstyp", "GetOrgtypesForSubDirectory", "Register")</li>
+                                         </ul>
+                                     </li>
+                                 </ul>
+                             </li>
                          </ul>
                      </li>
                  }

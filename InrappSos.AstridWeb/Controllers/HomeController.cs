@@ -75,6 +75,14 @@ namespace InrappSos.AstridWeb.Controllers
             return View();
         }
 
+        public ActionResult NotImplementedPage()
+        {
+            ViewBag.Message = "Inte implementerat.";
+            ViewBag.Text = _portalSosService.HamtaInfoText("Kontaktsida").Text;
+
+            return View();
+        }
+
         public enum ManageMessageId
         {
             AddPhoneSuccess,

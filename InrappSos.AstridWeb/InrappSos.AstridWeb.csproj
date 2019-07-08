@@ -359,6 +359,7 @@
     <Content Include="Views\System\AddDocument.cshtml" />
     <Content Include="Views\System\_Files.cshtml" />
     <Content Include="Views\Register\EditSubDirectorysOrgtypes.cshtml" />
+    <Content Include="Views\Home\NotImplementedPage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

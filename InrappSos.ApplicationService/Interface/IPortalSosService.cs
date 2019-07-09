@@ -29,16 +29,6 @@ namespace InrappSos.ApplicationService.Interface
 
         IdentityRole HamtaAstridRoll(string roleName);
 
-        IEnumerable<AspNetPermissions> HamtaAllaAstridRattigheter();
-            
-        IEnumerable<AspNetRolesPermissions> HamtaAstridRattigheterForRoll(string rollId);
-
-        IEnumerable<string> HamtaAstridRattighetersNamnForRoll(string rollId);
-
-        IEnumerable<PermissionDTO> HamtaValdaAstridRattigheterForRoll(string rollId);
-
-        void UppdateraAstridRollsRattigheter(string rollId, List<PermissionDTO> rattighetsLista);
-
         IdentityRole HamtaFilipRoll(string roleName);
 
         IEnumerable<AdmFAQKategori> HamtaAllaFAQs();

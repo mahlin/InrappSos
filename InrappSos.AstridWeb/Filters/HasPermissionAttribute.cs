@@ -50,11 +50,11 @@ namespace InrappSos.AstridWeb.Filters
             foreach (var roleName in roles)
             {
                 var role = _portalSosService.HamtaAstridRoll(roleName);
-                var rolePermissionsNamesList = _portalSosService.HamtaAstridRattighetersNamnForRoll(role.Id);
-                if (rolePermissionsNamesList.Contains(_permission))
-                {
-                    hasPermission = true;
-                }
+                //var rolePermissionsNamesList = _portalSosService.HamtaAstridRattighetersNamnForRoll(role.Id);
+                //if (rolePermissionsNamesList.Contains(_permission))
+                //{
+                //    hasPermission = true;
+                //}
             }
 
             if (!hasPermission)

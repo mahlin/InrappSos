@@ -215,7 +215,6 @@ namespace InrappSos.AstridWeb.Controllers
             var model = new AdminViewModels.AdminRoleViewModel();
             model.SelectedApplication = "Astrid";
             model.Role = _portalSosService.HamtaAstridRoll(roleName);
-            model.PermissionsList =  _portalSosService.HamtaValdaAstridRattigheterForRoll(model.Role.Id).ToList();
             //var thisRole = _portalSosService.HamtaAstridRoll(roleName);
             ViewBag.Text = "Ändra Astrid-roll";
 
@@ -232,7 +231,6 @@ namespace InrappSos.AstridWeb.Controllers
             try
             {
                 _portalSosService.UppdateraAstridRoll(model.Role);
-                _portalSosService.UppdateraAstridRollsRattigheter(model.Role.Id, model.PermissionsList);
             }
             catch (Exception e)
             {
@@ -299,9 +297,11 @@ namespace InrappSos.AstridWeb.Controllers
         // GET: /Roles/Edit/5
         public ActionResult EditFilipRole(string roleName)
         {
-            var thisRole = _portalSosService.HamtaFilipRoll(roleName);
+            var model = new AdminViewModels.AdminRoleViewModel();
+            model.SelectedApplication = "Filip";
+            model.Role = _portalSosService.HamtaFilipRoll(roleName);
             ViewBag.Text = "Ändra Filip-roll";
-            return View("EditRole", thisRole);
+            return View("EditRole", model);
             //return RedirectToAction("CRUDRoles");
         }
 

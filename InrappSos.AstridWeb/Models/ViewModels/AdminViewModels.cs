@@ -36,7 +36,6 @@ namespace InrappSos.AstridWeb.Models.ViewModels
         {
             public IdentityRole Role { get; set; }
             public string SelectedApplication { get; set; }
-            public List<PermissionDTO> PermissionsList { get; set; }
 
         }
     }

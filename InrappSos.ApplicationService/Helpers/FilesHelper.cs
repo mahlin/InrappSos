@@ -231,7 +231,10 @@ namespace InrappSos.ApplicationService.Helpers
             var arende = _portalSosRepository.GetCase(selectedCaseId);
             var slussmapp = _portalSosRepository.GetCaseType(arende.ArendetypId).Slussmapp;
 
-            StorageRoot = StorageRoot + slussmapp + "\\" + arende.Arendenr + "\\";
+            //Byt ut ev slashar(/\) i ärendenr,mret mot bindestreck (-)
+            var fixedCasenumber = arende.Arendenr.Replace('/', '-').Replace('\\', '-').Replace('.', '-').Replace('?', '-').Replace('*', '-').Replace('"', '-'); 
+
+            StorageRoot = StorageRoot + slussmapp + "\\" + fixedCasenumber + "\\";
             String fullPath = Path.Combine(StorageRoot);
             Directory.CreateDirectory(fullPath);
 

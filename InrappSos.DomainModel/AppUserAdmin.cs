@@ -22,5 +22,7 @@ namespace InrappSos.DomainModel
             // Add custom user claims here
             return userIdentity;
         }
+
+        public ICollection<ApplicationUserRole> UserRoles { get; set; }
     }
 }

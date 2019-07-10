@@ -19,24 +19,24 @@ namespace InrappSos.DataAccess
 
         void DeleteAdminUser(string userId);
 
-        IEnumerable<IdentityRole> GetAllAstridRoles();
+        IEnumerable<ApplicationRole> GetAllAstridRoles();
 
-        IEnumerable<IdentityRole> GetAllFilipRoles();
+        IEnumerable<ApplicationRole> GetAllFilipRoles();
 
         void CreateAstridRole(string roleName);
 
         void CreateFilipRole(string roleName);
 
-        IdentityRole GetAstridRole(string roleName);
+        ApplicationRole GetAstridRole(string roleName);
 
-        void UpdateAstridRole(IdentityRole role);
+        void UpdateAstridRole(ApplicationRole role);
 
         void DeleteAstridRole(string roleName);
 
         //****************************************************************//
 
         UndantagEpostadress GetUserFromUndantagEpostadress(string email);
-        IdentityRole GetFilipRole(string roleName);
+        ApplicationRole GetFilipRole(string roleName);
         void UpdateFilipRole(IdentityRole role);
         void DeleteFilipRole(string roleName);
 

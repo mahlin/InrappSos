@@ -227,7 +227,7 @@ namespace InrappSos.AstridWeb.Controllers
                 model.Kommunkod = model.Organisation.Kommunkod;
                 var contacts = _portalSosService.HamtaKontaktpersonerForOrg(model.Organisation.Id);
                 //TODO - roller även här?
-                var roller = new List<IdentityRole>();
+                var roller = new List<ApplicationRole>();
                 model.ContactPersons = ConvertUsersViewModelUser(contacts, roller);
 
                 model.OrgUnits = _portalSosService.HamtaOrgEnheterForOrg(model.Organisation.Id).ToList();
@@ -1621,7 +1621,7 @@ namespace InrappSos.AstridWeb.Controllers
 
 
 
-        private List<OrganisationViewModels.ApplicationUserViewModel> ConvertUsersViewModelUser(IEnumerable<ApplicationUser> contacts, List<IdentityRole> roller)
+        private List<OrganisationViewModels.ApplicationUserViewModel> ConvertUsersViewModelUser(IEnumerable<ApplicationUser> contacts, List<ApplicationRole> roller)
         {
             var contactPersonsView = new List<OrganisationViewModels.ApplicationUserViewModel>();
 
@@ -2201,7 +2201,7 @@ namespace InrappSos.AstridWeb.Controllers
             return alreadyUsed;
         }
 
-        private List<IdentityRoleViewModel> ConvertRolesToVM(List<IdentityRole> roller)
+        private List<IdentityRoleViewModel> ConvertRolesToVM(List<ApplicationRole> roller)
         {
             var rollerList = new List<IdentityRoleViewModel>();
 

@@ -215,16 +215,16 @@ namespace InrappSos.AstridWeb
         }
     }
 
-    public class ApplicationRoleManager : RoleManager<IdentityRole>
+    public class ApplicationRoleManager : RoleManager<ApplicationRole>
     {
-        public ApplicationRoleManager(IRoleStore<IdentityRole, string> roleStore) : base(roleStore)
+        public ApplicationRoleManager(IRoleStore<ApplicationRole, string> roleStore) : base(roleStore)
         {
         }
 
         public static ApplicationRoleManager Create(IdentityFactoryOptions<ApplicationRoleManager> options,
             IOwinContext context)
         {
-            var appRoleManager = new ApplicationRoleManager(new RoleStore<IdentityRole>(context.Get<InrappSosAstridDbContext>()));
+            var appRoleManager = new ApplicationRoleManager(new RoleStore<ApplicationRole>(context.Get<InrappSosAstridDbContext>()));
             return appRoleManager;
         }
     }

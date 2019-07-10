@@ -72,7 +72,7 @@ namespace InrappSos.DataAccess
             AstridDbContext.SaveChanges();
         }
 
-        public IEnumerable<IdentityRole> GetAllAstridRoles()
+        public IEnumerable<ApplicationRole> GetAllAstridRoles()
         {
             var astridRoles = AstridDbContext.Roles.OrderBy(r => r.Name).ToList();
             return astridRoles;
@@ -81,7 +81,7 @@ namespace InrappSos.DataAccess
 
         }
 
-        public IEnumerable<IdentityRole> GetAllFilipRoles()
+        public IEnumerable<ApplicationRole> GetAllFilipRoles()
         {
             var filipRoles = DbContext.Roles.OrderBy(r => r.Name).ToList();
             return filipRoles;
@@ -89,7 +89,7 @@ namespace InrappSos.DataAccess
 
         public void CreateAstridRole(string roleName)
         {
-            AstridDbContext.Roles.Add(new Microsoft.AspNet.Identity.EntityFramework.IdentityRole()
+            AstridDbContext.Roles.Add(new ApplicationRole
             {
                 Name = roleName
             });
@@ -98,20 +98,20 @@ namespace InrappSos.DataAccess
 
         public void CreateFilipRole(string roleName)
         {
-            DbContext.Roles.Add(new Microsoft.AspNet.Identity.EntityFramework.IdentityRole()
+            DbContext.Roles.Add(new ApplicationRole
             {
                 Name = roleName
             });
             DbContext.SaveChanges();
         }
 
-        public IdentityRole GetAstridRole(string roleName)
+        public ApplicationRole GetAstridRole(string roleName)
         {
             var thisRole = AstridDbContext.Roles.FirstOrDefault(r => r.Name.Equals(roleName, StringComparison.CurrentCultureIgnoreCase));
             return thisRole;
         }
 
-        public void UpdateAstridRole(IdentityRole role)
+        public void UpdateAstridRole(ApplicationRole role)
         {
             AstridDbContext.Entry(role).State = System.Data.Entity.EntityState.Modified;
             AstridDbContext.SaveChanges();
@@ -130,7 +130,7 @@ namespace InrappSos.DataAccess
             return userException;
         }
 
-        public IdentityRole GetFilipRole(string roleName)
+        public ApplicationRole GetFilipRole(string roleName)
         {
             var thisRole = DbContext.Roles.FirstOrDefault(r => r.Name.Equals(roleName, StringComparison.CurrentCultureIgnoreCase));
             return thisRole;
@@ -2627,6 +2627,8 @@ namespace InrappSos.DataAccess
             }
             return orgList;
         }
+
+        
 
 
     }

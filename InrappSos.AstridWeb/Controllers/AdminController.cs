@@ -24,10 +24,12 @@ namespace InrappSos.AstridWeb.Controllers
     {
         private readonly IPortalSosService _portalSosService;
         private ApplicationUserManager _userManager;
+        private ApplicationRoleManager _roleManager;
 
-        public AdminController(ApplicationUserManager userManager)
+        public AdminController(ApplicationUserManager userManager, ApplicationRoleManager roleManager)
         {
             UserManager = userManager;
+            RoleManager = roleManager;
             _portalSosService = new PortalSosService(new PortalSosRepository(new InrappSosDbContext(), new InrappSosAstridDbContext()));
 
         }
@@ -45,6 +47,18 @@ namespace InrappSos.AstridWeb.Controllers
             private set
             {
                 _userManager = value;
+            }
+        }
+
+        public ApplicationRoleManager RoleManager
+        {
+            get
+            {
+                return _roleManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationRoleManager>();
+            }
+            private set
+            {
+                _roleManager = value;
             }
         }
 
@@ -169,6 +183,9 @@ namespace InrappSos.AstridWeb.Controllers
         // GET: /Roles/Create/Read/Update/Delete
         public ActionResult CRUDRoles()
         {
+            //Test
+            var res = CreateRole(_roleManager,"Admin","Kan göra allt");
+
             //Hämta info för Create/Read/Update/Delete Roles
             var AstridRoles = _portalSosService.HamtaAllaAstridRoller();
             var astridRolelist = CreateRolesDropDownList(AstridRoles);
@@ -309,7 +326,7 @@ namespace InrappSos.AstridWeb.Controllers
         // POST: /Roles/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult EditFilipRole(Microsoft.AspNet.Identity.EntityFramework.IdentityRole role)
+        public ActionResult EditFilipRole(ApplicationRole role)
         {
             try
             {
@@ -350,8 +367,50 @@ namespace InrappSos.AstridWeb.Controllers
             return RedirectToAction("CRUDRoles");
         }
 
+        //Role handling (TODO - ApplicationManager borde flyttas till servielagret, liksom dessa metoder)
+        public bool RoleExists(ApplicationRoleManager roleManager, string name)
+        {
+            return roleManager.RoleExists(name);
+        }
 
-        private IEnumerable<AdminViewModels.AppUserAdminViewModel> ConvertAdminUsersToViewModel(IEnumerable<AppUserAdmin> adminUsers, List<IdentityRole> roller)
+        public bool CreateRole(ApplicationRoleManager _roleManager, string name, string description = "")
+        {
+            var role = new ApplicationRole
+            {
+                Name = "Admin",
+                Description = "Kan göra det mesta"
+            };
+
+            var idResult = _roleManager.Create(role);
+            return idResult.Succeeded;
+        }
+
+        public bool AddUserToRole(ApplicationUserManager _userManager, string userId, string roleName)
+        {
+            var idResult = _userManager.AddToRole(userId, roleName);
+            return idResult.Succeeded;
+        }
+
+        public void ClearUserRoles(ApplicationUserManager userManager, string userId)
+        {
+            var user = userManager.FindById(userId);
+            var currentRoles = new List<IdentityUserRole>();
+
+            currentRoles.AddRange(user.UserRoles);
+            foreach (ApplicationUserRole role in currentRoles)
+            {
+                userManager.RemoveFromRole(userId, role.Role.Name);
+            }
+        }
+
+
+        public void RemoveFromRole(ApplicationUserManager userManager, string userId, string roleName)
+        {
+            userManager.RemoveFromRole(userId, roleName);
+        }
+
+
+        private IEnumerable<AdminViewModels.AppUserAdminViewModel> ConvertAdminUsersToViewModel(IEnumerable<AppUserAdmin> adminUsers, List<ApplicationRole> roller)
         {
             var adminUserViewList = new List<AdminViewModels.AppUserAdminViewModel>();
            
@@ -421,7 +480,7 @@ namespace InrappSos.AstridWeb.Controllers
             return user;
         }
 
-        private List<IdentityRoleViewModel> ConvertRolesToVM(List<IdentityRole> roller)
+        private List<IdentityRoleViewModel> ConvertRolesToVM(List<ApplicationRole> roller)
         {
             var rollerList = new List<IdentityRoleViewModel>();
 

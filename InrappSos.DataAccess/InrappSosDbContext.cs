@@ -12,6 +12,8 @@ namespace InrappSos.DataAccess
 {
     public class InrappSosDbContext : IdentityDbContext<ApplicationUser>
     {
+        public DbSet<ApplicationRole> Roles { get; set; }
+
         public InrappSosDbContext() : base("name=DefaultConnection")
         {
 #if DEBUG

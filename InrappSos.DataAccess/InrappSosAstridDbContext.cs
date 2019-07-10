@@ -7,12 +7,14 @@ using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using InrappSos.DomainModel;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace InrappSos.DataAccess
 {
     public class InrappSosAstridDbContext : IdentityDbContext<AppUserAdmin>
     {
+        public DbSet<ApplicationRole> Roles { get; set; }
         public InrappSosAstridDbContext() : base("name=IdentityConnection")
         {
 #if DEBUG
@@ -51,20 +53,21 @@ namespace InrappSos.DataAccess
             modelBuilder.Entity<AppUserAdmin>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
             modelBuilder.Entity<AppUserAdmin>().Property(e => e.AndradAv).HasColumnName("andradav");
 
-            //Permissions
-            modelBuilder.Entity<AspNetPermissions>().Property(e => e.Id).HasColumnName("PermissionId");
+            //Defining the keys and relations
+            modelBuilder.Entity<ApplicationRole>().HasKey<string>(r => r.Id).ToTable("AspNetRoles");
+            modelBuilder.Entity<AppUserAdmin>().HasMany(u => u.UserRoles);
+            modelBuilder.Entity<ApplicationUserRole>().HasKey(r => new { UserId = r.UserId, RoleId = r.RoleId }).ToTable("AspNetUserRoles");
 
-            //RolesPermissions
-            modelBuilder.Entity<AspNetRolesPermissions>().Property(e => e.Id).HasColumnName("RolesPermissionId");
-            modelBuilder.Entity<AspNetRolesPermissions>()
-                .HasRequired(c => c.AspNetPermissions)
-                .WithMany(d => d.AspNetRolesPermissions)
-                .HasForeignKey(c => c.PermissionId);
+
+            //ApplicationRoles
+            //modelBuilder.Entity<ApplicationRole>().ToTable("AspNetRoles");
+            //modelBuilder.Entity<ApplicationRole>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
+            //modelBuilder.Entity<ApplicationRole>().Property(e => e.SkapadAv).HasColumnName("skapadav");
+            //modelBuilder.Entity<ApplicationRole>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
+            //modelBuilder.Entity<ApplicationRole>().Property(e => e.AndradAv).HasColumnName("andradav");
         }
-
-        public DbSet<AspNetPermissions> AspNetPermissions { get; set; }
-        public DbSet<AspNetRolesPermissions> AspNetRolesPermissions { get; set; }
 
 
     }
+
 }

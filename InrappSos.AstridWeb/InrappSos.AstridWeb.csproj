@@ -185,6 +185,7 @@
     <Compile Include="Controllers\NavigationController.cs" />
     <Compile Include="Controllers\OrganisationController.cs" />
     <Compile Include="Controllers\RegisterController.cs" />
+    <Compile Include="Controllers\RoleController.cs" />
     <Compile Include="Controllers\SystemController.cs" />
     <Compile Include="Filters\HasPermissionAttribute.cs" />
     <Compile Include="Global.asax.cs">
@@ -201,6 +202,7 @@
     <Compile Include="Models\ViewModels\ManageViewModels.cs" />
     <Compile Include="Models\ViewModels\OrganisationViewModels.cs" />
     <Compile Include="Models\ViewModels\RegisterViewModels.cs" />
+    <Compile Include="Models\ViewModels\RoleViewModels.cs" />
     <Compile Include="Models\ViewModels\SystemViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
@@ -360,6 +362,9 @@
     <Content Include="Views\System\_Files.cshtml" />
     <Content Include="Views\Register\EditSubDirectorysOrgtypes.cshtml" />
     <Content Include="Views\Home\NotImplementedPage.cshtml" />
+    <Content Include="Views\Role\Create.cshtml" />
+    <Content Include="Views\Role\Edit.cshtml" />
+    <Content Include="Views\Role\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

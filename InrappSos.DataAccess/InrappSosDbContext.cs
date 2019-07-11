@@ -678,7 +678,6 @@ namespace InrappSos.DataAccess
         public DbSet<AdmSpecialdag> AdmSpecialdag { get; set; }
         public DbSet<Inloggning> Inloggning { get; set; }
         public DbSet<Roll> Roll { get; set; }
-        //public DbSet<ApplicationUser> ApplicationUser { get; set; }
         public DbSet<Rapporteringsresultat> RapporteringsResultat { get; set; }
         public DbSet<AdmUppgiftsskyldighetOrganisationstyp> AdmUppgiftsskyldighetOrganisationstyp { get; set; }
         public DbSet<Organisationstyp> Organisationstyp { get; set; }

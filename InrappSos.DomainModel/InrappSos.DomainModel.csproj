@@ -79,11 +79,9 @@
     <Compile Include="ApplicationUser.cs" />
     <Compile Include="AppUserAdmin.cs" />
     <Compile Include="Arende.cs" />
-    <Compile Include="AspNetRolesPermissions.cs" />
     <Compile Include="ArendeKontaktperson.cs" />
     <Compile Include="ArendeStatus.cs" />
     <Compile Include="Arendetyp.cs" />
-    <Compile Include="AspNetPermissions.cs" />
     <Compile Include="Aterkoppling.cs" />
     <Compile Include="DroppadFil.cs" />
     <Compile Include="Kontaktpersonstyp.cs" />

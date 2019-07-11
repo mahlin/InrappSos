@@ -224,8 +224,6 @@ namespace InrappSos.AstridWeb.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        //TODO - HasPermission?
-        //[HasPermission("EditFAQ")]
         // GET: /Roles/Edit/5
         public ActionResult EditAstridRole(string roleName)
         {

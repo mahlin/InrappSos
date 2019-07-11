@@ -378,7 +378,7 @@ namespace InrappSos.AstridWeb.Controllers
             var role = new ApplicationRoleAstrid
             {
                 Name = "Admin",
-                Description = "Kan göra det mesta"
+                Beskrivning = "Kan göra det mesta"
             };
 
             var idResult = _roleManager.Create(role);

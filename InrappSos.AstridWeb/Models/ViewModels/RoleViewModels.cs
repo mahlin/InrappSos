@@ -18,7 +18,7 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public RoleViewModel(ApplicationRoleAstrid role)
             {
                 this.RoleName = role.Name;
-                this.Description = role.Description;
+                this.Description = role.Beskrivning;
             }
 
             public IEnumerator GetEnumerator()
@@ -39,7 +39,7 @@ namespace InrappSos.AstridWeb.Models.ViewModels
                 this.RoleName = role.Name;
 
                 // Assign the new Descrption property:
-                this.Description = role.Description;
+                this.Description = role.Beskrivning;
             }
 
             public bool Selected { get; set; }
@@ -65,7 +65,7 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             {
                 this.OriginalRoleName = role.Name;
                 this.RoleName = role.Name;
-                this.Description = role.Description;
+                this.Description = role.Beskrivning;
             }
         }
     }

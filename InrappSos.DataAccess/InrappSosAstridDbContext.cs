@@ -56,6 +56,12 @@ namespace InrappSos.DataAccess
             //Defining the keys and relations
             modelBuilder.Entity<AppUserAdmin>().ToTable("AspNetUsers");
             modelBuilder.Entity<ApplicationRoleAstrid>().HasKey<string>(r => r.Id).ToTable("AspNetRoles");
+            modelBuilder.Entity<ApplicationRoleAstrid>().Property(e => e.BeskrivandeNamn).HasColumnName("beskrivandenamn");
+            modelBuilder.Entity<ApplicationRoleAstrid>().Property(e => e.Beskrivning).HasColumnName("beskrivning");
+            modelBuilder.Entity<ApplicationRoleAstrid>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
+            modelBuilder.Entity<ApplicationRoleAstrid>().Property(e => e.SkapadAv).HasColumnName("skapadav");
+            modelBuilder.Entity<ApplicationRoleAstrid>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
+            modelBuilder.Entity<ApplicationRoleAstrid>().Property(e => e.AndradAv).HasColumnName("andradav");
             modelBuilder.Entity<AppUserAdmin>().HasMany<ApplicationUserRoleAstrid>((AppUserAdmin u) => u.UserRoles);
             modelBuilder.Entity<ApplicationUserRoleAstrid>().HasKey(r => new { UserId = r.UserId, RoleId = r.RoleId }).ToTable("AspNetUserRoles");
 

@@ -66,7 +66,7 @@ namespace InrappSos.AstridWeb.Controllers
                 var role = new ApplicationRoleAstrid
                 {
                     Name = "Admin",
-                    Description = "Kan göra det mesta"
+                    Beskrivning = "Kan göra det mesta"
                 };
 
                 var idResult = _roleManager.Create(role);
@@ -92,7 +92,11 @@ namespace InrappSos.AstridWeb.Controllers
                 {
                     var _db = new InrappSosAstridDbContext();
 
-                    var role = new ApplicationRoleAstrid(model.RoleName, model.Description);
+                    var role = new ApplicationRoleAstrid
+                    {
+                        Name = model.RoleName,
+                        Beskrivning = model.Description
+                    };
                     ApplicationRoleManager _roleManager = new ApplicationRoleManager(new RoleStore<ApplicationRoleAstrid>(_db));
                     //if (_db.RoleExists(_roleManager, model.RoleName))
                     //{
@@ -129,7 +133,7 @@ namespace InrappSos.AstridWeb.Controllers
                     var _db = new InrappSosAstridDbContext();
                      var role = _db.Roles.First(r => r.Name == model.OriginalRoleName);
                     role.Name = model.RoleName;
-                    role.Description = model.Description;
+                    role.Beskrivning = model.Description;
                     _db.Entry(role).State = EntityState.Modified;
                     _db.SaveChanges();
                     return RedirectToAction("Index");

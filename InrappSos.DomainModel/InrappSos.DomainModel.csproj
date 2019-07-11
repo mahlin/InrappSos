@@ -77,7 +77,6 @@
     <Compile Include="AdmEnhetsUppgiftsskyldighet.cs" />
     <Compile Include="AdmUppgiftsskyldighet.cs" />
     <Compile Include="ApplicationUser.cs" />
-    <Compile Include="AppRoleAdmin.cs" />
     <Compile Include="AppUserAdmin.cs" />
     <Compile Include="Arende.cs" />
     <Compile Include="AspNetRolesPermissions.cs" />

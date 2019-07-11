@@ -316,7 +316,7 @@ namespace InrappSos.AstridWeb.Controllers
         {
             var model = new AdminViewModels.AdminRoleViewModel();
             model.SelectedApplication = "Filip";
-            model.Role = _portalSosService.HamtaFilipRoll(roleName);
+            //model.Role = _portalSosService.HamtaFilipRoll(roleName);
             ViewBag.Text = "Ändra Filip-roll";
             return View("EditRole", model);
             //return RedirectToAction("CRUDRoles");
@@ -391,17 +391,17 @@ namespace InrappSos.AstridWeb.Controllers
             return idResult.Succeeded;
         }
 
-        public void ClearUserRoles(ApplicationUserManager userManager, string userId)
-        {
-            var user = userManager.FindById(userId);
-            var currentRoles = new List<IdentityUserRole>();
+        //public void ClearUserRoles(ApplicationUserManager userManager, string userId)
+        //{
+        //    var user = userManager.FindById(userId);
+        //    var currentRoles = new List<ApplicationUserRole>();
 
-            currentRoles.AddRange(user.UserRoles);
-            foreach (ApplicationUserRole role in currentRoles)
-            {
-                userManager.RemoveFromRole(userId, role.Role.Name);
-            }
-        }
+        //    currentRoles.AddRange(user.UserRoles);
+        //    foreach (ApplicationUserRole role in currentRoles)
+        //    {
+        //        userManager.RemoveFromRole(userId, role.Role.Name);
+        //    }
+        //}
 
 
         public void RemoveFromRole(ApplicationUserManager userManager, string userId, string roleName)

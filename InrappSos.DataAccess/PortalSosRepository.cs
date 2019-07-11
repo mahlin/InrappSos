@@ -81,7 +81,7 @@ namespace InrappSos.DataAccess
 
         }
 
-        public IEnumerable<ApplicationRole> GetAllFilipRoles()
+        public IEnumerable<IdentityRole> GetAllFilipRoles()
         {
             var filipRoles = DbContext.Roles.OrderBy(r => r.Name).ToList();
             return filipRoles;
@@ -130,7 +130,7 @@ namespace InrappSos.DataAccess
             return userException;
         }
 
-        public ApplicationRole GetFilipRole(string roleName)
+        public IdentityRole GetFilipRole(string roleName)
         {
             var thisRole = DbContext.Roles.FirstOrDefault(r => r.Name.Equals(roleName, StringComparison.CurrentCultureIgnoreCase));
             return thisRole;

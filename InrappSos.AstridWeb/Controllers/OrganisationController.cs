@@ -227,7 +227,7 @@ namespace InrappSos.AstridWeb.Controllers
                 model.Kommunkod = model.Organisation.Kommunkod;
                 var contacts = _portalSosService.HamtaKontaktpersonerForOrg(model.Organisation.Id);
                 //TODO - roller även här?
-                var roller = new List<ApplicationRole>();
+                var roller = new List<IdentityRole>();
                 model.ContactPersons = ConvertUsersViewModelUser(contacts, roller);
 
                 model.OrgUnits = _portalSosService.HamtaOrgEnheterForOrg(model.Organisation.Id).ToList();
@@ -300,7 +300,7 @@ namespace InrappSos.AstridWeb.Controllers
                 model.Kommunkod = model.Organisation.Kommunkod;
                 var contacts = _portalSosService.HamtaKontaktpersonerForOrg(model.Organisation.Id);
                 var roller = _portalSosService.HamtaAllaFilipRoller().ToList();
-                model.ContactPersons = ConvertUsersViewModelUser(contacts, roller);
+               // model.ContactPersons = ConvertUsersViewModelUser(contacts, roller);
                 foreach (var contact in model.ContactPersons)
                 {
                     //Hämta användarens valda register
@@ -308,7 +308,7 @@ namespace InrappSos.AstridWeb.Controllers
                 }
                
                 //Skapa lista över filip-roller 
-                model.Roller = ConvertRolesToVM(roller);
+                //model.Roller = ConvertRolesToVM(roller);
                 ViewBag.RolesList = CreateRolesDropDownList(roller);
                 model.SearchResult = new List<List<Organisation>>();
                 model.ContactSearchResult = new List<List<OrganisationViewModels.ApplicationUserViewModel>>();
@@ -1621,7 +1621,7 @@ namespace InrappSos.AstridWeb.Controllers
 
 
 
-        private List<OrganisationViewModels.ApplicationUserViewModel> ConvertUsersViewModelUser(IEnumerable<ApplicationUser> contacts, List<ApplicationRole> roller)
+        private List<OrganisationViewModels.ApplicationUserViewModel> ConvertUsersViewModelUser(IEnumerable<ApplicationUser> contacts, List<IdentityRole> roller)
         {
             var contactPersonsView = new List<OrganisationViewModels.ApplicationUserViewModel>();
 
@@ -2201,7 +2201,7 @@ namespace InrappSos.AstridWeb.Controllers
             return alreadyUsed;
         }
 
-        private List<IdentityRoleViewModel> ConvertRolesToVM(List<ApplicationRole> roller)
+        private List<IdentityRoleViewModel> ConvertRolesToVM(List<IdentityRole> roller)
         {
             var rollerList = new List<IdentityRoleViewModel>();
 

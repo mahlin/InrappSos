@@ -29,7 +29,7 @@ namespace InrappSos.ApplicationService.Interface
 
         ApplicationRole HamtaAstridRoll(string roleName);
 
-        ApplicationRole HamtaFilipRoll(string roleName);
+        IdentityRole HamtaFilipRoll(string roleName);
 
         IEnumerable<AdmFAQKategori> HamtaAllaFAQs();
         IEnumerable<AdmOrganisationstyp> HamtaAllaOrganisationstyper();
@@ -205,7 +205,7 @@ namespace InrappSos.ApplicationService.Interface
         IEnumerable<AdmRegister> HamtaAllaRegisterForPortalen();
 
         IEnumerable<ApplicationRole> HamtaAllaAstridRoller();
-        IEnumerable<ApplicationRole> HamtaAllaFilipRoller();
+        IEnumerable<IdentityRole> HamtaAllaFilipRoller();
 
         IEnumerable<AdmDelregister> HamtaAllaDelregisterForPortalen();
 

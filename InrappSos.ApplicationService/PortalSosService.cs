@@ -540,7 +540,7 @@ namespace InrappSos.ApplicationService
         }
         
 
-        public ApplicationRole HamtaFilipRoll(string roleName)
+        public IdentityRole HamtaFilipRoll(string roleName)
         {
             var filipRoll = _portalSosRepository.GetFilipRole(roleName);
             return filipRoll;
@@ -1085,7 +1085,7 @@ namespace InrappSos.ApplicationService
             return roller;
         }
 
-        public IEnumerable<ApplicationRole> HamtaAllaFilipRoller()
+        public IEnumerable<IdentityRole> HamtaAllaFilipRoller()
         {
             var roller = _portalSosRepository.GetAllFilipRoles();
             return roller;

@@ -23,6 +23,6 @@ namespace InrappSos.DomainModel
             return userIdentity;
         }
 
-        public ICollection<ApplicationUserRole> UserRoles { get; set; }
+        public ICollection<ApplicationUserRoleAstrid> UserRoles { get; set; }
     }
 }

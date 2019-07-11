@@ -326,7 +326,7 @@ namespace InrappSos.AstridWeb.Controllers
         // POST: /Roles/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult EditFilipRole(ApplicationRole role)
+        public ActionResult EditFilipRole(IdentityRole role)
         {
             try
             {
@@ -375,7 +375,7 @@ namespace InrappSos.AstridWeb.Controllers
 
         public bool CreateRole(ApplicationRoleManager _roleManager, string name, string description = "")
         {
-            var role = new ApplicationRole
+            var role = new ApplicationRoleAstrid
             {
                 Name = "Admin",
                 Description = "Kan göra det mesta"
@@ -410,7 +410,7 @@ namespace InrappSos.AstridWeb.Controllers
         }
 
 
-        private IEnumerable<AdminViewModels.AppUserAdminViewModel> ConvertAdminUsersToViewModel(IEnumerable<AppUserAdmin> adminUsers, List<ApplicationRole> roller)
+        private IEnumerable<AdminViewModels.AppUserAdminViewModel> ConvertAdminUsersToViewModel(IEnumerable<AppUserAdmin> adminUsers, List<ApplicationRoleAstrid> roller)
         {
             var adminUserViewList = new List<AdminViewModels.AppUserAdminViewModel>();
            
@@ -480,7 +480,7 @@ namespace InrappSos.AstridWeb.Controllers
             return user;
         }
 
-        private List<IdentityRoleViewModel> ConvertRolesToVM(List<ApplicationRole> roller)
+        private List<IdentityRoleViewModel> ConvertRolesToVM(List<ApplicationRoleAstrid> roller)
         {
             var rollerList = new List<IdentityRoleViewModel>();
 

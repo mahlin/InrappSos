@@ -72,7 +72,7 @@ namespace InrappSos.DataAccess
             AstridDbContext.SaveChanges();
         }
 
-        public IEnumerable<ApplicationRole> GetAllAstridRoles()
+        public IEnumerable<ApplicationRoleAstrid> GetAllAstridRoles()
         {
             var astridRoles = AstridDbContext.Roles.OrderBy(r => r.Name).ToList();
             return astridRoles;
@@ -89,7 +89,7 @@ namespace InrappSos.DataAccess
 
         public void CreateAstridRole(string roleName)
         {
-            AstridDbContext.Roles.Add(new ApplicationRole
+            AstridDbContext.Roles.Add(new ApplicationRoleAstrid
             {
                 Name = roleName
             });
@@ -98,20 +98,20 @@ namespace InrappSos.DataAccess
 
         public void CreateFilipRole(string roleName)
         {
-            DbContext.Roles.Add(new ApplicationRole
+            DbContext.Roles.Add(new IdentityRole
             {
                 Name = roleName
             });
             DbContext.SaveChanges();
         }
 
-        public ApplicationRole GetAstridRole(string roleName)
+        public ApplicationRoleAstrid GetAstridRole(string roleName)
         {
             var thisRole = AstridDbContext.Roles.FirstOrDefault(r => r.Name.Equals(roleName, StringComparison.CurrentCultureIgnoreCase));
             return thisRole;
         }
 
-        public void UpdateAstridRole(ApplicationRole role)
+        public void UpdateAstridRole(ApplicationRoleAstrid role)
         {
             AstridDbContext.Entry(role).State = System.Data.Entity.EntityState.Modified;
             AstridDbContext.SaveChanges();

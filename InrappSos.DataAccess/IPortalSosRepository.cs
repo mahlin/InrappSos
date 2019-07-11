@@ -19,7 +19,7 @@ namespace InrappSos.DataAccess
 
         void DeleteAdminUser(string userId);
 
-        IEnumerable<ApplicationRole> GetAllAstridRoles();
+        IEnumerable<ApplicationRoleAstrid> GetAllAstridRoles();
 
         IEnumerable<IdentityRole> GetAllFilipRoles();
 
@@ -27,9 +27,9 @@ namespace InrappSos.DataAccess
 
         void CreateFilipRole(string roleName);
 
-        ApplicationRole GetAstridRole(string roleName);
+        ApplicationRoleAstrid GetAstridRole(string roleName);
 
-        void UpdateAstridRole(ApplicationRole role);
+        void UpdateAstridRole(ApplicationRoleAstrid role);
 
         void DeleteAstridRole(string roleName);
 

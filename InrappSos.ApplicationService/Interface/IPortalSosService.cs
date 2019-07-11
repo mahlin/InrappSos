@@ -27,7 +27,7 @@ namespace InrappSos.ApplicationService.Interface
 
         IEnumerable<FilloggDetaljDTO> FiltreraHistorikForAnvandare(string userId, List<RegisterInfo> valdaDelregisterList, List<FilloggDetaljDTO> historikForOrganisation);
 
-        ApplicationRole HamtaAstridRoll(string roleName);
+        ApplicationRoleAstrid HamtaAstridRoll(string roleName);
 
         IdentityRole HamtaFilipRoll(string roleName);
 
@@ -204,7 +204,7 @@ namespace InrappSos.ApplicationService.Interface
         IEnumerable<AdmRegister> HamtaAllaRegister();
         IEnumerable<AdmRegister> HamtaAllaRegisterForPortalen();
 
-        IEnumerable<ApplicationRole> HamtaAllaAstridRoller();
+        IEnumerable<ApplicationRoleAstrid> HamtaAllaAstridRoller();
         IEnumerable<IdentityRole> HamtaAllaFilipRoller();
 
         IEnumerable<AdmDelregister> HamtaAllaDelregisterForPortalen();
@@ -354,8 +354,8 @@ namespace InrappSos.ApplicationService.Interface
 
         void SkapaInsamlingsfrekvens(AdmInsamlingsfrekvens insamlingsfrekvens, string userName);
 
-        void UppdateraAstridRoll(ApplicationRole role);
-        void UppdateraFilipRoll(ApplicationRole role);
+        void UppdateraAstridRoll(ApplicationRoleAstrid role);
+        void UppdateraFilipRoll(IdentityRole role);
 
         void UppdateraOrganisation(Organisation org, string userName);
 

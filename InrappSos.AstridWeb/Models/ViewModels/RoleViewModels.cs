@@ -15,7 +15,7 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             {
             }
 
-            public RoleViewModel(ApplicationRole role)
+            public RoleViewModel(ApplicationRoleAstrid role)
             {
                 this.RoleName = role.Name;
                 this.Description = role.Description;
@@ -34,7 +34,7 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             }
 
             // Update this to accept an argument of type ApplicationRole:
-            public SelectRoleEditorViewModel(ApplicationRole role)
+            public SelectRoleEditorViewModel(ApplicationRoleAstrid role)
             {
                 this.RoleName = role.Name;
 
@@ -61,7 +61,7 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             {
             }
 
-            public EditRoleViewModel(ApplicationRole role)
+            public EditRoleViewModel(ApplicationRoleAstrid role)
             {
                 this.OriginalRoleName = role.Name;
                 this.RoleName = role.Name;

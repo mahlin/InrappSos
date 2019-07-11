@@ -7,10 +7,10 @@ using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace InrappSos.DomainModel
 {
-    public class ApplicationRole : IdentityRole
+    public class ApplicationRoleAstrid : IdentityRole
     {
-        public ApplicationRole() : base() { }
-        public ApplicationRole(string name, string description)
+        public ApplicationRoleAstrid() : base() { }
+        public ApplicationRoleAstrid(string name, string description)
             : base(name)
         {
             this.Description = description;

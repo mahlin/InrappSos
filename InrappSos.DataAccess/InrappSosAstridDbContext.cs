@@ -14,7 +14,7 @@ namespace InrappSos.DataAccess
 {
     public class InrappSosAstridDbContext : IdentityDbContext<AppUserAdmin>
     {
-        public DbSet<ApplicationRole> Roles { get; set; }
+        public DbSet<ApplicationRoleAstrid> Roles { get; set; }
         public InrappSosAstridDbContext() : base("name=IdentityConnection")
         {
 #if DEBUG
@@ -55,9 +55,9 @@ namespace InrappSos.DataAccess
 
             //Defining the keys and relations
             modelBuilder.Entity<AppUserAdmin>().ToTable("AspNetUsers");
-            modelBuilder.Entity<ApplicationRole>().HasKey<string>(r => r.Id).ToTable("AspNetRoles");
-            modelBuilder.Entity<AppUserAdmin>().HasMany<ApplicationUserRole>((AppUserAdmin u) => u.UserRoles);
-            modelBuilder.Entity<ApplicationUserRole>().HasKey(r => new { UserId = r.UserId, RoleId = r.RoleId }).ToTable("AspNetUserRoles");
+            modelBuilder.Entity<ApplicationRoleAstrid>().HasKey<string>(r => r.Id).ToTable("AspNetRoles");
+            modelBuilder.Entity<AppUserAdmin>().HasMany<ApplicationUserRoleAstrid>((AppUserAdmin u) => u.UserRoles);
+            modelBuilder.Entity<ApplicationUserRoleAstrid>().HasKey(r => new { UserId = r.UserId, RoleId = r.RoleId }).ToTable("AspNetUserRoles");
 
 
 

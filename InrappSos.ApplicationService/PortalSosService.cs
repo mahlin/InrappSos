@@ -533,7 +533,7 @@ namespace InrappSos.ApplicationService
             return org;
         }
 
-        public ApplicationRole HamtaAstridRoll(string roleName)
+        public ApplicationRoleAstrid HamtaAstridRoll(string roleName)
         {
             var astridRoll = _portalSosRepository.GetAstridRole(roleName);
             return astridRoll;
@@ -1079,7 +1079,7 @@ namespace InrappSos.ApplicationService
             return registersList;
         }
 
-        public IEnumerable<ApplicationRole> HamtaAllaAstridRoller()
+        public IEnumerable<ApplicationRoleAstrid> HamtaAllaAstridRoller()
         {
             var roller = _portalSosRepository.GetAllAstridRoles();
             return roller;
@@ -2410,12 +2410,12 @@ namespace InrappSos.ApplicationService
             _portalSosRepository.CreateCollectFrequence(insamlingsfrekvens);
         }
 
-        public void UppdateraAstridRoll(ApplicationRole role)
+        public void UppdateraAstridRoll(ApplicationRoleAstrid role)
         {
             _portalSosRepository.UpdateAstridRole(role);
         }
 
-        public void UppdateraFilipRoll(ApplicationRole role)
+        public void UppdateraFilipRoll(IdentityRole role)
         {
             _portalSosRepository.UpdateFilipRole(role);
         }

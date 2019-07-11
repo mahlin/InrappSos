@@ -9,14 +9,14 @@ using Microsoft.AspNet.Identity.EntityFramework;
 namespace InrappSos.DomainModel
 {
 
-    public class ApplicationUserRole : IdentityUserRole
+    public class ApplicationUserRoleAstrid : IdentityUserRole
     {
-        public ApplicationUserRole()
+        public ApplicationUserRoleAstrid()
             : base()
         {
         }
 
-        public ApplicationRole Role { get; set; }
+        public ApplicationRoleAstrid Role { get; set; }
     }
 }
 

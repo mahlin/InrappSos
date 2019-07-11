@@ -48,7 +48,7 @@ namespace InrappSos.AstridWeb.Controllers
             public ActionResult Index()
             {
                 var _db = new InrappSosAstridDbContext();
-                ApplicationRoleManager _roleManager = new ApplicationRoleManager(new RoleStore<ApplicationRole>(_db));
+                ApplicationRoleManager _roleManager = new ApplicationRoleManager(new RoleStore<ApplicationRoleAstrid>(_db));
                 var res = CreateRole(_roleManager, "Admin", "Test1");
 
             //var rolesList = new List<RoleViewModel>();
@@ -63,7 +63,7 @@ namespace InrappSos.AstridWeb.Controllers
 
             public bool CreateRole(ApplicationRoleManager _roleManager, string name, string description = "")
             {
-                var role = new ApplicationRole
+                var role = new ApplicationRoleAstrid
                 {
                     Name = "Admin",
                     Description = "Kan göra det mesta"
@@ -92,8 +92,8 @@ namespace InrappSos.AstridWeb.Controllers
                 {
                     var _db = new InrappSosAstridDbContext();
 
-                    var role = new ApplicationRole(model.RoleName, model.Description);
-                    ApplicationRoleManager _roleManager = new ApplicationRoleManager(new RoleStore<ApplicationRole>(_db));
+                    var role = new ApplicationRoleAstrid(model.RoleName, model.Description);
+                    ApplicationRoleManager _roleManager = new ApplicationRoleManager(new RoleStore<ApplicationRoleAstrid>(_db));
                     //if (_db.RoleExists(_roleManager, model.RoleName))
                     //{
                     //    return View(message);

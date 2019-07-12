@@ -28,26 +28,6 @@ namespace InrappSos.AstridWeb.Controllers
         [ChildActionOnly]
         public ActionResult Menu()
         {
-            ////TODO - tillfälligt/istf Roles
-            //var user = UserManager.FindById(User.Identity.GetUserId());
-
-            //if (user != null)
-            //{
-            //    if (UserManager.IsInRole(user.Id, "Admin"))
-            //    {
-            //        return PartialView("_LoginAdmin");
-            //    }
-            //    else
-            //    {
-            //        return PartialView("_LoginPartial");
-            //    }
-            //}
-
-            //if (Roles.IsUserInRole("Admin"))
-            //{
-            //    return PartialView("_LoginAdmin");
-            //}
-
             return PartialView("_LoginPartial");
         }
 

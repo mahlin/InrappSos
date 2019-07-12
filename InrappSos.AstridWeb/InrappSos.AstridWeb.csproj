@@ -323,7 +323,6 @@
     <Content Include="Views\Shared\CustomError.cshtml" />
     <Content Include="Views\Shared\FileNotFound.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
-    <Content Include="Views\Shared\_LoginAdmin.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\System\CreateFAQ.cshtml" />
     <Content Include="Views\System\CreateFAQCategory.cshtml" />

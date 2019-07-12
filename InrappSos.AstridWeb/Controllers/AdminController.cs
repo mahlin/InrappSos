@@ -179,25 +179,25 @@ namespace InrappSos.AstridWeb.Controllers
             return RedirectToAction("GetAstridUsers");
         }
 
-        [Authorize(Roles = "Admin")]
-        // GET: /Roles/Create/Read/Update/Delete
-        public ActionResult CRUDRoles()
-        {
-            //Test
-            var res = CreateRole(_roleManager,"Admin","Kan göra allt");
+        //[Authorize(Roles = "Admin")]
+        //// GET: /Roles/Create/Read/Update/Delete
+        //public ActionResult CRUDRoles()
+        //{
+        //    //Test
+        //    var res = CreateRole(_roleManager,"Admin","Kan göra allt");
 
-            //Hämta info för Create/Read/Update/Delete Roles
-            var AstridRoles = _portalSosService.HamtaAllaAstridRoller();
-            var astridRolelist = CreateRolesDropDownList(AstridRoles);
-            ViewBag.AstridRoles = astridRolelist;
+        //    //Hämta info för Create/Read/Update/Delete Roles
+        //    var AstridRoles = _portalSosService.HamtaAllaAstridRoller();
+        //    var astridRolelist = CreateRolesDropDownList(AstridRoles);
+        //    ViewBag.AstridRoles = astridRolelist;
 
-            //var FilipRoles = _portalSosService.HamtaAllaFilipRoller();
-            //var filipRolelist = CreateRolesDropDownList(FilipRoles);
-            //ViewBag.FilipRoles = filipRolelist;
+        //    //var FilipRoles = _portalSosService.HamtaAllaFilipRoller();
+        //    //var filipRolelist = CreateRolesDropDownList(FilipRoles);
+        //    //ViewBag.FilipRoles = filipRolelist;
 
-            ViewBag.Message = "";
-            return View("CRUDRoles");
-        }
+        //    ViewBag.Message = "";
+        //    return View("CRUDRoles");
+        //}
 
         //[Authorize(Roles = "Admin")]
         //// POST: /Roles/Create
@@ -223,19 +223,19 @@ namespace InrappSos.AstridWeb.Controllers
         //    return RedirectToAction("CRUDRoles");
         //}
 
-        [Authorize(Roles = "Admin")]
-        // GET: /Roles/Edit/5
-        public ActionResult EditAstridRole(string roleName)
-        {
-            var model = new AdminViewModels.AdminRoleViewModel();
-            model.SelectedApplication = "Astrid";
-            model.Role = _portalSosService.HamtaAstridRoll(roleName);
-            //var thisRole = _portalSosService.HamtaAstridRoll(roleName);
-            ViewBag.Text = "Ändra Astrid-roll";
+        //[Authorize(Roles = "Admin")]
+        //// GET: /Roles/Edit/5
+        //public ActionResult EditAstridRole(string roleName)
+        //{
+        //    var model = new AdminViewModels.AdminRoleViewModel();
+        //    model.SelectedApplication = "Astrid";
+        //    model.Role = _portalSosService.HamtaAstridRoll(roleName);
+        //    //var thisRole = _portalSosService.HamtaAstridRoll(roleName);
+        //    ViewBag.Text = "Ändra Astrid-roll";
 
-            return View("EditRole",model);
-            //return RedirectToAction("CRUDRoles");
-        }
+        //    return View("EditRole",model);
+        //    //return RedirectToAction("CRUDRoles");
+        //}
 
     //    [Authorize(Roles = "Admin")]
     //    // POST: /Roles/Edit/5
@@ -365,23 +365,23 @@ namespace InrappSos.AstridWeb.Controllers
         //    return RedirectToAction("CRUDRoles");
         //}
 
-        //Role handling (TODO - ApplicationManager borde flyttas till servielagret, liksom dessa metoder)
-        public bool RoleExists(ApplicationRoleManager roleManager, string name)
-        {
-            return roleManager.RoleExists(name);
-        }
+        ////Role handling (TODO - ApplicationManager borde flyttas till servielagret, liksom dessa metoder)
+        //public bool RoleExists(ApplicationRoleManager roleManager, string name)
+        //{
+        //    return roleManager.RoleExists(name);
+        //}
 
-        public bool CreateRole(ApplicationRoleManager _roleManager, string name, string description = "")
-        {
-            var role = new ApplicationRoleAstrid
-            {
-                Name = "Admin",
-                Beskrivning = "Kan göra det mesta"
-            };
+        //public bool CreateRole(ApplicationRoleManager _roleManager, string name, string description = "")
+        //{
+        //    var role = new ApplicationRoleAstrid
+        //    {
+        //        Name = "Admin",
+        //        Beskrivning = "Kan göra det mesta"
+        //    };
 
-            var idResult = _roleManager.Create(role);
-            return idResult.Succeeded;
-        }
+        //    var idResult = _roleManager.Create(role);
+        //    return idResult.Succeeded;
+        //}
 
         public bool AddUserToRole(ApplicationUserManager _userManager, string userId, string roleName)
         {

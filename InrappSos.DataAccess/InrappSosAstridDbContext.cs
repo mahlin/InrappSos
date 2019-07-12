@@ -63,7 +63,14 @@ namespace InrappSos.DataAccess
             modelBuilder.Entity<ApplicationRoleAstrid>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
             modelBuilder.Entity<ApplicationRoleAstrid>().Property(e => e.AndradAv).HasColumnName("andradav");
             modelBuilder.Entity<AppUserAdmin>().HasMany<ApplicationUserRoleAstrid>((AppUserAdmin u) => u.UserRoles);
+
+
+
             modelBuilder.Entity<ApplicationUserRoleAstrid>().HasKey(r => new { UserId = r.UserId, RoleId = r.RoleId }).ToTable("AspNetUserRoles");
+            modelBuilder.Entity<ApplicationUserRoleAstrid>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
+            modelBuilder.Entity<ApplicationUserRoleAstrid>().Property(e => e.SkapadAv).HasColumnName("skapadav");
+            modelBuilder.Entity<ApplicationUserRoleAstrid>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
+            modelBuilder.Entity<ApplicationUserRoleAstrid>().Property(e => e.AndradAv).HasColumnName("andradav");
 
 
 

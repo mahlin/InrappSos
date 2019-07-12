@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using InrappSos.DomainModel;
 
@@ -6,24 +7,24 @@ namespace InrappSos.AstridWeb.Models.ViewModels
 {
     public class RoleViewModels
     {
-        public class RoleViewModel : IEnumerable
+        public List<ApplicationRoleAstrid> AstridRoller { get; set; }
+
+        public class RoleViewModelAstrid 
         {
             public string RoleName { get; set; }
-            public string Description { get; set; }
+            public string BeskrivandeNamn { get; set; }
+            public string Beskrivning { get; set; }
 
-            public RoleViewModel()
+            public RoleViewModelAstrid()
             {
             }
 
-            public RoleViewModel(ApplicationRoleAstrid role)
+            public RoleViewModelAstrid(ApplicationRoleAstrid role)
             {
-                this.RoleName = role.Name;
-                this.Description = role.Beskrivning;
-            }
+                RoleName = role.Name;
+                BeskrivandeNamn = role.BeskrivandeNamn;
+                Beskrivning = role.Beskrivning;
 
-            public IEnumerator GetEnumerator()
-            {
-                throw new System.NotImplementedException();
             }
         }
 

@@ -23,15 +23,14 @@ namespace InrappSos.DataAccess
 
         IEnumerable<IdentityRole> GetAllFilipRoles();
 
-        void CreateAstridRole(string roleName);
+        //void CreateAstridRole(string roleName);
 
         void CreateFilipRole(string roleName);
 
         ApplicationRoleAstrid GetAstridRole(string roleName);
 
         void UpdateAstridRole(ApplicationRoleAstrid role);
-
-        void DeleteAstridRole(string roleName);
+ 
 
         //****************************************************************//
 

@@ -87,14 +87,14 @@ namespace InrappSos.DataAccess
             return filipRoles;
         }
 
-        public void CreateAstridRole(string roleName)
-        {
-            AstridDbContext.Roles.Add(new ApplicationRoleAstrid
-            {
-                Name = roleName
-            });
-            AstridDbContext.SaveChanges();
-        }
+        //public void CreateAstridRole(string roleName)
+        //{
+        //    AstridDbContext.Roles.Add(new ApplicationRoleAstrid
+        //    {
+        //        Name = roleName
+        //    });
+        //    AstridDbContext.SaveChanges();
+        //}
 
         public void CreateFilipRole(string roleName)
         {
@@ -113,14 +113,11 @@ namespace InrappSos.DataAccess
 
         public void UpdateAstridRole(ApplicationRoleAstrid role)
         {
-            AstridDbContext.Entry(role).State = System.Data.Entity.EntityState.Modified;
-            AstridDbContext.SaveChanges();
-        }
-
-        public void DeleteAstridRole(string roleName)
-        {
-            var thisRole = AstridDbContext.Roles.FirstOrDefault(r => r.Name.Equals(roleName, StringComparison.CurrentCultureIgnoreCase));
-            AstridDbContext.Roles.Remove(thisRole);
+            var dbRole = AstridDbContext.Roles.First(r => r.Name == role.Name);
+            dbRole.Beskrivning = role.Beskrivning;
+            dbRole.BeskrivandeNamn = role.BeskrivandeNamn;
+            dbRole.AndradDatum = role.AndradDatum;
+            dbRole.AndradAv = role.AndradAv;
             AstridDbContext.SaveChanges();
         }
         

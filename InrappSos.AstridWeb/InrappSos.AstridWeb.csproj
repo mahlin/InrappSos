@@ -362,8 +362,9 @@
     <Content Include="Views\System\_Files.cshtml" />
     <Content Include="Views\Register\EditSubDirectorysOrgtypes.cshtml" />
     <Content Include="Views\Home\NotImplementedPage.cshtml" />
-    <Content Include="Views\Role\Create.cshtml" />
+    <Content Include="Views\Role\CreateAstrid.cshtml" />
     <Content Include="Views\Role\Edit.cshtml" />
+    <Content Include="Views\Role\IndexOLD.cshtml" />
     <Content Include="Views\Role\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>

@@ -299,7 +299,7 @@ namespace InrappSos.AstridWeb.Controllers
                 model.Organisation = _portalSosService.HamtaOrganisation(model.SelectedOrganisationId);
                 model.Kommunkod = model.Organisation.Kommunkod;
                 var contacts = _portalSosService.HamtaKontaktpersonerForOrg(model.Organisation.Id);
-                var roller = _portalSosService.HamtaAllaFilipRoller().ToList();
+                //var roller = _portalSosService.HamtaAllaFilipRoller().ToList();
                // model.ContactPersons = ConvertUsersViewModelUser(contacts, roller);
                 foreach (var contact in model.ContactPersons)
                 {
@@ -309,7 +309,7 @@ namespace InrappSos.AstridWeb.Controllers
                
                 //Skapa lista över filip-roller 
                 //model.Roller = ConvertRolesToVM(roller);
-                ViewBag.RolesList = CreateRolesDropDownList(roller);
+                //ViewBag.RolesList = CreateRolesDropDownList(roller);
                 model.SearchResult = new List<List<Organisation>>();
                 model.ContactSearchResult = new List<List<OrganisationViewModels.ApplicationUserViewModel>>();
             }

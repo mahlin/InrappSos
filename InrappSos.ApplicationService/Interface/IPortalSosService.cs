@@ -309,7 +309,7 @@ namespace InrappSos.ApplicationService.Interface
         bool IsHelgdag();
         bool IsSpecialdag();
 
-        void SkapaAstridRoll(string rollNamn);
+        //void SkapaAstridRoll(string rollNamn);
 
         void SkapaFilipRoll(string rollNamn);
 
@@ -354,7 +354,7 @@ namespace InrappSos.ApplicationService.Interface
 
         void SkapaInsamlingsfrekvens(AdmInsamlingsfrekvens insamlingsfrekvens, string userName);
 
-        void UppdateraAstridRoll(ApplicationRoleAstrid role);
+        void UppdateraAstridRoll(ApplicationRoleAstrid role, string userName);
         void UppdateraFilipRoll(IdentityRole role);
 
         void UppdateraOrganisation(Organisation org, string userName);
@@ -418,10 +418,6 @@ namespace InrappSos.ApplicationService.Interface
         void SparaTillDatabasFillogg(string userName, string ursprungligtFilNamn, string nyttFilNamn, int leveransId, int sequenceNumber);
         void SparaValdaRegistersForAnvandare(string userId, string userName, List<RegisterInfo> registerList);
         void SaveToLoginLog(string userid, string userName);
-
-        void TaBortAstridRoll(string roleName);
-
-        void TaBortFilipRoll(string roleName);
 
         void TaBortFAQKategori(int faqKategoriId);
 

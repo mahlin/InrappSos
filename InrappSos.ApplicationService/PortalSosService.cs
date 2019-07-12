@@ -2081,10 +2081,10 @@ namespace InrappSos.ApplicationService
             _portalSosRepository.DeleteChosenSubDirectoriesForUser(userId);
         }
 
-        public void SkapaAstridRoll(string rollNamn)
-        {
-            _portalSosRepository.CreateAstridRole(rollNamn);
-        }
+        //public void SkapaAstridRoll(string rollNamn)
+        //{
+        //    _portalSosRepository.CreateAstridRole(rollNamn);
+        //}
 
         public void SkapaFilipRoll(string rollNamn)
         {
@@ -2410,8 +2410,10 @@ namespace InrappSos.ApplicationService
             _portalSosRepository.CreateCollectFrequence(insamlingsfrekvens);
         }
 
-        public void UppdateraAstridRoll(ApplicationRoleAstrid role)
+        public void UppdateraAstridRoll(ApplicationRoleAstrid role, string userName)
         {
+            role.AndradDatum = DateTime.Now;
+            role.AndradAv = userName;
             _portalSosRepository.UpdateAstridRole(role);
         }
 
@@ -2860,16 +2862,6 @@ namespace InrappSos.ApplicationService
         public void SaveToLoginLog(string userid, string userName)
         {
             _portalSosRepository.SaveToLoginLog(userid, userName);
-        }
-
-        public void TaBortAstridRoll(string roleName)
-        {
-            _portalSosRepository.DeleteAstridRole(roleName);
-        }
-
-        public void TaBortFilipRoll(string roleName)
-        {
-            _portalSosRepository.DeleteFilipRole(roleName);
         }
 
         public List<OpeningDay> MarkeraStangdaDagar(List<string> closedDays)

@@ -22,9 +22,7 @@ namespace InrappSos.DataAccess
         IEnumerable<ApplicationRoleAstrid> GetAllAstridRoles();
 
         IEnumerable<IdentityRole> GetAllFilipRoles();
-
-        //void CreateAstridRole(string roleName);
-
+        
         void CreateFilipRole(string roleName);
 
         ApplicationRoleAstrid GetAstridRole(string roleName);
@@ -389,7 +387,6 @@ namespace InrappSos.DataAccess
         //void UpdateUserInfo(ApplicationUser user);
         void UpdateChosenRegistersForUser(string userId, string userName, List<RegisterInfo> registerList);
 
-        //void UpdateAdminUser(AppUserAdmin user);
         void UpdateNameForUser(string userId, string userName);
         void UpdateOrgUnit(Organisationsenhet orgUnit);
         void UpdateOrgType(AdmOrganisationstyp orgType);
@@ -445,6 +442,10 @@ namespace InrappSos.DataAccess
 
         List<List<ApplicationUser>> SearchContact(string[] searchString);
 
+        void SetAstridRoleForAstridUser(ApplicationUserRoleAstrid appUserRole);
+
+        IEnumerable<ApplicationRoleAstrid> GetAstridUsersRoles(string userId);
+
         void SaveChosenRegistersForUser(string userId, string userName, List<RegisterInfo> registerList);
 
         void SaveExceptionExpectedFile(UndantagForvantadfil exception);
@@ -459,8 +460,6 @@ namespace InrappSos.DataAccess
         void DeleteSpecialDay(int specialDayId);
 
         void DeleteContact(string contactId);
-
-        //void DeleteAdminUser(string userId);
 
         void DeleteChosenSubDirectoriesForUser(string userId);
 

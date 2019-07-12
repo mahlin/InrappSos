@@ -82,7 +82,7 @@ namespace InrappSos.DataAccess
             //modelBuilder.Entity<ApplicationRole>().Property(e => e.AndradAv).HasColumnName("andradav");
         }
 
+        public DbSet<ApplicationUserRoleAstrid> ApplicationUserRoleAstrid { get; set; }
 
     }
-
 }

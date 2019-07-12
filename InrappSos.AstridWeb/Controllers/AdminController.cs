@@ -108,38 +108,41 @@ namespace InrappSos.AstridWeb.Controllers
                     //Lägg till användarens roller med multiselect/ListOfRoles
                     try
                     {
+                        var astridRoller = _portalSosService.HamtaAllaAstridRoller();
                         foreach (var role in user.ListOfRoles)
                         {
+                            var rollNamn = astridRoller.SingleOrDefault(x => x.BeskrivandeNamn == role.Name).Name;
                             if (role.Selected)
                             {
-                                UserManager.AddToRole(user.Id, role.Name);
+                                if (!UserManager.IsInRole(user.Id, rollNamn))
+                                {
+                                    _portalSosService.KopplaAstridAnvändareTillAstridRoll(userName, user.Id, role.Id);
+                                }
                             }
                             else
                             {
-                                if (UserManager.IsInRole(user.Id, role.Name))
+                                if (UserManager.IsInRole(user.Id, rollNamn))
                                 {
-                                    UserManager.RemoveFromRole(user.Id, role.Name);
+                                    UserManager.RemoveFromRole(user.Id, rollNamn);
                                 }
                             }
                         }
                     }
-                    ////Lägg till användarens roller från StringOfRoles
-                    //try
-                    //{
-                    //    var roles = user.StringOfRoles.Split(',');
-                    //    foreach (var role in roles)
-                    //    {
-                    //        if (!String.IsNullOrEmpty(role))
-                    //        {
-                    //            UserManager.AddToRole(user.Id, role.Trim());
-                    //        }
-                    //    }
-                    //}
                     catch (Exception e)
                     {
                         throw new ArgumentException(e.Message);
                     }
                 }
+            }
+            catch (ArgumentException e)
+            {
+                ApplicationService.Helpers.ErrorManager.WriteToErrorLog("AdminController", "UpdateAdminUser", e.ToString(), e.HResult, User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade vid uppdatering av Astrid-användare",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
             }
             catch (Exception e)
             {
@@ -178,210 +181,7 @@ namespace InrappSos.AstridWeb.Controllers
             }
             return RedirectToAction("GetAstridUsers");
         }
-
-        //[Authorize(Roles = "Admin")]
-        //// GET: /Roles/Create/Read/Update/Delete
-        //public ActionResult CRUDRoles()
-        //{
-        //    //Test
-        //    var res = CreateRole(_roleManager,"Admin","Kan göra allt");
-
-        //    //Hämta info för Create/Read/Update/Delete Roles
-        //    var AstridRoles = _portalSosService.HamtaAllaAstridRoller();
-        //    var astridRolelist = CreateRolesDropDownList(AstridRoles);
-        //    ViewBag.AstridRoles = astridRolelist;
-
-        //    //var FilipRoles = _portalSosService.HamtaAllaFilipRoller();
-        //    //var filipRolelist = CreateRolesDropDownList(FilipRoles);
-        //    //ViewBag.FilipRoles = filipRolelist;
-
-        //    ViewBag.Message = "";
-        //    return View("CRUDRoles");
-        //}
-
-        //[Authorize(Roles = "Admin")]
-        //// POST: /Roles/Create
-        //[HttpPost]
-        //public ActionResult CreateAstridRole(FormCollection collection)
-        //{
-        //    try
-        //    {
-        //        _portalSosService.SkapaAstridRoll(collection["RoleName"]);
-        //        ViewBag.Message = "Rollen skapad!";
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Console.WriteLine(e);
-        //        ErrorManager.WriteToErrorLog("AdminController", "CreateAstridRole", e.ToString(), e.HResult, User.Identity.Name);
-        //        var errorModel = new CustomErrorPageModel
-        //        {
-        //            Information = "Ett fel inträffade när Astrid-roll skulle skapas.",
-        //            ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
-        //        };
-        //        return View("CustomError", errorModel);
-        //    }
-        //    return RedirectToAction("CRUDRoles");
-        //}
-
-        //[Authorize(Roles = "Admin")]
-        //// GET: /Roles/Edit/5
-        //public ActionResult EditAstridRole(string roleName)
-        //{
-        //    var model = new AdminViewModels.AdminRoleViewModel();
-        //    model.SelectedApplication = "Astrid";
-        //    model.Role = _portalSosService.HamtaAstridRoll(roleName);
-        //    //var thisRole = _portalSosService.HamtaAstridRoll(roleName);
-        //    ViewBag.Text = "Ändra Astrid-roll";
-
-        //    return View("EditRole",model);
-        //    //return RedirectToAction("CRUDRoles");
-        //}
-
-    //    [Authorize(Roles = "Admin")]
-    //    // POST: /Roles/Edit/5
-    //    [HttpPost]
-    //    [ValidateAntiForgeryToken]
-    //    public ActionResult EditAstridRole(AdminViewModels.AdminRoleViewModel model)
-    //    {
-    //        try
-    //        {
-    //            _portalSosService.UppdateraAstridRoll(model.Role);
-    //        }
-    //        catch (Exception e)
-    //        {
-    //            Console.WriteLine(e);
-    //            ErrorManager.WriteToErrorLog("AdminController", "EditAstridRole", e.ToString(), e.HResult,
-    //                User.Identity.Name);
-    //            var errorModel = new CustomErrorPageModel
-    //            {
-    //                Information = "Ett fel inträffade när Astrid-roll skulle uppdateras.",
-    //                ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
-    //            };
-    //            return View("CustomError", errorModel);
-    //        }
-    //        return RedirectToAction("EditAstridRole", new {roleName = model.Role.Name});
-    //}
-
-        //[Authorize(Roles = "Admin")]
-        //public ActionResult DeleteAstridRole(string roleName)
-        //{
-        //    try
-        //    {
-        //        _portalSosService.TaBortAstridRoll(roleName);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Console.WriteLine(e);
-        //        ErrorManager.WriteToErrorLog("AdminController", "DeleteAstridRole", e.ToString(), e.HResult, User.Identity.Name);
-        //        var errorModel = new CustomErrorPageModel
-        //        {
-        //            Information = "Ett fel inträffade när Astrid-roll skulle tas bort.",
-        //            ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
-        //        };
-        //        return View("CustomError", errorModel);
-        //    }
-        //    return RedirectToAction("CRUDRoles");
-        //}
-
-
-        //[Authorize(Roles = "Admin")]
-        //// POST: /Roles/Create
-        //[HttpPost]
-        //public ActionResult CreateFilipRole(FormCollection collection)
-        //{
-        //    try
-        //    {
-        //        _portalSosService.SkapaFilipRoll(collection["RoleName"]);
-        //        ViewBag.Message = "Rollen skapad!";
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Console.WriteLine(e);
-        //        ErrorManager.WriteToErrorLog("AdminController", "CreateFilipRole", e.ToString(), e.HResult, User.Identity.Name);
-        //        var errorModel = new CustomErrorPageModel
-        //        {
-        //            Information = "Ett fel inträffade när Filip-roll skulle skapas.",
-        //            ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
-        //        };
-        //        return View("CustomError", errorModel);
-        //    }
-        //    return RedirectToAction("CRUDRoles");
-        //}
-
-        //[Authorize(Roles = "Admin")]
-        //// GET: /Roles/Edit/5
-        //public ActionResult EditFilipRole(string roleName)
-        //{
-        //    var model = new AdminViewModels.AdminRoleViewModel();
-        //    model.SelectedApplication = "Filip";
-        //    //model.Role = _portalSosService.HamtaFilipRoll(roleName);
-        //    ViewBag.Text = "Ändra Filip-roll";
-        //    return View("EditRole", model);
-        //    //return RedirectToAction("CRUDRoles");
-        //}
-
-        //[Authorize(Roles = "Admin")]
-        //// POST: /Roles/Edit/5
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult EditFilipRole(IdentityRole role)
-        //{
-        //    try
-        //    {
-        //        _portalSosService.UppdateraFilipRoll(role);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Console.WriteLine(e);
-        //        ErrorManager.WriteToErrorLog("AdminController", "EditFilipRole", e.ToString(), e.HResult, User.Identity.Name);
-        //        var errorModel = new CustomErrorPageModel
-        //        {
-        //            Information = "Ett fel inträffade när Filip-roll skulle uppdateras.",
-        //            ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
-        //        };
-        //        return View("CustomError", errorModel);
-        //    }
-        //    return RedirectToAction("CRUDRoles");
-        //}
-
-        //[Authorize(Roles = "Admin")]
-        //public ActionResult DeleteFilipRole(string roleName)
-        //{
-        //    try
-        //    {
-        //        _portalSosService.TaBortFilipRoll(roleName);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Console.WriteLine(e);
-        //        ErrorManager.WriteToErrorLog("AdminController", "DeleteFilipRole", e.ToString(), e.HResult, User.Identity.Name);
-        //        var errorModel = new CustomErrorPageModel
-        //        {
-        //            Information = "Ett fel inträffade när Filip-roll skulle tas bort.",
-        //            ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
-        //        };
-        //        return View("CustomError", errorModel);
-        //    }
-        //    return RedirectToAction("CRUDRoles");
-        //}
-
-        ////Role handling (TODO - ApplicationManager borde flyttas till servielagret, liksom dessa metoder)
-        //public bool RoleExists(ApplicationRoleManager roleManager, string name)
-        //{
-        //    return roleManager.RoleExists(name);
-        //}
-
-        //public bool CreateRole(ApplicationRoleManager _roleManager, string name, string description = "")
-        //{
-        //    var role = new ApplicationRoleAstrid
-        //    {
-        //        Name = "Admin",
-        //        Beskrivning = "Kan göra det mesta"
-        //    };
-
-        //    var idResult = _roleManager.Create(role);
-        //    return idResult.Succeeded;
-        //}
+       
 
         public bool AddUserToRole(ApplicationUserManager _userManager, string userId, string roleName)
         {
@@ -402,12 +202,6 @@ namespace InrappSos.AstridWeb.Controllers
         //}
 
 
-        public void RemoveFromRole(ApplicationUserManager userManager, string userId, string roleName)
-        {
-            userManager.RemoveFromRole(userId, roleName);
-        }
-
-
         private IEnumerable<AdminViewModels.AppUserAdminViewModel> ConvertAdminUsersToViewModel(IEnumerable<AppUserAdmin> adminUsers, List<ApplicationRoleAstrid> roller)
         {
             var adminUserViewList = new List<AdminViewModels.AppUserAdminViewModel>();
@@ -426,7 +220,7 @@ namespace InrappSos.AstridWeb.Controllers
                     SkapadAv = user.SkapadAv,
                     AndradDatum = user.AndradDatum,
                     AndradAv = user.AndradAv,
-                    Roles = UserManager.GetRoles(user.Id)
+                    Roles = _portalSosService.HamtaAstridAnvandaresRoller(user.Id).Select(x => x.BeskrivandeNamn).ToList()
                 };
 
                 //Skapa lista över roller och markera valda roller för aktuell användare
@@ -435,10 +229,10 @@ namespace InrappSos.AstridWeb.Controllers
                     var roleVm = new IdentityRoleViewModel
                     {
                         Id = roll.Id,
-                        Name = roll.Name
+                        Name = roll.BeskrivandeNamn
                     };
 
-                    if (adminUserView.Roles.Contains(roll.Name))
+                    if (adminUserView.Roles.Contains(roll.BeskrivandeNamn))
                     {
                         roleVm.Selected = true;
                     }
@@ -487,7 +281,7 @@ namespace InrappSos.AstridWeb.Controllers
                 var roleVM = new IdentityRoleViewModel()
                 {
                     Id = roll.Id,
-                    Name = roll.Name,
+                    Name = roll.BeskrivandeNamn,
                     Selected = false
                 };
                 rollerList.Add(roleVM);
@@ -500,7 +294,7 @@ namespace InrappSos.AstridWeb.Controllers
         /// Create list for roles-dropdown  
         /// </summary>  
         /// <returns>Return roles for drop down list.</returns>  
-        private IEnumerable<SelectListItem> CreateRolesDropDownList(IEnumerable<IdentityRole> roles)
+        private IEnumerable<SelectListItem> CreateRolesDropDownList(IEnumerable<ApplicationRoleAstrid> roles)
         {
             SelectList lstobj = null;
 
@@ -509,7 +303,7 @@ namespace InrappSos.AstridWeb.Controllers
                     new SelectListItem
                     {
                         Value = p.Id.ToString(),
-                        Text = p.Name
+                        Text = p.BeskrivandeNamn
                     });
 
             // Setting.  

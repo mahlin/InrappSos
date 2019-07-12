@@ -307,7 +307,7 @@
                                 <input type="text" id="Email" value="@item.Email" class="edit-mode form-control" /></text>, style: "col4Width"),
                 grid.Column("PhoneNumber", "Telefonnummer", format: @<text><span class="display-mode"><label id="lblDescription" style="width: 200px;">@item.PhoneNumber  </label></span>
                 <input type="text" id="PhoneNumber" value="@item.PhoneNumber" class="edit-mode form-control" /></text>, style: "colMinWidth"),
-                grid.Column("Roller", "Roller", format: @<text><label id="lblRoller" class="longColumnText" style="width: 200px;">@item.StringOfRoles</label></text>, style: "col3Width"),
+                grid.Column("Roller", "Roller", format: @<text><label id="lblRoller" >@item.StringOfRoles</label></text>, style: "col2Width"),
                 //grid.Column("Roller", format: @item => Html.DropDownListFor(m => m.Roller, new SelectList(@item.ListOfRoles, "Id", "Name"), " - Välj roll -", new { id = "ddlRoleList", @class = "form-control edit-mode", style = "min-width:100px !important" })),
                 grid.Column("Roller", format: @item => Html.DropDownListFor(m => m.Roller, new SelectList(@item.ListOfRoles, "Id", "Name"), new { id = "ddlRoleList", @class = "form-control edit-mode ddl", multiple = "multiple", style = "min-width:100px !important" })),
 

@@ -77,8 +77,6 @@ namespace InrappSos.ApplicationService.Interface
 
         AdmOrganisationstyp HamtaOrganisationstyp(int orgtypId);
 
-        //List<UserRolesDTO> HamtaAstridRoller();
-
         IEnumerable<ApplicationUser> HamtaKontaktpersonerForOrg(int orgId);
 
         IEnumerable<ApplicationUser> HamtaAktivaKontaktpersonerForOrg(int orgId);
@@ -283,6 +281,10 @@ namespace InrappSos.ApplicationService.Interface
 
         string KontrolleraOmKomplettaEnhetsleveranser(int orgId, LeveransStatusDTO leveransStatusObj, List<AdmDelregister> delregisterList);
 
+        void KopplaAstridAnvändareTillAstridRoll(string userName, string astridUserId, string rollId);
+
+        IEnumerable<ApplicationRoleAstrid> HamtaAstridAnvandaresRoller(string userId);
+
         //IEnumerable<RegisterInfo> HamtaValdaRegistersForAnvandare(string userId, int orgId);
 
         List<RegisterInfo> HamtaValdaDelregisterForAnvandare(string userId, int orgId);
@@ -308,8 +310,6 @@ namespace InrappSos.ApplicationService.Interface
         bool IsOpen();
         bool IsHelgdag();
         bool IsSpecialdag();
-
-        //void SkapaAstridRoll(string rollNamn);
 
         void SkapaFilipRoll(string rollNamn);
 

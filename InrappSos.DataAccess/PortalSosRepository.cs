@@ -87,15 +87,6 @@ namespace InrappSos.DataAccess
             return filipRoles;
         }
 
-        //public void CreateAstridRole(string roleName)
-        //{
-        //    AstridDbContext.Roles.Add(new ApplicationRoleAstrid
-        //    {
-        //        Name = roleName
-        //    });
-        //    AstridDbContext.SaveChanges();
-        //}
-
         public void CreateFilipRole(string roleName)
         {
             DbContext.Roles.Add(new IdentityRole
@@ -453,12 +444,6 @@ namespace InrappSos.DataAccess
             }
             return contactList;
         }
-
-        //public IEnumerable<AppUserAdmin> GetAdminUsers()
-        //{
-        //    var adminUsers = IdentityDbContext.Users.ToList();
-        //    return adminUsers;
-        //}
 
         public IEnumerable<Organisationsenhet> GetOrgUnitsForOrg(int orgId)
         {
@@ -2335,6 +2320,25 @@ namespace InrappSos.DataAccess
             }
             return contactList;
         }
+
+        public void SetAstridRoleForAstridUser(ApplicationUserRoleAstrid appUserRole)
+        {
+            AstridDbContext.ApplicationUserRoleAstrid.Add(appUserRole);
+            AstridDbContext.SaveChanges();
+        }
+
+        public IEnumerable<ApplicationRoleAstrid> GetAstridUsersRoles(string userId)
+        {
+            var userRoles = new List<ApplicationRoleAstrid>();
+            var roles = AstridDbContext.ApplicationUserRoleAstrid.Where(x => x.UserId == userId).ToList();
+            foreach (var role in roles)
+            {
+                var userRole = AstridDbContext.Roles.Where(x => x.Id == role.RoleId).SingleOrDefault();
+                userRoles.Add(userRole);
+            }
+            return userRoles;
+        }
+
 
         public void SaveChosenRegistersForUser(string userId, string userName, List<RegisterInfo> registerList)
         {

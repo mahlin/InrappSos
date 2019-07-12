@@ -369,13 +369,7 @@ namespace InrappSos.ApplicationService
             var orgtyp = _portalSosRepository.GetOrgtype(orgtypId);
             return orgtyp;
         }
-
-        //public List<UserRolesDTO> HamtaAstridRoller()
-        //{
-        //    var roles = _portalSosRepository.GetAllAstridRoles();
-        //    return roles;
-        //}
-
+        
         public IEnumerable<ApplicationUser> HamtaKontaktpersonerForOrg(int orgId)
         {
             var contacts = _portalSosRepository.GetContactPersonsForOrg(orgId);
@@ -1860,6 +1854,27 @@ namespace InrappSos.ApplicationService
             return status;
         }
 
+        public void KopplaAstridAnvändareTillAstridRoll(string userName, string astridUserId, string rollId)
+        {
+
+            var userRole = new ApplicationUserRoleAstrid
+            {
+                UserId = astridUserId,
+                RoleId = rollId,
+                SkapadDatum = DateTime.Now,
+                SkapadAv = userName,
+                AndradDatum = DateTime.Now,
+                AndradAv = userName
+            };
+            _portalSosRepository.SetAstridRoleForAstridUser(userRole);
+        }
+
+        public IEnumerable<ApplicationRoleAstrid> HamtaAstridAnvandaresRoller(string userId)
+        {
+            var astridAnvRoller = _portalSosRepository.GetAstridUsersRoles(userId);
+            return astridAnvRoller;
+        }
+
         //public IEnumerable<RegisterInfo> HamtaValdaRegistersForAnvandare(string userId, int orgId)
         //{
         //    var registerList = _portalSosRepository.GetChosenDelRegistersForUser(userId);
@@ -2080,12 +2095,7 @@ namespace InrappSos.ApplicationService
             //Remove users chosen registers
             _portalSosRepository.DeleteChosenSubDirectoriesForUser(userId);
         }
-
-        //public void SkapaAstridRoll(string rollNamn)
-        //{
-        //    _portalSosRepository.CreateAstridRole(rollNamn);
-        //}
-
+        
         public void SkapaFilipRoll(string rollNamn)
         {
             _portalSosRepository.CreateFilipRole(rollNamn);

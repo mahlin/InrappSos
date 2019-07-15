@@ -347,6 +347,7 @@ namespace SFTPFileHandler
                     }
                 }
             }
+            HandleErrorLists(incorrectFileCodeList, incorrectPeriodList);
         }
 
         private void HandleErrorLists(List<FileInfo> incorrectFileCodeList, List<FileInfo> incorrectPeriodList)

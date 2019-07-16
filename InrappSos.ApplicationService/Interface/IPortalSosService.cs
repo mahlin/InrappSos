@@ -29,9 +29,7 @@ namespace InrappSos.ApplicationService.Interface
 
         ApplicationRoleAstrid HamtaAstridRoll(string roleName);
 
-        IdentityRole HamtaFilipRoll(string roleName);
-
-        //IList<string> HamtaFilipRollerForAnvandare(string userId);
+        List<string> HamtaFilipRollerForAnvandare(string userId);
 
         IEnumerable<AdmFAQKategori> HamtaAllaFAQs();
         IEnumerable<AdmOrganisationstyp> HamtaAllaOrganisationstyper();
@@ -284,6 +282,10 @@ namespace InrappSos.ApplicationService.Interface
         string KontrolleraOmKomplettaEnhetsleveranser(int orgId, LeveransStatusDTO leveransStatusObj, List<AdmDelregister> delregisterList);
 
         void KopplaAstridAnvändareTillAstridRoll(string userName, string astridUserId, string rollId);
+
+        void KopplaFilipAnvändareTillFilipRoll(string userName, string filipUserId, string rollId);
+
+        void TaBortFilipRollForanvandare(string userName, string filipUserId, string rollId);
 
         IEnumerable<ApplicationRoleAstrid> HamtaAstridAnvandaresRoller(string userId);
 

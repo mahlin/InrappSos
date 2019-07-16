@@ -746,14 +746,16 @@ namespace InrappSos.AstridWeb.Controllers
                         {
                             if (role.Selected)
                             {
-                                FilipUserManager.AddToRole(user.ID, role.Name);
+                                //FilipUserManager.AddToRole(user.ID, role.Name);
+                                _portalSosService.KopplaFilipAnvändareTillFilipRoll(userName, user.ID,role.Id);
                             }
                             else
                             {
-                                if (FilipUserManager.IsInRole(user.ID, role.Name))
-                                {
-                                    FilipUserManager.RemoveFromRole(user.ID, role.Name);
-                                }
+                                _portalSosService.TaBortFilipRollForanvandare(userName, user.ID, role.Id);
+                                //if (FilipUserManager.IsInRole(user.ID, role.Name))
+                                //{
+                                //    FilipUserManager.RemoveFromRole(user.ID, role.Name);
+                                //}
                             }
                         }
                     }
@@ -1656,7 +1658,7 @@ namespace InrappSos.AstridWeb.Controllers
                     AndradDatum = contact.AndradDatum,
                     AndradAv = contact.AndradAv,
                     OkToDelete = okToDelete,
-                    //Roles = _portalSosService.HamtaFilipRollerForAnvandare(contact.Id)
+                    Roles = _portalSosService.HamtaFilipRollerForAnvandare(contact.Id)
                 };
 
                 //Skapa lista över roller och markera valda roller för aktuell användare
@@ -1665,10 +1667,10 @@ namespace InrappSos.AstridWeb.Controllers
                     var roleVm = new IdentityRoleViewModel
                     {
                         Id = roll.Id,
-                        Name = roll.Name
+                        Name = roll.beskrivandeNamn
                     };
 
-                    if (contactView.Roles.Contains(roll.Name))
+                    if (contactView.Roles.Contains(roll.beskrivandeNamn))
                     {
                         roleVm.Selected = true;
                     }

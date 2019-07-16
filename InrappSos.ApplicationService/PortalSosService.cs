@@ -532,25 +532,19 @@ namespace InrappSos.ApplicationService
             var astridRoll = _portalSosRepository.GetAstridRole(roleName);
             return astridRoll;
         }
-        
 
-        public IdentityRole HamtaFilipRoll(string roleName)
+        public List<string> HamtaFilipRollerForAnvandare(string userId)
         {
-            var filipRoll = _portalSosRepository.GetFilipRole(roleName);
-            return filipRoll;
+            var rollLista = new List<string>();
+            var userRoles = _portalSosRepository.GetFilipUserRolesForUser(userId);
+
+            foreach (var userRole in userRoles)
+            {
+                var role = _portalSosRepository.GetFilipRoleById(userRole.RoleId);
+                rollLista.Add(role.beskrivandeNamn);
+            }
+            return rollLista;
         }
-
-        //public IList<string> HamtaFilipRollerForAnvandare(string userId)
-        //{
-        //    var roleIdsForUser = _portalSosRepository.GetFilipRoleIdsForUser(userId);
-
-        //    foreach (var roleId in roleIdsForUser)
-        //    {
-        //        var role = _portalSosRepository.GetFilipRoleById(roleId);
-        //    }
-        //    var rollLista = _portalSosRepository.GetFilipRolesForUser(userId);
-        //    return rollLista;
-        //}
 
         public IEnumerable<AdmFAQKategori> HamtaAllaFAQs()
         {
@@ -1868,7 +1862,6 @@ namespace InrappSos.ApplicationService
 
         public void KopplaAstridAnvändareTillAstridRoll(string userName, string astridUserId, string rollId)
         {
-
             var userRole = new ApplicationUserRoleAstrid
             {
                 UserId = astridUserId,
@@ -1879,6 +1872,30 @@ namespace InrappSos.ApplicationService
                 AndradAv = userName
             };
             _portalSosRepository.SetAstridRoleForAstridUser(userRole);
+        }
+
+        public void KopplaFilipAnvändareTillFilipRoll(string userName, string filipUserId, string rollId)
+        {
+            var userRole = new ApplicationUserRole
+            {
+                UserId = filipUserId,
+                RoleId = rollId,
+                skapadDatum = DateTime.Now,
+                skapadAv = userName,
+                andradDatum = DateTime.Now,
+                andradAv = userName
+            };
+            _portalSosRepository.SetFilipRoleForFilipUser(userRole);
+        }
+
+        public void TaBortFilipRollForanvandare(string userName, string filipUserId, string rollId)
+        {
+            var userRoles =  _portalSosRepository.GetFilipUserRolesForUser(filipUserId).Select(x => x.RoleId).ToList();
+            //Om användare har rollen ska den tas bort
+            if (userRoles.Contains(rollId))
+            {
+                _portalSosRepository.DeleteRoleFromFilipUser(filipUserId, rollId);
+            }
         }
 
         public IEnumerable<ApplicationRoleAstrid> HamtaAstridAnvandaresRoller(string userId)

@@ -33,10 +33,16 @@ namespace InrappSos.DataAccess
         //****************************************************************//
 
         UndantagEpostadress GetUserFromUndantagEpostadress(string email);
-        IdentityRole GetFilipRole(string roleName);
+
+        IEnumerable<ApplicationUserRole> GetFilipUserRolesForUser(string userId);
+
+        ApplicationRole GetFilipRoleById(string roleId);
 
         void UpdateFilipRole(ApplicationRole role);
+
         void DeleteFilipRole(string roleName);
+
+        void DeleteRoleFromFilipUser(string userId, string roleId);
 
         Arende GetArende(string arendeNr);
 
@@ -444,6 +450,8 @@ namespace InrappSos.DataAccess
         List<List<ApplicationUser>> SearchContact(string[] searchString);
 
         void SetAstridRoleForAstridUser(ApplicationUserRoleAstrid appUserRole);
+
+        void SetFilipRoleForFilipUser(ApplicationUserRole applicationUserRole);
 
         IEnumerable<ApplicationRoleAstrid> GetAstridUsersRoles(string userId);
 

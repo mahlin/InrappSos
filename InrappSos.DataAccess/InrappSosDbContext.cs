@@ -708,5 +708,6 @@ namespace InrappSos.DataAccess
         public DbSet<LevId> LevId { get; set; }
 
         public DbSet<ApplicationRole> ApplicationRole { get; set; }
+        public DbSet<ApplicationUserRole> ApplicationUserRole { get; set; }
     }
 }

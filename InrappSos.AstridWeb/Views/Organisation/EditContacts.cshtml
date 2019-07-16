@@ -400,7 +400,7 @@
                                    mode: WebGridPagerModes.All,
                                    columns: grid.Columns(
                                      grid.Column(null, null, format: @<input type="hidden" id="ContactId" name="IDHidden" value="@item.ID" />),
-                                    grid.Column("Namn", format: @<text><span class="display-mode">@item.Namn</span><label id="ContactName" class="edit-mode">@item.Namn</label></text>, style: "col3Width"),
+                                    grid.Column("Namn", format: @<text><span class="display-mode" style="display: inline-block;">@item.Namn</span><label id="ContactName" class="edit-mode">@item.Namn</label></text>, style: "col3Width"),
                                     grid.Column("Email", "E-post", format: @<text><span class="display-mode col3Width">@item.Email</span><label id="Epost" class="edit-mode col3Width">@item.Email</label></text>, style: "col3Width"),
                                     grid.Column("PhoneNumber", "Telefon", format: @<text><span class="display-mode col2Width"><label id="lblPhoneNumber">@item.PhoneNumber</label></span>
                                                 <input type="text" id="ContactPhoneNumber" value="@item.PhoneNumber" class="edit-mode form-control" /></text>, style: "col2Width"),
@@ -415,8 +415,8 @@
                                                 <input type="text" id="ContactAktivTom" value="@( item.AktivTom != null ? item.AktivTom.ToString("yyyy-MM-dd") : item.AktivTom)" class="edit-mode form-control" /></text>, style: "col2Width"),
                                     grid.Column("Status", "Status", format: @<text><span class="display-mode colMinWidth"><label id="lblStatus">@item.Status</label></span>
                                                 <input type="text" id="ContactStatus" value="@item.Status" class="edit-mode form-control" /></text>, style: "colMinWidth"),
-                                    grid.Column("Valda delregister", "Valda delregister", format: @<text><span class="display-mode col3Width" style="display: inline-block;">@item.ValdaDelregister</span><label id="lblValdaDelreg" class="edit-mode col3Width">@item.ValdaDelregister</label></text>, style: "col3Width"),
-                                    grid.Column("Roller", "Roller", format: @<text><label id="lblRoller" class="longColumnText" style="width: 100px;">@item.StringOfRoles</label></text>, style: "col3Width"),
+                                    grid.Column("Valda delregister", "Valda delregister", format: @<text><span class="display-mode col2Width" style="display: inline-block;">@item.ValdaDelregister</span><label id="lblValdaDelreg" class="edit-mode col3Width">@item.ValdaDelregister</label></text>, style: "col2Width"),
+                                    grid.Column("Roller", "Roller", format: @<text><label id="lblRoller" class="display-mode col2Width" style="display: inline-block;">@item.StringOfRoles</label></text>, style: "col2Width"),
                                     grid.Column("Roller", format: @item => Html.DropDownListFor(m => m.Roller, new SelectList(@item.ListOfRoles, "Id", "Name"), new { id = "ddlRoleList", @class = "form-control edit-mode ddl", multiple = "multiple", style = "min-width:100px !important" })),
                                     grid.Column(null, format: @<text>
                                         <button class="edit-user display-mode btn btn-default">Ändra</button>

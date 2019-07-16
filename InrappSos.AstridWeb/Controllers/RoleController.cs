@@ -24,12 +24,14 @@ namespace InrappSos.AstridWeb.Controllers
         {
             private readonly IPortalSosService _portalSosService;
             private ApplicationRoleManager _roleManager;
+            private FilipApplicationRoleManager _filipRoleManager;
             private ApplicationUserManager _userManager;
 
-            public RoleController(ApplicationUserManager userManager, ApplicationRoleManager roleManager)
+            public RoleController(ApplicationUserManager userManager, ApplicationRoleManager roleManager, FilipApplicationRoleManager filipRoleManager)
             {
                 _portalSosService = new PortalSosService(new PortalSosRepository(new InrappSosDbContext(), new InrappSosAstridDbContext()));
                 RoleManager = roleManager;
+                FilipRoleManager = filipRoleManager;
                 UserManager = userManager;
             }
 
@@ -37,7 +39,9 @@ namespace InrappSos.AstridWeb.Controllers
             {
                 _portalSosService = new PortalSosService(new PortalSosRepository(new InrappSosDbContext(), new InrappSosAstridDbContext()));
                 var roleStore = new RoleStore<ApplicationRoleAstrid>(new InrappSosAstridDbContext());
+                var filipRoleStore = new RoleStore<ApplicationRole>(new InrappSosDbContext());
                 RoleManager = new ApplicationRoleManager(roleStore);
+                FilipRoleManager = new FilipApplicationRoleManager(filipRoleStore);
                 
             }
 
@@ -50,6 +54,18 @@ namespace InrappSos.AstridWeb.Controllers
                 private set
                 {
                     _roleManager = value;
+                }
+            }
+
+            public FilipApplicationRoleManager FilipRoleManager
+            {
+                get
+                {
+                    return _filipRoleManager ?? HttpContext.GetOwinContext().GetUserManager<FilipApplicationRoleManager>();
+                }
+                private set
+                {
+                    _filipRoleManager = value;
                 }
             }
 
@@ -71,12 +87,9 @@ namespace InrappSos.AstridWeb.Controllers
                 //Hämta info för Create/Read/Update Roles
                 var model = new RoleViewModels();
                 var astridRolesList = _portalSosService.HamtaAllaAstridRoller();
+                var filipRolesList = _portalSosService.HamtaAllaFilipRoller();
                 model.AstridRoller = astridRolesList.ToList();
-
-                //var FilipRoles = _portalSosService.HamtaAllaFilipRoller();
-                //var filipRolelist = CreateRolesDropDownList(FilipRoles);
-                //ViewBag.FilipRoles = filipRolelist;
-
+                model.FilipRoller = filipRolesList.ToList();
                 ViewBag.Message = "";
                 return View(model);
             }
@@ -85,7 +98,7 @@ namespace InrappSos.AstridWeb.Controllers
             //GET
             public ActionResult CreateAstridRole()
             {
-                return View("CreateAstrid");
+                return View();
             }
 
             [Authorize(Roles = "Admin")]
@@ -109,7 +122,7 @@ namespace InrappSos.AstridWeb.Controllers
                             Beskrivning = astridRole.Beskrivning
                         };
 
-                        await CreateRole(dbRole);
+                        await CreateRoleForAstrid(dbRole);
                     }
                     catch (Exception e)
                     {
@@ -125,15 +138,69 @@ namespace InrappSos.AstridWeb.Controllers
                     }
                     return RedirectToAction("Index");
                 }
-                return View("CreateAstrid");
+                return View();
             }
 
-            private async Task CreateRole(ApplicationRoleAstrid astridRole)
+            [Authorize(Roles = "Admin")]
+            //GET
+            public ActionResult CreateFilipRole()
+            {
+                return View();
+            }
+
+            [Authorize(Roles = "Admin")]
+            // POST: /Roles/Create
+            [HttpPost]
+            public async Task<ActionResult> CreateFilipRole(RoleViewModels.RoleViewModelFilip filipRole)
+            {
+                if (ModelState.IsValid)
+                {
+                    try
+                    {
+                        var user = User.Identity.GetUserName();
+                    var dbRole = new ApplicationRole
+                        {
+                            Name = filipRole.RoleName,
+                            beskrivandeNamn = filipRole.BeskrivandeNamn,
+                            beskrivning = filipRole.Beskrivning
+                        };
+
+                    _portalSosService.SkapaFilipRoll(dbRole, user);
+
+                        //await CreateRoleForFilip(dbRole);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                        ErrorManager.WriteToErrorLog("RoleController", "CreateFilipRole", e.ToString(), e.HResult,
+                            User.Identity.Name);
+                        var errorModel = new CustomErrorPageModel
+                        {
+                            Information = "Ett fel inträffade när Filip-roll skulle skapas.",
+                            ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                        };
+                        return View("CustomError", errorModel);
+                    }
+                    return RedirectToAction("Index");
+                }
+                return View();
+            }
+
+            private async Task CreateRoleForAstrid(ApplicationRoleAstrid astridRole)
             {
                 bool exists = await _roleManager.RoleExistsAsync(astridRole.Name);
                 if (!exists)
                 {
                     await _roleManager.CreateAsync(astridRole);
+                }
+            }
+
+            private async Task CreateRoleForFilip(ApplicationRole filipRole)
+            {
+                bool exists = await _filipRoleManager.RoleExistsAsync(filipRole.Name);
+                if (!exists)
+                {
+                    await _filipRoleManager.CreateAsync(filipRole);
                 }
             }
 
@@ -166,7 +233,35 @@ namespace InrappSos.AstridWeb.Controllers
                 return RedirectToAction("Index");
             }
 
-            public bool AddUserToRole(ApplicationUserManager _userManager, string userId, string roleName)
+            [Authorize(Roles = "Admin")]
+            // POST: /Roles/Edit/5
+            [HttpPost]
+            public ActionResult EditFilipRole(ApplicationRole model)
+            {
+                try
+                {
+                    if (ModelState.IsValid)
+                    {
+                        var user = User.Identity.GetUserName();
+                        _portalSosService.UppdateraFilipRoll(model, user);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    ErrorManager.WriteToErrorLog("RoleController", "EditAstridRole", e.ToString(), e.HResult,
+                        User.Identity.Name);
+                    var errorModel = new CustomErrorPageModel
+                    {
+                        Information = "Ett fel inträffade när Filip-roll skulle uppdateras.",
+                        ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                    };
+                    return View("CustomError", errorModel);
+                }
+                return RedirectToAction("Index");
+            }
+
+        public bool AddUserToRole(ApplicationUserManager _userManager, string userId, string roleName)
             {
                 var idResult = _userManager.AddToRole(userId, roleName);
                 return idResult.Succeeded;

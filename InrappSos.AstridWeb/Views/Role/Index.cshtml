@@ -5,10 +5,11 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
-
+        $('.edit-mode').hide();
+        $('.filipedit-mode').hide();
     });
     $(function () {
-        $('.edit-mode').hide();
+        
         $('.cancel-user').on('click', function () {
             var tr = $(this).parents('tr:first');
             tr.find('.edit-mode, .display-mode').toggle();
@@ -43,26 +44,38 @@
 
         });
 
-        //$('.edit-user').on('click', function () {
-        //    var tr = $(this).parents('tr:first');
-        //    var arendeNamn = tr.find("#Arendenamn").val();
-        //    var arendeNr = tr.find("#ArendeNr").val();
-        //    var arendetyp = tr.find("#Arendetyp").val();
-        //    var arendestatus = tr.find("#Arendestatus").val();
-        //    var ansvarig = tr.find("#Ansvarig").val();
-        //    var rapportorer = tr.find("#Rapportorer").val();
-        //    var startDatum = tr.find("#StartDatum").val();
-        //    var slutDatum = tr.find("#SlutDatum").val();
+        $('.filipcancel-user').on('click', function () {
+            var tr = $(this).parents('tr:first');
+            tr.find('.filipedit-mode, .filipdisplay-mode').toggle();
+        });
+        $('.filipedit-user').on('click', function () {
+            var tr = $(this).parents('tr:first');
+            tr.find('.filipedit-mode, .filipdisplay-mode').toggle();
+        });
+        $('.filipsave-user').on('click', function () {
+            var tr = $(this).parents('tr:first');
+            var beskrivandeNamn = tr.find("#BeskrivandeNamn").val();
+            var namn = tr.find("#lblRollnamn").html();
+            var beskrivning = tr.find("#Beskrivning").val();
 
-        //    tr.find("#lblArendenamn").text(arendeNamn);
-        //    tr.find("#lblArendeNr").text(arendeNr);
-        //    tr.find("#lblArendetyp").text(arendetyp);
-        //    tr.find("#lblArendestatus").text(arendestatus);
-        //    tr.find("#lblAnsvarig").text(ansvarig);
-        //    tr.find("#lblRapportorer").val(rapportorer);
-        //    tr.find("#lblStartDatum").text(startDatum);
-        //    tr.find("#lblSlutDatum").text(slutDatum);
-        //});
+            //Creating ApplicationRole JSON object
+            var appRole =
+            {
+                "Name": namn,
+                "BeskrivandeNamn": beskrivandeNamn,
+                "Beskrivning": beskrivning
+            };
+            //Posting ApplicationRole object to controller's Update action method
+            $.ajax({
+                url: '/Role/EditFilipRole',
+                data: JSON.stringify(appRole),
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    location.reload();
+                }
+            });
+        });
     });
 
 </script>
@@ -96,7 +109,7 @@
                         mode: WebGridPagerModes.All,
                         columns: grid.Columns(
                             grid.Column("RoleName", "Rollnamn", format: @<text><span class="display-mode col1Width">@item.Name</span><label id="lblRollnamn" class="edit-mode col1Width">@item.Name</label></text>, style: "col1Width"),
-                                 grid.Column("BeskrivandeNamn", "Beskrivande namn", format: @<text><span class="display-mode col3Width"><label id="lblBeskrivandeNamn" class="col3Width">@item.BeskrivandeNamn</label></span>
+                                  grid.Column("BeskrivandeNamn", "Beskrivande namn", format: @<text><span class="display-mode col3Width"><label id="lblBeskrivandeNamn" class="col3Width">@item.BeskrivandeNamn</label></span>
                                 <input type="text" id="BeskrivandeNamn" value="@item.BeskrivandeNamn" class="edit-mode form-control" /></text>, style: "col4Width"),
                                      grid.Column("Beskrivning", "Beskrivning", format: @<text><span class="display-mode"><label id="lblBeskrivning" class="col4Width">@item.Beskrivning</label></span>
                                     <textarea id="Beskrivning" value="" class="edit-mode form-control">@item.Beskrivning</textarea></text>, style: "col4Width"),
@@ -114,36 +127,55 @@
                 <br />
                 <div style="font-size: 1.2em; padding-left: 20px;">Inga roller för Astrid hittades</div>
             }
+
+            <h4>Filiproller</h4>
+
+            @Html.ActionLink("Skapa ny roll i Filip", "CreateFilipRole", "Role", new { style = "padding-left:0px;" })
+
+
+            if (Model.FilipRoller != null)
+            {
+                <div id="gridContent" style="font-family: Arial; padding: 20px; padding-left: 0px;">
+                    @{
+                        ViewBag.Title = "Administrera Filiproller";
+                        var grid = new WebGrid(source: Model.FilipRoller, canPage: false, rowsPerPage: 10, ajaxUpdateContainerId: "filipRolesGrid");
+                    }
+
+                    @grid.GetHtml(htmlAttributes: new {id = "filipRolesTable"},
+                        tableStyle: "webgrid-table",
+                        headerStyle: "webgrid-header",
+                        footerStyle: "webgrid-footer",
+                        alternatingRowStyle: "webgrid-alternating-row",
+                        selectedRowStyle: "webgrid-selected-row",
+                        rowStyle: "webgrid-row-style",
+                        mode: WebGridPagerModes.All,
+                        columns: grid.Columns(
+                            grid.Column("RoleName", "Rollnamn", format: @<text><span class="filipdisplay-mode col1Width">@item.Name</span><label id="lblRollnamn" class="filipedit-mode col1Width">@item.Name</label></text>, style: "col1Width"),
+                            grid.Column("BeskrivandeNamn", "Beskrivande namn", format: @<text><span class="filipdisplay-mode col3Width"><label id="lblBeskrivandeNamn" class="col3Width">@item.BeskrivandeNamn</label></span>
+                                                                                           <input type="text" id="BeskrivandeNamn" value="@item.BeskrivandeNamn" class="filipedit-mode form-control" /></text>, style: "col4Width"),
+                            grid.Column("Beskrivning", "Beskrivning", format: @<text><span class="filipdisplay-mode"><label id="lblBeskrivning" class="col4Width">@item.Beskrivning</label></span>
+                                                                                  <textarea id="Beskrivning" value="" class="filipedit-mode form-control">@item.Beskrivning</textarea></text>, style: "col4Width"),
+
+                                         grid.Column(null, format: @<text>
+                                            <button class="filipedit-user filipdisplay-mode btn btn-default">Ändra</button>
+                                            <button class="filipsave-user filipedit-mode btn btn-default">Spara</button>
+                                            <button class="filipcancel-user filipedit-mode btn btn-default">Avbryt</button>
+                                        </text>, style: "col1Width", canSort: false)))
+                </div>
+            }
+            else
+            {
+                <br />
+                <br />
+                <div style="font-size: 1.2em; padding-left: 20px;">Inga roller för Filip hittades</div>
+            }
         }
 
     </div>
     
 </div>
 
-@*<div class="panel panel-roles" style="border: 1px solid #C5C5C5 !important;">
-                <div class="panel-heading-roles" style="padding-left: 20px !important">
-                    <h4>Skapa ny roll i Astrid</h4>
-                </div>
-                <div class="panel-body">
-                    @using (Html.BeginForm("CreateAstridRole", "Admin", new { @class = "form-horizontal" }))
-                    {
-                        @Html.AntiForgeryToken()
-                        @Html.ValidationSummary(true)
 
-                        <div>
-                            <div class="form-group">
-                                @Html.Label("Rollnamn", new { @class = "control-label col-md-2" })
-                                <div class="col-md-6">
-                                    @Html.TextBox("RoleName", null, new { @class = "form-control" })
-                                </div>
-                            </div>
-                            <input type="submit" value="Spara" class="btn btn-default" style="margin-right: 15px; margin-left: 20px;" />
-                        </div>
-                    }
-
-                </div> <!--End Panel Body-->
-            </div> <!--End Panel-->
-        </div> <!--End First Column-->*@
 
 
 

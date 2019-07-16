@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using InrappSos.DomainModel;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace InrappSos.AstridWeb.Models.ViewModels
 {
@@ -9,23 +10,21 @@ namespace InrappSos.AstridWeb.Models.ViewModels
     {
         public List<ApplicationRoleAstrid> AstridRoller { get; set; }
 
+        public List<ApplicationRole> FilipRoller { get; set; }
+
         public class RoleViewModelAstrid 
         {
             public string RoleName { get; set; }
             public string BeskrivandeNamn { get; set; }
             public string Beskrivning { get; set; }
+        }
 
-            public RoleViewModelAstrid()
-            {
-            }
+        public class RoleViewModelFilip
+        {
+            public string RoleName { get; set; }
+            public string BeskrivandeNamn { get; set; }
+            public string Beskrivning { get; set; }
 
-            public RoleViewModelAstrid(ApplicationRoleAstrid role)
-            {
-                RoleName = role.Name;
-                BeskrivandeNamn = role.BeskrivandeNamn;
-                Beskrivning = role.Beskrivning;
-
-            }
         }
 
         public class SelectRoleEditorViewModel

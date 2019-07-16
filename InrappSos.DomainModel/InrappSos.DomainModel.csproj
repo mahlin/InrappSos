@@ -66,6 +66,7 @@
     <Compile Include="AdmKonfiguration.cs" />
     <Compile Include="AdmKontaktpersonstyp.cs" />
     <Compile Include="AdmDokument.cs" />
+    <Compile Include="ApplicationRole.cs" />
     <Compile Include="ApplicationRoleAstrid.cs" />
     <Compile Include="ApplicationUserRoleAstrid.cs" />
     <Compile Include="KontaktpersonSFTPkonto.cs" />

@@ -540,6 +540,18 @@ namespace InrappSos.ApplicationService
             return filipRoll;
         }
 
+        //public IList<string> HamtaFilipRollerForAnvandare(string userId)
+        //{
+        //    var roleIdsForUser = _portalSosRepository.GetFilipRoleIdsForUser(userId);
+
+        //    foreach (var roleId in roleIdsForUser)
+        //    {
+        //        var role = _portalSosRepository.GetFilipRoleById(roleId);
+        //    }
+        //    var rollLista = _portalSosRepository.GetFilipRolesForUser(userId);
+        //    return rollLista;
+        //}
+
         public IEnumerable<AdmFAQKategori> HamtaAllaFAQs()
         {
             var faqs = _portalSosRepository.GetAllFAQs();
@@ -1079,7 +1091,7 @@ namespace InrappSos.ApplicationService
             return roller;
         }
 
-        public IEnumerable<IdentityRole> HamtaAllaFilipRoller()
+        public IEnumerable<ApplicationRole> HamtaAllaFilipRoller()
         {
             var roller = _portalSosRepository.GetAllFilipRoles();
             return roller;
@@ -2096,9 +2108,14 @@ namespace InrappSos.ApplicationService
             _portalSosRepository.DeleteChosenSubDirectoriesForUser(userId);
         }
         
-        public void SkapaFilipRoll(string rollNamn)
+        public void SkapaFilipRoll(ApplicationRole filipRoll, string userName)
         {
-            _portalSosRepository.CreateFilipRole(rollNamn);
+            //Sätt datum och användare
+            filipRoll.skapadDatum = DateTime.Now;
+            filipRoll.skapadAv = userName;
+            filipRoll.andradDatum = DateTime.Now;
+            filipRoll.andradAv = userName;
+            _portalSosRepository.CreateFilipRole(filipRoll);
         }
 
         public int SkapaOrganisation(Organisation org, ICollection<Organisationstyp> orgtyperForOrg, string userName)
@@ -2427,8 +2444,10 @@ namespace InrappSos.ApplicationService
             _portalSosRepository.UpdateAstridRole(role);
         }
 
-        public void UppdateraFilipRoll(IdentityRole role)
+        public void UppdateraFilipRoll(ApplicationRole role, string userName)
         {
+            role.andradDatum = DateTime.Now;
+            role.andradAv = userName;
             _portalSosRepository.UpdateFilipRole(role);
         }
 

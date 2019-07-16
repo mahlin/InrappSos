@@ -21,9 +21,9 @@ namespace InrappSos.DataAccess
 
         IEnumerable<ApplicationRoleAstrid> GetAllAstridRoles();
 
-        IEnumerable<IdentityRole> GetAllFilipRoles();
+        IEnumerable<ApplicationRole> GetAllFilipRoles();
         
-        void CreateFilipRole(string roleName);
+        void CreateFilipRole(ApplicationRole filipRole);
 
         ApplicationRoleAstrid GetAstridRole(string roleName);
 
@@ -34,7 +34,8 @@ namespace InrappSos.DataAccess
 
         UndantagEpostadress GetUserFromUndantagEpostadress(string email);
         IdentityRole GetFilipRole(string roleName);
-        void UpdateFilipRole(IdentityRole role);
+
+        void UpdateFilipRole(ApplicationRole role);
         void DeleteFilipRole(string roleName);
 
         Arende GetArende(string arendeNr);

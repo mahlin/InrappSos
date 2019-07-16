@@ -14,7 +14,7 @@ namespace InrappSos.DataAccess
 {
     public class InrappSosAstridDbContext : IdentityDbContext<AppUserAdmin>
     {
-        public DbSet<ApplicationRoleAstrid> Roles { get; set; }
+        
         public InrappSosAstridDbContext() : base("name=IdentityConnection")
         {
 #if DEBUG
@@ -83,6 +83,7 @@ namespace InrappSos.DataAccess
         }
 
         public DbSet<ApplicationUserRoleAstrid> ApplicationUserRoleAstrid { get; set; }
+        public DbSet<ApplicationRoleAstrid> ApplicationRoleAstrid { get; set; }
 
     }
 }

@@ -12,7 +12,7 @@ namespace InrappSos.DataAccess
 {
     public class InrappSosDbContext : IdentityDbContext<ApplicationUser>
     {
-        //public DbSet<ApplicationRole> Roles { get; set; }
+       
 
         public InrappSosDbContext() : base("name=DefaultConnection")
         {
@@ -653,6 +653,17 @@ namespace InrappSos.DataAccess
             modelBuilder.Entity<AdmDokument>().Property(e => e.SkapadAv).HasColumnName("skapadav");
             modelBuilder.Entity<AdmDokument>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
             modelBuilder.Entity<AdmDokument>().Property(e => e.AndradAv).HasColumnName("andradav");
+
+            //ApplicationRole
+            //modelBuilder.Entity<ApplicationUser>().ToTable("Kontaktperson");
+            //modelBuilder.Entity<ApplicationRole>().ToTable("AspNetRoles");
+            //modelBuilder.Entity<ApplicationRole>().Property(e => e.BeskrivandeNamn).HasColumnName("beskrivandenamn");
+            //modelBuilder.Entity<ApplicationRole>().Property(e => e.Beskrivning).HasColumnName("beskrivning");
+            //modelBuilder.Entity<ApplicationRole>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
+            //modelBuilder.Entity<ApplicationRole>().Property(e => e.SkapadAv).HasColumnName("skapadav");
+            //modelBuilder.Entity<ApplicationRole>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
+            //modelBuilder.Entity<ApplicationRole>().Property(e => e.AndradAv).HasColumnName("andradav");
+            // modelBuilder.Entity<ApplicationUser>().HasMany<ApplicationUserRoleAstrid>((AppUserAdmin u) => u.UserRoles);
         }
 
 
@@ -696,5 +707,6 @@ namespace InrappSos.DataAccess
         public DbSet<AdmDokument> AdmDokument { get; set; }
         public DbSet<LevId> LevId { get; set; }
 
+        public DbSet<ApplicationRole> ApplicationRole { get; set; }
     }
 }

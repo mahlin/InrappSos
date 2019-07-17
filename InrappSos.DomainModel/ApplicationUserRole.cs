@@ -3,12 +3,12 @@ using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace InrappSos.DomainModel
 {
-    public class ApplicationUserRole 
+    public class ApplicationUserRole : IdentityUserRole
     {
-        //public DateTime SkapadDatum2 { get; set; }
-        //public string SkapadAv2 { get; set; }
-        //public DateTime AndradDatum2 { get; set; }
-        //public string AndradAv2 { get; set; }
-        //public virtual ApplicationRole ApplicationRole2 { get; set; }
+        public ApplicationRole ApplicationRole { get; set; }
+        public DateTime SkapadDatum { get; set; }
+        public string SkapadAv { get; set; }
+        public DateTime AndradDatum { get; set; }
+        public string AndradAv { get; set; }
     }
 }

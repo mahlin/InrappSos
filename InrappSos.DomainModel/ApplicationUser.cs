@@ -28,7 +28,7 @@ namespace InrappSos.DomainModel
         public virtual ICollection<ArendeKontaktperson> ArendeKontaktperson { get; set; }
         public virtual ICollection<KontaktpersonSFTPkonto> KontaktpersonSFTPkonto { get; set; }
 
-        public ICollection<ApplicationUserRoleAstrid> UserRoles { get; set; }
+        public ICollection<ApplicationUserRole> UserRoles { get; set; }
 
         public virtual ICollection<DroppadFil> DroppadFil { get; set; }
 

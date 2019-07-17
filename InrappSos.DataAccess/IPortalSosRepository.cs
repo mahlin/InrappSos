@@ -19,26 +19,26 @@ namespace InrappSos.DataAccess
 
         void DeleteAdminUser(string userId);
 
-        IEnumerable<ApplicationRoleAstrid> GetAllAstridRoles();
+        IEnumerable<ApplicationRole> GetAllAstridRoles();
 
-        IEnumerable<ApplicationRoleAstrid> GetAllFilipRoles();
+        IEnumerable<ApplicationRole> GetAllFilipRoles();
         
-        void CreateFilipRole(ApplicationRoleAstrid filipRole);
+        void CreateFilipRole(ApplicationRole filipRole);
 
-        ApplicationRoleAstrid GetAstridRole(string roleName);
+        ApplicationRole GetAstridRole(string roleName);
 
-        void UpdateAstridRole(ApplicationRoleAstrid role);
+        void UpdateAstridRole(ApplicationRole role);
  
 
         //****************************************************************//
 
         UndantagEpostadress GetUserFromUndantagEpostadress(string email);
 
-        IEnumerable<ApplicationUserRoleAstrid> GetFilipUserRolesForUser(string userId);
+        IEnumerable<ApplicationUserRole> GetFilipUserRolesForUser(string userId);
 
-        ApplicationRoleAstrid GetFilipRoleById(string roleId);
+        ApplicationRole GetFilipRoleById(string roleId);
 
-        void UpdateFilipRole(ApplicationRoleAstrid role);
+        void UpdateFilipRole(ApplicationRole role);
 
         void DeleteFilipRole(string roleName);
 
@@ -449,11 +449,11 @@ namespace InrappSos.DataAccess
 
         List<List<ApplicationUser>> SearchContact(string[] searchString);
 
-        void SetAstridRoleForAstridUser(ApplicationUserRoleAstrid appUserRole);
+        void SetAstridRoleForAstridUser(ApplicationUserRole appUserRole);
 
-        void SetFilipRoleForFilipUser(ApplicationUserRoleAstrid applicationUserRole);
+        void SetFilipRoleForFilipUser(ApplicationUserRole applicationUserRole);
 
-        IEnumerable<ApplicationRoleAstrid> GetAstridUsersRoles(string userId);
+        IEnumerable<ApplicationRole> GetAstridUsersRoles(string userId);
 
         void SaveChosenRegistersForUser(string userId, string userName, List<RegisterInfo> registerList);
 

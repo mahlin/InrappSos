@@ -202,7 +202,7 @@ namespace InrappSos.AstridWeb.Controllers
         //}
 
 
-        private IEnumerable<AdminViewModels.AppUserAdminViewModel> ConvertAdminUsersToViewModel(IEnumerable<AppUserAdmin> adminUsers, List<ApplicationRoleAstrid> roller)
+        private IEnumerable<AdminViewModels.AppUserAdminViewModel> ConvertAdminUsersToViewModel(IEnumerable<AppUserAdmin> adminUsers, List<ApplicationRole> roller)
         {
             var adminUserViewList = new List<AdminViewModels.AppUserAdminViewModel>();
            
@@ -272,7 +272,7 @@ namespace InrappSos.AstridWeb.Controllers
             return user;
         }
 
-        private List<IdentityRoleViewModel> ConvertRolesToVM(List<ApplicationRoleAstrid> roller)
+        private List<IdentityRoleViewModel> ConvertRolesToVM(List<ApplicationRole> roller)
         {
             var rollerList = new List<IdentityRoleViewModel>();
 
@@ -294,7 +294,7 @@ namespace InrappSos.AstridWeb.Controllers
         /// Create list for roles-dropdown  
         /// </summary>  
         /// <returns>Return roles for drop down list.</returns>  
-        private IEnumerable<SelectListItem> CreateRolesDropDownList(IEnumerable<ApplicationRoleAstrid> roles)
+        private IEnumerable<SelectListItem> CreateRolesDropDownList(IEnumerable<ApplicationRole> roles)
         {
             SelectList lstobj = null;
 

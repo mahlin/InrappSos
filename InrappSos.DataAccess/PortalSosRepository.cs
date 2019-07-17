@@ -72,29 +72,29 @@ namespace InrappSos.DataAccess
             AstridDbContext.SaveChanges();
         }
 
-        public IEnumerable<ApplicationRoleAstrid> GetAllAstridRoles()
+        public IEnumerable<ApplicationRole> GetAllAstridRoles()
         {
-            var astridRoles = AstridDbContext.ApplicationRoleAstrid.OrderBy(r => r.Name).ToList();
+            var astridRoles = AstridDbContext.ApplicationRole.OrderBy(r => r.Name).ToList();
             return astridRoles;
             //AstridDbContext.Roles.OrderBy(r => r.Name).ToList().Select(rr =>
             //    new SelectListItem { Value = rr.Name.ToString(), Text = rr.Name }).ToList();
 
         }
 
-        public IEnumerable<ApplicationRoleAstrid> GetAllFilipRoles()
+        public IEnumerable<ApplicationRole> GetAllFilipRoles()
         {
 
               //var rappB = DbContext.ApplicationRole.SqlQuery("select * from dbo.AspNetRoles").ToList();
 
-            var filipRoles = DbContext.ApplicationRoleAstrid.OrderBy(r => r.Name);
+            var filipRoles = DbContext.ApplicationRole.OrderBy(r => r.Name);
             return filipRoles;
         }
 
-        public void CreateFilipRole(ApplicationRoleAstrid filipRole)
+        public void CreateFilipRole(ApplicationRole filipRole)
         {
             //TODO - handmade since EF tries to insert duplicate columns.
             var newId = Guid.NewGuid().ToString();
-            var id = DbContext.ApplicationRoleAstrid.FirstOrDefault(x => x.Id == newId);
+            var id = DbContext.ApplicationRole.FirstOrDefault(x => x.Id == newId);
             if (id == null)
             {
                 var sql2 = @"Insert into dbo.AspNetRoles values(@Id,@Name,@beskrivandenamn,@beskrivning,@Discriminator,@skapaddatum,@skapadav, @andraddatum,@andradav)";
@@ -103,7 +103,7 @@ namespace InrappSos.DataAccess
                     new SqlParameter("@Name", filipRole.Name),
                     new SqlParameter("@beskrivandenamn", filipRole.BeskrivandeNamn),
                     new SqlParameter("@beskrivning",filipRole.Beskrivning),
-                    new SqlParameter("@Discriminator", "ApplicationRoleAstrid"),
+                    new SqlParameter("@Discriminator", "ApplicationRole"),
                     new SqlParameter("@skapaddatum",filipRole.SkapadDatum),
                     new SqlParameter("@skapadav", filipRole.SkapadAv),
                     new SqlParameter("@andraddatum", filipRole.AndradDatum),
@@ -115,15 +115,15 @@ namespace InrappSos.DataAccess
             DbContext.SaveChanges();
         }
 
-        public ApplicationRoleAstrid GetAstridRole(string roleName)
+        public ApplicationRole GetAstridRole(string roleName)
         {
-            var thisRole = AstridDbContext.ApplicationRoleAstrid.FirstOrDefault(r => r.Name.Equals(roleName, StringComparison.CurrentCultureIgnoreCase));
+            var thisRole = AstridDbContext.ApplicationRole.FirstOrDefault(r => r.Name.Equals(roleName, StringComparison.CurrentCultureIgnoreCase));
             return thisRole;
         }
 
-        public void UpdateAstridRole(ApplicationRoleAstrid role)
+        public void UpdateAstridRole(ApplicationRole role)
         {
-            var dbRole = AstridDbContext.ApplicationRoleAstrid.First(r => r.Name == role.Name);
+            var dbRole = AstridDbContext.ApplicationRole.First(r => r.Name == role.Name);
             dbRole.Beskrivning = role.Beskrivning;
             dbRole.BeskrivandeNamn = role.BeskrivandeNamn;
             dbRole.AndradDatum = role.AndradDatum;
@@ -137,15 +137,15 @@ namespace InrappSos.DataAccess
             return userException;
         }
 
-        public IEnumerable<ApplicationUserRoleAstrid> GetFilipUserRolesForUser(string userId)
+        public IEnumerable<ApplicationUserRole> GetFilipUserRolesForUser(string userId)
         {
-            var userRoles = DbContext.ApplicationUserRoleAstrid.Where(x => x.UserId == userId).ToList();
+            var userRoles = DbContext.ApplicationUserRole.Where(x => x.UserId == userId).ToList();
             return userRoles;
         }
 
-        public ApplicationRoleAstrid GetFilipRoleById(string roleId)
+        public ApplicationRole GetFilipRoleById(string roleId)
         {
-            var filipRole = DbContext.ApplicationRoleAstrid.FirstOrDefault(x => x.Id == roleId);
+            var filipRole = DbContext.ApplicationRole.FirstOrDefault(x => x.Id == roleId);
             return filipRole;
         }
 
@@ -155,9 +155,9 @@ namespace InrappSos.DataAccess
             return thisRole;
         }
 
-        public void UpdateFilipRole(ApplicationRoleAstrid role)
+        public void UpdateFilipRole(ApplicationRole role)
         {
-            var dbRole = DbContext.ApplicationRoleAstrid.First(r => r.Name == role.Name);
+            var dbRole = DbContext.ApplicationRole.First(r => r.Name == role.Name);
             dbRole.Beskrivning = role.Beskrivning;
             dbRole.BeskrivandeNamn = role.BeskrivandeNamn;
             dbRole.AndradDatum = role.AndradDatum;
@@ -167,15 +167,15 @@ namespace InrappSos.DataAccess
 
         public void DeleteFilipRole(string roleName)
         {
-            var thisRole = DbContext.ApplicationRoleAstrid.FirstOrDefault(r => r.Name.Equals(roleName, StringComparison.CurrentCultureIgnoreCase));
+            var thisRole = DbContext.ApplicationRole.FirstOrDefault(r => r.Name.Equals(roleName, StringComparison.CurrentCultureIgnoreCase));
             DbContext.Roles.Remove(thisRole);
             DbContext.SaveChanges();
         }
 
         public void DeleteRoleFromFilipUser(string userId, string roleId)
         {
-            var userRoleDb = DbContext.ApplicationUserRoleAstrid.FirstOrDefault(x => x.UserId == userId && x.RoleId == roleId);
-            DbContext.ApplicationUserRoleAstrid.Remove(userRoleDb);
+            var userRoleDb = DbContext.ApplicationUserRole.FirstOrDefault(x => x.UserId == userId && x.RoleId == roleId);
+            DbContext.ApplicationUserRole.Remove(userRoleDb);
             DbContext.SaveChanges();
         }
 
@@ -2363,16 +2363,16 @@ namespace InrappSos.DataAccess
             return contactList;
         }
 
-        public void SetAstridRoleForAstridUser(ApplicationUserRoleAstrid appUserRole)
+        public void SetAstridRoleForAstridUser(ApplicationUserRole appUserRole)
         {
-            AstridDbContext.ApplicationUserRoleAstrid.Add(appUserRole);
+            AstridDbContext.ApplicationUserRole.Add(appUserRole);
             AstridDbContext.SaveChanges();
         }
 
-        public void SetFilipRoleForFilipUser(ApplicationUserRoleAstrid applicationUserRole)
+        public void SetFilipRoleForFilipUser(ApplicationUserRole applicationUserRole)
         {
             //TODO - handmade since EF tries to insert duplicate columns.
-            var id = DbContext.ApplicationUserRoleAstrid.FirstOrDefault(x => x.UserId == applicationUserRole.UserId && x.RoleId == applicationUserRole.RoleId);
+            var id = DbContext.ApplicationUserRole.FirstOrDefault(x => x.UserId == applicationUserRole.UserId && x.RoleId == applicationUserRole.RoleId);
             if (id == null)
             {
                 var sqlStr = @"Insert into dbo.AspNetUserRoles values(@UserId,@RoleId,@Discriminator,@skapaddatum,@skapadav, @andraddatum,@andradav)";
@@ -2390,13 +2390,13 @@ namespace InrappSos.DataAccess
             DbContext.SaveChanges();
         }
 
-        public IEnumerable<ApplicationRoleAstrid> GetAstridUsersRoles(string userId)
+        public IEnumerable<ApplicationRole> GetAstridUsersRoles(string userId)
         {
-            var userRoles = new List<ApplicationRoleAstrid>();
-            var roles = AstridDbContext.ApplicationUserRoleAstrid.Where(x => x.UserId == userId).ToList();
+            var userRoles = new List<ApplicationRole>();
+            var roles = AstridDbContext.ApplicationUserRole.Where(x => x.UserId == userId).ToList();
             foreach (var role in roles)
             {
-                var userRole = AstridDbContext.ApplicationRoleAstrid.Where(x => x.Id == role.RoleId).SingleOrDefault();
+                var userRole = AstridDbContext.ApplicationRole.Where(x => x.Id == role.RoleId).SingleOrDefault();
                 userRoles.Add(userRole);
             }
             return userRoles;

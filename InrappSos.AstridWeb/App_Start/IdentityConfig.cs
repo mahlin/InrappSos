@@ -216,30 +216,30 @@ namespace InrappSos.AstridWeb
         }
     }
 
-    public class ApplicationRoleManager : RoleManager<ApplicationRoleAstrid>
+    public class ApplicationRoleManager : RoleManager<ApplicationRole>
     {
-        public ApplicationRoleManager(IRoleStore<ApplicationRoleAstrid, string> roleStore) : base(roleStore)
+        public ApplicationRoleManager(IRoleStore<ApplicationRole, string> roleStore) : base(roleStore)
         {
         }
 
         public static ApplicationRoleManager Create(IdentityFactoryOptions<ApplicationRoleManager> options,
             IOwinContext context)
         {
-            var appRoleManager = new ApplicationRoleManager(new RoleStore<ApplicationRoleAstrid>(context.Get<InrappSosAstridDbContext>()));
+            var appRoleManager = new ApplicationRoleManager(new RoleStore<ApplicationRole>(context.Get<InrappSosAstridDbContext>()));
             return appRoleManager;
         }
     }
 
-    public class FilipApplicationRoleManager : RoleManager<ApplicationRoleAstrid>
+    public class FilipApplicationRoleManager : RoleManager<ApplicationRole>
     {
-        public FilipApplicationRoleManager(IRoleStore<ApplicationRoleAstrid, string> filipRoleStore) : base(filipRoleStore)
+        public FilipApplicationRoleManager(IRoleStore<ApplicationRole, string> filipRoleStore) : base(filipRoleStore)
         {
         }
 
         public static FilipApplicationRoleManager Create(IdentityFactoryOptions<FilipApplicationRoleManager> options,
             IOwinContext context)
         {
-            var filipAppRoleManager = new FilipApplicationRoleManager(new RoleStore<ApplicationRoleAstrid>(context.Get<InrappSosDbContext>()));
+            var filipAppRoleManager = new FilipApplicationRoleManager(new RoleStore<ApplicationRole>(context.Get<InrappSosDbContext>()));
             return filipAppRoleManager;
         }
     }

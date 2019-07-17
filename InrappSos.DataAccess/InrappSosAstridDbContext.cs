@@ -53,36 +53,28 @@ namespace InrappSos.DataAccess
             modelBuilder.Entity<AppUserAdmin>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
             modelBuilder.Entity<AppUserAdmin>().Property(e => e.AndradAv).HasColumnName("andradav");
 
-            //ApplicationRoleAstrid
-            modelBuilder.Entity<ApplicationRoleAstrid>().HasKey<string>(r => r.Id).ToTable("AspNetRoles");
-            modelBuilder.Entity<ApplicationRoleAstrid>().Property(e => e.BeskrivandeNamn).HasColumnName("beskrivandenamn");
-            modelBuilder.Entity<ApplicationRoleAstrid>().Property(e => e.Beskrivning).HasColumnName("beskrivning");
-            modelBuilder.Entity<ApplicationRoleAstrid>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
-            modelBuilder.Entity<ApplicationRoleAstrid>().Property(e => e.SkapadAv).HasColumnName("skapadav");
-            modelBuilder.Entity<ApplicationRoleAstrid>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
-            modelBuilder.Entity<ApplicationRoleAstrid>().Property(e => e.AndradAv).HasColumnName("andradav");
-            modelBuilder.Entity<AppUserAdmin>().HasMany<ApplicationUserRoleAstrid>((AppUserAdmin u) => u.UserRoles);
-            modelBuilder.Entity<ApplicationRoleAstrid>().HasMany<ApplicationUserRoleAstrid>((ApplicationRoleAstrid u) => u.UserRoles);
+            //ApplicationRole
+            modelBuilder.Entity<ApplicationRole>().HasKey<string>(r => r.Id).ToTable("AspNetRoles");
+            modelBuilder.Entity<ApplicationRole>().Property(e => e.BeskrivandeNamn).HasColumnName("beskrivandenamn");
+            modelBuilder.Entity<ApplicationRole>().Property(e => e.Beskrivning).HasColumnName("beskrivning");
+            modelBuilder.Entity<ApplicationRole>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
+            modelBuilder.Entity<ApplicationRole>().Property(e => e.SkapadAv).HasColumnName("skapadav");
+            modelBuilder.Entity<ApplicationRole>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
+            modelBuilder.Entity<ApplicationRole>().Property(e => e.AndradAv).HasColumnName("andradav");
+            modelBuilder.Entity<AppUserAdmin>().HasMany<ApplicationUserRole>((AppUserAdmin u) => u.UserRoles);
+            modelBuilder.Entity<ApplicationRole>().HasMany<ApplicationUserRole>((ApplicationRole u) => u.UserRoles);
 
-            //ApplicationUserRoleAstrid
-            modelBuilder.Entity<ApplicationUserRoleAstrid>().HasKey(r => new { UserId = r.UserId, RoleId = r.RoleId }).ToTable("AspNetUserRoles");
-            modelBuilder.Entity<ApplicationUserRoleAstrid>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
-            modelBuilder.Entity<ApplicationUserRoleAstrid>().Property(e => e.SkapadAv).HasColumnName("skapadav");
-            modelBuilder.Entity<ApplicationUserRoleAstrid>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
-            modelBuilder.Entity<ApplicationUserRoleAstrid>().Property(e => e.AndradAv).HasColumnName("andradav");
+            //ApplicationUserRole
+            modelBuilder.Entity<ApplicationUserRole>().HasKey(r => new { UserId = r.UserId, RoleId = r.RoleId }).ToTable("AspNetUserRoles");
+            modelBuilder.Entity<ApplicationUserRole>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
+            modelBuilder.Entity<ApplicationUserRole>().Property(e => e.SkapadAv).HasColumnName("skapadav");
+            modelBuilder.Entity<ApplicationUserRole>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
+            modelBuilder.Entity<ApplicationUserRole>().Property(e => e.AndradAv).HasColumnName("andradav");
 
-
-
-            //ApplicationRoles
-            //modelBuilder.Entity<ApplicationRole>().ToTable("AspNetRoles");
-            //modelBuilder.Entity<ApplicationRole>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
-            //modelBuilder.Entity<ApplicationRole>().Property(e => e.SkapadAv).HasColumnName("skapadav");
-            //modelBuilder.Entity<ApplicationRole>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
-            //modelBuilder.Entity<ApplicationRole>().Property(e => e.AndradAv).HasColumnName("andradav");
         }
 
-        public DbSet<ApplicationUserRoleAstrid> ApplicationUserRoleAstrid { get; set; }
-        public DbSet<ApplicationRoleAstrid> ApplicationRoleAstrid { get; set; }
+        public DbSet<ApplicationUserRole> ApplicationUserRole{ get; set; }
+        public DbSet<ApplicationRole> ApplicationRole { get; set; }
 
     }
 }

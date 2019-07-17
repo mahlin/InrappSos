@@ -38,8 +38,8 @@ namespace InrappSos.AstridWeb.Controllers
             public RoleController()
             {
                 _portalSosService = new PortalSosService(new PortalSosRepository(new InrappSosDbContext(), new InrappSosAstridDbContext()));
-                var roleStore = new RoleStore<ApplicationRoleAstrid>(new InrappSosAstridDbContext());
-                var filipRoleStore = new RoleStore<ApplicationRoleAstrid>(new InrappSosDbContext());
+                var roleStore = new RoleStore<ApplicationRole>(new InrappSosAstridDbContext());
+                var filipRoleStore = new RoleStore<ApplicationRole>(new InrappSosDbContext());
                 RoleManager = new ApplicationRoleManager(roleStore);
                 FilipRoleManager = new FilipApplicationRoleManager(filipRoleStore);
                 
@@ -104,14 +104,14 @@ namespace InrappSos.AstridWeb.Controllers
             [Authorize(Roles = "Admin")]
             // POST: /Roles/Create
             [HttpPost]
-            public async Task<ActionResult> CreateAstridRole(RoleViewModels.RoleViewModelAstrid astridRole)
+            public async Task<ActionResult> CreateAstridRole(RoleViewModels.RoleViewModel astridRole)
             {
                 if (ModelState.IsValid)
                 {
                     try
                     {
                         var user = User.Identity.GetUserName();
-                        var dbRole = new ApplicationRoleAstrid
+                        var dbRole = new ApplicationRole
                         {
                             SkapadAv = user,
                             SkapadDatum = DateTime.Now,
@@ -151,14 +151,14 @@ namespace InrappSos.AstridWeb.Controllers
             [Authorize(Roles = "Admin")]
             // POST: /Roles/Create
             [HttpPost]
-            public async Task<ActionResult> CreateFilipRole(RoleViewModels.RoleViewModelFilip filipRole)
+            public async Task<ActionResult> CreateFilipRole(RoleViewModels.RoleViewModel filipRole)
             {
                 if (ModelState.IsValid)
                 {
                     try
                     {
                         var user = User.Identity.GetUserName();
-                    var dbRole = new ApplicationRoleAstrid
+                    var dbRole = new ApplicationRole
                         {
                             Name = filipRole.RoleName,
                             BeskrivandeNamn = filipRole.BeskrivandeNamn,
@@ -186,7 +186,7 @@ namespace InrappSos.AstridWeb.Controllers
                 return View();
             }
 
-            private async Task CreateRoleForAstrid(ApplicationRoleAstrid astridRole)
+            private async Task CreateRoleForAstrid(ApplicationRole astridRole)
             {
                 bool exists = await _roleManager.RoleExistsAsync(astridRole.Name);
                 if (!exists)
@@ -195,7 +195,7 @@ namespace InrappSos.AstridWeb.Controllers
                 }
             }
 
-            private async Task CreateRoleForFilip(ApplicationRoleAstrid filipRole)
+            private async Task CreateRoleForFilip(ApplicationRole filipRole)
             {
                 bool exists = await _filipRoleManager.RoleExistsAsync(filipRole.Name);
                 if (!exists)
@@ -208,7 +208,7 @@ namespace InrappSos.AstridWeb.Controllers
             [Authorize(Roles = "Admin")]
             // POST: /Roles/Edit/5
             [HttpPost]
-            public ActionResult EditAstridRole(ApplicationRoleAstrid model)
+            public ActionResult EditAstridRole(ApplicationRole model)
             {
                 try
                 {
@@ -236,7 +236,7 @@ namespace InrappSos.AstridWeb.Controllers
             [Authorize(Roles = "Admin")]
             // POST: /Roles/Edit/5
             [HttpPost]
-            public ActionResult EditFilipRole(ApplicationRoleAstrid model)
+            public ActionResult EditFilipRole(ApplicationRole model)
             {
                 try
                 {
@@ -270,12 +270,12 @@ namespace InrappSos.AstridWeb.Controllers
             public void ClearUserRoles(ApplicationUserManager userManager, string userId)
             {
                 var user = userManager.FindById(userId);
-                var currentRoles = new List<ApplicationUserRoleAstrid>();
+                var currentRoles = new List<ApplicationUserRole>();
 
                 currentRoles.AddRange(user.UserRoles);
-                foreach (ApplicationUserRoleAstrid role in currentRoles)
+                foreach (ApplicationUserRole role in currentRoles)
                 {
-                    userManager.RemoveFromRole(userId, role.ApplicationRoleAstrid.Name);
+                    userManager.RemoveFromRole(userId, role.ApplicationRole.Name);
                 }
             }
 

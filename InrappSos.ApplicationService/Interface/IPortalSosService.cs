@@ -27,7 +27,7 @@ namespace InrappSos.ApplicationService.Interface
 
         IEnumerable<FilloggDetaljDTO> FiltreraHistorikForAnvandare(string userId, List<RegisterInfo> valdaDelregisterList, List<FilloggDetaljDTO> historikForOrganisation);
 
-        ApplicationRoleAstrid HamtaAstridRoll(string roleName);
+        ApplicationRole HamtaAstridRoll(string roleName);
 
         List<string> HamtaFilipRollerForAnvandare(string userId);
 
@@ -202,8 +202,8 @@ namespace InrappSos.ApplicationService.Interface
         IEnumerable<AdmRegister> HamtaAllaRegister();
         IEnumerable<AdmRegister> HamtaAllaRegisterForPortalen();
 
-        IEnumerable<ApplicationRoleAstrid> HamtaAllaAstridRoller();
-        IEnumerable<ApplicationRoleAstrid> HamtaAllaFilipRoller();
+        IEnumerable<ApplicationRole> HamtaAllaAstridRoller();
+        IEnumerable<ApplicationRole> HamtaAllaFilipRoller();
 
         IEnumerable<AdmDelregister> HamtaAllaDelregisterForPortalen();
 
@@ -287,7 +287,7 @@ namespace InrappSos.ApplicationService.Interface
 
         void TaBortFilipRollForanvandare(string userName, string filipUserId, string rollId);
 
-        IEnumerable<ApplicationRoleAstrid> HamtaAstridAnvandaresRoller(string userId);
+        IEnumerable<ApplicationRole> HamtaAstridAnvandaresRoller(string userId);
 
         //IEnumerable<RegisterInfo> HamtaValdaRegistersForAnvandare(string userId, int orgId);
 
@@ -315,7 +315,7 @@ namespace InrappSos.ApplicationService.Interface
         bool IsHelgdag();
         bool IsSpecialdag();
 
-        void SkapaFilipRoll(ApplicationRoleAstrid filipRoll, string userName);
+        void SkapaFilipRoll(ApplicationRole filipRoll, string userName);
 
         int SkapaOrganisation(Organisation org, ICollection<Organisationstyp> orgtyperForOrg, string userName);
 
@@ -358,8 +358,8 @@ namespace InrappSos.ApplicationService.Interface
 
         void SkapaInsamlingsfrekvens(AdmInsamlingsfrekvens insamlingsfrekvens, string userName);
 
-        void UppdateraAstridRoll(ApplicationRoleAstrid role, string userName);
-        void UppdateraFilipRoll(ApplicationRoleAstrid role, string userName);
+        void UppdateraAstridRoll(ApplicationRole role, string userName);
+        void UppdateraFilipRoll(ApplicationRole role, string userName);
 
         void UppdateraOrganisation(Organisation org, string userName);
 

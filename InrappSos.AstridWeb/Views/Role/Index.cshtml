@@ -24,14 +24,14 @@
             var namn = tr.find("#lblRollnamn").html();
             var beskrivning = tr.find("#Beskrivning").val();
 
-            //Creating ApplicationRoleAstrid JSON object
+            //Creating ApplicationRole JSON object
             var appRoleAstrid =
             {
                 "Name": namn,
                 "BeskrivandeNamn": beskrivandeNamn,
                 "Beskrivning": beskrivning
             };
-            //Posting ApplicationRoleAstrid object to controller's Update action method
+            //Posting ApplicationRole object to controller's Update action method
             $.ajax({
                 url: '/Role/EditAstridRole',
                 data: JSON.stringify(appRoleAstrid),

@@ -527,7 +527,7 @@ namespace InrappSos.ApplicationService
             return org;
         }
 
-        public ApplicationRoleAstrid HamtaAstridRoll(string roleName)
+        public ApplicationRole HamtaAstridRoll(string roleName)
         {
             var astridRoll = _portalSosRepository.GetAstridRole(roleName);
             return astridRoll;
@@ -1079,13 +1079,13 @@ namespace InrappSos.ApplicationService
             return registersList;
         }
 
-        public IEnumerable<ApplicationRoleAstrid> HamtaAllaAstridRoller()
+        public IEnumerable<ApplicationRole> HamtaAllaAstridRoller()
         {
             var roller = _portalSosRepository.GetAllAstridRoles();
             return roller;
         }
 
-        public IEnumerable<ApplicationRoleAstrid> HamtaAllaFilipRoller()
+        public IEnumerable<ApplicationRole> HamtaAllaFilipRoller()
         {
             var roller = _portalSosRepository.GetAllFilipRoles();
             return roller;
@@ -1862,7 +1862,7 @@ namespace InrappSos.ApplicationService
 
         public void KopplaAstridAnvändareTillAstridRoll(string userName, string astridUserId, string rollId)
         {
-            var userRole = new ApplicationUserRoleAstrid
+            var userRole = new ApplicationUserRole
             {
                 UserId = astridUserId,
                 RoleId = rollId,
@@ -1876,7 +1876,7 @@ namespace InrappSos.ApplicationService
 
         public void KopplaFilipAnvändareTillFilipRoll(string userName, string filipUserId, string rollId)
         {
-            var userRole = new ApplicationUserRoleAstrid
+            var userRole = new ApplicationUserRole
             {
                 UserId = filipUserId,
                 RoleId = rollId,
@@ -1898,7 +1898,7 @@ namespace InrappSos.ApplicationService
             }
         }
 
-        public IEnumerable<ApplicationRoleAstrid> HamtaAstridAnvandaresRoller(string userId)
+        public IEnumerable<ApplicationRole> HamtaAstridAnvandaresRoller(string userId)
         {
             var astridAnvRoller = _portalSosRepository.GetAstridUsersRoles(userId);
             return astridAnvRoller;
@@ -2125,7 +2125,7 @@ namespace InrappSos.ApplicationService
             _portalSosRepository.DeleteChosenSubDirectoriesForUser(userId);
         }
         
-        public void SkapaFilipRoll(ApplicationRoleAstrid filipRoll, string userName)
+        public void SkapaFilipRoll(ApplicationRole filipRoll, string userName)
         {
             //Sätt datum och användare
             filipRoll.SkapadDatum = DateTime.Now;
@@ -2454,14 +2454,14 @@ namespace InrappSos.ApplicationService
             _portalSosRepository.CreateCollectFrequence(insamlingsfrekvens);
         }
 
-        public void UppdateraAstridRoll(ApplicationRoleAstrid role, string userName)
+        public void UppdateraAstridRoll(ApplicationRole role, string userName)
         {
             role.AndradDatum = DateTime.Now;
             role.AndradAv = userName;
             _portalSosRepository.UpdateAstridRole(role);
         }
 
-        public void UppdateraFilipRoll(ApplicationRoleAstrid role, string userName)
+        public void UppdateraFilipRoll(ApplicationRole role, string userName)
         {
             role.AndradDatum = DateTime.Now;
             role.AndradAv = userName;

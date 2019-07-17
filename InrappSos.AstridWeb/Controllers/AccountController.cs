@@ -527,7 +527,7 @@ namespace InrappSos.AstridWeb.Controllers
            return lstobj;
        }
 
-        private List<IdentityRoleViewModel> ConvertRolesToVM(List<ApplicationRoleAstrid> roller)
+        private List<IdentityRoleViewModel> ConvertRolesToVM(List<ApplicationRole> roller)
         {
             var rollerList = new List<IdentityRoleViewModel>();
 

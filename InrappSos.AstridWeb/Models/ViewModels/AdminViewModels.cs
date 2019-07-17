@@ -34,7 +34,7 @@ namespace InrappSos.AstridWeb.Models.ViewModels
 
         public class AdminRoleViewModel
         {
-            public ApplicationRoleAstrid Role { get; set; }
+            public ApplicationRoleAstrid ApplicationRoleAstrid { get; set; }
             public string SelectedApplication { get; set; }
 
         }

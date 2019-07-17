@@ -203,7 +203,7 @@ namespace InrappSos.ApplicationService.Interface
         IEnumerable<AdmRegister> HamtaAllaRegisterForPortalen();
 
         IEnumerable<ApplicationRoleAstrid> HamtaAllaAstridRoller();
-        IEnumerable<ApplicationRole> HamtaAllaFilipRoller();
+        IEnumerable<ApplicationRoleAstrid> HamtaAllaFilipRoller();
 
         IEnumerable<AdmDelregister> HamtaAllaDelregisterForPortalen();
 
@@ -315,7 +315,7 @@ namespace InrappSos.ApplicationService.Interface
         bool IsHelgdag();
         bool IsSpecialdag();
 
-        void SkapaFilipRoll(ApplicationRole filipRoll, string userName);
+        void SkapaFilipRoll(ApplicationRoleAstrid filipRoll, string userName);
 
         int SkapaOrganisation(Organisation org, ICollection<Organisationstyp> orgtyperForOrg, string userName);
 
@@ -359,7 +359,7 @@ namespace InrappSos.ApplicationService.Interface
         void SkapaInsamlingsfrekvens(AdmInsamlingsfrekvens insamlingsfrekvens, string userName);
 
         void UppdateraAstridRoll(ApplicationRoleAstrid role, string userName);
-        void UppdateraFilipRoll(ApplicationRole role, string userName);
+        void UppdateraFilipRoll(ApplicationRoleAstrid role, string userName);
 
         void UppdateraOrganisation(Organisation org, string userName);
 

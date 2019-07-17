@@ -81,33 +81,33 @@ namespace InrappSos.DataAccess
 
         }
 
-        public IEnumerable<ApplicationRole> GetAllFilipRoles()
+        public IEnumerable<ApplicationRoleAstrid> GetAllFilipRoles()
         {
 
               //var rappB = DbContext.ApplicationRole.SqlQuery("select * from dbo.AspNetRoles").ToList();
 
-            var filipRoles = DbContext.ApplicationRole.OrderBy(r => r.Name);
+            var filipRoles = DbContext.ApplicationRoleAstrid.OrderBy(r => r.Name);
             return filipRoles;
         }
 
-        public void CreateFilipRole(ApplicationRole filipRole)
+        public void CreateFilipRole(ApplicationRoleAstrid filipRole)
         {
             //TODO - handmade since EF tries to insert duplicate columns.
             var newId = Guid.NewGuid().ToString();
-            var id = DbContext.ApplicationRole.FirstOrDefault(x => x.Id == newId);
+            var id = DbContext.ApplicationRoleAstrid.FirstOrDefault(x => x.Id == newId);
             if (id == null)
             {
                 var sql2 = @"Insert into dbo.AspNetRoles values(@Id,@Name,@beskrivandenamn,@beskrivning,@Discriminator,@skapaddatum,@skapadav, @andraddatum,@andradav)";
 
                 DbContext.Database.ExecuteSqlCommand(sql2, new SqlParameter("@Id", newId),
                     new SqlParameter("@Name", filipRole.Name),
-                    new SqlParameter("@beskrivandenamn", filipRole.beskrivandeNamn),
-                    new SqlParameter("@beskrivning",filipRole.beskrivning),
-                    new SqlParameter("@Discriminator", "ApplicationRole"),
-                    new SqlParameter("@skapaddatum",filipRole.skapadDatum),
-                    new SqlParameter("@skapadav", filipRole.skapadAv),
-                    new SqlParameter("@andraddatum", filipRole.andradDatum),
-                    new SqlParameter("@andradav", filipRole.andradAv)
+                    new SqlParameter("@beskrivandenamn", filipRole.BeskrivandeNamn),
+                    new SqlParameter("@beskrivning",filipRole.Beskrivning),
+                    new SqlParameter("@Discriminator", "ApplicationRoleAstrid"),
+                    new SqlParameter("@skapaddatum",filipRole.SkapadDatum),
+                    new SqlParameter("@skapadav", filipRole.SkapadAv),
+                    new SqlParameter("@andraddatum", filipRole.AndradDatum),
+                    new SqlParameter("@andradav", filipRole.AndradAv)
                 );
 
             }
@@ -137,15 +137,15 @@ namespace InrappSos.DataAccess
             return userException;
         }
 
-        public IEnumerable<ApplicationUserRole> GetFilipUserRolesForUser(string userId)
+        public IEnumerable<ApplicationUserRoleAstrid> GetFilipUserRolesForUser(string userId)
         {
-            var userRoles = DbContext.ApplicationUserRole.Where(x => x.UserId == userId).ToList();
+            var userRoles = DbContext.ApplicationUserRoleAstrid.Where(x => x.UserId == userId).ToList();
             return userRoles;
         }
 
-        public ApplicationRole GetFilipRoleById(string roleId)
+        public ApplicationRoleAstrid GetFilipRoleById(string roleId)
         {
-            var filipRole = DbContext.ApplicationRole.FirstOrDefault(x => x.Id == roleId);
+            var filipRole = DbContext.ApplicationRoleAstrid.FirstOrDefault(x => x.Id == roleId);
             return filipRole;
         }
 
@@ -155,27 +155,27 @@ namespace InrappSos.DataAccess
             return thisRole;
         }
 
-        public void UpdateFilipRole(ApplicationRole role)
+        public void UpdateFilipRole(ApplicationRoleAstrid role)
         {
-            var dbRole = DbContext.ApplicationRole.First(r => r.Name == role.Name);
-            dbRole.beskrivning = role.beskrivning;
-            dbRole.beskrivandeNamn = role.beskrivandeNamn;
-            dbRole.andradDatum = role.andradDatum;
-            dbRole.andradAv = role.andradAv;
+            var dbRole = DbContext.ApplicationRoleAstrid.First(r => r.Name == role.Name);
+            dbRole.Beskrivning = role.Beskrivning;
+            dbRole.BeskrivandeNamn = role.BeskrivandeNamn;
+            dbRole.AndradDatum = role.AndradDatum;
+            dbRole.AndradAv = role.AndradAv;
             DbContext.SaveChanges();
         }
 
         public void DeleteFilipRole(string roleName)
         {
-            var thisRole = DbContext.Roles.FirstOrDefault(r => r.Name.Equals(roleName, StringComparison.CurrentCultureIgnoreCase));
+            var thisRole = DbContext.ApplicationRoleAstrid.FirstOrDefault(r => r.Name.Equals(roleName, StringComparison.CurrentCultureIgnoreCase));
             DbContext.Roles.Remove(thisRole);
             DbContext.SaveChanges();
         }
 
         public void DeleteRoleFromFilipUser(string userId, string roleId)
         {
-            var userRoleDb = DbContext.ApplicationUserRole.FirstOrDefault(x => x.UserId == userId && x.RoleId == roleId);
-            DbContext.ApplicationUserRole.Remove(userRoleDb);
+            var userRoleDb = DbContext.ApplicationUserRoleAstrid.FirstOrDefault(x => x.UserId == userId && x.RoleId == roleId);
+            DbContext.ApplicationUserRoleAstrid.Remove(userRoleDb);
             DbContext.SaveChanges();
         }
 
@@ -2369,10 +2369,10 @@ namespace InrappSos.DataAccess
             AstridDbContext.SaveChanges();
         }
 
-        public void SetFilipRoleForFilipUser(ApplicationUserRole applicationUserRole)
+        public void SetFilipRoleForFilipUser(ApplicationUserRoleAstrid applicationUserRole)
         {
             //TODO - handmade since EF tries to insert duplicate columns.
-            var id = DbContext.ApplicationUserRole.FirstOrDefault(x => x.UserId == applicationUserRole.UserId && x.RoleId == applicationUserRole.RoleId);
+            var id = DbContext.ApplicationUserRoleAstrid.FirstOrDefault(x => x.UserId == applicationUserRole.UserId && x.RoleId == applicationUserRole.RoleId);
             if (id == null)
             {
                 var sqlStr = @"Insert into dbo.AspNetUserRoles values(@UserId,@RoleId,@Discriminator,@skapaddatum,@skapadav, @andraddatum,@andradav)";
@@ -2380,10 +2380,10 @@ namespace InrappSos.DataAccess
                 DbContext.Database.ExecuteSqlCommand(sqlStr, new SqlParameter("@UserId",applicationUserRole.UserId),
                     new SqlParameter("@RoleId", applicationUserRole.RoleId),
                     new SqlParameter("@Discriminator", "ApplicationUserRole"),
-                    new SqlParameter("@skapaddatum", applicationUserRole.skapadDatum),
-                    new SqlParameter("@skapadav", applicationUserRole.skapadAv),
-                    new SqlParameter("@andraddatum", applicationUserRole.andradDatum),
-                    new SqlParameter("@andradav", applicationUserRole.andradAv)
+                    new SqlParameter("@skapaddatum", applicationUserRole.SkapadDatum),
+                    new SqlParameter("@skapadav", applicationUserRole.SkapadAv),
+                    new SqlParameter("@andraddatum", applicationUserRole.AndradDatum),
+                    new SqlParameter("@andradav", applicationUserRole.AndradAv)
                 );
             }
             //DbContext.ApplicationUserRole.Add(applicationUserRole);

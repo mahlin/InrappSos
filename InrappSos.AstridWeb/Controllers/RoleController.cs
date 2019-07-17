@@ -39,7 +39,7 @@ namespace InrappSos.AstridWeb.Controllers
             {
                 _portalSosService = new PortalSosService(new PortalSosRepository(new InrappSosDbContext(), new InrappSosAstridDbContext()));
                 var roleStore = new RoleStore<ApplicationRoleAstrid>(new InrappSosAstridDbContext());
-                var filipRoleStore = new RoleStore<ApplicationRole>(new InrappSosDbContext());
+                var filipRoleStore = new RoleStore<ApplicationRoleAstrid>(new InrappSosDbContext());
                 RoleManager = new ApplicationRoleManager(roleStore);
                 FilipRoleManager = new FilipApplicationRoleManager(filipRoleStore);
                 
@@ -158,11 +158,11 @@ namespace InrappSos.AstridWeb.Controllers
                     try
                     {
                         var user = User.Identity.GetUserName();
-                    var dbRole = new ApplicationRole
+                    var dbRole = new ApplicationRoleAstrid
                         {
                             Name = filipRole.RoleName,
-                            beskrivandeNamn = filipRole.BeskrivandeNamn,
-                            beskrivning = filipRole.Beskrivning
+                            BeskrivandeNamn = filipRole.BeskrivandeNamn,
+                            Beskrivning = filipRole.Beskrivning
                         };
 
                     _portalSosService.SkapaFilipRoll(dbRole, user);
@@ -195,7 +195,7 @@ namespace InrappSos.AstridWeb.Controllers
                 }
             }
 
-            private async Task CreateRoleForFilip(ApplicationRole filipRole)
+            private async Task CreateRoleForFilip(ApplicationRoleAstrid filipRole)
             {
                 bool exists = await _filipRoleManager.RoleExistsAsync(filipRole.Name);
                 if (!exists)
@@ -236,7 +236,7 @@ namespace InrappSos.AstridWeb.Controllers
             [Authorize(Roles = "Admin")]
             // POST: /Roles/Edit/5
             [HttpPost]
-            public ActionResult EditFilipRole(ApplicationRole model)
+            public ActionResult EditFilipRole(ApplicationRoleAstrid model)
             {
                 try
                 {
@@ -275,7 +275,7 @@ namespace InrappSos.AstridWeb.Controllers
                 currentRoles.AddRange(user.UserRoles);
                 foreach (ApplicationUserRoleAstrid role in currentRoles)
                 {
-                    userManager.RemoveFromRole(userId, role.Role.Name);
+                    userManager.RemoveFromRole(userId, role.ApplicationRoleAstrid.Name);
                 }
             }
 

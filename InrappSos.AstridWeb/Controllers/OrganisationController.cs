@@ -227,7 +227,7 @@ namespace InrappSos.AstridWeb.Controllers
                 model.Kommunkod = model.Organisation.Kommunkod;
                 var contacts = _portalSosService.HamtaKontaktpersonerForOrg(model.Organisation.Id);
                 //TODO - roller även här?
-                var roller = new List<ApplicationRole>();
+                var roller = new List<ApplicationRoleAstrid>();
                 model.ContactPersons = ConvertUsersViewModelUser(contacts, roller);
 
                 model.OrgUnits = _portalSosService.HamtaOrgEnheterForOrg(model.Organisation.Id).ToList();
@@ -1623,7 +1623,7 @@ namespace InrappSos.AstridWeb.Controllers
 
 
 
-        private List<OrganisationViewModels.ApplicationUserViewModel> ConvertUsersViewModelUser(IEnumerable<ApplicationUser> contacts, List<ApplicationRole> roller)
+        private List<OrganisationViewModels.ApplicationUserViewModel> ConvertUsersViewModelUser(IEnumerable<ApplicationUser> contacts, List<ApplicationRoleAstrid> roller)
         {
             var contactPersonsView = new List<OrganisationViewModels.ApplicationUserViewModel>();
 
@@ -1667,10 +1667,10 @@ namespace InrappSos.AstridWeb.Controllers
                     var roleVm = new IdentityRoleViewModel
                     {
                         Id = roll.Id,
-                        Name = roll.beskrivandeNamn
+                        Name = roll.BeskrivandeNamn
                     };
 
-                    if (contactView.Roles.Contains(roll.beskrivandeNamn))
+                    if (contactView.Roles.Contains(roll.BeskrivandeNamn))
                     {
                         roleVm.Selected = true;
                     }

@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using System.Web;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 
@@ -30,6 +27,9 @@ namespace InrappSos.DomainModel
         public virtual ICollection<Kontaktpersonstyp> Kontaktpersontyp { get; set; }
         public virtual ICollection<ArendeKontaktperson> ArendeKontaktperson { get; set; }
         public virtual ICollection<KontaktpersonSFTPkonto> KontaktpersonSFTPkonto { get; set; }
+
+        public ICollection<ApplicationUserRoleAstrid> UserRoles { get; set; }
+
         public virtual ICollection<DroppadFil> DroppadFil { get; set; }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
@@ -39,7 +39,7 @@ namespace InrappSos.DomainModel
             // Add custom user claims here
             return userIdentity;
         }
-        //public ICollection<ApplicationUserRole> UserRoles { get; set; }
+
 
     }
 }

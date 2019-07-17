@@ -10,7 +10,7 @@ namespace InrappSos.AstridWeb.Models.ViewModels
     {
         public List<ApplicationRoleAstrid> AstridRoller { get; set; }
 
-        public List<ApplicationRole> FilipRoller { get; set; }
+        public List<ApplicationRoleAstrid> FilipRoller { get; set; }
 
         public class RoleViewModelAstrid 
         {

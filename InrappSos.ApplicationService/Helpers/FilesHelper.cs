@@ -231,8 +231,8 @@ namespace InrappSos.ApplicationService.Helpers
             var arende = _portalSosRepository.GetCase(selectedCaseId);
             var slussmapp = _portalSosRepository.GetCaseType(arende.ArendetypId).Slussmapp;
 
-            //Byt ut ev slashar(/\) i ärendenr,mret mot bindestreck (-)
-            var fixedCasenumber = arende.Arendenr.Replace('/', '-').Replace('\\', '-').Replace('.', '-').Replace('?', '-').Replace('*', '-').Replace('"', '-'); 
+            //Byt ut ev slashar(/\) i ärendenumret mot bindestreck (-)
+            var fixedCasenumber = arende.Arendenr.Replace('/', '_').Replace('\\', '_').Replace('.', '_').Replace('?', '_').Replace('*', '_').Replace('"', '_'); 
 
             StorageRoot = StorageRoot + slussmapp + "\\" + fixedCasenumber + "\\";
             String fullPath = Path.Combine(StorageRoot);
@@ -243,7 +243,7 @@ namespace InrappSos.ApplicationService.Helpers
             //Kontrollera om chunked upload
             if (string.IsNullOrEmpty(headers["X-File-Name"]))
             {
-                UploadWholeFiledropFile(ContentBase, resultList, userId, userName, selectedCaseId);
+                UploadWholeFiledropFile(ContentBase, resultList, userId, userName, selectedCaseId, fixedCasenumber);
             }
             else
             {
@@ -431,14 +431,18 @@ namespace InrappSos.ApplicationService.Helpers
             }
         }
 
-        private void UploadWholeFiledropFile(HttpContextBase requestContext, List<ViewDataUploadFilesResult> statuses, string userId,string  userName, int selectedCaseId)
+        private void UploadWholeFiledropFile(HttpContextBase requestContext, List<ViewDataUploadFilesResult> statuses, string userId,string  userName, int selectedCaseId, string caseNumber)
         {
             var extendedFileName = String.Empty;
             var request = requestContext.Request;
             for (int i = 0; i < request.Files.Count; i++)
             {
                 var file = request.Files[i];
-                extendedFileName = file.FileName; //Om taggning ska göras framöver så ska hash läggas till extendedFilename
+                var timestamp = DateTime.Now.ToString("yyyy-MM-dd" + "T" + "HHmmss");
+                var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file.FileName);
+                var extension = Path.GetExtension(file.FileName);
+                extendedFileName = fileNameWithoutExtension + "_" + caseNumber + "_" + timestamp + extension;
+
 
                 //Save to database
                 var filedropId = _portalSosRepository.SaveFiledropFile(file.FileName, file.FileName, selectedCaseId, userId, userName);
@@ -501,6 +505,8 @@ namespace InrappSos.ApplicationService.Helpers
 
             return hashAddOn;
         }
+
+
         public ViewDataUploadFilesResult UploadResult(String FileName,int fileSize,String FileFullPath, String SosFileName, int LeveransId, int SequenceNumber)
         {
             String getType = System.Web.MimeMapping.GetMimeMapping(FileFullPath);

@@ -110,6 +110,7 @@ namespace InrappSos.AstridWeb
         {
         }
 
+
         public static ApplicationUserManager Create(IdentityFactoryOptions<ApplicationUserManager> options,
             IOwinContext context)
         {
@@ -229,16 +230,16 @@ namespace InrappSos.AstridWeb
         }
     }
 
-    public class FilipApplicationRoleManager : RoleManager<ApplicationRole>
+    public class FilipApplicationRoleManager : RoleManager<ApplicationRoleAstrid>
     {
-        public FilipApplicationRoleManager(IRoleStore<ApplicationRole, string> filipRoleStore) : base(filipRoleStore)
+        public FilipApplicationRoleManager(IRoleStore<ApplicationRoleAstrid, string> filipRoleStore) : base(filipRoleStore)
         {
         }
 
         public static FilipApplicationRoleManager Create(IdentityFactoryOptions<FilipApplicationRoleManager> options,
             IOwinContext context)
         {
-            var filipAppRoleManager = new FilipApplicationRoleManager(new RoleStore<ApplicationRole>(context.Get<InrappSosDbContext>()));
+            var filipAppRoleManager = new FilipApplicationRoleManager(new RoleStore<ApplicationRoleAstrid>(context.Get<InrappSosDbContext>()));
             return filipAppRoleManager;
         }
     }

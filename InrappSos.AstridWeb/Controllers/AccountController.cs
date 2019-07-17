@@ -111,10 +111,12 @@ namespace InrappSos.AstridWeb.Controllers
                     // To enable password failures to trigger account lockout, change to shouldLockout: true
                     var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe,shouldLockout: false);
 
-                    //if (UserManager.IsInRole(user.Id, "Admin"))
-                    //{
-                    //    ViewBag.displayRegister = "Yes";
-                    //}
+                    var tmp = _portalSosService.HamtaAstridAnvandaresRoller(user.Id);
+
+                    if (UserManager.IsInRole(user.Id, "Admin"))
+                    {
+                        ViewBag.displayRegister = "Yes";
+                    }
 
                     //var x = User.Identity.Name;
                     //var y = User.Identity.GetUserName();
@@ -209,7 +211,8 @@ namespace InrappSos.AstridWeb.Controllers
                             {
                                 if (roll.Selected)
                                 {
-                                    UserManager.AddToRole(user.Id, roll.Name);
+                                    //UserManager.AddToRole(user.Id, roll.Name);
+                                    _portalSosService.KopplaAstridAnvändareTillAstridRoll(user.Email, user.Id, roll.Id);
                                 }
                             }
                         }
@@ -218,11 +221,22 @@ namespace InrappSos.AstridWeb.Controllers
                             throw new ArgumentException(e.Message);
                         }
                         ViewBag.Message = "Role created successfully !";
-                        return RedirectToAction("Index", "Home", new { Message = AccountMessageId.AddUserSuccess });
+                        return RedirectToAction("GetAstridUsers", "Admin", new { Message = AccountMessageId.AddUserSuccess });
                     }
                   AddErrors(result);
                }
-               catch (ApplicationException e)
+               catch (ArgumentException e)
+               {
+                   ErrorManager.WriteToErrorLog("AccountController", "Register", e.ToString(), e.HResult,
+                       User.Identity.Name);
+                   var errorModel = new CustomErrorPageModel
+                   {
+                       Information = "Ett fel inträffade när användarens roller skulle sparas. " + e.Message,
+                       ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                   };
+                   return View("CustomError", errorModel);
+               }
+                catch (ApplicationException e)
                {
                    ErrorManager.WriteToErrorLog("AccountController", "Register", e.ToString(), e.HResult,
                        User.Identity.Name);

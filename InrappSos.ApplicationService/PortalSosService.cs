@@ -541,7 +541,7 @@ namespace InrappSos.ApplicationService
             foreach (var userRole in userRoles)
             {
                 var role = _portalSosRepository.GetFilipRoleById(userRole.RoleId);
-                rollLista.Add(role.beskrivandeNamn);
+                rollLista.Add(role.BeskrivandeNamn);
             }
             return rollLista;
         }
@@ -1085,7 +1085,7 @@ namespace InrappSos.ApplicationService
             return roller;
         }
 
-        public IEnumerable<ApplicationRole> HamtaAllaFilipRoller()
+        public IEnumerable<ApplicationRoleAstrid> HamtaAllaFilipRoller()
         {
             var roller = _portalSosRepository.GetAllFilipRoles();
             return roller;
@@ -1876,14 +1876,14 @@ namespace InrappSos.ApplicationService
 
         public void KopplaFilipAnvändareTillFilipRoll(string userName, string filipUserId, string rollId)
         {
-            var userRole = new ApplicationUserRole
+            var userRole = new ApplicationUserRoleAstrid
             {
                 UserId = filipUserId,
                 RoleId = rollId,
-                skapadDatum = DateTime.Now,
-                skapadAv = userName,
-                andradDatum = DateTime.Now,
-                andradAv = userName
+                SkapadDatum = DateTime.Now,
+                SkapadAv = userName,
+                AndradDatum = DateTime.Now,
+                AndradAv = userName
             };
             _portalSosRepository.SetFilipRoleForFilipUser(userRole);
         }
@@ -2125,13 +2125,13 @@ namespace InrappSos.ApplicationService
             _portalSosRepository.DeleteChosenSubDirectoriesForUser(userId);
         }
         
-        public void SkapaFilipRoll(ApplicationRole filipRoll, string userName)
+        public void SkapaFilipRoll(ApplicationRoleAstrid filipRoll, string userName)
         {
             //Sätt datum och användare
-            filipRoll.skapadDatum = DateTime.Now;
-            filipRoll.skapadAv = userName;
-            filipRoll.andradDatum = DateTime.Now;
-            filipRoll.andradAv = userName;
+            filipRoll.SkapadDatum = DateTime.Now;
+            filipRoll.SkapadAv = userName;
+            filipRoll.AndradDatum = DateTime.Now;
+            filipRoll.AndradAv = userName;
             _portalSosRepository.CreateFilipRole(filipRoll);
         }
 
@@ -2461,10 +2461,10 @@ namespace InrappSos.ApplicationService
             _portalSosRepository.UpdateAstridRole(role);
         }
 
-        public void UppdateraFilipRoll(ApplicationRole role, string userName)
+        public void UppdateraFilipRoll(ApplicationRoleAstrid role, string userName)
         {
-            role.andradDatum = DateTime.Now;
-            role.andradAv = userName;
+            role.AndradDatum = DateTime.Now;
+            role.AndradAv = userName;
             _portalSosRepository.UpdateFilipRole(role);
         }
 

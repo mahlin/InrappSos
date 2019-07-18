@@ -454,6 +454,8 @@ namespace InrappSos.DataAccess
         void SetFilipRoleForFilipUser(ApplicationUserRole applicationUserRole);
 
         IEnumerable<ApplicationRole> GetAstridUsersRoles(string userId);
+        IEnumerable<ApplicationUserRole> GetAstridUsersInRole(string roleId);
+        AppUserAdmin GetAstridUserById(string userId);
 
         void SaveChosenRegistersForUser(string userId, string userName, List<RegisterInfo> registerList);
 

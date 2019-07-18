@@ -4,110 +4,201 @@
     ViewBag.Title = "Skapa nytt ärende";
 }
 
-<script>
+<link href="~/Scripts//bootstrap-multiselect/dist/css/bootstrap-multiselect.css" rel="stylesheet" type="text/css" />
+<script src="~/Scripts/bootstrap-multiselect/dist/js/bootstrap-multiselect.js" type="text/javascript"></script>
 
-    //$(document).ready(function () {
-    //    alert("Orgid: " + $('#Organisationsid').val());
+<script type="text/javascript">
+    var contactpersons = @Html.Raw(Json.Encode(Model.Kontaktpersoner));
+
+    $(document).ready(function () {
+        $('[id*=ContactList]').multiselect({
+            onInitialized: function () {
+                $.each(contactpersons, function (index, item) {
+                    if (item.Selected) {
+                        $("#ContactList > option")[index].selected = true;
+                        $("#ContactList > option")[index].checked = true;
+                    }
+                });
+                this.refresh();
+            },
+            onChange: function (option, checked, select) {
+                //Update string of contacts
+                $('#ChosenContactsStr').val("");
+                $.each(contactpersons, function (index, item) {
+                    if ($('#Kontaktpersoner_' + index + '__Id').val() === $(option).val()) {
+                        if ($('#Kontaktpersoner_' + index + '__Selected').val() === 'False')
+                            $('#Kontaktpersoner_' + index + '__Selected').val('True');
+                        else
+                            $('#Kontaktpersoner_' + index + '__Selected').val('False');
+                    }
+                });
+                setChosenContactsStr();
+            },
+            onSelectAll: function () {
+                $.each(contactpersons, function (index, item) {
+                    $('#Kontaktpersoner_' + index + '__Selected').val('True');
+                });
+            },
+            onDeselectAll: function () {
+                $.each(userRoles, function (index, item) {
+                    $('#Kontaktpersoner_' + index + '__Selected').val('False');
+                });
+            },
+            includeSelectAllOption: false,
+            nonSelectedText: 'Välj kontaktperson',
+            allSelectedText: 'Alla valda',
+            selectAllText: "Välj alla",
+            nSelectedText: "valda",
+            astridDefaultText: "Välj kontaktperson"
+        });
+    });
+
+    function setChosenContactsStr() {
+        var contactStr = "";
+        [].forEach.call(document.querySelectorAll('#ContactList :checked'),
+            function (contact) {
+                if (contactStr === "") {
+                    contactStr = contactStr + contact.text;
+                } else {
+                    contactStr = contactStr + ", " + contact.text;
+                }
+            });
+
+        $('#chosenContacts').val(contactStr);
+        $('#ChosenContactsStr').val(contactStr);
+    }
+
+    //$(document).on('change', '#ddlArendetyp', function () {
+    //    $("#SelectedArendetypId").val($('#ddlArendetyp').val());
     //});
 
-    $(document).on('change', '#ddlArendetyp', function () {
-        $("#SelectedArendetypId").val($('#ddlArendetyp').val());
-    });
+    //$(document).on('change', '#ddlArendestatus', function () {
+    //    $("#SelectedArendestatusId").val($('#ddlArendestatus').val());
+    //});
 
-    $(document).on('change', '#ddlArendestatus', function () {
-        $("#SelectedArendestatusId").val($('#ddlArendestatus').val());
-    });
+    //$(document).on('change', '#ddlArendeansvarig', function () {
+    //    $("#SelectedArendeansvarigId").val($('#ddlArendeansvarig').val());
+    //});
 
-    
+
 </script>
 
 @using (Html.BeginForm("CreateCase", "Organisation", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.OrganisationsId)
+    @Html.HiddenFor(m => m.ChosenContactsStr)
+    @Html.HiddenFor(m => m.ChosenContactsStr)
+
+    if (Model.Kontaktpersoner != null)
     {
-        @Html.AntiForgeryToken()
-        @Html.HiddenFor(m => m.OrganisationsId)
-
-        <div class="form-horizontal padding-top-55">
-            <h4>Lägg till nytt ärende för @Model.Organisationsnamn</h4>
-            <hr />
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            <div class="form-group">
-                @Html.LabelFor(model => model.Arendenamn, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.TextBoxFor(model => model.Arendenamn, htmlAttributes: new { @class = "form-control"})
-                </div>
-            </div>
-
-            <div class="form-group">
-                @Html.LabelFor(model => model.Arendenr, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.EditorFor(model => model.Arendenr, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Arendenr, "", new { @class = "text-danger" })
-                </div>
-            </div>
-           
-            <div class="form-group">
-                @Html.Label("Ärendetyp", new { @class = "control-label col-md-2" })
-                <div class="col-md-10" style="width: 255px !important;">
-                    @Html.DropDownListFor(m => m.ArendetypId, ViewBag.ArendetypList as SelectList, " - Välj ärendetyp -", new {id = "ddlArendetyp", @class = "form-control", style = "max-width:250px !important"})
-                </div>
-            </div>
-            
-            <div class="form-group">
-                @Html.Label("Ärendestatus", new { @class = "control-label col-md-2" })
-                <div class="col-md-10" style="width: 255px !important;">
-                    @Html.DropDownListFor(m => m.ArendestatusId, ViewBag.ArendestatusList as SelectList, " - Välj ärendestatus -", new {id = "ddlArendestatus", @class = "form-control", style = "max-width:250px !important"})
-                </div>
-            </div>
-            
-            <div class="form-group">
-                @Html.LabelFor(model => model.AnsvarigEpost, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.EditorFor(model => model.AnsvarigEpost, new { htmlAttributes = new { @class = "form-control", placeholder = "Ansvarigs epostadress" } })
-                    @Html.ValidationMessageFor(model => model.AnsvarigEpost, "", new { @class = "text-danger" })
-                </div>
-            </div>
-            
-            <div class="form-group">
-                @Html.LabelFor(model => model.Rapportorer, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.EditorFor(model => model.Rapportorer, new { htmlAttributes = new { @class = "form-control", placeholder = "Rapportörs epostadress" } })
-                    <small id="passwordHelpBlock" class="form-text text-muted">
-                        Om flera rapportörer, separera med kommatecken.
-                    </small>
-                    @Html.ValidationMessageFor(model => model.Rapportorer, "", new { @class = "text-danger" })
-                </div>
-            </div>
-            
-            <div class="form-group">
-                @Html.LabelFor(model => model.StartDatum, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.EditorFor(model => model.StartDatum, new { htmlAttributes = new { @class = "form-control", @placeholder = "ÅÅÅÅ-MM-dd" } })
-                    @Html.ValidationMessageFor(model => model.StartDatum, "", new { @class = "text-danger" })
-                </div>
-            </div>
-            
-            <div class="form-group">
-                @Html.LabelFor(model => model.SlutDatum, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.EditorFor(model => model.SlutDatum, new { htmlAttributes = new { @class = "form-control", @placeholder = "ÅÅÅÅ-MM-dd" } })
-                    @Html.ValidationMessageFor(model => model.SlutDatum, "", new { @class = "text-danger" })
-                </div>
-            </div>
-
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="Spara" class="btn btn-default" />
-                </div>
-            </div>
-        </div>
-        <div>
-            @Html.ActionLink("Tillbaka", "GetOrganisationsCases", "Organisation", new { selectedOrganisationId = Model.OrganisationsId }, null)
-
-        </div>
+        for (int i = 0; i < Model.Kontaktpersoner.Count; i++)
+        {
+            @Html.HiddenFor(x => x.Kontaktpersoner[i].Id)
+            @Html.HiddenFor(x => x.Kontaktpersoner[i].Email)
+            @Html.HiddenFor(x => x.Kontaktpersoner[i].Selected)
+        }
     }
 
+    <div class="form-horizontal padding-top-55">
+        <h4>Lägg till nytt ärende för @Model.Organisationsnamn</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.Arendenamn, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Arendenamn, htmlAttributes: new { @class = "form-control", placeholder = "99999/ÅÅÅÅ (ex 12345/2019)" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Arendenr, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Arendenr, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Arendenr, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Ärendetyp", new { @class = "control-label col-md-2" })
+            <div class="col-md-10" style="width: 255px !important;">
+                @Html.DropDownListFor(m => m.ArendetypId, ViewBag.ArendetypList as SelectList, " - Välj ärendetyp -", new { id = "ddlArendetyp", @class = "form-control", style = "max-width:250px !important" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Ärendestatus", new { @class = "control-label col-md-2" })
+            <div class="col-md-10" style="width: 255px !important;">
+                @Html.DropDownListFor(m => m.ArendestatusId, ViewBag.ArendestatusList as SelectList, " - Välj ärendestatus -", new { id = "ddlArendestatus", @class = "form-control", style = "max-width:250px !important" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Ärendeansvarig", new { @class = "control-label col-md-2" })
+            <div class="col-md-10" style="width: 255px !important;">
+                @Html.DropDownListFor(m => m.ArendeansvarigId, ViewBag.ArendeansvarigList as SelectList, " - Välj ärendeansvarig -", new { id = "ddlArendeansvarig", @class = "form-control", style = "max-width:250px !important" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Kontaktpersoner", new { @class = "control-label col-md-2" })
+            <div class="col-md-3">
+                @Html.TextBoxFor(model => model.ChosenContactsStr, new { id = "chosenContacts", @class = "form-control", disabled = "disabled" })
+            </div>
+            @if (Model.Kontaktpersoner != null)
+            {
+                <div class="col-md-7" style="padding-left: 20px; float: left;">
+                    <select id="ContactList" multiple="multiple">
+                        @for (var i = 0; i < Model.Kontaktpersoner.Count; i++)
+                        {
+                            <option value=@Model.Kontaktpersoner[i].Id>@Model.Kontaktpersoner[i].Email</option>
+                        }
+                    </select>
+                </div>
+            }
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Ej registrerade kontaktpersoner", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Rapportorer, new { htmlAttributes = new { @class = "form-control", placeholder = "Kontaktpersons epostadress" } })
+                <small id="passwordHelpBlock" class="form-text text-muted">
+                    Om flera kontaktpersoner, separera med kommatecken.
+                </small>
+                @Html.ValidationMessageFor(model => model.Rapportorer, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.StartDatum, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.StartDatum, new { htmlAttributes = new { @class = "form-control", @placeholder = "ÅÅÅÅ-MM-dd" } })
+                @Html.ValidationMessageFor(model => model.StartDatum, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.SlutDatum, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.SlutDatum, new { htmlAttributes = new { @class = "form-control", @placeholder = "ÅÅÅÅ-MM-dd" } })
+                @Html.ValidationMessageFor(model => model.SlutDatum, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Spara" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+    <div>
+        @Html.ActionLink("Tillbaka", "GetOrganisationsCases", "Organisation", new { selectedOrganisationId = Model.OrganisationsId }, null)
+
+    </div>
+}
 
 
-    @section Scripts {
-        @Scripts.Render("~/bundles/jqueryval")
-    }
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

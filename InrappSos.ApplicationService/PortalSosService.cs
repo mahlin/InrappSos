@@ -1104,6 +1104,19 @@ namespace InrappSos.ApplicationService
             return allRegisterinfoForOrg;
         }
 
+        public IEnumerable<AppUserAdmin> HamtaAllaArendeadministratorerForOrg(int orgId)
+        {
+            var roll = _portalSosRepository.GetAstridRole("ArendeAdmin");
+            var userRoles = _portalSosRepository.GetAstridUsersInRole(roll.Id);
+            var arendeadmins = new List<AppUserAdmin>();
+            foreach (var userRole in userRoles)
+            {
+                var user = _portalSosRepository.GetAstridUserById(userRole.UserId);
+                arendeadmins.Add(user);
+            }
+            return arendeadmins;
+        }
+
         public IEnumerable<AdmForeskrift> HamtaAllaForeskrifter()
         {
             var foreskrifter = _portalSosRepository.GetAllRegulations();

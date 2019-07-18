@@ -362,6 +362,7 @@
     <Content Include="Views\Role\CreateAstridRole.cshtml" />
     <Content Include="Views\Role\Index.cshtml" />
     <Content Include="Views\Role\CreateFilipRole.cshtml" />
+    <Content Include="Views\Organisation\_Cases.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

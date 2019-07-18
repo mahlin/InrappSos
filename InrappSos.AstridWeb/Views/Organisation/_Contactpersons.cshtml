@@ -19,9 +19,11 @@
             Mobilnummer verifierat
         </th>
         <th>
+            Roller
+        </th>
+        <th>
             Skapad
         </th>
-        <th></th>
     </tr>
 
     @foreach (var item in Model.ContactPersons)
@@ -38,6 +40,9 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.PhoneNumberConfirmed)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StringOfRoles)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.SkapadDatum)

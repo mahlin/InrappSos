@@ -151,9 +151,21 @@ namespace InrappSos.FilipWeb.Controllers
                 switch (result)
                 {
                     case SignInStatus.Success:
-                        //var user = UserManager.FindByEmail(model.Email);
+                        var z = await UserManager.IsInRoleAsync(user.Id, "ArendeUpp");
                         _portalService.SaveToLoginLog(user.Id, user.UserName);
-                        return RedirectToLocal(returnUrl);
+                        //Check users role => startpage
+                        if (await UserManager.IsInRoleAsync(user.Id, "ArendeUpp"))
+                        {
+                            return RedirectToAction("Index", "FileDrop");
+                        }
+                        else if (await UserManager.IsInRoleAsync(user.Id, "RegUpp"))
+                        {
+                            return RedirectToAction("Index", "FileUpload");
+                        }
+                        else
+                        {
+                            return RedirectToLocal(returnUrl);
+                        }
                     case SignInStatus.LockedOut:
                         return View("Lockout");
                     case SignInStatus.RequiresVerification:
@@ -908,8 +920,7 @@ namespace InrappSos.FilipWeb.Controllers
             {
                 return Redirect(returnUrl);
             }
-            //return RedirectToAction("Index", "Home");
-            return RedirectToAction("Index", "FileUpload");
+            return RedirectToAction("Index", "Home");
         }
 
         private async Task<ActionResult> RegisterUser(int orgId, RegisterViewModel model)

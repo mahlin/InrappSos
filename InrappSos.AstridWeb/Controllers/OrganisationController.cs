@@ -230,6 +230,8 @@ namespace InrappSos.AstridWeb.Controllers
                 var roller = new List<ApplicationRole>();
                 model.ContactPersons = ConvertUsersViewModelUser(contacts, roller);
 
+                var cases = _portalSosService.HamtaArendenForOrg(model.Organisation.Id);
+                model.Arenden = ConvertArendeToVM(cases.ToList());
                 model.OrgUnits = _portalSosService.HamtaOrgEnheterForOrg(model.Organisation.Id).ToList();
                 var reportObligationsDb = _portalSosService.HamtaUppgiftsskyldighetForOrg(model.Organisation.Id);
                 model.ReportObligations = ConvertAdmUppgiftsskyldighetToViewModel(reportObligationsDb.ToList());
@@ -1283,7 +1285,13 @@ namespace InrappSos.AstridWeb.Controllers
             model.ArendetypId = 0;
             var arendestatusList = _portalSosService.HamtaAllaArendestatusar();
             ViewBag.ArendestatusList = CreateArendestatusDropDownList(arendestatusList);
+            var arendeansvarigList = _portalSosService.HamtaAllaArendeadministratorerForOrg(model.OrganisationsId);
+            ViewBag.ArendeansvarigList = CreateArendeansvarigDropDownList(arendeansvarigList);
             model.ArendetypId = 0;
+            //Skapa lista över valbara kontaktpersoner 
+            model.ChosenContactsStr = "";
+            var contacts = _portalSosService.HamtaKontaktpersonerForOrg(model.OrganisationsId);
+            model.Kontaktpersoner = ConvertContactsToVM(contacts.ToList());
             return View(model);
         }
 
@@ -1313,24 +1321,20 @@ namespace InrappSos.AstridWeb.Controllers
                     var userName = User.Identity.GetUserName();
                     var arendeDTO = ConvertArendeVMToDb(arendeVM);
                     _portalSosService.SkapaArende(arendeDTO, userName);
-                    //Lägg till roll för de rapportörer som är reggade
-                    //TODO - Flytta detta till svc-lagret eller repo-lagret?
-                    var reporters = arendeVM.Rapportorer.Replace(' ', ',');
-                    var newEmailStr = reporters.Split(',');
-                    foreach (var email in newEmailStr)
+                    //Lägg till roll Ärendeuppgiftslämnare för de kontaktpersoner/rapportörer som är reggade i db
+                    try
                     {
-                        if (!String.IsNullOrEmpty(email.Trim()))
+                        foreach (var person in arendeVM.Kontaktpersoner)
                         {
-                            var user = await FilipUserManager.FindByNameAsync(email.Trim());
-                            if (user != null)
+                            if (person.Selected)
                             {
-                                if (!FilipUserManager.IsInRole(user.Id, "RegSvcRapp"))
-                                {
-                                    FilipUserManager.AddToRole(user.Id, "RegSvcRapp");
-                                }
+                                _portalSosService.KopplaFilipAnvändareTillFilipRoll(userName, User.Identity.GetUserId(),"ArendeUpp" );
                             }
                         }
-                        
+                    }
+                    catch (Exception e)
+                    {
+                        throw new ArgumentException(e.Message);
                     }
                 }
                 catch (Exception e)
@@ -2106,6 +2110,7 @@ namespace InrappSos.AstridWeb.Controllers
 
         private ArendeDTO ConvertArendeVMToDb(OrganisationViewModels.ArendeViewModel arendeVM)
         {
+            var tmp = arendeVM.ArendeansvarigId;
             var arende = new ArendeDTO
             {
                 Id = arendeVM.Id,
@@ -2142,10 +2147,10 @@ namespace InrappSos.AstridWeb.Controllers
 
                 //Hämta ärentyp, klartext 
                 arendeVM.Arendetyp = _portalSosService.HamtaArendetyp(arendeDb.ArendetypId).ArendetypNamn;
-                arendeVM.SelectedArendetypId = arendeDb.ArendetypId;
+                arendeVM.ArendetypId = arendeDb.ArendetypId;
                 //Hämta ärendestatus, klartext
                 arendeVM.Arendestatus = _portalSosService.HamtaArendestatus(arendeDb.ArendestatusId).ArendeStatusNamn;
-                arendeVM.SelectedArendestatusId = arendeDb.ArendestatusId;
+                arendeVM.ArendestatusId = arendeDb.ArendestatusId;
 
                 arendeVM.AnsvarigEpost = arendeDb.AnsvarigEpost;
                 //Hämta rapportörers epostadress
@@ -2165,6 +2170,23 @@ namespace InrappSos.AstridWeb.Controllers
                     {
                         Value = p.Id.ToString(),
                         Text = p.ArendetypNamn
+                    });
+            // Setting.  
+            lstobj = new SelectList(list, "Value", "Text");
+            var y = lstobj.ToList();
+            return lstobj;
+        }
+
+
+        private IEnumerable<SelectListItem> CreateArendeansvarigDropDownList(IEnumerable<AppUserAdmin> userList)
+        {
+            SelectList lstobj = null;
+            var list = userList
+                .Select(p =>
+                    new SelectListItem
+                    {
+                        Value = p.Id,
+                        Text = p.Email
                     });
             // Setting.  
             lstobj = new SelectList(list, "Value", "Text");
@@ -2383,6 +2405,24 @@ namespace InrappSos.AstridWeb.Controllers
             lstobj = new SelectList(list, "Value", "Text");
 
             return lstobj;
+        }
+
+        private List<OrganisationViewModels.ContactViewModel> ConvertContactsToVM(List<ApplicationUser> contacts)
+        {
+            var contactsList = new List<OrganisationViewModels.ContactViewModel>();
+
+            foreach (var contact in contacts)
+            {
+                var contactVM = new OrganisationViewModels.ContactViewModel()
+                {
+                    Id = contact.Id,
+                    Email = contact.Email,
+                    Selected = false
+                };
+                contactsList.Add(contactVM);
+            }
+
+            return contactsList;
         }
     }
 }

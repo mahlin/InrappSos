@@ -129,22 +129,28 @@
             @Html.ActionLink("Ändra namn", "ChangeName")
             ]
         </dd>
-        <dt>Valda register:</dt>
-        <dd style="padding-left: 15px">
-            @for (int i = 0; i < Model.RegisterList.Count; i++)
+        @if (Request.IsAuthenticated)
+        {
+            if (User.IsInRole("RegUpp"))
             {
-                if (Model.RegisterList[i].Selected)
-                {
-                        @Html.Raw(Model.RegisterList[i].Namn)
-                        <br />
-                }
-            }
-            [
-                @Html.ActionLink("Ändra", "ChangeChosenRegisters")
-            ]
+                <dt>Valda register:</dt>
+                <dd style="padding-left: 15px">
+                    @for (int i = 0; i < Model.RegisterList.Count; i++)
+                    {
+                        if (Model.RegisterList[i].Selected)
+                        {
+                            @Html.Raw(Model.RegisterList[i].Namn)
+                            <br/>
+                        }
+                    }
+                    [
+                    @Html.ActionLink("Ändra", "ChangeChosenRegisters")
+                    ]
 
-        </dd>
-    </dl>
+                </dd>
+            }
+        }
+        </dl>
 
 <!-- Ändra valda register att rapportera till -->
         @*@using (Html.BeginForm("ChangeChosenRegisters", "Manage", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))

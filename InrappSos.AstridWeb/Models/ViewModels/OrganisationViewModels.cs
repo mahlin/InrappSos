@@ -204,14 +204,25 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public string Arendenamn { get; set; }
             [Display(Name = "Ärendenummer")]
             public string Arendenr { get; set; }
+
             public int ArendetypId { get; set; }
-            public SelectList ArendetypDDL { get; set; }
+            //public SelectList ArendetypDDL { get; set; }
             [Display(Name = "Ärendetyp")]
             public string Arendetyp { get; set; }
+
             public int ArendestatusId { get; set; }
-            public SelectList ArendestatusDDL { get; set; }
             [Display(Name = "Ärendestatus")]
+            //public SelectList ArendestatusDDL { get; set; }
             public string Arendestatus { get; set; }
+
+            public string ArendeansvarigId { get; set; }
+            //public SelectList ArendeansvarigDDL { get; set; }
+            [Display(Name = "Ärendeansvarig")]
+            public string Arendeansvarig { get; set; }
+
+            public string ChosenContactsStr { get; set; }
+            public List<ContactViewModel> Kontaktpersoner { get; set; }
+
             [Display(Name = "Startdatum")]
             [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
             [Required(ErrorMessage = "Fältet Startdatum är obligatoriskt.")]
@@ -219,8 +230,6 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             [Display(Name = "Slutdatum")]
             [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
             public DateTime? SlutDatum { get; set; }
-            public int SelectedArendetypId { get; set; }
-            public int SelectedArendestatusId { get; set; }
             [Display(Name = "Ansvarigs epost")]
             public string AnsvarigEpost { get; set; }
             [Display(Name = "Rapportörer")]

@@ -323,7 +323,14 @@
                 </dd>
 
             </dl>
-            <input type="button" class="btn btn-primary" value="Ändra organisation" id="editLink" onclick="showEditableForm();return false;" />
+            @if (Request.IsAuthenticated)
+            {
+                if (User.IsInRole("Admin"))
+                {
+                    <input type="button" class="btn btn-primary" value="Ändra organisation" id="editLink" onclick="showEditableForm();return false;"/>
+                }
+            }
+                
         </div>
 
         <div id="editOrg" class="form-horizontal">
@@ -552,26 +559,44 @@
 
 
         @Html.Partial("_Contactpersons")
+        if (Request.IsAuthenticated)
+        {
+            if (User.IsInRole("Admin"))
+            {
+                <p>
+                    @Html.ActionLink(HttpUtility.HtmlDecode("Administrera kontaktpersoner &raquo;"), "GetOrganisationsContacts", "Organisation", new {selectedOrganisationId = Model.SelectedOrganisationId}, new {@class = "btn btn-primary"})
+                </p>
+            }
+        }
+        <br />
+        <br />
+
+        @Html.Partial("_Cases")
         <p>
-            @Html.ActionLink(HttpUtility.HtmlDecode("Administrera kontaktpersoner &raquo;"), "GetOrganisationsContacts", "Organisation", new { selectedOrganisationId = Model.SelectedOrganisationId }, new { @class = "btn btn-primary" })
+            @Html.ActionLink(HttpUtility.HtmlDecode("Administrera ärenden &raquo;"), "GetOrganisationsCases", "Organisation", new { selectedOrganisationId = Model.SelectedOrganisationId }, new { @class = "btn btn-primary" })
         </p>
-
-
         <br />
         <br />
 
-        @Html.Partial("_OrgUnits")
-        <p>
-            @Html.ActionLink(HttpUtility.HtmlDecode("Administrera organisationsenheter &raquo;"), "GetOrganisationsOrgUnits", "Organisation", new { selectedOrganisationId = Model.SelectedOrganisationId }, new { @class = "btn btn-primary" })
-        </p>
+        if (Request.IsAuthenticated)
+         {
+             if (User.IsInRole("Admin"))
+             {
 
-        <br />
-        <br />
+                 @Html.Partial("_OrgUnits")
+                 <p>
+                     @Html.ActionLink(HttpUtility.HtmlDecode("Administrera organisationsenheter &raquo;"), "GetOrganisationsOrgUnits", "Organisation", new {selectedOrganisationId = Model.SelectedOrganisationId}, new {@class = "btn btn-primary"})
+                 </p>
 
-        @Html.Partial("_ReportObligations")
-        <p>
-            @Html.ActionLink(HttpUtility.HtmlDecode("Administrera uppgiftsskyldighet &raquo;"), "GetOrganisationsReportObligations", "Organisation", new { selectedOrganisationId = Model.SelectedOrganisationId }, new { @class = "btn btn-primary" })
-        </p>
+                 <br/>
+                 <br/>
+
+                 @Html.Partial("_ReportObligations")
+                 <p>
+                     @Html.ActionLink(HttpUtility.HtmlDecode("Administrera uppgiftsskyldighet &raquo;"), "GetOrganisationsReportObligations", "Organisation", new {selectedOrganisationId = Model.SelectedOrganisationId}, new {@class = "btn btn-primary"})
+                 </p>
+             }
+         }
     }
 
 }

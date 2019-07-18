@@ -230,7 +230,7 @@
                             grid.Column("Ansvarig", format: @<text><span class="display-mode col3Width"><label id="lblAnsvarig" class="col3Width">@item.AnsvarigEpost</label></span>
                                         <input type="text" id="Ansvarig" value="@item.AnsvarigEpost" class="edit-mode form-control col3Width"/></text>, style: "col3Width"),
 
-                            grid.Column("Rapportorer", "Rapportörer", format: @<text><span class="display-mode col3Width"><label id="lblRapportorer" style="width: 220px;">@item.Rapportorer</label></span>
+                            grid.Column("Rapportorer", "Kontaktpersoner", format: @<text><span class="display-mode col3Width"><label id="lblRapportorer" style="width: 220px;">@item.Rapportorer</label></span>
                                  <textarea id="Rapportorer" value ="" class="edit-mode form-control" style="height: 100px; width: 220px;">@item.Rapportorer</textarea></text>, style: "col3Width"),
 
                             grid.Column("StartDatum", "Startdatum", format: @<text><span class="display-mode"><label id="lblStartDatum">@( item.StartDatum != null ? item.StartDatum.ToString("yyyy-MM-dd") : item.StartDatum)</label></span>

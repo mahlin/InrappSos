@@ -2368,6 +2368,18 @@ namespace InrappSos.DataAccess
             return userRoles;
         }
 
+        public IEnumerable<ApplicationUserRole> GetAstridUsersInRole(string roleId)
+        {
+            var userRoles = AstridDbContext.ApplicationUserRole.Where(x => x.RoleId == roleId).ToList();
+            return userRoles;
+        }
+
+        public AppUserAdmin GetAstridUserById(string userId)
+        {
+            var user = AstridDbContext.Users.Where(x => x.Id == userId).SingleOrDefault();
+            return user;
+        }
+
 
         public void SaveChosenRegistersForUser(string userId, string userName, List<RegisterInfo> registerList)
         {

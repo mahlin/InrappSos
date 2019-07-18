@@ -41,8 +41,18 @@
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav" style="margin-top: 20px">
-                <li>@Html.ActionLink("Lämna filer", "Index", "FileDrop")</li>
-                <li>@Html.ActionLink("Lämna uppgifter", "Index", "FileUpload")</li>
+            @if (Request.IsAuthenticated)
+            {
+                if (User.IsInRole("ArendeUpp"))
+                {
+                    <li>@Html.ActionLink("Lämna filer", "Index", "FileDrop")</li>
+                }
+            }
+            @if (Request.IsAuthenticated)
+            {
+                if (User.IsInRole("RegUpp"))
+                {
+                    <li>@Html.ActionLink("Lämna uppgifter", "Index", "FileUpload")</li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Leveransöversikt <span class="caret"></span></a>
                     <ul class="dropdown-menu">
@@ -50,6 +60,8 @@
                         <li>@Html.ActionLink("Leveransstatus", "GetDeliveryStatus", "History")</li>
                     </ul>
                 </li>
+                }
+            }
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Hjälp<span class="caret"></span></a>
                     <ul class="dropdown-menu">

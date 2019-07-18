@@ -1,0 +1,69 @@
+﻿@model InrappSos.AstridWeb.Models.ViewModels.OrganisationViewModels.OrganisationViewModel
+
+<hr />
+
+<h4>Ärenden</h4>
+
+<table class="table table-small">
+    <tr>
+        <th>
+            Ärndenamn
+        </th>
+        <th>
+            Ärendenummer
+        </th>
+        <th>
+            Ärendetyp
+        </th>
+        <th>
+            Ärendestatus
+        </th>
+        <th>
+            Ansvarig
+        </th>
+        <th>
+            Kontaktpersoner
+        </th>
+        <th>
+            Startdatum
+        </th>
+        <th>
+            Slutdatum
+        </th>
+
+    </tr>
+
+    @foreach (var item in Model.Arenden)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Arendenamn)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Arendenr)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Arendetyp)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Arendestatus)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AnsvarigEpost)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Rapportorer)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StartDatum)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SlutDatum)
+            </td>
+        </tr>
+
+    }
+
+
+</table>
+

@@ -95,7 +95,6 @@ namespace InrappSos.AstridWeb.Models
 
     public class RegisterViewModel
     {
-
         [Required (ErrorMessage = "Fältet E-postadress är obligatoriskt.")]
         [StringLength(60, ErrorMessage = "E-postadressen kan inte vara längre än 60 tecken.")]
         [EmailAddress(ErrorMessage = "Fältet E-postadress är inte en giltig e-postadress.")]

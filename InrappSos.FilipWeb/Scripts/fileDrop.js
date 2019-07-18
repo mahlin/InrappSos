@@ -2,7 +2,6 @@
 
 $(document).ready(function () {
 
-    var x = $("#SelectedCaseId").val();
     $(function () {
         $('#ddlCase > option').each(function () {
             $(this).attr("title", $(this).text());

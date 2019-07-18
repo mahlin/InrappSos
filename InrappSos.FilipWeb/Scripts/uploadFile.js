@@ -74,7 +74,6 @@ $(document).on('submit', '#updateHistoryForm', function () {
 $(document).on('change','#ddlRegister',
     function() {
         var selectedRegister = $('#ddlRegister').val();
-        var x = $("#GiltigKommunKod").val();
 
         $('#fileupload').fileupload(
             'option',
@@ -94,8 +93,6 @@ $(document).on('change','#ddlRegister',
                 var foundKommun = false;
                 var foundLandsting = false;
                 register.Organisationstyper.forEach(function (unit, ix) {
-                    var x = unit.Value;
-                    var y = unit.Key;
                     if (unit.Value === "Kommun") {
                         foundKommun = true;
                     }
@@ -207,7 +204,6 @@ $(document).on('change','#ddlRegister',
 
         $(document).on('change', '#ddlUnits', function () {
             var selectedIndex = $('#ddlUnits').prop('selectedIndex');
-            var x = $('#ddlUnits').val();
             $("#SelectedUnitId").val($('#ddlUnits').val());
             $("#IngetAttRapporteraForSelectedUnitId").val($('#ddlUnits').val());
             var y = $("#SelectedUnitId").val();
@@ -236,8 +232,6 @@ $(document).on('change','#ddlRegister',
                 registerLista.forEach(function(register, index) {
                     if (selectedRegister === register.Id.toString()) {
                         register.Orgenheter.forEach(function (unit, ix) {
-                            var x = unit.Value;
-                            var y = unit.Key;
                             if (unit.Key === $("#SelectedUnitId").val()) {
                                 validFileCode = unit.Value;
                             }
@@ -248,7 +242,6 @@ $(document).on('change','#ddlRegister',
         });
 
         $(document).on('change', '#ddlPerioder', function () {
-            var x = $('#ddlPerioder').val();
             $("#IngetAttRapporteraForPeriod").val($('#ddlPerioder').val());
             $("#IngetAttRapporteraForRegisterId").val($('#SelectedRegisterId').val());
             if ($('#ddlPerioder').val() !== "0") {

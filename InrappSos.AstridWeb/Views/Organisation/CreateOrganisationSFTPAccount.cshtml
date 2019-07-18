@@ -29,7 +29,6 @@
             onChange: function (option, checked, select) {
                 //Update string of names, ChosenContacts
                 $('#ChosenContacts').val("");
-                var x = $(option).val();
                 $.each(contacts, function (index, item) {
                     var y = $('#ListOfContacts_' + index + '__Id').val();
                     if ($('#ListOfContacts_' + index + '__Id').val() === $(option).val()) {

@@ -55,7 +55,6 @@
     });
 
     function setFixedTableHeaderWidths() {
-        var x = $('#GridHeader table tbody');
         //$('#GridHeader table tbody tr').find('th:nth-child(1)').css('background-color', '#E8A2A2');
 
         var y = $('#GridBody table tbody');
@@ -65,8 +64,6 @@
         var $header = $('#GridHeader table tbody');
 
         $body.find('tr:first-child').children().each(function (i) {
-            var x = $(this).width();
-            var y = $($header.find('tr:first-child'));
             $($header.find('tr:first-child').children()[i]).css('width', $(this).width() + 12);
 
             ////Dra bort 12 px från benämningskolumnen vid scroll för att få headern i linje med budgeten. Vet ej varför detta behövs. Nåt med i:et i konto-kolumnen?

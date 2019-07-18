@@ -12,7 +12,6 @@
 
         $("#gridContent tbody tr").each(function(i, row) {
             var $actualRow = $(row);
-            var x = $actualRow.find("#AlreadyExists").val();
             if ($actualRow.find("#AlreadyExists").val() === 'True') {
                 $actualRow.css('background-color', '#a3a3c2');
             }
@@ -24,7 +23,6 @@
             $('#ddlFilkrav').val($('#SelectedFilkravId').val());
         }
 
-        var x = utkastLista;
         if (utkastLista != null) {
             $('#dotText').show();
             $('#showDraftBtn').hide();

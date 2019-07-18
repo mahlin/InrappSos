@@ -44,7 +44,6 @@
         //Sätt antal rader
         $('#headerText').html("");
         if (antalRader > 0) {
-            var x = $('#RapportResList').length;
             $('<H4><span style="font-size: 0.7em">Antal rader: ' + antalRader + '</span></H4>').appendTo('#headerText');
         }
 
@@ -65,10 +64,8 @@
     });
 
     function setFixedTableHeaderWidths() {
-        var x = $('#GridHeader table tbody');
         //$('#GridHeader table tbody tr').find('th:nth-child(1)').css('background-color', '#E8A2A2');
 
-        var y = $('#GridBody table tbody');
         //$('#GridBody table tbody tr').find('td:nth-child(1)').css('background-color', '#66E0ED');
 
         var $body = $('#GridBody table tbody');

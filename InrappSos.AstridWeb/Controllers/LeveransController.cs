@@ -809,7 +809,6 @@ namespace InrappSos.AstridWeb.Controllers
         [Authorize]
         public ActionResult UpdateFilkrav(LeveransViewModels.AdmFilkravViewModel filkrav, string regId = "0")
         {
-            var x = filkrav.InsamlingsfrekvensId;
             if (ModelState.IsValid)
             {
                 try

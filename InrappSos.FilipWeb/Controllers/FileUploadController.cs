@@ -282,12 +282,8 @@ namespace InrappSos.FilipWeb.Controllers
 
                 Response.Headers.Add("Content-Disposition", cd.ToString());
 
-                var a =  File(filedata, contentType);
                 //View file
-                var x =  File(filedata, MediaTypeNames.Text.Plain);
                 //Download file
-                var y =  File(filedata, MediaTypeNames.Text.Plain, "Test.txt");
-
                 //Öppnar excel
                 return File(filedata, contentType);
 

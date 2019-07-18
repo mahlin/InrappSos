@@ -45,7 +45,6 @@
     });
 
     $(document).on('change', '#ddlInsamlingsfrekvens', function () {
-        var x = $('#ddlInsamlingsfrekvens').val();
         $("#SelectedInsamlingsfrekvensId").val($('#ddlInsamlingsfrekvens').val());
         var y = $("#SelectedInsamlingsfrekvensId").val();
     });
@@ -132,7 +131,6 @@
                     "UppgifterAntalmanader": uppgifterAntalmanader,
                     "InsamlingsfrekvensId": insamlingsfrekvensId 
                 };
-                var x = admFilkrav;
                 var regId = $("#SelectedRegisterId").val();
                 //Posting AdmFilkrav object to controller's Update action method
                 $.ajax({

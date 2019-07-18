@@ -13,7 +13,6 @@
 
     @using (Html.BeginForm("CreateSubDirectory", "Register", FormMethod.Post))
     {
-        var x = Model.RegisterShortName;
         @Html.AntiForgeryToken()
         @Html.HiddenFor(m => m.RegisterId)
         @Html.HiddenFor(m => m.RegisterShortName)

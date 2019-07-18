@@ -25,8 +25,6 @@
             $(row).find('td:eq(0)').hide();
             $(row).find('td:eq(11)').hide();
             if (!$('#chbxInaktiva').is(':checked')) {
-                var x = $(row).find("#ContactAktivTom").length;
-                var y = $(row).find("#ContactAktivTom").val();
                 if ($(row).find("#ContactAktivTom").val() !== "") {
                     $(row).hide();
                 }  

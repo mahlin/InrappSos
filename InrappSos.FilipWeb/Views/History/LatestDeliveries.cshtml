@@ -17,8 +17,6 @@
         $('[id^="error"]').addClass('panelColorError');
 
         //check SelectedYear and if there should be arrows
-        var x = $("#SelectedYear").val();
-        var y = parseInt(x);
         var previousYear = parseInt($("#SelectedYear").val()) - 1;
         var nextYear = parseInt($("#SelectedYear").val()) + 1;
         var z = jQuery.inArray(previousYear, selecteableYearsList);

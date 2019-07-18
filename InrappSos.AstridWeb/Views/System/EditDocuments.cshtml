@@ -49,9 +49,6 @@
         $('.cancel-user').on('click', function () {
             var tr = $(this).parents('tr:first');
             tr.find('.edit-mode, .display-mode').toggle();
-            var x = $('#textArea').html();
-            var y = $('#textArea').text();
-            var z = $('#textArea').val();
             $('#textArea').html("");
         });
         $('.save-user').on('click', function () {

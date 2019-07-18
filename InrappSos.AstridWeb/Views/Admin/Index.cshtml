@@ -61,8 +61,6 @@
         //Multiselect
         $('[id*=ddlRoleList]').multiselect({
             onInitialized: function () {
-                var x = this;
-                var y = this.originalOptions;
                 var ddls = getTableRowsDDLs();
 
                 users.forEach(function(user, idx) {

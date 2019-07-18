@@ -49,7 +49,6 @@ namespace InrappSos.AstridWeb.Controllers
             try
             {
                 //Uppdatera valda register
-                var x = _portalSosService.HamtaHistorikForOrganisation(29);
                 return RedirectToAction("Index", new { Message = ManageMessageId.ChangeChosenRegister });
             }
             catch (Exception e)

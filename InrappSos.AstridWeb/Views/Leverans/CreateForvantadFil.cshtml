@@ -16,7 +16,6 @@
         //$("#SelectedDelregisterId").val($('#ddlDelregister').val());
         //alert($("#SelectedDelregisterId").val());
         //alert($("#SelectedFilkravId").val());
-        var x = $('#ddlDelregister').val();
         if ($('#ddlDelregister').val() === "") {
             addSelectFilkrav("FileRequirementsSelect-container", []);
             $('#submitBtn').prop('disabled', true);
@@ -36,7 +35,6 @@
 
     $(document).on('change', '#ddlFilkrav', function () {
         $("#SelectedFilkravId").val($('#ddlFilkrav').val());
-        var x = $('#ddlFilkrav').val();
         if ($('#ddlFilkrav').val() === "0") {
             $('#submitBtn').prop('disabled', true);
         }

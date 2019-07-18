@@ -126,7 +126,6 @@ function CheckPeriod(periodInFilename, validPeriods) {
 //Kontrollera så att ej fler filer av samma filtyp laddas upp i samma leverans 
 function DoubletFiles(selectedRegister, fileName) {
     var re;
-    var x = window.filelist;
     var tmp = null;
     var antHits = 0;
 

@@ -32,7 +32,6 @@
         if (historikLista.length > 10) {
             $("#GridBody table tbody tr").each(function(i, row) {
                 var $actualRow = $(row);
-                var x = $actualRow.find('td:eq(4)').html().trim();
                 if (($actualRow.find('td:eq(4)').html().trim() === 'Inget att rapportera') ||
                     ($actualRow.find('td:eq(4)').html().trim() === 'Leveransen är godkänd med varningar') ||
                     ($actualRow.find('td:eq(4)').html().trim() === 'Leveransen är godkänd')) {
@@ -42,7 +41,6 @@
         } else {
             $("#historyGridContent table tbody tr").each(function(i, row) {
                 var $actualRow = $(row);
-                var x = $actualRow.find('td:eq(4)').html().trim();
                 if (($actualRow.find('td:eq(4)').html().trim() === 'Inget att rapportera') ||
                     ($actualRow.find('td:eq(4)').html().trim() === 'Leveransen är godkänd med varningar') ||
                     ($actualRow.find('td:eq(4)').html().trim() === 'Leveransen är godkänd')) {
@@ -69,18 +67,13 @@
     });
 
     function setFixedTableHeaderWidths() {
-        var x = $('#GridHeader table tbody');
         //$('#GridHeader table tbody tr').find('th:nth-child(1)').css('background-color', '#E8A2A2');
-
-        var y = $('#GridBody table tbody');
         //$('#GridBody table tbody tr').find('td:nth-child(1)').css('background-color', '#66E0ED');
 
         var $body = $('#GridBody table tbody');
         var $header = $('#GridHeader table tbody');
 
         $body.find('tr:first-child').children().each(function (i) {
-            var x = $(this).width();
-            var y = $($header.find('tr:first-child'));
             $($header.find('tr:first-child').children()[i]).css('width', $(this).width() + 18);
 
             //Fulfix, koden ovan funkar ej pga padding/margin or whatever

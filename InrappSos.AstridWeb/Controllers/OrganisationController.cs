@@ -306,10 +306,10 @@ namespace InrappSos.AstridWeb.Controllers
                     //Hämta användarens valda register
                     contact.ValdaDelregister = GetContactsChosenSubDirectories(contact);
                 }
-               
+
                 //Skapa lista över filip-roller 
-                //model.Roller = ConvertRolesToVM(roller);
-                //ViewBag.RolesList = CreateRolesDropDownList(roller);
+                model.Roller = ConvertRolesToVM(roller);
+                ViewBag.RolesList = CreateRolesDropDownList(roller);
                 model.SearchResult = new List<List<Organisation>>();
                 model.ContactSearchResult = new List<List<OrganisationViewModels.ApplicationUserViewModel>>();
             }
@@ -764,6 +764,17 @@ namespace InrappSos.AstridWeb.Controllers
                         throw new ArgumentException(e.Message);
                     }
                 }
+            }
+            catch (ArgumentException e)
+            {
+                ErrorManager.WriteToErrorLog("OrganisationController", "UpdateOrganisationsContact", e.ToString(), e.HResult,
+                    User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade när användarens roller skulle sparas. " + e.Message,
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
             }
             catch (Exception e)
             {
@@ -2203,7 +2214,7 @@ namespace InrappSos.AstridWeb.Controllers
             return alreadyUsed;
         }
 
-        private List<IdentityRoleViewModel> ConvertRolesToVM(List<IdentityRole> roller)
+        private List<IdentityRoleViewModel> ConvertRolesToVM(List<ApplicationRole> roller)
         {
             var rollerList = new List<IdentityRoleViewModel>();
 
@@ -2212,7 +2223,7 @@ namespace InrappSos.AstridWeb.Controllers
                 var roleVM = new IdentityRoleViewModel()
                 {
                     Id = roll.Id,
-                    Name = roll.Name,
+                    Name = roll.BeskrivandeNamn,
                     Selected = false
                 };
                 rollerList.Add(roleVM);
@@ -2221,7 +2232,7 @@ namespace InrappSos.AstridWeb.Controllers
             return rollerList;
         }
 
-        private IEnumerable<SelectListItem> CreateRolesDropDownList(IEnumerable<IdentityRole> roles)
+        private IEnumerable<SelectListItem> CreateRolesDropDownList(IEnumerable<ApplicationRole> roles)
         {
             SelectList lstobj = null;
 

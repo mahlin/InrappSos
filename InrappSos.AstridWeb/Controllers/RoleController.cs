@@ -158,16 +158,20 @@ namespace InrappSos.AstridWeb.Controllers
                     try
                     {
                         var user = User.Identity.GetUserName();
-                    var dbRole = new ApplicationRole
+                        var dbRole = new ApplicationRole
                         {
+                            SkapadAv = user,
+                            SkapadDatum = DateTime.Now,
+                            AndradAv = user,
+                            AndradDatum = DateTime.Now,
                             Name = filipRole.RoleName,
                             BeskrivandeNamn = filipRole.BeskrivandeNamn,
                             Beskrivning = filipRole.Beskrivning
                         };
 
-                    _portalSosService.SkapaFilipRoll(dbRole, user);
+                    //_portalSosService.SkapaFilipRoll(dbRole, user);
 
-                        //await CreateRoleForFilip(dbRole);
+                        await CreateRoleForFilip(dbRole);
                     }
                     catch (Exception e)
                     {

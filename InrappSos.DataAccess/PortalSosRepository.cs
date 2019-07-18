@@ -92,26 +92,26 @@ namespace InrappSos.DataAccess
 
         public void CreateFilipRole(ApplicationRole filipRole)
         {
-            //TODO - handmade since EF tries to insert duplicate columns.
-            var newId = Guid.NewGuid().ToString();
-            var id = DbContext.ApplicationRole.FirstOrDefault(x => x.Id == newId);
-            if (id == null)
-            {
-                var sql2 = @"Insert into dbo.AspNetRoles values(@Id,@Name,@beskrivandenamn,@beskrivning,@Discriminator,@skapaddatum,@skapadav, @andraddatum,@andradav)";
+            ////TODO - handmade since EF tries to insert duplicate columns.
+            //var newId = Guid.NewGuid().ToString();
+            //var id = DbContext.ApplicationRole.FirstOrDefault(x => x.Id == newId);
+            //if (id == null)
+            //{
+            //    var sql2 = @"Insert into dbo.AspNetRoles values(@Id,@Name,@beskrivandenamn,@beskrivning,@Discriminator,@skapaddatum,@skapadav, @andraddatum,@andradav)";
 
-                DbContext.Database.ExecuteSqlCommand(sql2, new SqlParameter("@Id", newId),
-                    new SqlParameter("@Name", filipRole.Name),
-                    new SqlParameter("@beskrivandenamn", filipRole.BeskrivandeNamn),
-                    new SqlParameter("@beskrivning",filipRole.Beskrivning),
-                    new SqlParameter("@Discriminator", "ApplicationRole"),
-                    new SqlParameter("@skapaddatum",filipRole.SkapadDatum),
-                    new SqlParameter("@skapadav", filipRole.SkapadAv),
-                    new SqlParameter("@andraddatum", filipRole.AndradDatum),
-                    new SqlParameter("@andradav", filipRole.AndradAv)
-                );
+            //    DbContext.Database.ExecuteSqlCommand(sql2, new SqlParameter("@Id", newId),
+            //        new SqlParameter("@Name", filipRole.Name),
+            //        new SqlParameter("@beskrivandenamn", filipRole.BeskrivandeNamn),
+            //        new SqlParameter("@beskrivning",filipRole.Beskrivning),
+            //        new SqlParameter("@Discriminator", "ApplicationRole"),
+            //        new SqlParameter("@skapaddatum",filipRole.SkapadDatum),
+            //        new SqlParameter("@skapadav", filipRole.SkapadAv),
+            //        new SqlParameter("@andraddatum", filipRole.AndradDatum),
+            //        new SqlParameter("@andradav", filipRole.AndradAv)
+            //    );
 
-            }
-            //DbContext.ApplicationRole.Add(filipRole);
+            //}
+            DbContext.ApplicationRole.Add(filipRole);
             DbContext.SaveChanges();
         }
 
@@ -149,9 +149,9 @@ namespace InrappSos.DataAccess
             return filipRole;
         }
 
-        public IdentityRole GetFilipRole(string roleName)
+        public ApplicationRole GetFilipRole(string roleName)
         {
-            var thisRole = DbContext.Roles.FirstOrDefault(r => r.Name.Equals(roleName, StringComparison.CurrentCultureIgnoreCase));
+            var thisRole = DbContext.ApplicationRole.FirstOrDefault(r => r.Name.Equals(roleName, StringComparison.CurrentCultureIgnoreCase));
             return thisRole;
         }
 
@@ -2371,22 +2371,22 @@ namespace InrappSos.DataAccess
 
         public void SetFilipRoleForFilipUser(ApplicationUserRole applicationUserRole)
         {
-            //TODO - handmade since EF tries to insert duplicate columns.
-            var id = DbContext.ApplicationUserRole.FirstOrDefault(x => x.UserId == applicationUserRole.UserId && x.RoleId == applicationUserRole.RoleId);
-            if (id == null)
-            {
-                var sqlStr = @"Insert into dbo.AspNetUserRoles values(@UserId,@RoleId,@Discriminator,@skapaddatum,@skapadav, @andraddatum,@andradav)";
+            ////TODO - handmade since EF tries to insert duplicate columns.
+            //var id = DbContext.ApplicationUserRole.FirstOrDefault(x => x.UserId == applicationUserRole.UserId && x.RoleId == applicationUserRole.RoleId);
+            //if (id == null)
+            //{
+            //    var sqlStr = @"Insert into dbo.AspNetUserRoles values(@UserId,@RoleId,@Discriminator,@skapaddatum,@skapadav, @andraddatum,@andradav)";
 
-                DbContext.Database.ExecuteSqlCommand(sqlStr, new SqlParameter("@UserId",applicationUserRole.UserId),
-                    new SqlParameter("@RoleId", applicationUserRole.RoleId),
-                    new SqlParameter("@Discriminator", "ApplicationUserRole"),
-                    new SqlParameter("@skapaddatum", applicationUserRole.SkapadDatum),
-                    new SqlParameter("@skapadav", applicationUserRole.SkapadAv),
-                    new SqlParameter("@andraddatum", applicationUserRole.AndradDatum),
-                    new SqlParameter("@andradav", applicationUserRole.AndradAv)
-                );
-            }
-            //DbContext.ApplicationUserRole.Add(applicationUserRole);
+            //    DbContext.Database.ExecuteSqlCommand(sqlStr, new SqlParameter("@UserId",applicationUserRole.UserId),
+            //        new SqlParameter("@RoleId", applicationUserRole.RoleId),
+            //        new SqlParameter("@Discriminator", "ApplicationUserRole"),
+            //        new SqlParameter("@skapaddatum", applicationUserRole.SkapadDatum),
+            //        new SqlParameter("@skapadav", applicationUserRole.SkapadAv),
+            //        new SqlParameter("@andraddatum", applicationUserRole.AndradDatum),
+            //        new SqlParameter("@andradav", applicationUserRole.AndradAv)
+            //    );
+            //}
+            DbContext.ApplicationUserRole.Add(applicationUserRole);
             DbContext.SaveChanges();
         }
 

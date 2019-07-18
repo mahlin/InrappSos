@@ -111,7 +111,7 @@ namespace InrappSos.AstridWeb.Controllers
                     // To enable password failures to trigger account lockout, change to shouldLockout: true
                     var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe,shouldLockout: false);
 
-                    var tmp = _portalSosService.HamtaAstridAnvandaresRoller(user.Id);
+                    //var tmp = _portalSosService.HamtaAstridAnvandaresRoller(user.Id);
 
                     if (UserManager.IsInRole(user.Id, "Admin"))
                     {

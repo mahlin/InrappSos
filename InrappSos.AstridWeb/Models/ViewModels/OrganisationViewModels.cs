@@ -215,7 +215,7 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             //public SelectList ArendestatusDDL { get; set; }
             public string Arendestatus { get; set; }
 
-            public string ArendeansvarigId { get; set; }
+            public int ArendeansvarId { get; set; }
             //public SelectList ArendeansvarigDDL { get; set; }
             [Display(Name = "Ärendeansvarig")]
             public string Arendeansvarig { get; set; }

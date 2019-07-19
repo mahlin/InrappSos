@@ -28,7 +28,8 @@ namespace InrappSos.DataAccess
         ApplicationRole GetAstridRole(string roleName);
 
         void UpdateAstridRole(ApplicationRole role);
- 
+        ApplicationRole GetAstridRoleById(string roleId);
+
 
         //****************************************************************//
 
@@ -37,6 +38,7 @@ namespace InrappSos.DataAccess
         IEnumerable<ApplicationUserRole> GetFilipUserRolesForUser(string userId);
 
         ApplicationRole GetFilipRoleById(string roleId);
+        ApplicationRole GetFilipRoleByName(string name);
 
         void UpdateFilipRole(ApplicationRole role);
 
@@ -62,6 +64,8 @@ namespace InrappSos.DataAccess
         int GetNewLeveransId(string userId, string userName, int orgId, int regId, int orgenhetsId, int forvLevId, string status, int sftpAccountId);
 
         int SaveFiledropFile(string filename, string sosFilename, int caseId, string userId, string userName);
+
+        int SaveCaseContact(ArendeKontaktperson contact);
 
         Aterkoppling GetAterkopplingForLeverans(int levId);
 
@@ -100,6 +104,9 @@ namespace InrappSos.DataAccess
         IEnumerable<Arende> GetCasesForOrg(int orgId);
 
         IEnumerable<string> GetCaseReporterIds(int caseId);
+        ArendeAnsvarig GetCaseResponsibleForCase(int respId);
+
+        IEnumerable<ArendeAnsvarig> GetAllCaseResponsibles();
 
         Arende GetCase(int caseId);
 
@@ -353,7 +360,9 @@ namespace InrappSos.DataAccess
 
         void CreatePrivateEmail(UndantagEpostadress privEmail);
 
-        void CreateCase(Arende arende);
+        void CreatePreKontakt(PreKontakt preContact);
+
+        int CreateCase(Arende arende);
         void CreateOrgType(AdmOrganisationstyp orgType);
 
         void CreateFAQCategory(AdmFAQKategori faqCategory);
@@ -436,7 +445,7 @@ namespace InrappSos.DataAccess
 
         void UpdateSubdirReportObligation(AdmUppgiftsskyldighetOrganisationstyp subdirOrgtype);
 
-        void AddRoleToFilipUser(string userId, string roleName);
+        void AddRoleToFilipUser(ApplicationUserRole userRole);
 
         void UpdateCaseUnregisteredReporters(int caseId, List<UndantagEpostadress> userList, string userName);
 
@@ -471,6 +480,8 @@ namespace InrappSos.DataAccess
         void DeleteSpecialDay(int specialDayId);
 
         void DeleteContact(string contactId);
+
+        void DeleteCaseContact(string contactId, int caseId);
 
         void DeleteChosenSubDirectoriesForUser(string userId);
 

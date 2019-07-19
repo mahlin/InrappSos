@@ -70,6 +70,8 @@
     <Compile Include="ApplicationRoleAstrid.cs" />
     <Compile Include="ApplicationUserRole.cs" />
     <Compile Include="ApplicationUserRoleAstrid.cs" />
+    <Compile Include="PreKontakt.cs" />
+    <Compile Include="ArendeAnsvarig.cs" />
     <Compile Include="KontaktpersonSFTPkonto.cs" />
     <Compile Include="LevId.cs" />
     <Compile Include="SFTPkonto.cs" />

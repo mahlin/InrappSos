@@ -1117,6 +1117,24 @@ namespace InrappSos.ApplicationService
             return arendeadmins;
         }
 
+        public IEnumerable<ArendeAnsvarig> HamtaAllaArendeansvarigaForOrg(int orgId)
+        {
+            var arendeansvariga = new List<ArendeAnsvarig>();
+            var casesForOrg = _portalSosRepository.GetCasesForOrg(orgId);
+            foreach (var arende in casesForOrg)
+            {
+                var arendeansv = _portalSosRepository.GetCaseResponsibleForCase(arende.ArendeansvarId);
+                arendeansvariga.Add(arendeansv);
+            }
+            return arendeansvariga;
+        }
+
+        public IEnumerable<ArendeAnsvarig> HamtaAllaArendeansvariga()
+        {
+            var arendeansvariga = _portalSosRepository.GetAllCaseResponsibles();
+            return arendeansvariga;
+        }
+
         public IEnumerable<AdmForeskrift> HamtaAllaForeskrifter()
         {
             var foreskrifter = _portalSosRepository.GetAllRegulations();
@@ -1885,6 +1903,12 @@ namespace InrappSos.ApplicationService
                 AndradAv = userName
             };
             _portalSosRepository.SetAstridRoleForAstridUser(userRole);
+            //Om Ärendeansvarig ska info sparas i Filipdatbasen/Ärendeansvarigtabellen
+            var role = _portalSosRepository.GetAstridRoleById(rollId);
+            if (role.Name == "ArendeAdmin")
+            {
+                
+            }
         }
 
         public void KopplaFilipAnvändareTillFilipRoll(string userName, string filipUserId, string rollId)
@@ -2217,9 +2241,6 @@ namespace InrappSos.ApplicationService
 
         public void SkapaArende(ArendeDTO arende, string userName)
         {
-            var registeredReportersList = new List<string>();
-            var unregisteredReportersList = new List<UndantagEpostadress>();
-
             var arendeDb = ConvertArendeDTOToDb(arende);
             //Sätt datum och användare
             arendeDb.SkapadDatum = DateTime.Now;
@@ -2227,52 +2248,14 @@ namespace InrappSos.ApplicationService
             arendeDb.AndradDatum = DateTime.Now;
             arendeDb.AndradAv = userName;
 
-            _portalSosRepository.CreateCase(arendeDb);
-            //Hantera rapportörer för ärendet
-            //Kontrollera om rapportör redan är registrerad i Filip, annars spara i undantagstabell
-            var reporters = arende.Rapportorer.Replace(' ', ',');
-            var newEmailStr = reporters.Split(',');
-            foreach (var email in newEmailStr)
-            {
-                if (!String.IsNullOrEmpty(email.Trim()))
-                {
-                    var redanReggadAnv = _portalSosRepository.GetUserByEmail(email.Trim());
-                    if (redanReggadAnv != null)
-                    {
-                        registeredReportersList.Add(redanReggadAnv.Id);
-                    }
-                    else
-                    {
-                        //Spara i undantagstabell
-                        var undantag = new UndantagEpostadress
-                        {
-                            OrganisationsId = arende.OrganisationsId,
-                            ArendeId = arendeDb.Id,
-                            PrivatEpostAdress = email.Trim(),
-                            AktivFrom = DateTime.Now,
-                            SkapadAv = userName,
-                            SkapadDatum = DateTime.Now,
-                            AndradAv = userName,
-                            AndradDatum = DateTime.Now
-                        };
-                        unregisteredReportersList.Add(undantag);
-                    }
-                }
-            }
+            arende.Id = _portalSosRepository.CreateCase(arendeDb);
 
-            _portalSosRepository.UpdateCaseReporters(arendeDb.Id, registeredReportersList, userName);
-            //Lägg till rollen RegSvcRapp för redan reggad användare (om den inte redan är satt)
-            foreach (var reporterId in registeredReportersList)
-            {
-                _portalSosRepository.AddRoleToFilipUser(reporterId, "RegSvcRapp");
-            }
+            //Hantera reggade rapportörer för ärendet
+            HandleRegisteredCaseReporters(arende, userName);
 
-            //Oreggade användare läggs i undantagstabellen tills användaren registrerat sig
-            foreach (var unregistered in unregisteredReportersList)
-            {
-                _portalSosRepository.CreatePrivateEmail(unregistered);
-            }
-
+            //Hantera oreggade rapportörer för ärendet
+            HandleUnRegisteredCaseReporters(arende, userName);
+            
         }
 
         public void SkapaOrganisationstyp(AdmOrganisationstyp orgtyp, string userName)
@@ -3127,9 +3110,9 @@ namespace InrappSos.ApplicationService
                 Arendenr = arendeDto.Arendenr,
                 ArendetypId = arendeDto.ArendetypId,
                 ArendestatusId = arendeDto.ArendestatusId,
+                ArendeansvarId = arendeDto.ArendeanvsarId,
                 StartDatum = arendeDto.StartDatum,
                 SlutDatum = arendeDto.SlutDatum,
-                AnsvarigEpost = arendeDto.AnsvarigEpost
             };
             return arende;
         }
@@ -3860,6 +3843,72 @@ namespace InrappSos.ApplicationService
 
             return registerInfoList;
         }
+
+        private void HandleRegisteredCaseReporters(ArendeDTO arende, string userName)
+        {
+            foreach (var contact in arende.Kontaktpersoner)
+            {
+                if (contact.Selected)
+                {
+                    var caseContact = new ArendeKontaktperson
+                    {
+                        ArendeId = arende.Id,
+                        ApplicationUserId = contact.Id,
+                        SkapadAv = userName,
+                        SkapadDatum = DateTime.Now,
+                        AndradAv = userName,
+                        AndradDatum = DateTime.Now
+                    };
+                    var arendeContactId = _portalSosRepository.SaveCaseContact(caseContact);
+
+                    //Lägg till rollen ArendeUpp för redan reggad användare (om den inte redan är satt)
+                    var roll = _portalSosRepository.GetFilipRoleByName("ArendeUpp");
+                    var userRoles = _portalSosRepository.GetFilipUserRolesForUser(contact.Id);
+                    var exists = userRoles.SingleOrDefault(x => x.RoleId == roll.Id);
+                    if (exists == null)
+                    {
+                        var role = new ApplicationUserRole
+                        {
+                            UserId = contact.Id,
+                            RoleId = roll.Id,
+                            SkapadAv = userName,
+                            SkapadDatum = DateTime.Now,
+                            AndradAv = userName,
+                            AndradDatum = DateTime.Now
+                        };
+                        _portalSosRepository.AddRoleToFilipUser(role);
+                    }
+                }
+                else
+                {
+                    _portalSosRepository.DeleteCaseContact(contact.Id, arende.Id);
+                }
+            }
+        }
+
+        private void HandleUnRegisteredCaseReporters(ArendeDTO arende, string userName)
+        {
+            var reporters = arende.Rapportorer.Replace(' ', ',');
+            var newEmailStr = reporters.Split(',');
+            foreach (var email in newEmailStr)
+            {
+                if (!String.IsNullOrEmpty(email.Trim()))
+                {
+                    //Spara i undantagstabell
+                    var undantag = new PreKontakt()
+                    {
+                        ArendeId = arende.Id,
+                        Epostadress = email.Trim(),
+                        SkapadAv = userName,
+                        SkapadDatum = DateTime.Now,
+                        AndradAv = userName,
+                        AndradDatum = DateTime.Now
+                    };
+                    _portalSosRepository.CreatePreKontakt(undantag);
+                }
+            }
+        }
+
 
         public List<List<Organisation>> SokOrganisation(string sokStr)
         {

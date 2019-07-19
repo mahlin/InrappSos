@@ -111,7 +111,13 @@ namespace InrappSos.DataAccess
             dbRole.AndradAv = role.AndradAv;
             AstridDbContext.SaveChanges();
         }
-        
+
+        public ApplicationRole GetAstridRoleById(string roleId)
+        {
+            var role = AstridDbContext.ApplicationRole.SingleOrDefault(x => x.Id == roleId);
+            return role;
+        }
+
         public UndantagEpostadress GetUserFromUndantagEpostadress(string email)
         {
             var userException = DbContext.UndantagEpostadress.FirstOrDefault(x => x.PrivatEpostAdress == email);
@@ -127,6 +133,12 @@ namespace InrappSos.DataAccess
         public ApplicationRole GetFilipRoleById(string roleId)
         {
             var filipRole = DbContext.ApplicationRole.FirstOrDefault(x => x.Id == roleId);
+            return filipRole;
+        }
+
+        public ApplicationRole GetFilipRoleByName(string name)
+        {
+            var filipRole = DbContext.ApplicationRole.SingleOrDefault(x => x.Name == name);
             return filipRole;
         }
 
@@ -242,6 +254,13 @@ namespace InrappSos.DataAccess
 
             DbContext.SaveChanges();
             return filedrop.Id;
+        }
+
+        public int SaveCaseContact(ArendeKontaktperson contact)
+        {
+            DbContext.ArendeKontaktperson.Add(contact);
+            DbContext.SaveChanges();
+            return contact.Id;
         }
 
         public Aterkoppling GetAterkopplingForLeverans(int levId)
@@ -384,6 +403,18 @@ namespace InrappSos.DataAccess
         {
             var caseRepIds = DbContext.ArendeKontaktperson.Where(x => x.ArendeId == caseId).Select(x => x.ApplicationUserId).ToList();
             return caseRepIds;
+        }
+
+        public ArendeAnsvarig GetCaseResponsibleForCase(int respId)
+        {
+            var caseResponisble = DbContext.ArendeAnsvarig.SingleOrDefault(x => x.Id == respId);
+            return caseResponisble;
+        }
+
+        public IEnumerable<ArendeAnsvarig> GetAllCaseResponsibles()
+        {
+            var caseResponsibles = DbContext.ArendeAnsvarig.ToList();
+            return caseResponsibles;
         }
 
         public Arende GetCase(int caseId)
@@ -1699,10 +1730,17 @@ namespace InrappSos.DataAccess
             DbContext.SaveChanges();
         }
 
-        public void CreateCase(Arende arende)
+        public void CreatePreKontakt(PreKontakt preContact)
+        {
+            DbContext.PreKontakt.Add(preContact);
+            DbContext.SaveChanges();
+        }
+
+        public int CreateCase(Arende arende)
         {
             DbContext.Arende.Add(arende);
             DbContext.SaveChanges();
+            return arende.Id;
         }
 
         public void CreateOrgType(AdmOrganisationstyp orgType)
@@ -1980,7 +2018,6 @@ namespace InrappSos.DataAccess
             arendeDb.Arendenr = arende.Arendenr;
             arendeDb.StartDatum = arende.StartDatum;
             arendeDb.SlutDatum = arende.SlutDatum;
-            arendeDb.AnsvarigEpost = arende.AnsvarigEpost;
 
             //If areandestatus and arendetyp changed, e.g. != 0, update theese as well
             if (arende.ArendetypId != 0)
@@ -2028,34 +2065,10 @@ namespace InrappSos.DataAccess
             DbContext.SaveChanges();
         }
 
-        public void AddRoleToFilipUser(string userId, string roleName)
+        public void AddRoleToFilipUser(ApplicationUserRole userRole)
         {
-            //Anv RoleManager istället? Flytta till svc-layer?
-            //var user = DbContext.Users.Where(x => x.Id == userId).Include(u => u.);
-
-            //var finns = false;
-            //var existingRolesInFilip = DbContext.AspNetRoles.ToString();
-            //var roleid = DbContext.AspNetRoles.Where(x => x.Name == roleName).Select(x => x.Id).ToString();
-            //var currentRolesForUser = DbContext.AspNetUserRoles.Where(x => x.UserId == userId).ToList();
-            //foreach (var userRole in currentRolesForUser)
-            //{
-            //    var role = DbContext.AspNetRoles.SingleOrDefault(x => x.Id == userRole.RoleId);
-            //    if (role.Name == roleName)
-            //    {
-            //        finns = true;
-            //    }
-            //}
-            //if (!finns)
-            //{
-            //    var userRole = new AspNetUserRoles
-            //    {
-            //        UserId = userId,
-            //        RoleId = roleid
-            //    };
-            //    DbContext.AspNetUserRoles.Add(userRole);
-            //    DbContext.SaveChanges();
-            //}
-
+            DbContext.ApplicationUserRole.Add(userRole);
+            DbContext.SaveChanges();
         }
 
         public void UpdateCaseUnregisteredReporters(int caseId, List<UndantagEpostadress> userList, string userName)
@@ -2490,6 +2503,16 @@ namespace InrappSos.DataAccess
                     DbContext.SaveChanges();
                 }
                 DbContext.Users.Remove(contactToDelete);
+                DbContext.SaveChanges();
+            }
+        }
+
+        public void DeleteCaseContact(string contactId, int caseId)
+        {
+            var caseUserDb = DbContext.ArendeKontaktperson.SingleOrDefault(x => x.ApplicationUserId == contactId && x.ArendeId == caseId);
+            if (caseUserDb != null)
+            {
+                DbContext.ArendeKontaktperson.Remove(caseUserDb);
                 DbContext.SaveChanges();
             }
         }

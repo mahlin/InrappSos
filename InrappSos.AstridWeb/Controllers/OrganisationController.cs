@@ -1285,7 +1285,7 @@ namespace InrappSos.AstridWeb.Controllers
             model.ArendetypId = 0;
             var arendestatusList = _portalSosService.HamtaAllaArendestatusar();
             ViewBag.ArendestatusList = CreateArendestatusDropDownList(arendestatusList);
-            var arendeansvarigList = _portalSosService.HamtaAllaArendeadministratorerForOrg(model.OrganisationsId);
+            var arendeansvarigList = _portalSosService.HamtaAllaArendeansvariga();
             ViewBag.ArendeansvarigList = CreateArendeansvarigDropDownList(arendeansvarigList);
             model.ArendetypId = 0;
             //Skapa lista över valbara kontaktpersoner 
@@ -1321,21 +1321,21 @@ namespace InrappSos.AstridWeb.Controllers
                     var userName = User.Identity.GetUserName();
                     var arendeDTO = ConvertArendeVMToDb(arendeVM);
                     _portalSosService.SkapaArende(arendeDTO, userName);
-                    //Lägg till roll Ärendeuppgiftslämnare för de kontaktpersoner/rapportörer som är reggade i db
-                    try
-                    {
-                        foreach (var person in arendeVM.Kontaktpersoner)
-                        {
-                            if (person.Selected)
-                            {
-                                _portalSosService.KopplaFilipAnvändareTillFilipRoll(userName, User.Identity.GetUserId(),"ArendeUpp" );
-                            }
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        throw new ArgumentException(e.Message);
-                    }
+                    ////Lägg till roll Ärendeuppgiftslämnare för de kontaktpersoner som är reggade i db
+                    //try
+                    //{
+                    //    foreach (var person in arendeVM.Kontaktpersoner)
+                    //    {
+                    //        if (person.Selected)
+                    //        {
+                    //            _portalSosService.KopplaFilipAnvändareTillFilipRoll(userName, User.Identity.GetUserId(),"ArendeUpp" );
+                    //        }
+                    //    }
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    throw new ArgumentException(e.Message);
+                    //}
                 }
                 catch (Exception e)
                 {
@@ -2110,7 +2110,7 @@ namespace InrappSos.AstridWeb.Controllers
 
         private ArendeDTO ConvertArendeVMToDb(OrganisationViewModels.ArendeViewModel arendeVM)
         {
-            var tmp = arendeVM.ArendeansvarigId;
+            var tmp = arendeVM.ArendeansvarId;
             var arende = new ArendeDTO
             {
                 Id = arendeVM.Id,
@@ -2119,11 +2119,25 @@ namespace InrappSos.AstridWeb.Controllers
                 Arendenr = arendeVM.Arendenr,
                 ArendetypId = arendeVM.ArendetypId,
                 ArendestatusId = arendeVM.ArendestatusId,
-                AnsvarigEpost = arendeVM.AnsvarigEpost,
+                ArendeanvsarId = arendeVM.ArendeansvarId,
                 Rapportorer = arendeVM.Rapportorer,
                 StartDatum = arendeVM.StartDatum,
                 SlutDatum = arendeVM.SlutDatum
             };
+
+            var contactsDTO = new List<ArendeKontaktpersonDTO>();
+            foreach (var kontakt in arendeVM.Kontaktpersoner)
+            {
+                var contact = new ArendeKontaktpersonDTO
+                {
+                    Id = kontakt.Id,
+                    Email = kontakt.Email,
+                    Selected = kontakt.Selected
+                };
+                contactsDTO.Add(contact);
+            }
+            arende.Kontaktpersoner = contactsDTO;
+
             return arende;
         }
 
@@ -2151,8 +2165,7 @@ namespace InrappSos.AstridWeb.Controllers
                 //Hämta ärendestatus, klartext
                 arendeVM.Arendestatus = _portalSosService.HamtaArendestatus(arendeDb.ArendestatusId).ArendeStatusNamn;
                 arendeVM.ArendestatusId = arendeDb.ArendestatusId;
-
-                arendeVM.AnsvarigEpost = arendeDb.AnsvarigEpost;
+                arendeVM.ArendeansvarId = arendeDb.ArendeansvarId;
                 //Hämta rapportörers epostadress
                 arendeVM.Rapportorer = _portalSosService.HamtaArendesRapportorer(arendeVM.OrganisationsId, arendeDb.Id);
 
@@ -2177,22 +2190,22 @@ namespace InrappSos.AstridWeb.Controllers
             return lstobj;
         }
 
-
-        private IEnumerable<SelectListItem> CreateArendeansvarigDropDownList(IEnumerable<AppUserAdmin> userList)
+        private IEnumerable<SelectListItem> CreateArendeansvarigDropDownList(IEnumerable<ArendeAnsvarig> userList)
         {
             SelectList lstobj = null;
             var list = userList
                 .Select(p =>
                     new SelectListItem
                     {
-                        Value = p.Id,
-                        Text = p.Email
+                        Value = p.Id.ToString(),
+                        Text = p.Epostadress
                     });
             // Setting.  
             lstobj = new SelectList(list, "Value", "Text");
             var y = lstobj.ToList();
             return lstobj;
         }
+
 
         private IEnumerable<SelectListItem> CreateArendestatusDropDownList(IEnumerable<ArendeStatus> arendestatusList)
         {

@@ -211,6 +211,10 @@ namespace InrappSos.ApplicationService.Interface
 
         IEnumerable<AppUserAdmin> HamtaAllaArendeadministratorerForOrg(int orgId);
 
+        IEnumerable<ArendeAnsvarig> HamtaAllaArendeansvarigaForOrg(int orgId);
+
+        IEnumerable<ArendeAnsvarig> HamtaAllaArendeansvariga();
+
         IEnumerable<AdmForeskrift> HamtaAllaForeskrifter();
 
         IEnumerable<AdmDelregister> HamtaDelregisterMedInsamlingsfrekvens(int insamlingsfrekvensId);

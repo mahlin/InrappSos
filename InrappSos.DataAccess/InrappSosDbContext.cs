@@ -548,7 +548,6 @@ namespace InrappSos.DataAccess
             modelBuilder.Entity<Arende>().Property(e => e.ArendestatusId).HasColumnName("arendestatusid");
             modelBuilder.Entity<Arende>().Property(e => e.StartDatum).HasColumnName("startdatum");
             modelBuilder.Entity<Arende>().Property(e => e.SlutDatum).HasColumnName("slutdatum");
-            modelBuilder.Entity<Arende>().Property(e => e.AnsvarigEpost).HasColumnName("ansvarigepost");
             modelBuilder.Entity<Arende>()
                 .HasRequired(c => c.Organisation)
                 .WithMany(d => d.Arende)
@@ -561,6 +560,10 @@ namespace InrappSos.DataAccess
                 .HasRequired(c => c.Arendetyp)
                 .WithMany(d => d.Arende)
                 .HasForeignKey(c => c.ArendetypId);
+            modelBuilder.Entity<Arende>()
+                .HasRequired(c => c.ArendeAnsvarig)
+                .WithMany(d => d.Arende)
+                .HasForeignKey(c => c.ArendeansvarId);
             modelBuilder.Entity<Arende>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
             modelBuilder.Entity<Arende>().Property(e => e.SkapadAv).HasColumnName("skapadav");
             modelBuilder.Entity<Arende>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
@@ -581,6 +584,27 @@ namespace InrappSos.DataAccess
             modelBuilder.Entity<Arendetyp>().Property(e => e.SkapadAv).HasColumnName("skapadav");
             modelBuilder.Entity<Arendetyp>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
             modelBuilder.Entity<Arendetyp>().Property(e => e.AndradAv).HasColumnName("andradav");
+
+            //Arendeansvarig
+            modelBuilder.Entity<ArendeAnsvarig>().Property(e => e.Id).HasColumnName("arendeansvarid");
+            modelBuilder.Entity<ArendeAnsvarig>().Property(e => e.Namn).HasColumnName("namn");
+            modelBuilder.Entity<ArendeAnsvarig>().Property(e => e.Epostadress).HasColumnName("epostadress");
+            modelBuilder.Entity<ArendeAnsvarig>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
+            modelBuilder.Entity<ArendeAnsvarig>().Property(e => e.SkapadAv).HasColumnName("skapadav");
+            modelBuilder.Entity<ArendeAnsvarig>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
+            modelBuilder.Entity<ArendeAnsvarig>().Property(e => e.AndradAv).HasColumnName("andradav");
+
+            //PreKontakt
+            modelBuilder.Entity<PreKontakt>().Property(e => e.Id).HasColumnName("prekontaktid");
+            modelBuilder.Entity<PreKontakt>().Property(e => e.ArendeId).HasColumnName("arendeid");
+            modelBuilder.Entity<PreKontakt>()
+                .HasRequired(c => c.Arende)
+                .WithMany(d => d.PreKontakt)
+                .HasForeignKey(c => c.ArendeId);
+            modelBuilder.Entity<PreKontakt>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
+            modelBuilder.Entity<PreKontakt>().Property(e => e.SkapadAv).HasColumnName("skapadav");
+            modelBuilder.Entity<PreKontakt>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
+            modelBuilder.Entity<PreKontakt>().Property(e => e.AndradAv).HasColumnName("andradav");
 
             //ArendeKontaktperson
             modelBuilder.Entity<ArendeKontaktperson>().Property(e => e.Id).HasColumnName("arendekontaktpersonid");
@@ -705,8 +729,10 @@ namespace InrappSos.DataAccess
         public DbSet<ArendeKontaktperson> ArendeKontaktperson { get; set; }
         public DbSet<DroppadFil> DroppadFil { get; set; }
         public DbSet<Arende> Arende { get; set; }
+        public DbSet<PreKontakt> PreKontakt { get; set; }
         public DbSet<ArendeStatus> ArendeStatus { get; set; }
         public DbSet<Arendetyp> Arendetyp { get; set; }
+        public DbSet<ArendeAnsvarig> ArendeAnsvarig { get; set; }
         public DbSet<UndantagEpostadress> UndantagEpostadress { get; set; }
         public DbSet<UndantagForvantadfil> UndantagForvantadfil { get; set; }
         public DbSet<SFTPkonto> SFTPkonto { get; set; }

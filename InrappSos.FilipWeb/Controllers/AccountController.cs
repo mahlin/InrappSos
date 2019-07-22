@@ -347,6 +347,20 @@ namespace InrappSos.FilipWeb.Controllers
                             ViewBag.Email = model.Email;
                             return View("DisplayEmail");
                         }
+                        //check if user emailadress connected to organisation via ärende/case (table PreKontakt)
+                        else if (_portalService.IsConnectedViaArende(model.Email))
+                        {
+                            //Register user, add role ArendeUpp and remove from PreKontakt
+                            var preKontakt = _portalService.HamtaPrekontakt(model.Email);
+                            var orgId = _portalService.HamtaArendeById(preKontakt.ArendeId).OrganisationsId;
+                            await RegisterUser(orgId, model);
+                            var user = UserManager.FindByEmail(model.Email);
+                            _portalService.HandlePrekontaktUserRegistration(user, preKontakt);
+
+                            ViewBag.Email = model.Email;
+                            return View("DisplayEmail");
+
+                        }
                         else
                         {
                             ModelState.AddModelError("",

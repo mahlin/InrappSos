@@ -14,7 +14,10 @@ namespace InrappSos.ApplicationService.Interface
     {
         bool IsConnectedViaPrivateEmailadress(string email);
 
+        bool IsConnectedViaArende(string email);
+
         UndantagEpostadress HamtaUndantagEpostadress(string email);
+        PreKontakt HamtaPrekontakt(string email);
         void AktiveraKontaktperson(string userId);
         string ClosedComingWeek();
 
@@ -30,6 +33,10 @@ namespace InrappSos.ApplicationService.Interface
         ApplicationRole HamtaAstridRoll(string roleName);
 
         List<string> HamtaFilipRollerForAnvandare(string userId);
+
+        ApplicationRole HamtaFilipRoll(string roleName);
+
+        void HandlePrekontaktUserRegistration(ApplicationUser user, PreKontakt preKontakt);
 
         IEnumerable<AdmFAQKategori> HamtaAllaFAQs();
         IEnumerable<AdmOrganisationstyp> HamtaAllaOrganisationstyper();

@@ -52,9 +52,25 @@ namespace InrappSos.ApplicationService
             return isConnected;
         }
 
+        public bool IsConnectedViaArende(string email)
+        {
+            var userException = _portalSosRepository.GetUserFromPreKontakt(email);
+            if (userException != null)
+            {
+                return true;
+            }
+            return false;
+        }
+
         public UndantagEpostadress HamtaUndantagEpostadress(string email)
         {
             var userException = _portalSosRepository.GetUserFromUndantagEpostadress(email);
+            return userException;
+        }
+
+        public PreKontakt HamtaPrekontakt(string email)
+        {
+            var userException = _portalSosRepository.GetUserFromPreKontakt(email);
             return userException;
         }
 
@@ -544,6 +560,20 @@ namespace InrappSos.ApplicationService
                 rollLista.Add(role.BeskrivandeNamn);
             }
             return rollLista;
+        }
+
+        public ApplicationRole HamtaFilipRoll(string roleName)
+        {
+            var role = _portalSosRepository.GetFilipRoleByName(roleName);
+            return role;
+        }
+
+        public void HandlePrekontaktUserRegistration(ApplicationUser user, PreKontakt preKontakt)
+        {
+            //Lägg till som kontaktperson för ärendet och sätt roll
+            KopplaKontaktpersonTillArende(user.Email,preKontakt.ArendeId,user.Id);
+            //Ta bort från PreKontakt
+            _portalSosRepository.DeletePreKontakt(preKontakt.Id);
         }
 
         public IEnumerable<AdmFAQKategori> HamtaAllaFAQs()
@@ -1927,10 +1957,11 @@ namespace InrappSos.ApplicationService
 
         public void KopplaKontaktpersonTillArende(string userName, int arendeId, string kontaktId)
         {
-            //cehck if already exists
-            var caseContactExistsInDb = _portalSosRepository.GetCaseContacts(arendeId).Select(x => x.ApplicationUserId == kontaktId).SingleOrDefault();
+            //check if already exists
+            var caseContacts = _portalSosRepository.GetCaseContacts(arendeId).ToList();
+            var caseContactExists = caseContacts.SingleOrDefault(x => x.ApplicationUserId == kontaktId);
 
-            if (!caseContactExistsInDb)
+            if (caseContactExists == null)
             {
                 var caseContact = new ArendeKontaktperson()
                 {

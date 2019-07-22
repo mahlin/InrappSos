@@ -35,6 +35,8 @@ namespace InrappSos.DataAccess
 
         UndantagEpostadress GetUserFromUndantagEpostadress(string email);
 
+        PreKontakt GetUserFromPreKontakt(string email);
+
         IEnumerable<ApplicationUserRole> GetFilipUserRolesForUser(string userId);
 
         ApplicationRole GetFilipRoleById(string roleId);
@@ -484,6 +486,8 @@ namespace InrappSos.DataAccess
         void DeleteFAQCategory(int faqCategoryId);
 
         void DeleteFAQ(int faqId);
+
+        void DeletePreKontakt(int prekontaktId);
         void DeleteOrgType(int orgTypeId);
 
         void DeleteHoliday(int holidayId);

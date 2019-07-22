@@ -124,6 +124,12 @@ namespace InrappSos.DataAccess
             return userException;
         }
 
+        public PreKontakt GetUserFromPreKontakt(string email)
+        {
+            var userException = DbContext.PreKontakt.FirstOrDefault(x => x.Epostadress == email);
+            return userException;
+        }
+
         public IEnumerable<ApplicationUserRole> GetFilipUserRolesForUser(string userId)
         {
             var userRoles = DbContext.ApplicationUserRole.Where(x => x.UserId == userId).ToList();
@@ -2485,6 +2491,16 @@ namespace InrappSos.DataAccess
             if (faqToDelete != null)
             {
                 DbContext.AdmFAQ.Remove(faqToDelete);
+                DbContext.SaveChanges();
+            }
+        }
+
+        public void DeletePreKontakt(int prekontaktId)
+        {
+            var prekontaktToDelete = DbContext.PreKontakt.SingleOrDefault(x => x.Id == prekontaktId);
+            if (prekontaktToDelete != null)
+            {
+                DbContext.PreKontakt.Remove(prekontaktToDelete);
                 DbContext.SaveChanges();
             }
         }

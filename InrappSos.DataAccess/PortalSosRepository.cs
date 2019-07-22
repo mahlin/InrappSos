@@ -165,11 +165,31 @@ namespace InrappSos.DataAccess
             DbContext.SaveChanges();
         }
 
+        public void DeleteAllNotRegistredContactsForCase(int caseId)
+        {
+            var preContacts = DbContext.PreKontakt.Where(x => x.ArendeId == caseId).ToList();
+            foreach (var preContact in preContacts)
+            {
+                var contactDb = DbContext.PreKontakt.Remove(preContact);
+            }
+            DbContext.SaveChanges();
+        }
+
         public void DeleteRoleFromFilipUser(string userId, string roleId)
         {
             var userRoleDb = DbContext.ApplicationUserRole.FirstOrDefault(x => x.UserId == userId && x.RoleId == roleId);
             DbContext.ApplicationUserRole.Remove(userRoleDb);
             DbContext.SaveChanges();
+        }
+
+        public void DeleteContactFromCase(int caseId, string userId)
+        {
+            var caseContactDb = DbContext.ArendeKontaktperson.FirstOrDefault(x => x.ArendeId == caseId && x.ApplicationUserId == userId);
+            if (caseContactDb != null)
+            {
+                DbContext.ArendeKontaktperson.Remove(caseContactDb);
+                DbContext.SaveChanges();
+            }
         }
 
         public Arende GetArende(string arendeNr)
@@ -399,13 +419,19 @@ namespace InrappSos.DataAccess
             return cases;
         }
 
-        public IEnumerable<string> GetCaseReporterIds(int caseId)
+        public IEnumerable<string> GetCaseRegisteredContactIds(int caseId)
         {
             var caseRepIds = DbContext.ArendeKontaktperson.Where(x => x.ArendeId == caseId).Select(x => x.ApplicationUserId).ToList();
             return caseRepIds;
         }
 
-        public ArendeAnsvarig GetCaseResponsibleForCase(int respId)
+        public IEnumerable<PreKontakt> GetCaseNotRegisteredContact(int caseId)
+        {
+            var contacts = DbContext.PreKontakt.Where(x => x.ArendeId == caseId).ToList();
+            return contacts;
+        }
+
+        public ArendeAnsvarig GetCaseResponsible(int respId)
         {
             var caseResponisble = DbContext.ArendeAnsvarig.SingleOrDefault(x => x.Id == respId);
             return caseResponisble;
@@ -433,6 +459,12 @@ namespace InrappSos.DataAccess
         {
             var caseStatus = DbContext.ArendeStatus.SingleOrDefault(x => x.Id == casestatusId);
             return caseStatus;
+        }
+
+        public IEnumerable<ArendeKontaktperson> GetCaseContacts(int caseId)
+        {
+            var caseContacts = DbContext.ArendeKontaktperson.Where(x => x.ArendeId == caseId).ToList();
+            return caseContacts;
         }
 
         public AdmUppgiftsskyldighet GetReportObligationById(int repOblId)
@@ -2015,7 +2047,7 @@ namespace InrappSos.DataAccess
         {
             var arendeDb = DbContext.Arende.SingleOrDefault(x => x.Id == arende.Id);
             arendeDb.Arendenamn = arende.Arendenamn;
-            arendeDb.Arendenr = arende.Arendenr;
+            arendeDb.ArendeansvarId= arende.ArendeansvarId;
             arendeDb.StartDatum = arende.StartDatum;
             arendeDb.SlutDatum = arende.SlutDatum;
 
@@ -2312,6 +2344,13 @@ namespace InrappSos.DataAccess
 
             DbContext.SaveChanges();
         }
+
+        public void SetCaseContact(ArendeKontaktperson caseContact)
+        {
+            DbContext.ArendeKontaktperson.Add(caseContact);
+            DbContext.SaveChanges();
+        }
+
         public void SaveToFilelogg(string userName, string ursprungligtFilNamn, string nyttFilNamn, int leveransId, int sequenceNumber)
         {
             var logFil = new LevereradFil

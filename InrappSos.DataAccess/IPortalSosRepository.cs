@@ -44,7 +44,11 @@ namespace InrappSos.DataAccess
 
         void DeleteFilipRole(string roleName);
 
+        void DeleteAllNotRegistredContactsForCase(int caseId);
+
         void DeleteRoleFromFilipUser(string userId, string roleId);
+
+        void DeleteContactFromCase(int caseId, string userId);
 
         Arende GetArende(string arendeNr);
 
@@ -103,8 +107,11 @@ namespace InrappSos.DataAccess
 
         IEnumerable<Arende> GetCasesForOrg(int orgId);
 
-        IEnumerable<string> GetCaseReporterIds(int caseId);
-        ArendeAnsvarig GetCaseResponsibleForCase(int respId);
+        IEnumerable<string> GetCaseRegisteredContactIds(int caseId);
+
+        IEnumerable<PreKontakt> GetCaseNotRegisteredContact(int caseId);
+
+        ArendeAnsvarig GetCaseResponsible(int respId);
 
         IEnumerable<ArendeAnsvarig> GetAllCaseResponsibles();
 
@@ -114,6 +121,7 @@ namespace InrappSos.DataAccess
 
         ArendeStatus GetCaseStatus(int casestatusId);
 
+        IEnumerable<ArendeKontaktperson> GetCaseContacts(int caseId);
         IEnumerable<ApplicationUser> GetContactPersonsForOrg(int orgId);
 
         IEnumerable<ApplicationUser> GetActiveContactPersonsForOrg(int orgId);
@@ -450,6 +458,9 @@ namespace InrappSos.DataAccess
         void UpdateCaseUnregisteredReporters(int caseId, List<UndantagEpostadress> userList, string userName);
 
         void SaveOpeningHours(AdmKonfiguration admKonf);
+
+        void SetCaseContact(ArendeKontaktperson caseContact);
+
         void SaveToFilelogg(string userName, string ursprungligtFilNamn, string nyttFilNamn, int leveransId, int sequenceNumber);
 
         void SaveToLoginLog(string userid, string userName);

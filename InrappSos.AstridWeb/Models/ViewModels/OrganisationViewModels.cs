@@ -35,6 +35,10 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public int SelectedArendetypId { get; set; }
             public int SelectedArendestatusId { get; set; }
 
+            public int SelectedArendeId { get; set; }
+
+            public int SelectedArendeansvarigId { get; set; }
+
             public int SelectedRegisterId { get; set; }
 
             public string ChosenOrganisationTypesNames { get; set; }
@@ -54,6 +58,7 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public List<UndantagForvantadfilViewModel> UndantagForvantadfiler { get; set; }
             public List<ArendeViewModel> Arenden { get; set; }
             public List<IdentityRoleViewModel> Roller { get; set; }
+            public List<ContactViewModel> Kontaktpersoner { get; set; }
             public string Origin { get; set; }
             [DisplayName("Visa även inaktiva")]
             public bool VisaInaktiva { get; set; }
@@ -222,6 +227,7 @@ namespace InrappSos.AstridWeb.Models.ViewModels
 
             public string ChosenContactsStr { get; set; }
             public List<ContactViewModel> Kontaktpersoner { get; set; }
+            public string KontaktpersonerStr { get; set; }
 
             [Display(Name = "Startdatum")]
             [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
@@ -230,8 +236,6 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             [Display(Name = "Slutdatum")]
             [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
             public DateTime? SlutDatum { get; set; }
-            [Display(Name = "Ansvarigs epost")]
-            public string AnsvarigEpost { get; set; }
             [Display(Name = "Rapportörer")]
             public string Rapportorer { get; set; }
 

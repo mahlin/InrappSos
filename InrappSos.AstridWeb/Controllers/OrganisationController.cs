@@ -231,7 +231,8 @@ namespace InrappSos.AstridWeb.Controllers
                 model.ContactPersons = ConvertUsersViewModelUser(contacts, roller);
 
                 var cases = _portalSosService.HamtaArendenForOrg(model.Organisation.Id);
-                model.Arenden = ConvertArendeToVM(cases.ToList());
+                var contactsForOrg = _portalSosService.HamtaKontaktpersonerForOrg(model.Organisation.Id);
+                model.Arenden = ConvertArendeToVM(cases.ToList(), contactsForOrg.ToList());
                 model.OrgUnits = _portalSosService.HamtaOrgEnheterForOrg(model.Organisation.Id).ToList();
                 var reportObligationsDb = _portalSosService.HamtaUppgiftsskyldighetForOrg(model.Organisation.Id);
                 model.ReportObligations = ConvertAdmUppgiftsskyldighetToViewModel(reportObligationsDb.ToList());
@@ -477,7 +478,10 @@ namespace InrappSos.AstridWeb.Controllers
         [Authorize]
         public ActionResult GetCases()
         {
-            return View("EditCases");
+            var model = new OrganisationViewModels.OrganisationViewModel();
+            model.Arenden= new List<OrganisationViewModels.ArendeViewModel>();
+            model.SearchResult = new List<List<Organisation>>();
+            return View("EditCases", model);
         }
 
 
@@ -495,7 +499,8 @@ namespace InrappSos.AstridWeb.Controllers
                 }
                 model.Organisation = _portalSosService.HamtaOrganisation(model.SelectedOrganisationId);
                 var cases = _portalSosService.HamtaArendenForOrg(model.Organisation.Id);
-                model.Arenden = ConvertArendeToVM(cases.ToList());
+                var contactPersons = _portalSosService.HamtaAktivaKontaktpersonerForOrg(model.Organisation.Id);
+                model.Arenden = ConvertArendeToVM(cases.ToList(), contactPersons.ToList());
                 model.SearchResult = new List<List<Organisation>>();
                 // Ladda drop down lists. 
                 var arendetypList = _portalSosService.HamtaAllaArendetyper();
@@ -504,6 +509,9 @@ namespace InrappSos.AstridWeb.Controllers
                 var arendestatusList = _portalSosService.HamtaAllaArendestatusar();
                 ViewBag.ArendestatusDDL = CreateArendestatusDropDownList(arendestatusList);
                 model.SelectedArendestatusId = 0;
+                var arendeansvarigList = _portalSosService.HamtaAllaArendeansvariga();
+                ViewBag.ArendeansvarigDDL = CreateArendeansvarigDropDownList(arendeansvarigList);
+                model.SelectedArendeansvarigId = 0;
             }
             catch (Exception e)
             {
@@ -866,28 +874,21 @@ namespace InrappSos.AstridWeb.Controllers
                 if (ModelState.IsValid)
                 {
                     var arende = ConvertArendeVMToDb(arendeVM);
-                    var rapportorer = arendeVM.Rapportorer;
                     var userName = User.Identity.GetUserName();
-                    _portalSosService.UppdateraArende(arende, userName, rapportorer);
-                    //Lägg till roll för de rapportörer som är reggade
-                    //TODO - Flytta detta till svc-lagret eller repo-lagret?
-                    var reporters = arendeVM.Rapportorer.Replace(' ', ',');
-                    var newEmailStr = reporters.Split(',');
-                    foreach (var email in newEmailStr)
-                    {
-                        if (!String.IsNullOrEmpty(email.Trim()))
-                        {
-                            var user = await FilipUserManager.FindByNameAsync(email.Trim());
-                            if (user != null)
-                            {
-                                if (!FilipUserManager.IsInRole(user.Id, "RegSvcRapp"))
-                                {
-                                    FilipUserManager.AddToRole(user.Id, "RegSvcRapp");
-                                }
-                            }
-                        }
-                    }
+                    _portalSosService.UppdateraArende(arende, userName);
                 }
+                return RedirectToAction("GetOrganisationsCases", new { selectedOrganisationId = arendeVM.OrganisationsId });
+            }
+            catch (ArgumentException e)
+            {
+                ErrorManager.WriteToErrorLog("OrganisationController", "UpdateOrganisationCase", e.ToString(), e.HResult,
+                    User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade när ärendet skulle uppdateras." + e.Message,
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
             }
             catch (Exception e)
             {
@@ -901,7 +902,6 @@ namespace InrappSos.AstridWeb.Controllers
                 };
                 return View("CustomError", errorModel);
             }
-            return RedirectToAction("GetOrganisationsCases", new { selectedOrganisationId = arendeVM.OrganisationsId });
         }
 
 
@@ -2141,7 +2141,7 @@ namespace InrappSos.AstridWeb.Controllers
             return arende;
         }
 
-        private List<OrganisationViewModels.ArendeViewModel> ConvertArendeToVM(List<Arende> arendeDbList)
+        private List<OrganisationViewModels.ArendeViewModel> ConvertArendeToVM(List<Arende> arendeDbList, List<ApplicationUser> kontaktpersoner)
         {
             var arendeList = new List<OrganisationViewModels.ArendeViewModel>();
 
@@ -2165,10 +2165,46 @@ namespace InrappSos.AstridWeb.Controllers
                 //Hämta ärendestatus, klartext
                 arendeVM.Arendestatus = _portalSosService.HamtaArendestatus(arendeDb.ArendestatusId).ArendeStatusNamn;
                 arendeVM.ArendestatusId = arendeDb.ArendestatusId;
+                //Hämta ärendeansvarigs epost
+                arendeVM.Arendeansvarig = _portalSosService.HamtaArendeAnsvarig(arendeDb.ArendeansvarId).Epostadress;
                 arendeVM.ArendeansvarId = arendeDb.ArendeansvarId;
-                //Hämta rapportörers epostadress
-                arendeVM.Rapportorer = _portalSosService.HamtaArendesRapportorer(arendeVM.OrganisationsId, arendeDb.Id);
 
+                //Hämta ej reggade kontaktpersoners (rapportörers) epostadress
+                arendeVM.Rapportorer =
+                    _portalSosService.HamtaArendesEjRegistreradeKontaktpersoner(arendeVM.OrganisationsId, arendeDb.Id);
+
+                //Hämta kontaktpersoner och markera valda kontaktpersoner
+                var contactsForOrg = _portalSosService.HamtaKontaktpersonerForOrg(arendeVM.OrganisationsId).ToList();
+                arendeVM.Kontaktpersoner = ConvertContactsForOrgToDropdownList(contactsForOrg);
+                var arendeKontakpersoner = _portalSosService.HamtaArendesKontaktpersoner(arendeVM.Id).ToList();
+                
+                foreach (var kontakt in arendeVM.Kontaktpersoner)
+                {
+                    var exists = arendeKontakpersoner.SingleOrDefault(x => x.ApplicationUserId == kontakt.Id);
+                    if (exists != null)
+                    {
+                        kontakt.Selected = true;
+                    }
+                }
+
+                //Skapa kommaseparerad textsträng över valda kontaktpersoner 
+                var contactsStr = String.Empty;
+                foreach (var contact in arendeVM.Kontaktpersoner)
+                {
+                    if (contact.Selected)
+                    {
+                        if (contactsStr.IsEmpty())
+                        {
+                            contactsStr = contact.Email;
+                        }
+                        else
+                        {
+                            contactsStr = contactsStr + ", " + contact.Email;
+                        }
+                    }
+                }
+
+                arendeVM.KontaktpersonerStr = contactsStr;
                 arendeList.Add(arendeVM);
             }
             return arendeList;
@@ -2222,6 +2258,7 @@ namespace InrappSos.AstridWeb.Controllers
             var y = lstobj.ToList();
             return lstobj;
         }
+
 
         private IEnumerable<SelectListItem> CreateOrgUnitDropDownList(IEnumerable<Organisationsenhet> orgenhetList)
         {

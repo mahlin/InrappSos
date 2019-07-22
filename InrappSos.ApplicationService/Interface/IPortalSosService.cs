@@ -291,7 +291,13 @@ namespace InrappSos.ApplicationService.Interface
 
         void KopplaFilipAnvändareTillFilipRoll(string userName, string filipUserId, string rollId);
 
+        void KopplaKontaktpersonTillArende(string userName, int arendeId, string kontaktId);
+
+        void HanteraArendesEjReggadeKontaktpersoner(ArendeDTO arende, string userName);
+
         void TaBortFilipRollForanvandare(string userName, string filipUserId, string rollId);
+
+        void TaBortKontaktpersonFranArende(string userName, int arendeId, string kontaktId);
 
         IEnumerable<ApplicationRole> HamtaAstridAnvandaresRoller(string userId);
 
@@ -311,7 +317,13 @@ namespace InrappSos.ApplicationService.Interface
 
         ArendeStatus HamtaArendestatus(int arendestatusId);
 
-        string HamtaArendesRapportorer(int orgId, int arendeId);
+        ArendeAnsvarig HamtaArendeAnsvarig(int arendeAnsvId);
+
+        string HamtaArendesKontaktpersoner(int orgId, int arendeId);
+
+        IEnumerable<ArendeKontaktperson> HamtaArendesKontaktpersoner(int arendeid);
+
+        string HamtaArendesEjRegistreradeKontaktpersoner(int orgId, int arendeId);
 
         IEnumerable<Leverans> HamtaLeveransStatusRapporterForOrgDelregPerioder( int orgId, List<AdmDelregister> delregisterList, List<string> periodsForRegister);
 
@@ -422,7 +434,7 @@ namespace InrappSos.ApplicationService.Interface
 
         void UppdateraPrivatEpostAdress(UndantagEpostadress privEpostDoman, string userName);
 
-        void UppdateraArende(ArendeDTO arende, string userName, string rapportorer);
+        void UppdateraArende(ArendeDTO arende, string userName);
 
         void SparaOppettider(OpeningHoursInfoDTO oppetTider, string userName);
         void SparaTillDatabasFillogg(string userName, string ursprungligtFilNamn, string nyttFilNamn, int leveransId, int sequenceNumber);

@@ -1123,7 +1123,7 @@ namespace InrappSos.ApplicationService
             var casesForOrg = _portalSosRepository.GetCasesForOrg(orgId);
             foreach (var arende in casesForOrg)
             {
-                var arendeansv = _portalSosRepository.GetCaseResponsibleForCase(arende.ArendeansvarId);
+                var arendeansv = _portalSosRepository.GetCaseResponsible(arende.ArendeansvarId);
                 arendeansvariga.Add(arendeansv);
             }
             return arendeansvariga;
@@ -1925,6 +1925,65 @@ namespace InrappSos.ApplicationService
             _portalSosRepository.SetFilipRoleForFilipUser(userRole);
         }
 
+        public void KopplaKontaktpersonTillArende(string userName, int arendeId, string kontaktId)
+        {
+            //cehck if already exists
+            var caseContactExistsInDb = _portalSosRepository.GetCaseContacts(arendeId).Select(x => x.ApplicationUserId == kontaktId).SingleOrDefault();
+
+            if (!caseContactExistsInDb)
+            {
+                var caseContact = new ArendeKontaktperson()
+                {
+                    ArendeId = arendeId,
+                    ApplicationUserId = kontaktId,
+                    SkapadDatum = DateTime.Now,
+                    SkapadAv = userName,
+                    AndradDatum = DateTime.Now,
+                    AndradAv = userName
+                };
+                _portalSosRepository.SetCaseContact(caseContact);
+                //Sätt rollen "ArendeUpp" om inte redan satt
+                var arendeRoleId = _portalSosRepository.GetFilipRoleByName("ArendeUpp").Id;
+                var userRole = new ApplicationUserRole
+                {
+                    UserId = kontaktId,
+                    RoleId = arendeRoleId,
+                    SkapadDatum = DateTime.Now,
+                    SkapadAv = userName,
+                    AndradDatum = DateTime.Now,
+                    AndradAv = userName
+                };
+                _portalSosRepository.SetFilipRoleForFilipUser(userRole);
+            }
+            
+        }
+
+        public void HanteraArendesEjReggadeKontaktpersoner(ArendeDTO arende, string userName)
+        {
+            var reporters = arende.Rapportorer.Replace(' ', ',');
+            var newEmailStr = reporters.Split(',');
+            //Rensa först alla ej reggade kontaktpersoner för ärendet
+            _portalSosRepository.DeleteAllNotRegistredContactsForCase(arende.Id);
+
+            //Spara nuvarande ej reggade kontaktpersoner för ärendet
+            foreach (var email in newEmailStr)
+            {
+                if (!String.IsNullOrEmpty(email.Trim()))
+                {
+                    var preContact = new PreKontakt()
+                    {
+                        ArendeId = arende.Id,
+                        Epostadress = email.Trim(),
+                        SkapadDatum = DateTime.Now,
+                        SkapadAv = userName,
+                        AndradDatum = DateTime.Now,
+                        AndradAv = userName
+                    };
+                    _portalSosRepository.CreatePreKontakt(preContact);
+                }
+            }
+        }
+
         public void TaBortFilipRollForanvandare(string userName, string filipUserId, string rollId)
         {
             var userRoles =  _portalSosRepository.GetFilipUserRolesForUser(filipUserId).Select(x => x.RoleId).ToList();
@@ -1932,6 +1991,16 @@ namespace InrappSos.ApplicationService
             if (userRoles.Contains(rollId))
             {
                 _portalSosRepository.DeleteRoleFromFilipUser(filipUserId, rollId);
+            }
+        }
+
+        public void TaBortKontaktpersonFranArende(string userName, int arendeId, string kontaktId)
+        {
+            var caseContacts = _portalSosRepository.GetCaseContacts(arendeId).Select(x => x.ApplicationUserId).ToList();
+            //Om ärendet har kontaktpersonen ska den tas bort
+            if (caseContacts.Contains(kontaktId))
+            {
+                _portalSosRepository.DeleteContactFromCase(arendeId, kontaktId);
             }
         }
 
@@ -2096,35 +2165,53 @@ namespace InrappSos.ApplicationService
             return arendestatus;
         }
 
-        public string HamtaArendesRapportorer(int orgId, int arendeId)
+        public ArendeAnsvarig HamtaArendeAnsvarig(int arendeAnsvId)
         {
-            string rapportorsLista = "";
-            var arendeRapportorerIdList = _portalSosRepository.GetCaseReporterIds(arendeId);
-            var arendeRappotorerIdUndantagList = _portalSosRepository.GetPrivateEmailAdressesForOrgAndCase(orgId, arendeId);
-            foreach (var rapportorId in arendeRapportorerIdList)
+            var arendeansvarig = _portalSosRepository.GetCaseResponsible(arendeAnsvId);
+            return arendeansvarig;
+        }
+
+        public string HamtaArendesKontaktpersoner(int orgId, int arendeId)
+        {
+            string kontaktLista = "";
+            var arendeKontaktIdList = _portalSosRepository.GetCaseRegisteredContactIds(arendeId);
+            foreach (var kontaktId in arendeKontaktIdList)
             {
-                var epostadress = _portalSosRepository.GetUserEmail(rapportorId);
-                if (String.IsNullOrEmpty(rapportorsLista))
+                var epostadress = _portalSosRepository.GetUserEmail(kontaktId);
+                if (String.IsNullOrEmpty(kontaktLista))
                 {
-                    rapportorsLista = epostadress;
+                    kontaktLista = epostadress;
                 }
                 else
                 {
-                    rapportorsLista = rapportorsLista + ", " + epostadress;
+                    kontaktLista = kontaktLista + ", " + epostadress;
                 }
             }
-            foreach (var item in arendeRappotorerIdUndantagList)
+            return kontaktLista;
+        }
+
+        public IEnumerable<ArendeKontaktperson> HamtaArendesKontaktpersoner(int arendeid)
+        {
+            var kontakter = _portalSosRepository.GetCaseContacts(arendeid);
+            return kontakter;
+        }
+
+        public string HamtaArendesEjRegistreradeKontaktpersoner(int orgId, int arendeId)
+        {
+            string kontaktLista = "";
+            var arendeKontaktList = _portalSosRepository.GetCaseNotRegisteredContact(arendeId);
+            foreach (var kontakt in arendeKontaktList)
             {
-                if (String.IsNullOrEmpty(rapportorsLista))
+                if (String.IsNullOrEmpty(kontaktLista))
                 {
-                    rapportorsLista = item.PrivatEpostAdress;
+                    kontaktLista = kontakt.Epostadress;
                 }
                 else
                 {
-                    rapportorsLista = rapportorsLista + ", " + item.PrivatEpostAdress;
+                    kontaktLista = kontaktLista + ", " + kontakt.Epostadress;
                 }
             }
-            return rapportorsLista;
+            return kontaktLista;
         }
 
         public IEnumerable<Leverans> HamtaLeveransStatusRapporterForOrgDelregPerioder(int orgId, List<AdmDelregister> delregisterList, List<string> periodsForRegister)
@@ -2759,7 +2846,7 @@ namespace InrappSos.ApplicationService
             _portalSosRepository.UpdatePrivateEmail(privEpostDoman);
         }
 
-        public void UppdateraArende(ArendeDTO arende,  string userName, string rapportorer)
+        public void UppdateraArende(ArendeDTO arende,  string userName)
         {
             var registeredReportersList = new List<string>();
             var unregisteredReportersList = new List<UndantagEpostadress>();
@@ -2768,44 +2855,28 @@ namespace InrappSos.ApplicationService
             arendeDb.AndradDatum = DateTime.Now;
             _portalSosRepository.UpdateCase(arendeDb);
 
-            //Hantera rapportörer för ärendet
-            //Kontrollera om rapportör redan är registrerad i Filip, annars spara i undantagstabell
-            var reporters = rapportorer.Replace(' ', ',');
-            var newEmailStr = reporters.Split(',');
-            foreach (var email in newEmailStr)
+            
+            try
             {
-                if (!String.IsNullOrEmpty(email.Trim()))
+                //Lägg till/ta bort arendets registrerade kontaktpersoner
+                foreach (var contact in arende.Kontaktpersoner)
                 {
-                    var redanReggadAnv = _portalSosRepository.GetUserByEmail(email.Trim());
-                    if (redanReggadAnv != null)
+                    if (contact.Selected)
                     {
-                        registeredReportersList.Add(redanReggadAnv.Id);
+                        KopplaKontaktpersonTillArende(userName, arende.Id, contact.Id);
                     }
                     else
                     {
-                        //Spara i undantagstabell
-                        var undantag = new UndantagEpostadress
-                        {
-                            OrganisationsId = arende.OrganisationsId,
-                            ArendeId = arende.Id,
-                            PrivatEpostAdress = email.Trim(),
-                            AktivFrom = DateTime.Now,
-                            SkapadAv = userName,
-                            SkapadDatum = DateTime.Now,
-                            AndradAv = userName,
-                            AndradDatum = DateTime.Now
-                        };
-                        unregisteredReportersList.Add(undantag);
+                        TaBortKontaktpersonFranArende(userName, arende.Id, contact.Id);
                     }
                 }
+                //Lägg till/ta bort ej registrerade kontaktpersoner
+                HanteraArendesEjReggadeKontaktpersoner(arende, userName);
             }
-
-            //Användare som redan är registrerade
-            _portalSosRepository.UpdateCaseReporters(arendeDb.Id,registeredReportersList, userName);
-
-            //Användare som ej är registrerade
-            _portalSosRepository.UpdateCaseUnregisteredReporters(arendeDb.Id, unregisteredReportersList, userName);
-
+            catch (Exception e)
+            {
+                throw new ArgumentException(e.Message);
+            }
         }
 
         public void SparaOppettider(OpeningHoursInfoDTO oppetTider, string userName)

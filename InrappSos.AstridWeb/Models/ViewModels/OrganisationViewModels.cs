@@ -178,7 +178,6 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public int Id { get; set; }
             public int ArendeId { get; set; }
             [Display(Name = "Ärendenr")]
-            public string ArendeNr { get; set; }
             public int OrganisationsId { get; set; }
             public string Organisationsnamn { get; set; }
             [Required(ErrorMessage = "Fältet E-postadress är obligatoriskt.")]

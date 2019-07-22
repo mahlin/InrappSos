@@ -2067,16 +2067,6 @@ namespace InrappSos.AstridWeb.Controllers
                 AktivFrom = privEmailAdressVM.AktivFrom,
                 AktivTom = privEmailAdressVM.AktivTom
             };
-
-            //Hämta ärendeId om ärendenr satt
-            if (privEmailAdressVM.ArendeNr != null)
-            {
-                var arende = _portalSosService.HamtaArende(privEmailAdressVM.ArendeNr);
-                if (arende != null)
-                {
-                    privEmail.ArendeId = arende.Id;
-                }
-            }
             return privEmail;
         }
 
@@ -2095,13 +2085,6 @@ namespace InrappSos.AstridWeb.Controllers
                     AktivFrom = privEmailDb.AktivFrom,
                     AktivTom = privEmailDb.AktivTom
                 };
-
-                //Hämta ärendenr om ärendeid satt
-                if (privEmailDb.ArendeId != null)
-                {
-                    privEmailVM.ArendeId = privEmailDb.ArendeId.Value;
-                    privEmailVM.ArendeNr = _portalSosService.HamtaArendeById(privEmailVM.ArendeId).Arendenr;
-                }
                
                 privEmailList.Add(privEmailVM);
             }

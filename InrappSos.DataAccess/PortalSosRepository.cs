@@ -2032,7 +2032,6 @@ namespace InrappSos.DataAccess
         public void UpdatePrivateEmail(UndantagEpostadress privEmail)
         {
             var privEmailDb = DbContext.UndantagEpostadress.SingleOrDefault(x => x.Id == privEmail.Id);
-            privEmailDb.ArendeId = privEmail.ArendeId;
             privEmailDb.OrganisationsId = privEmail.OrganisationsId;
             privEmailDb.PrivatEpostAdress = privEmail.PrivatEpostAdress;
             privEmailDb.Status = privEmail.Status;

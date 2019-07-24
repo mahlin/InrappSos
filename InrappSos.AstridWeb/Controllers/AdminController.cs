@@ -189,18 +189,6 @@ namespace InrappSos.AstridWeb.Controllers
             return idResult.Succeeded;
         }
 
-        //public void ClearUserRoles(ApplicationUserManager userManager, string userId)
-        //{
-        //    var user = userManager.FindById(userId);
-        //    var currentRoles = new List<ApplicationUserRole>();
-
-        //    currentRoles.AddRange(user.UserRoles);
-        //    foreach (ApplicationUserRole role in currentRoles)
-        //    {
-        //        userManager.RemoveFromRole(userId, role.Role.Name);
-        //    }
-        //}
-
 
         private IEnumerable<AdminViewModels.AppUserAdminViewModel> ConvertAdminUsersToViewModel(IEnumerable<AppUserAdmin> adminUsers, List<ApplicationRole> roller)
         {

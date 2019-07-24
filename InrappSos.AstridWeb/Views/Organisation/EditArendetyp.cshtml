@@ -1,0 +1,96 @@
+﻿@model InrappSos.AstridWeb.Models.ViewModels.OrganisationViewModels.OrganisationViewModel
+
+
+<script type="text/javascript">
+    $(function () {
+        $('.edit-mode').hide();
+        $('.edit-user, .cancel-user').on('click',
+            function () {
+                var tr = $(this).parents('tr:first');
+                tr.find('.edit-mode, .display-mode').toggle();
+            });
+        $('.save-user').on('click',
+            function () {
+                var tr = $(this).parents('tr:first');
+                var caseTypeId = tr.find("#CaseTypeId").html();
+                var caseTypeName = tr.find("#CaseTypeName").val();
+                var caseTypefolder = tr.find("#CaseTypeFolder").val();
+
+                //Creating Arendetyp JSON object
+                var caseType =
+                {
+                    "Id": caseTypeId,
+                    "ArendetypNamn": caseTypeName,
+                    "Slussmapp": caseTypefolder
+                };
+                //Posting Arendetyp object to controller's Update action method
+                $.ajax({
+                    url: '/Organisation/UpdateCaseType',
+                    data: JSON.stringify(caseType),
+                    type: 'POST',
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (data) {
+                        location.reload();
+                        //$("#pageContainer").html(data);
+                        //tr.find('.edit-mode, .display-mode').toggle();
+                        //$('#footer').hide();
+                        //alert('Record updated Successfully!!');
+                    }
+                });
+
+            });
+
+        $('.edit-user').on('click',
+            function () {
+                var tr = $(this).parents('tr:first');
+                var caseTypeId = tr.find("#CaseTypeId").html();
+                var caseTypeName = tr.find("#CaseTypeName").val();
+                var caseTypefolder = tr.find("#CaseTypeFolder").val();
+                tr.find("#lblName").text(caseTypeName);
+                tr.find("#lblDesc").text(caseTypefolder);
+            });
+    });
+
+</script>
+
+<div id="pageContainer">
+    <br />
+    @if (Model != null)
+    {
+        <div class="col-md-12 padding-top-25">
+            <h4>Administrera ärendetyper</h4>
+            <hr />
+
+            @Html.HiddenFor(m => m.SelectedCaseTypeId)
+
+            @Html.ActionLink("Skapa ny ärendetyp", "CreateCaseType", "Organisation", null, new { style = "padding-left:20px;" })
+            <div id="gridContent" style="font-family: Arial; padding: 20px;">
+                @{
+                    ViewBag.Title = "Administrera ärendetyper";
+                    var grid = new WebGrid(source: Model.CaseTypes, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "caseTypesGrid");
+                    grid.Pager(WebGridPagerModes.All);
+                }
+                @grid.GetHtml(tableStyle: "webgrid-table900",
+                    headerStyle: "webgrid-header",
+                    footerStyle: "webgrid-footer",
+                    alternatingRowStyle: "webgrid-alternating-row",
+                    selectedRowStyle: "webgrid-selected-row",
+                    rowStyle: "webgrid-row-style",
+                    mode: WebGridPagerModes.All,
+                    columns: grid.Columns(
+                        grid.Column("Arendetypid", format: @<text><span class="display-mode">@item.Id</span><label id="CaseTypeId" class="edit-mode colMinWidth">@item.Id</label></text>, style: "colMinWidth"),
+                         grid.Column("ArendetypNamn", "Namn", format: @<text><span class="display-mode"><label id="lblName">@item.ArendetypNamn</label></span>
+                        <input type="text" id="CaseTypeName" value="@item.ArendetypNamn" class="edit-mode form-control" /></text>, style: "col1Width"),
+                         grid.Column("Slussmapp", "Slussmapp", format: @<text><span class="display-mode"><label id="lblDesc">@item.Slussmapp</label></span>
+                        <input type="text" id="CaseTypeFolder" value="@item.Slussmapp" class="edit-mode form-control" /></text>, style: "col1Width"),
+                         grid.Column(null, format: @<text>
+                            <button class="edit-user display-mode btn btn-default">Ändra</button>
+                            @*<button class="display-mode btn btn-default" onclick="deleteOrgType(@item.Id, '@item.Typnamn');return false;">Ta bort</button>*@
+                            <button class="save-user edit-mode btn btn-default">Spara</button>
+                            <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
+                        </text>, style: "col3Width", canSort: false)))
+            </div>
+        </div>
+    }
+</div>
+

@@ -32,6 +32,7 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public string SelectedCountyCode { get; set; }
             public int SelectedOrganisationId { get; set; }
             public int SelectedOrgTypId { get; set; }
+            public int SelectedCaseTypeId { get; set; }
             public int SelectedArendetypId { get; set; }
             public int SelectedArendestatusId { get; set; }
 
@@ -53,6 +54,8 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public  List<ReportObligationsViewModel> ReportObligations { get; set; }
 
             public List<AdmOrganisationstyp> OrganisationTypes { get; set; }
+
+            public List<Arendetyp> CaseTypes { get; set; }
             public List<UndantagEpostadressViewModel> UndantagEpostadresser { get; set; }
 
             public List<UndantagForvantadfilViewModel> UndantagForvantadfiler { get; set; }
@@ -70,6 +73,13 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public int Organisationstypid { get; set; }
             public string Typnamn { get; set; }
             public string Beskrivning { get; set; }
+            public bool Selected { get; set; } = false;
+        }
+        public class ArendetypViewModel
+        {
+            public int Arendetypid { get; set; }
+            public string ArendetypNamn { get; set; }
+            public string Slussmapp { get; set; }
             public bool Selected { get; set; } = false;
         }
 

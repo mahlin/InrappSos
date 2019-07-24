@@ -1787,6 +1787,12 @@ namespace InrappSos.DataAccess
             DbContext.SaveChanges();
         }
 
+        public void CreateCaseType(Arendetyp caseType)
+        {
+            DbContext.Arendetyp.Add(caseType);
+            DbContext.SaveChanges();
+        }
+
         public void CreateFAQCategory(AdmFAQKategori faqCategory)
         {
             DbContext.AdmFAQKategori.Add(faqCategory);
@@ -2142,6 +2148,14 @@ namespace InrappSos.DataAccess
             orgTypeDb.Beskrivning = orgType.Beskrivning;
             orgTypeDb.AndradDatum = orgType.AndradDatum;
             orgTypeDb.AndradAv = orgType.AndradAv;
+            DbContext.SaveChanges();
+        }
+
+        public void UpdateCaseType(Arendetyp caseType)
+        {
+            var caseTypeDb = DbContext.Arendetyp.Where(u => u.Id == caseType.Id).Select(u => u).SingleOrDefault();
+            caseTypeDb.ArendetypNamn = caseType.ArendetypNamn;
+            caseTypeDb.Slussmapp = caseType.Slussmapp;
             DbContext.SaveChanges();
         }
 

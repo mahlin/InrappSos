@@ -363,6 +363,10 @@
     <Content Include="Views\Role\Index.cshtml" />
     <Content Include="Views\Role\CreateFilipRole.cshtml" />
     <Content Include="Views\Organisation\_Cases.cshtml" />
+    <Content Include="Views\Organisation\CreateCaseType.cshtml" />
+    <Content Include="Views\Organisation\CreateArendestatus.cshtml" />
+    <Content Include="Views\Organisation\EditArendetyp.cshtml" />
+    <Content Include="Views\Organisation\EditArendestatus.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

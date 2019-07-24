@@ -264,6 +264,15 @@ namespace InrappSos.AstridWeb.Controllers
 
         }
 
+        //GET
+        [Authorize]
+        public ActionResult GetCaseTypes()
+        {
+            var model = new OrganisationViewModels.OrganisationViewModel();
+            model.CaseTypes = _portalSosService.HamtaAllaArendetyper().ToList();
+            return View("EditArendetyp", model);
+        }
+
 
         //GET
         [Authorize]
@@ -904,6 +913,33 @@ namespace InrappSos.AstridWeb.Controllers
             }
         }
 
+        [HttpPost]
+        [Authorize]
+        public ActionResult UpdateCaseType(Arendetyp caseType)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var userName = User.Identity.GetUserName();
+                    _portalSosService.UppdateraArendetyp(caseType, userName);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("OrganisationController", "UpdateCaseType", e.ToString(), e.HResult,
+                    User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade vid uppdatering av ärendetyp.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
+            }
+            return RedirectToAction("GetCasetypes");
+        }
+
 
         [HttpPost]
         [Authorize]
@@ -1189,6 +1225,44 @@ namespace InrappSos.AstridWeb.Controllers
                     return View("CustomError", errorModel);
                 }
                 return RedirectToAction("GetOrganisationsSFTPAccounts", new { selectedOrganisationId });
+            }
+
+            return View();
+        }
+
+        [Authorize]
+        public ActionResult CreateCaseType()
+        {
+            var model = new OrganisationViewModels.ArendetypViewModel();
+            return View(model);
+        }
+
+        // POST
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public ActionResult CreateCaseType(Arendetyp arendeTyp)
+        {
+            var org = new Organisation();
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var userName = User.Identity.GetUserName();
+                    _portalSosService.SkapaArendetyp(arendeTyp, userName);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    ErrorManager.WriteToErrorLog("OrganisationController", "CreateCaseType", e.ToString(), e.HResult, User.Identity.Name);
+                    var errorModel = new CustomErrorPageModel
+                    {
+                        Information = "Ett fel inträffade när ny ärendetyp skulle sparas.",
+                        ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                    };
+                    return View("CustomError", errorModel);
+                }
+                return RedirectToAction("GetCaseTypes");
             }
 
             return View();

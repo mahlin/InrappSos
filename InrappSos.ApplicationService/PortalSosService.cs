@@ -2398,6 +2398,17 @@ namespace InrappSos.ApplicationService
             _portalSosRepository.CreateOrgType(orgtyp);
         }
 
+        public void SkapaArendetyp(Arendetyp arendetyp, string userName)
+        {
+            //Sätt datum och användare
+            arendetyp.SkapadDatum = DateTime.Now;
+            arendetyp.SkapadAv = userName;
+            arendetyp.AndradDatum = DateTime.Now;
+            arendetyp.AndradAv = userName;
+
+            _portalSosRepository.CreateCaseType(arendetyp);
+        }
+
         public void SkapaFAQKategori(AdmFAQKategori faqKategori, string userName)
         {
             //Sätt datum och användare
@@ -2661,6 +2672,14 @@ namespace InrappSos.ApplicationService
             orgtyp.AndradDatum = DateTime.Now;
             orgtyp.AndradAv = userName;
             _portalSosRepository.UpdateOrgType(orgtyp);
+        }
+
+        public void UppdateraArendetyp(Arendetyp caseType, string userName)
+        {
+            //Sätt datum och användare
+            caseType.AndradDatum = DateTime.Now;
+            caseType.AndradAv = userName;
+            _portalSosRepository.UpdateCaseType(caseType);
         }
 
         public void UppdateraUppgiftsskyldighet(AdmUppgiftsskyldighet uppgSkyldighet, string userName)

@@ -865,7 +865,7 @@ namespace InrappSos.AstridWeb.Controllers
         }
 
         // GET
-        [Authorize]
+        [Authorize(Roles = "Admin, InrappAdmin")]
         public ActionResult CreateForvantadeLeveranser(bool filterPgnde = false, int selectedRegId = 0)
         {
             // Ladda drop down lists
@@ -886,7 +886,7 @@ namespace InrappSos.AstridWeb.Controllers
         // POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
+        [Authorize(Roles = "Admin, InrappAdmin")]
         public ActionResult CreateForvantadeLeveranserDraft(LeveransViewModels.LeveransViewModel model)
         {
             if (ModelState.IsValid)

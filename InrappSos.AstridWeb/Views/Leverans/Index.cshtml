@@ -453,14 +453,21 @@
         @Html.HiddenFor(m => m.SelectedForvLevId)
         @Html.HiddenFor(m => m.FilterPagaende)
 
-        <div style="padding-left: 4px;">
-            @Html.ActionLink("Skapa ny förväntad leverans", "CreateForvantadLeverans", "Leverans", new { filterPgnde = Model.FilterPagaende, selectedRegId = Model.SelectedRegisterId }, null)
-        </div>
+        if (Request.IsAuthenticated)
+         {
+             if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin"))
+             {
+
+                 <div style="padding-left: 4px;">
+                     @Html.ActionLink("Skapa ny förväntad leverans", "CreateForvantadLeverans", "Leverans", new {filterPgnde = Model.FilterPagaende, selectedRegId = Model.SelectedRegisterId}, null)
+                 </div>
 
 
-        <div style="padding-left: 4px;">
-            @Html.ActionLink("Skapa förväntade leveranser (gäller f.n. endast månadsleveranser)", "CreateForvantadeLeveranser", "Leverans", new { filterPgnde = Model.FilterPagaende, selectedRegId = Model.SelectedRegisterId }, null)
-        </div>
+                 <div style="padding-left: 4px;">
+                     @Html.ActionLink("Skapa förväntade leveranser (gäller f.n. endast månadsleveranser)", "CreateForvantadeLeveranser", "Leverans", new {filterPgnde = Model.FilterPagaende, selectedRegId = Model.SelectedRegisterId}, null)
+                 </div>
+             }
+         }
 
 
         <div id="gridContent" style="font-family: Arial; padding-top: 20px;">

@@ -441,7 +441,7 @@ namespace InrappSos.ApplicationService.Helpers
                 var timestamp = DateTime.Now.ToString("yyyy-MM-dd" + "T" + "HHmmss");
                 var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file.FileName);
                 var extension = Path.GetExtension(file.FileName);
-                extendedFileName = fileNameWithoutExtension + "_" + caseNumber + "_" + timestamp + extension;
+                extendedFileName = caseNumber + "_" + timestamp + "_" + fileNameWithoutExtension + extension;
 
 
                 //Save to database

@@ -1,8 +1,90 @@
-﻿
-@{
-    ViewBag.Title = "EditArendetyp";
-    Layout = "EditRole";
-}
+﻿@model InrappSos.AstridWeb.Models.ViewModels.OrganisationViewModels.OrganisationViewModel
 
-<h2>EditArendetyp</h2>
+
+<script type="text/javascript">
+    $(function () {
+        $('.edit-mode').hide();
+        $('.edit-user, .cancel-user').on('click',
+            function () {
+                var tr = $(this).parents('tr:first');
+                tr.find('.edit-mode, .display-mode').toggle();
+            });
+        $('.save-user').on('click',
+            function () {
+                var tr = $(this).parents('tr:first');
+                var caseStatusId = tr.find("#CaseStatusId").html();
+                var caseStatusName = tr.find("#CaseStatusName").val();
+
+                //Creating ArendeStatus JSON object
+                var caseStatus =
+                {
+                    "Id": caseStatusId,
+                    "ArendeStatusNamn": caseStatusName
+                };
+                //Posting ArendeStatus object to controller's Update action method
+                $.ajax({
+                    url: '/Organisation/UpdateCaseStatus',
+                    data: JSON.stringify(caseStatus),
+                    type: 'POST',
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (data) {
+                        location.reload();
+                        //$("#pageContainer").html(data);
+                        //tr.find('.edit-mode, .display-mode').toggle();
+                        //$('#footer').hide();
+                        //alert('Record updated Successfully!!');
+                    }
+                });
+
+            });
+
+        $('.edit-user').on('click',
+            function () {
+                var tr = $(this).parents('tr:first');
+                var caseStatusId = tr.find("#CaseStatusId").html();
+                var caseStatusName = tr.find("#CaseStatusName").val();
+                tr.find("#lblName").text(caseStatusName);
+            });
+    });
+
+</script>
+
+<div id="pageContainer">
+    <br />
+    @if (Model != null)
+    {
+        <div class="col-md-12 padding-top-25">
+            <h4>Administrera ärendestatusar</h4>
+            <hr />
+
+            @Html.HiddenFor(m => m.SelectedCaseTypeId)
+
+            @Html.ActionLink("Skapa ny ärendestatus", "CreateCaseStatus", "Organisation", null, new { style = "padding-left:20px;" })
+            <div id="gridContent" style="font-family: Arial; padding: 20px;">
+                @{
+                    ViewBag.Title = "Administrera ärendestatus";
+                    var grid = new WebGrid(source: Model.CaseStatuses, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "caseTypesGrid");
+                    grid.Pager(WebGridPagerModes.All);
+                }
+                @grid.GetHtml(tableStyle: "webgrid-table900",
+                    headerStyle: "webgrid-header",
+                    footerStyle: "webgrid-footer",
+                    alternatingRowStyle: "webgrid-alternating-row",
+                    selectedRowStyle: "webgrid-selected-row",
+                    rowStyle: "webgrid-row-style",
+                    mode: WebGridPagerModes.All,
+                    columns: grid.Columns(
+                        grid.Column("Id", format: @<text><span class="display-mode">@item.Id</span><label id="CaseStatusId" class="edit-mode colMinWidth">@item.Id</label></text>, style: "colMinWidth"),
+                          grid.Column("ArendeStatusNamn", "Namn", format: @<text><span class="display-mode"><label id="lblName">@item.ArendeStatusNamn</label></span>
+                        <input type="text" id="CaseStatusName" value="@item.ArendeStatusNamn" class="edit-mode form-control" /></text>, style: "col1Width"),
+                         grid.Column(null, format: @<text>
+                            <button class="edit-user display-mode btn btn-default">Ändra</button>
+                            @*<button class="display-mode btn btn-default" onclick="deleteOrgType(@item.Id, '@item.Typnamn');return false;">Ta bort</button>*@
+                            <button class="save-user edit-mode btn btn-default">Spara</button>
+                            <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
+                        </text>, style: "col3Width", canSort: false)))
+            </div>
+        </div>
+    }
+</div>
 

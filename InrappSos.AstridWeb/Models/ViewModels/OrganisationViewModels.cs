@@ -56,6 +56,8 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public List<AdmOrganisationstyp> OrganisationTypes { get; set; }
 
             public List<Arendetyp> CaseTypes { get; set; }
+
+            public List<ArendeStatus> CaseStatuses { get; set; }
             public List<UndantagEpostadressViewModel> UndantagEpostadresser { get; set; }
 
             public List<UndantagForvantadfilViewModel> UndantagForvantadfiler { get; set; }
@@ -80,6 +82,13 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public int Arendetypid { get; set; }
             public string ArendetypNamn { get; set; }
             public string Slussmapp { get; set; }
+            public bool Selected { get; set; } = false;
+        }
+
+        public class ArendeStatusViewModel
+        {
+            public int ArendeStatusid { get; set; }
+            public string ArendeStatusNamn { get; set; }
             public bool Selected { get; set; } = false;
         }
 

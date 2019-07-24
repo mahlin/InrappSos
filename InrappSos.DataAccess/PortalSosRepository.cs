@@ -1793,6 +1793,12 @@ namespace InrappSos.DataAccess
             DbContext.SaveChanges();
         }
 
+        public void CreateCaseStatus(ArendeStatus caseStatus)
+        {
+            DbContext.ArendeStatus.Add(caseStatus);
+            DbContext.SaveChanges();
+        }
+
         public void CreateFAQCategory(AdmFAQKategori faqCategory)
         {
             DbContext.AdmFAQKategori.Add(faqCategory);
@@ -2156,6 +2162,13 @@ namespace InrappSos.DataAccess
             var caseTypeDb = DbContext.Arendetyp.Where(u => u.Id == caseType.Id).Select(u => u).SingleOrDefault();
             caseTypeDb.ArendetypNamn = caseType.ArendetypNamn;
             caseTypeDb.Slussmapp = caseType.Slussmapp;
+            DbContext.SaveChanges();
+        }
+
+        public void UpdateCaseStatus(ArendeStatus caseStatus)
+        {
+            var caseStatusDb = DbContext.ArendeStatus.Where(u => u.Id == caseStatus.Id).Select(u => u).SingleOrDefault();
+            caseStatusDb.ArendeStatusNamn = caseStatus.ArendeStatusNamn;
             DbContext.SaveChanges();
         }
 

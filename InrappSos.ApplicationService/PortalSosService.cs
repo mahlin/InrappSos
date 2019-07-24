@@ -2409,6 +2409,17 @@ namespace InrappSos.ApplicationService
             _portalSosRepository.CreateCaseType(arendetyp);
         }
 
+        public void SkapaArendestatus(ArendeStatus arendeStatus, string userName)
+        {
+            //Sätt datum och användare
+            arendeStatus.SkapadDatum = DateTime.Now;
+            arendeStatus.SkapadAv = userName;
+            arendeStatus.AndradDatum = DateTime.Now;
+            arendeStatus.AndradAv = userName;
+
+            _portalSosRepository.CreateCaseStatus(arendeStatus); ;
+        }
+
         public void SkapaFAQKategori(AdmFAQKategori faqKategori, string userName)
         {
             //Sätt datum och användare
@@ -2680,6 +2691,14 @@ namespace InrappSos.ApplicationService
             caseType.AndradDatum = DateTime.Now;
             caseType.AndradAv = userName;
             _portalSosRepository.UpdateCaseType(caseType);
+        }
+
+        public void UppdateraArendestatus(ArendeStatus caseStatus, string userName)
+        {
+            //Sätt datum och användare
+            caseStatus.AndradDatum = DateTime.Now;
+            caseStatus.AndradAv = userName;
+            _portalSosRepository.UpdateCaseStatus(caseStatus);
         }
 
         public void UppdateraUppgiftsskyldighet(AdmUppgiftsskyldighet uppgSkyldighet, string userName)

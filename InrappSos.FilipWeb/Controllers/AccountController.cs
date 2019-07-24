@@ -151,7 +151,6 @@ namespace InrappSos.FilipWeb.Controllers
                 switch (result)
                 {
                     case SignInStatus.Success:
-                        var z = await UserManager.IsInRoleAsync(user.Id, "ArendeUpp");
                         _portalService.SaveToLoginLog(user.Id, user.UserName);
                         //Check users role => startpage
                         if (await UserManager.IsInRoleAsync(user.Id, "ArendeUpp"))
@@ -283,7 +282,19 @@ namespace InrappSos.FilipWeb.Controllers
                     case SignInStatus.Success:
                         var user = UserManager.FindByEmail(model.UserEmail);
                         _portalService.SaveToLoginLog(user.Id, user.UserName);
-                        return RedirectToLocal(model.ReturnUrl);
+                        //Check users role => startpage
+                        if (await UserManager.IsInRoleAsync(user.Id, "ArendeUpp"))
+                        {
+                            return RedirectToAction("Index", "FileDrop");
+                        }
+                        else if (await UserManager.IsInRoleAsync(user.Id, "RegUpp"))
+                        {
+                            return RedirectToAction("Index", "FileUpload");
+                        }
+                        else
+                        {
+                            return RedirectToLocal(model.ReturnUrl);
+                        }
                     case SignInStatus.LockedOut:
                         return View("Lockout");
                     case SignInStatus.Failure:

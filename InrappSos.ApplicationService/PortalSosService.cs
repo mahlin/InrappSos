@@ -1350,6 +1350,17 @@ namespace InrappSos.ApplicationService
             return sorteradHistorikLista;
         }
 
+        public IEnumerable<FildroppDetaljDTO> HamtaFildroppsHistorikForValtArende(int arendeId)
+        {
+            var leveransList = _portalSosRepository.GetDroppedFilesForCase(arendeId).ToList();
+            var historikLista = SkapaHistorikraderForDroppadeFiler(leveransList);
+
+            var sorteradHistorikLista = historikLista.OrderByDescending(x => x.AndradDatum).ToList();
+            return sorteradHistorikLista;
+        }
+
+        
+
         public IEnumerable<FilloggDetaljDTO> HamtaTop10HistorikForOrganisation(int orgId)
         {
             var historikLista = new List<FilloggDetaljDTO>();

@@ -60,7 +60,7 @@ $(document).on('change', '#ddlCase', function () {
     } else {
         $('.fileinput-button').hide();
     }
-
+    updateHistory();
 });
 
 function checkOkToUpload() {
@@ -69,6 +69,21 @@ function checkOkToUpload() {
     } else {
         $('.start').hide();
     }
+}
+
+function updateHistory() {
+    $.ajax({ // create an AJAX call...'        
+        data: $(this).serialize(), // get the form data
+        cache: false,
+        type: 'post', // GET or POST
+        url: $('#StartUrl').val() + '/FileDrop/RefreshFilesHistory?caseId=' + $('#SelectedCaseId').val(),
+        success: function (response) { // on success..
+            $("#updateHistoryForm").html(response);
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            alert('error:' + errorThrown);
+        }
+    });  
 }
 
 $(document).on('submit', '#updateHistoryForm', function () {

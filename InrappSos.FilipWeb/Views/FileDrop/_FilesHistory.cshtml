@@ -15,38 +15,41 @@
 {
     @Html.HiddenFor(m => Model.OrganisationsNamn)
     @Html.HiddenFor(m => Model.StartUrl)
+    @Html.HiddenFor(m => Model.SelectedCaseId)
 
-    <H4>Historik för @Html.Raw(Model.OrganisationsNamn) <span style="font-size: 0.7em"></span></H4>
-    <table class="table table-striped" id="historyTable" >
-        <thead>
-            <tr class="historyHeader" style="background-color: #f9f9f9;">
-                <th>Ärende</th>
-                <th>Filnamn</th>
-                <th>Uppgiftslämnare</th>
-                <th>Leveranstidpunkt</th>
-
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model.HistorikLista != null)
-            {
-                if (Model.HistorikLista.Count > 0)
-                { 
-                    int i = 0;
-                    while (i < 10 && i < Model.HistorikLista.Count)
+    if (Model.HistorikLista != null)
+    {
+        if (Model.HistorikLista.Count > 0)
+        {
+            <H4>Historik för @Html.Raw(Model.SelectedCaseName), @Html.Raw(Model.SelectedCaseNumber) <span style="font-size: 0.7em"></span></H4>
+            <table class="table table-striped" id="historyTable">
+                <thead>
+                    <tr class="historyHeader" style="background-color: #f9f9f9;">
+                        <th>Ärende</th>
+                        <th>Filnamn</th>
+                        <th>Uppgiftslämnare</th>
+                        <th>Leveranstidpunkt</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.HistorikLista.Count > 0)
                     {
-            <tr>
-                <td>@Model.HistorikLista[i].Arendenummer - @Model.HistorikLista[i].Arendenamn</td>
-                <td>@Model.HistorikLista[i].Filnamn</td>
-                <td>@Model.HistorikLista[i].Kontaktperson</td>
-                <td>@Model.HistorikLista[i].AndradDatum</td>
-            </tr>
-                        i++;
+                        int i = 0;
+                        while (i < 10 && i < Model.HistorikLista.Count)
+                        {
+                            <tr>
+                                <td>@Model.HistorikLista[i].Arendenummer - @Model.HistorikLista[i].Arendenamn</td>
+                                <td>@Model.HistorikLista[i].Filnamn</td>
+                                <td>@Model.HistorikLista[i].Kontaktperson</td>
+                                <td>@Model.HistorikLista[i].AndradDatum</td>
+                            </tr>
+                            i++;
+                        }
                     }
-                }
-            }
-        </tbody>
-    </table>
+                </tbody>
+            </table>
+        }
+    }
 }
 
 

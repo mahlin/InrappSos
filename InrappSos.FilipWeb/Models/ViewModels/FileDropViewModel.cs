@@ -16,6 +16,8 @@ namespace InrappSos.FilipWeb.Models.ViewModels
         public string SelectedCaseId { get; set; }
         public List<Arende> CaseList { get; set; }
         public string OrganisationsNamn { get; set; }
+        public string SelectedCaseName { get; set; }
+        public string SelectedCaseNumber { get; set; }
         public List<FildroppDetaljDTO> HistorikLista { get; set; }
         public string StartUrl { get; set; }
 

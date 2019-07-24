@@ -255,6 +255,8 @@ namespace InrappSos.ApplicationService.Interface
 
         IEnumerable<FildroppDetaljDTO> HamtaFildroppsHistorikForAnvandaresArenden(string userId);
 
+        IEnumerable<FildroppDetaljDTO> HamtaFildroppsHistorikForValtArende(int arendeId);
+
         IEnumerable<FilloggDetaljDTO> HamtaTop10HistorikForOrganisation(int orgId);
 
         IEnumerable<FilloggDetaljDTO> HamtaTop10HistorikForOrganisationAndUser(int orgId, string userId);

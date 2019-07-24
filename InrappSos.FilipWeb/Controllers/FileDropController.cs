@@ -58,10 +58,7 @@ namespace InrappSos.FilipWeb.Controllers
                 var userOrg = _portalService.HamtaOrgForAnvandare(User.Identity.GetUserId());
                 _model.OrganisationsNamn = userOrg.Organisationsnamn;
 
-                //Hämta historik för användarens ärenden
-                var historyFileList = _portalService.HamtaFildroppsHistorikForAnvandaresArenden(User.Identity.GetUserId()).ToList();
-                _model.HistorikLista = historyFileList;
-
+                _model.HistorikLista = new List<FildroppDetaljDTO>();
                 var usersCases = _portalService.HamtaAnvandaresArenden(User.Identity.GetUserId()).ToList();
                 // Ladda drop down list.  
                 ViewBag.CaseList = CreateCaseDropDownList(usersCases);
@@ -144,14 +141,18 @@ namespace InrappSos.FilipWeb.Controllers
             return View(model);
         }
 
-        public ActionResult RefreshFilesHistory(FileDropViewModel model)
+        public ActionResult RefreshFilesHistory(FileDropViewModel model, string caseId)
         {
-            var userId = User.Identity.GetUserId();
-
-            List<FildroppDetaljDTO> historyFileList = _portalService.HamtaFildroppsHistorikForAnvandaresArenden(userId).ToList();
-
+            List<FildroppDetaljDTO> historyFileList = new List<FildroppDetaljDTO>();
+            if (caseId != "")
+            {
+                //Hämta historik för valt ärende
+                var arende = _portalService.HamtaArendeById(Convert.ToInt32(caseId));
+                model.SelectedCaseName = arende.Arendenamn;
+                model.SelectedCaseNumber = arende.Arendenr;
+                historyFileList = _portalService.HamtaFildroppsHistorikForValtArende(Convert.ToInt32(caseId)).ToList();
+            }
             model.HistorikLista = historyFileList;
-
             return PartialView("_FilesHistory", model);
         }
 

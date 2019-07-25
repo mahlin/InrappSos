@@ -374,6 +374,8 @@ namespace InrappSos.DataAccess
         void CreateOrgType(AdmOrganisationstyp orgType);
 
         void CreateCaseType(Arendetyp caseType);
+
+        void CreateCaseManager(ArendeAnsvarig caseManager);
         void CreateCaseStatus(ArendeStatus caseStatus);
 
         void CreateFAQCategory(AdmFAQKategori faqCategory);
@@ -419,6 +421,8 @@ namespace InrappSos.DataAccess
         void UpdateOrgType(AdmOrganisationstyp orgType);
 
         void UpdateCaseType(Arendetyp caseType);
+
+        void UpdateCaseManager(ArendeAnsvarig caseManager);
 
         void UpdateCaseStatus(ArendeStatus caseStatus);
 

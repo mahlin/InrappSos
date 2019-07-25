@@ -15,6 +15,11 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public List<AppUserAdminViewModel> AdminUsers { get; set; }
             public string SelectedUser { get; set; }
             public List<IdentityRoleViewModel> Roller { get; set; }
+            public List<Arendetyp> CaseTypes { get; set; }
+
+            public List<ArendeStatus> CaseStatuses { get; set; }
+
+            public List<ArendeAnsvarig> CaseManagers { get; set; }
         }
 
         public class AppUserAdminViewModel
@@ -37,6 +42,27 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public ApplicationRole ApplicationRole{ get; set; }
             public string SelectedApplication { get; set; }
 
+        }
+
+        public class ArendetypViewModel
+        {
+            public int Arendetypid { get; set; }
+            public string ArendetypNamn { get; set; }
+            public string Slussmapp { get; set; }
+            public bool Selected { get; set; } = false;
+        }
+
+        public class ArendeAnsvarigViewModel
+        {
+            public int Id { get; set; }
+            public string Epostadress { get; set; }
+        }
+
+        public class ArendeStatusViewModel
+        {
+            public int ArendeStatusid { get; set; }
+            public string ArendeStatusNamn { get; set; }
+            public bool Selected { get; set; } = false;
         }
     }
 }

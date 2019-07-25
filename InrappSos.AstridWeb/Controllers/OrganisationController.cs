@@ -266,25 +266,6 @@ namespace InrappSos.AstridWeb.Controllers
 
         //GET
         [Authorize]
-        public ActionResult GetCaseTypes()
-        {
-            var model = new OrganisationViewModels.OrganisationViewModel();
-            model.CaseTypes = _portalSosService.HamtaAllaArendetyper().ToList();
-            return View("EditArendetyp", model);
-        }
-
-        //GET
-        [Authorize]
-        public ActionResult GetCaseStatuses()
-        {
-            var model = new OrganisationViewModels.OrganisationViewModel();
-            model.CaseStatuses = _portalSosService.HamtaAllaArendestatusar().ToList();
-            return View("EditArendestatus", model);
-        }
-
-
-        //GET
-        [Authorize]
         public ActionResult GetOrganisationTypes()
         {
             var model = new OrganisationViewModels.OrganisationViewModel();
@@ -922,61 +903,7 @@ namespace InrappSos.AstridWeb.Controllers
             }
         }
 
-        [HttpPost]
-        [Authorize]
-        public ActionResult UpdateCaseType(Arendetyp caseType)
-        {
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    var userName = User.Identity.GetUserName();
-                    _portalSosService.UppdateraArendetyp(caseType, userName);
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                ErrorManager.WriteToErrorLog("OrganisationController", "UpdateCaseType", e.ToString(), e.HResult,
-                    User.Identity.Name);
-                var errorModel = new CustomErrorPageModel
-                {
-                    Information = "Ett fel inträffade vid uppdatering av ärendetyp.",
-                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
-                };
-                return View("CustomError", errorModel);
-            }
-            return RedirectToAction("GetCasetypes");
-        }
-
-        [HttpPost]
-        [Authorize]
-        public ActionResult UpdateCaseStatus(ArendeStatus caseStatus)
-        {
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    var userName = User.Identity.GetUserName();
-                    _portalSosService.UppdateraArendestatus(caseStatus, userName);
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                ErrorManager.WriteToErrorLog("OrganisationController", "UpdateCaseStatus", e.ToString(), e.HResult,
-                    User.Identity.Name);
-                var errorModel = new CustomErrorPageModel
-                {
-                    Information = "Ett fel inträffade vid uppdatering av ärendestatus.",
-                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
-                };
-                return View("CustomError", errorModel);
-            }
-            return RedirectToAction("GetCasetypes");
-        }
-
-
+        
         [HttpPost]
         [Authorize]
         public ActionResult UpdateOrganisationType(AdmOrganisationstyp orgtype)
@@ -1265,85 +1192,6 @@ namespace InrappSos.AstridWeb.Controllers
 
             return View();
         }
-
-        [Authorize]
-        public ActionResult CreateCaseType()
-        {
-            var model = new OrganisationViewModels.ArendetypViewModel();
-            return View(model);
-        }
-
-        // POST
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize]
-        public ActionResult CreateCaseType(Arendetyp arendeTyp)
-        {
-            var org = new Organisation();
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    var userName = User.Identity.GetUserName();
-                    _portalSosService.SkapaArendetyp(arendeTyp, userName);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                    ErrorManager.WriteToErrorLog("OrganisationController", "CreateCaseType", e.ToString(), e.HResult, User.Identity.Name);
-                    var errorModel = new CustomErrorPageModel
-                    {
-                        Information = "Ett fel inträffade när ny ärendetyp skulle sparas.",
-                        ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
-                    };
-                    return View("CustomError", errorModel);
-                }
-                return RedirectToAction("GetCaseTypes");
-            }
-
-            return View();
-        }
-
-
-        [Authorize]
-        public ActionResult CreateCaseStatus()
-        {
-            var model = new OrganisationViewModels.ArendeStatusViewModel();
-            return View(model);
-        }
-
-        // POST
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize]
-        public ActionResult CreateCaseStatus(ArendeStatus arendeStatus)
-        {
-            var org = new Organisation();
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    var userName = User.Identity.GetUserName();
-                    _portalSosService.SkapaArendestatus(arendeStatus, userName);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                    ErrorManager.WriteToErrorLog("OrganisationController", "CreateCaseStatus", e.ToString(), e.HResult, User.Identity.Name);
-                    var errorModel = new CustomErrorPageModel
-                    {
-                        Information = "Ett fel inträffade när ny ärendestatus skulle sparas.",
-                        ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
-                    };
-                    return View("CustomError", errorModel);
-                }
-                return RedirectToAction("GetCaseStatuses");
-            }
-
-            return View();
-        }
-
-
 
         [Authorize]
         public ActionResult CreateOrganisationType()

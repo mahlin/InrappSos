@@ -1,4 +1,4 @@
-﻿@model InrappSos.AstridWeb.Models.ViewModels.OrganisationViewModels.ArendeStatusViewModel
+﻿@model InrappSos.AstridWeb.Models.ViewModels.AdminViewModels.ArendeStatusViewModel
 
 @{
     ViewBag.Title = "Skapa ärendestatus";
@@ -11,7 +11,7 @@
 
 
 
-@using (Html.BeginForm("CreateCaseStatus", "Organisation", FormMethod.Post))
+@using (Html.BeginForm("CreateCaseStatus", "Admin", FormMethod.Post))
 {
     @Html.AntiForgeryToken()
 
@@ -34,7 +34,7 @@
         </div>
     </div>
     <div>
-        @Html.ActionLink("Tillbaka", "GetCaseStatuses", "Organisation")
+        @Html.ActionLink("Tillbaka", "GetCaseStatuses", "Admin")
 
     </div>
 }

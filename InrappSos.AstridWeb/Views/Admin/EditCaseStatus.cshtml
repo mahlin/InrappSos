@@ -1,4 +1,4 @@
-﻿@model InrappSos.AstridWeb.Models.ViewModels.OrganisationViewModels.OrganisationViewModel
+﻿@model InrappSos.AstridWeb.Models.ViewModels.AdminViewModels.AdminViewModel
 
 
 <script type="text/javascript">
@@ -12,21 +12,19 @@
         $('.save-user').on('click',
             function () {
                 var tr = $(this).parents('tr:first');
-                var caseTypeId = tr.find("#CaseTypeId").html();
-                var caseTypeName = tr.find("#CaseTypeName").val();
-                var caseTypefolder = tr.find("#CaseTypeFolder").val();
+                var caseStatusId = tr.find("#CaseStatusId").html();
+                var caseStatusName = tr.find("#CaseStatusName").val();
 
-                //Creating Arendetyp JSON object
-                var caseType =
+                //Creating ArendeStatus JSON object
+                var caseStatus =
                 {
-                    "Id": caseTypeId,
-                    "ArendetypNamn": caseTypeName,
-                    "Slussmapp": caseTypefolder
+                    "Id": caseStatusId,
+                    "ArendeStatusNamn": caseStatusName
                 };
-                //Posting Arendetyp object to controller's Update action method
+                //Posting ArendeStatus object to controller's Update action method
                 $.ajax({
-                    url: '/Organisation/UpdateCaseType',
-                    data: JSON.stringify(caseType),
+                    url: '/Admin/UpdateCaseStatus',
+                    data: JSON.stringify(caseStatus),
                     type: 'POST',
                     contentType: 'application/json; charset=utf-8',
                     success: function (data) {
@@ -43,11 +41,9 @@
         $('.edit-user').on('click',
             function () {
                 var tr = $(this).parents('tr:first');
-                var caseTypeId = tr.find("#CaseTypeId").html();
-                var caseTypeName = tr.find("#CaseTypeName").val();
-                var caseTypefolder = tr.find("#CaseTypeFolder").val();
-                tr.find("#lblName").text(caseTypeName);
-                tr.find("#lblDesc").text(caseTypefolder);
+                var caseStatusId = tr.find("#CaseStatusId").html();
+                var caseStatusName = tr.find("#CaseStatusName").val();
+                tr.find("#lblName").text(caseStatusName);
             });
     });
 
@@ -58,16 +54,14 @@
     @if (Model != null)
     {
         <div class="col-md-12 padding-top-25">
-            <h4>Administrera ärendetyper</h4>
+            <h4>Administrera ärendestatusar</h4>
             <hr />
 
-            @Html.HiddenFor(m => m.SelectedCaseTypeId)
-
-            @Html.ActionLink("Skapa ny ärendetyp", "CreateCaseType", "Organisation", null, new { style = "padding-left:20px;" })
+            @Html.ActionLink("Skapa ny ärendestatus", "CreateCaseStatus", "Admin", null, new { style = "padding-left:20px;" })
             <div id="gridContent" style="font-family: Arial; padding: 20px;">
                 @{
-                    ViewBag.Title = "Administrera ärendetyper";
-                    var grid = new WebGrid(source: Model.CaseTypes, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "caseTypesGrid");
+                    ViewBag.Title = "Administrera ärendestatus";
+                    var grid = new WebGrid(source: Model.CaseStatuses, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "caseTypesGrid");
                     grid.Pager(WebGridPagerModes.All);
                 }
                 @grid.GetHtml(tableStyle: "webgrid-table900",
@@ -78,11 +72,9 @@
                     rowStyle: "webgrid-row-style",
                     mode: WebGridPagerModes.All,
                     columns: grid.Columns(
-                        grid.Column("Arendetypid", format: @<text><span class="display-mode">@item.Id</span><label id="CaseTypeId" class="edit-mode colMinWidth">@item.Id</label></text>, style: "colMinWidth"),
-                         grid.Column("ArendetypNamn", "Namn", format: @<text><span class="display-mode"><label id="lblName">@item.ArendetypNamn</label></span>
-                        <input type="text" id="CaseTypeName" value="@item.ArendetypNamn" class="edit-mode form-control" /></text>, style: "col1Width"),
-                         grid.Column("Slussmapp", "Slussmapp", format: @<text><span class="display-mode"><label id="lblDesc">@item.Slussmapp</label></span>
-                        <input type="text" id="CaseTypeFolder" value="@item.Slussmapp" class="edit-mode form-control" /></text>, style: "col1Width"),
+                        grid.Column("Id", format: @<text><span class="display-mode">@item.Id</span><label id="CaseStatusId" class="edit-mode colMinWidth">@item.Id</label></text>, style: "colMinWidth"),
+                          grid.Column("ArendeStatusNamn", "Namn", format: @<text><span class="display-mode"><label id="lblName">@item.ArendeStatusNamn</label></span>
+                        <input type="text" id="CaseStatusName" value="@item.ArendeStatusNamn" class="edit-mode form-control" /></text>, style: "col1Width"),
                          grid.Column(null, format: @<text>
                             <button class="edit-user display-mode btn btn-default">Ändra</button>
                             @*<button class="display-mode btn btn-default" onclick="deleteOrgType(@item.Id, '@item.Typnamn');return false;">Ta bort</button>*@

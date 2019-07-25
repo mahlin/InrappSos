@@ -1,4 +1,4 @@
-﻿@model InrappSos.AstridWeb.Models.ViewModels.OrganisationViewModels.ArendetypViewModel
+﻿@model InrappSos.AstridWeb.Models.ViewModels.AdminViewModels.ArendetypViewModel
 
 @{
     ViewBag.Title = "Skapa ärendetyp";
@@ -11,7 +11,7 @@
 
 
 
-@using (Html.BeginForm("CreateCaseType", "Organisation", FormMethod.Post))
+@using (Html.BeginForm("CreateCaseType", "Admin", FormMethod.Post))
 {
     @Html.AntiForgeryToken()
 
@@ -42,7 +42,7 @@
         </div>
     </div>
     <div>
-        @Html.ActionLink("Tillbaka", "GetCaseTypes", "Organisation")
+        @Html.ActionLink("Tillbaka", "GetCaseTypes", "Admin")
 
     </div>
 }

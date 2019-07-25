@@ -94,6 +94,145 @@ namespace InrappSos.AstridWeb.Controllers
             return View("Index", model);
         }
 
+        
+
+        [HttpPost]
+        [Authorize]
+        public ActionResult DeleteAdminUser(string userId)
+        {
+            try
+            {
+                _portalSosService.TaBortAdminAnvandare(userId);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("AdminController", "DeleteAdminUser", e.ToString(), e.HResult, User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade när Astrid-användare skulle tas bort.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
+            }
+            return RedirectToAction("GetAstridUsers");
+        }
+       
+
+        public bool AddUserToRole(ApplicationUserManager _userManager, string userId, string roleName)
+        {
+            var idResult = _userManager.AddToRole(userId, roleName);
+            return idResult.Succeeded;
+        }
+
+        //GET
+        [Authorize]
+        public ActionResult GetCaseTypes()
+        {
+            var model = new AdminViewModels.AdminViewModel();
+            model.CaseTypes = _portalSosService.HamtaAllaArendetyper().ToList();
+            return View("EditcaseType", model);
+        }
+
+        //GET
+        [Authorize]
+        public ActionResult GetCaseStatuses()
+        {
+            var model = new AdminViewModels.AdminViewModel();
+            model.CaseStatuses = _portalSosService.HamtaAllaArendestatusar().ToList();
+            return View("EditcaseStatus", model);
+        }
+
+        //GET
+        [Authorize]
+        public ActionResult GetCaseManagers()
+        {
+            var model = new AdminViewModels.AdminViewModel();
+            model.CaseManagers = _portalSosService.HamtaAllaArendeansvariga().ToList();
+            return View("EditCaseManagers", model);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public ActionResult UpdateCaseManager(ArendeAnsvarig caseManager)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var userName = User.Identity.GetUserName();
+                    _portalSosService.UppdateraArendeAnsvarig(caseManager, userName);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("OrganisationController", "UpdateCaseManager", e.ToString(), e.HResult,
+                    User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade vid uppdatering av ärendeansvarig.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
+            }
+            return RedirectToAction("GetCaseManagers");
+        }
+
+        [HttpPost]
+        [Authorize]
+        public ActionResult UpdateCaseType(Arendetyp caseType)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var userName = User.Identity.GetUserName();
+                    _portalSosService.UppdateraArendetyp(caseType, userName);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("OrganisationController", "UpdateCaseType", e.ToString(), e.HResult,
+                    User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade vid uppdatering av ärendetyp.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
+            }
+            return RedirectToAction("GetCasetypes");
+        }
+
+        [HttpPost]
+        [Authorize]
+        public ActionResult UpdateCaseStatus(ArendeStatus caseStatus)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var userName = User.Identity.GetUserName();
+                    _portalSosService.UppdateraArendestatus(caseStatus, userName);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("OrganisationController", "UpdateCaseStatus", e.ToString(), e.HResult,
+                    User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade vid uppdatering av ärendestatus.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
+            }
+            return RedirectToAction("GetCasetypes");
+        }
+
         [HttpPost]
         [Authorize]
         public ActionResult UpdateAdminUser(AdminViewModels.AppUserAdminViewModel user)
@@ -160,33 +299,118 @@ namespace InrappSos.AstridWeb.Controllers
 
         }
 
-        [HttpPost]
         [Authorize]
-        public ActionResult DeleteAdminUser(string userId)
+        public ActionResult CreateCaseManager()
         {
-            try
-            {
-                _portalSosService.TaBortAdminAnvandare(userId);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                ErrorManager.WriteToErrorLog("AdminController", "DeleteAdminUser", e.ToString(), e.HResult, User.Identity.Name);
-                var errorModel = new CustomErrorPageModel
-                {
-                    Information = "Ett fel inträffade när Astrid-användare skulle tas bort.",
-                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
-                };
-                return View("CustomError", errorModel);
-            }
-            return RedirectToAction("GetAstridUsers");
+            var model = new AdminViewModels.ArendeAnsvarigViewModel();
+            return View(model);
         }
-       
 
-        public bool AddUserToRole(ApplicationUserManager _userManager, string userId, string roleName)
+        // POST
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public ActionResult CreateCaseManager(ArendeAnsvarig arendeAnsvarig)
         {
-            var idResult = _userManager.AddToRole(userId, roleName);
-            return idResult.Succeeded;
+            var org = new Organisation();
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var userName = User.Identity.GetUserName();
+                    _portalSosService.SkapaArendeAnsvarig(arendeAnsvarig, userName);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    ErrorManager.WriteToErrorLog("OrganisationController", "CreateCaseManager", e.ToString(), e.HResult, User.Identity.Name);
+                    var errorModel = new CustomErrorPageModel
+                    {
+                        Information = "Ett fel inträffade när ny ärendeansvarig skulle sparas.",
+                        ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                    };
+                    return View("CustomError", errorModel);
+                }
+                return RedirectToAction("GetCaseManagers");
+            }
+
+            return View();
+        }
+
+        [Authorize]
+        public ActionResult CreateCaseType()
+        {
+            var model = new AdminViewModels.ArendetypViewModel();
+            return View(model);
+        }
+
+        // POST
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public ActionResult CreateCaseType(Arendetyp arendeTyp)
+        {
+            var org = new Organisation();
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var userName = User.Identity.GetUserName();
+                    _portalSosService.SkapaArendetyp(arendeTyp, userName);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    ErrorManager.WriteToErrorLog("OrganisationController", "CreateCaseType", e.ToString(), e.HResult, User.Identity.Name);
+                    var errorModel = new CustomErrorPageModel
+                    {
+                        Information = "Ett fel inträffade när ny ärendetyp skulle sparas.",
+                        ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                    };
+                    return View("CustomError", errorModel);
+                }
+                return RedirectToAction("GetCaseTypes");
+            }
+
+            return View();
+        }
+
+        [Authorize]
+        public ActionResult CreateCaseStatus()
+        {
+            var model = new AdminViewModels.ArendeStatusViewModel();
+            return View(model);
+        }
+
+        // POST
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public ActionResult CreateCaseStatus(ArendeStatus arendeStatus)
+        {
+            var org = new Organisation();
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var userName = User.Identity.GetUserName();
+                    _portalSosService.SkapaArendestatus(arendeStatus, userName);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    ErrorManager.WriteToErrorLog("OrganisationController", "CreateCaseStatus", e.ToString(), e.HResult, User.Identity.Name);
+                    var errorModel = new CustomErrorPageModel
+                    {
+                        Information = "Ett fel inträffade när ny ärendestatus skulle sparas.",
+                        ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                    };
+                    return View("CustomError", errorModel);
+                }
+                return RedirectToAction("GetCaseStatuses");
+            }
+
+            return View();
         }
 
 

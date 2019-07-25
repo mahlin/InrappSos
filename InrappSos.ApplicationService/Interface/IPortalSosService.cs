@@ -357,6 +357,8 @@ namespace InrappSos.ApplicationService.Interface
 
         void SkapaArendetyp(Arendetyp arendetyp, string userName);
 
+        void SkapaArendeAnsvarig(ArendeAnsvarig arendeAnsvarig, string userName);
+
         void SkapaArendestatus(ArendeStatus arendeStatus, string userName);
 
         void SkapaFAQKategori(AdmFAQKategori faqKategori, string userName);
@@ -408,6 +410,8 @@ namespace InrappSos.ApplicationService.Interface
         void UppdateraOrganisationstyp(AdmOrganisationstyp orgtyp, string userName);
 
         void UppdateraArendetyp(Arendetyp caseType, string userName);
+
+        void UppdateraArendeAnsvarig(ArendeAnsvarig caseManager, string userName);
 
         void UppdateraArendestatus(ArendeStatus caseStatus, string userName);
 

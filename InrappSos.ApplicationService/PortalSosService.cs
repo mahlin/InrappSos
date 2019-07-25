@@ -2411,6 +2411,17 @@ namespace InrappSos.ApplicationService
             _portalSosRepository.CreateCaseType(arendetyp);
         }
 
+        public void SkapaArendeAnsvarig(ArendeAnsvarig arendeAnsvarig, string userName)
+        {
+            //Sätt datum och användare
+            arendeAnsvarig.SkapadDatum = DateTime.Now;
+            arendeAnsvarig.SkapadAv = userName;
+            arendeAnsvarig.AndradDatum = DateTime.Now;
+            arendeAnsvarig.AndradAv = userName;
+
+            _portalSosRepository.CreateCaseManager(arendeAnsvarig);
+        }
+
         public void SkapaArendestatus(ArendeStatus arendeStatus, string userName)
         {
             //Sätt datum och användare
@@ -2693,6 +2704,14 @@ namespace InrappSos.ApplicationService
             caseType.AndradDatum = DateTime.Now;
             caseType.AndradAv = userName;
             _portalSosRepository.UpdateCaseType(caseType);
+        }
+
+        public void UppdateraArendeAnsvarig(ArendeAnsvarig caseManager, string userName)
+        {
+            //Sätt datum och användare
+            caseManager.AndradDatum = DateTime.Now;
+            caseManager.AndradAv = userName;
+            _portalSosRepository.UpdateCaseManager(caseManager);
         }
 
         public void UppdateraArendestatus(ArendeStatus caseStatus, string userName)

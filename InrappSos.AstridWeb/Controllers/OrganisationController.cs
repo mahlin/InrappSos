@@ -534,7 +534,7 @@ namespace InrappSos.AstridWeb.Controllers
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                ErrorManager.WriteToErrorLog("OrganisationController", "GetOrganisationsPrivateEmailAdresses", e.ToString(), e.HResult,
+                ErrorManager.WriteToErrorLog("OrganisationController", "GetOrganisationsCases", e.ToString(), e.HResult,
                     User.Identity.Name);
                 var errorModel = new CustomErrorPageModel
                 {
@@ -1459,7 +1459,7 @@ namespace InrappSos.AstridWeb.Controllers
                 {
                     //TODO - testa detta på klienten
                     //Check arendenr not already used
-                    var alredayUsed = CaseNumberAlreadyUsed(arendeVM.Arendenr, arendeVM.OrganisationsId);
+                    var alredayUsed = CaseNumberAlreadyUsed(arendeVM.Arendenr);
                     if (alredayUsed)
                     {
                         var errorModel = new CustomErrorPageModel
@@ -2409,11 +2409,11 @@ namespace InrappSos.AstridWeb.Controllers
             return lstobj;
         }
 
-        private bool CaseNumberAlreadyUsed(string arendenr, int orgId)
+        private bool CaseNumberAlreadyUsed(string arendenr)
         {
             var alreadyUsed = false;
-            var organisationCasenumbers = _portalSosService.HamtaArendenForOrg(orgId).Select(x => x.Arendenr);
-            if (organisationCasenumbers.Contains(arendenr))
+            var arende = _portalSosService.HamtaArende(arendenr);
+            if (arende != null )
             {
                 alreadyUsed = true;
             }

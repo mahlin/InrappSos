@@ -105,8 +105,6 @@ namespace InrappSos.DataAccess
 
         UndantagForvantadfil GetExceptionExpectedFile(int orgId, int subdirId, int expectedFielId);
 
-        IEnumerable<UndantagEpostadress> GetPrivateEmailAdressesForOrgAndCase(int orgId, int caseId);
-
         IEnumerable<Arende> GetCasesForOrg(int orgId);
 
         IEnumerable<string> GetCaseRegisteredContactIds(int caseId);
@@ -463,8 +461,6 @@ namespace InrappSos.DataAccess
         void UpdateSubdirReportObligation(AdmUppgiftsskyldighetOrganisationstyp subdirOrgtype);
 
         void AddRoleToFilipUser(ApplicationUserRole userRole);
-
-        void UpdateCaseUnregisteredReporters(int caseId, List<UndantagEpostadress> userList, string userName);
 
         void SaveOpeningHours(AdmKonfiguration admKonf);
 

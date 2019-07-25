@@ -587,7 +587,6 @@ namespace InrappSos.DataAccess
 
             //Arendeansvarig
             modelBuilder.Entity<ArendeAnsvarig>().Property(e => e.Id).HasColumnName("arendeansvarid");
-            modelBuilder.Entity<ArendeAnsvarig>().Property(e => e.Namn).HasColumnName("namn");
             modelBuilder.Entity<ArendeAnsvarig>().Property(e => e.Epostadress).HasColumnName("epostadress");
             modelBuilder.Entity<ArendeAnsvarig>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
             modelBuilder.Entity<ArendeAnsvarig>().Property(e => e.SkapadAv).HasColumnName("skapadav");
@@ -642,7 +641,6 @@ namespace InrappSos.DataAccess
             //UndantagEpostadress
             modelBuilder.Entity<UndantagEpostadress>().Property(e => e.Id).HasColumnName("undantagsid");
             modelBuilder.Entity<UndantagEpostadress>().Property(e => e.OrganisationsId).HasColumnName("organisationsid");
-            modelBuilder.Entity<UndantagEpostadress>().Property(e => e.ArendeId).HasColumnName("arendeid");
             modelBuilder.Entity<UndantagEpostadress>().Property(e => e.PrivatEpostAdress).HasColumnName("epostadress");
             modelBuilder.Entity<UndantagEpostadress>().Property(e => e.Status).HasColumnName("status");
             modelBuilder.Entity<UndantagEpostadress>().Property(e => e.AktivFrom).HasColumnName("aktivfrom");
@@ -651,10 +649,6 @@ namespace InrappSos.DataAccess
                 .HasRequired(c => c.Organisation)
                 .WithMany(d => d.UndantagEpostadress)
                 .HasForeignKey(c => c.OrganisationsId);
-            modelBuilder.Entity<UndantagEpostadress>()
-                .HasRequired(c => c.Arende)
-                .WithMany(d => d.UndantagEpostadress)
-                .HasForeignKey(c => c.ArendeId);
             modelBuilder.Entity<UndantagEpostadress>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
             modelBuilder.Entity<UndantagEpostadress>().Property(e => e.SkapadAv).HasColumnName("skapadav");
             modelBuilder.Entity<UndantagEpostadress>().Property(e => e.AndradDatum).HasColumnName("andraddatum");

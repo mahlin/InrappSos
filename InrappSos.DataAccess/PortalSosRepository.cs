@@ -413,11 +413,11 @@ namespace InrappSos.DataAccess
             return exception;
         }
 
-        public IEnumerable<UndantagEpostadress> GetPrivateEmailAdressesForOrgAndCase(int orgId, int caseId)
-        {
-            var privEmails = DbContext.UndantagEpostadress.Where(x => x.OrganisationsId == orgId && x.ArendeId == caseId).ToList();
-            return privEmails;
-        }
+        //public IEnumerable<UndantagEpostadress> GetPrivateEmailAdressesForOrgAndCase(int orgId, int caseId)
+        //{
+        //    var privEmails = DbContext.UndantagEpostadress.Where(x => x.OrganisationsId == orgId && x.ArendeId == caseId).ToList();
+        //    return privEmails;
+        //}
 
         public IEnumerable<Arende> GetCasesForOrg(int orgId)
         {
@@ -2120,19 +2120,19 @@ namespace InrappSos.DataAccess
             DbContext.SaveChanges();
         }
 
-        public void UpdateCaseUnregisteredReporters(int caseId, List<UndantagEpostadress> userList, string userName)
-        {
-            //delete prevoious unregistered reporters for current case
-            var currentUsersList = DbContext.UndantagEpostadress.RemoveRange(DbContext.UndantagEpostadress.Where(x => x.ArendeId == caseId));
-            DbContext.SaveChanges();
+        //public void UpdateCaseUnregisteredReporters(int caseId, List<UndantagEpostadress> userList, string userName)
+        //{
+        //    //delete prevoious unregistered reporters for current case
+        //    var currentUsersList = DbContext.UndantagEpostadress.RemoveRange(DbContext.UndantagEpostadress.Where(x => x.ArendeId == caseId));
+        //    DbContext.SaveChanges();
 
-            //Insert new unregistered reporters
-            foreach (var user in userList)
-            {
-                DbContext.UndantagEpostadress.Add(user);
-            }
-            DbContext.SaveChanges();
-        }
+        //    //Insert new unregistered reporters
+        //    foreach (var user in userList)
+        //    {
+        //        DbContext.UndantagEpostadress.Add(user);
+        //    }
+        //    DbContext.SaveChanges();
+        //}
 
         public void UpdateOrgUnit(Organisationsenhet orgUnit)
         {

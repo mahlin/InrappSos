@@ -9,7 +9,6 @@ namespace InrappSos.DomainModel
     public class UndantagEpostadress
     {
         public int Id { get; set; }
-        public int? ArendeId { get; set; }
         public int OrganisationsId { get; set; }
         public string PrivatEpostAdress { get; set; }
         public int Status { get; set; }

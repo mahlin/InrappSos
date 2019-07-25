@@ -2383,8 +2383,10 @@ namespace InrappSos.ApplicationService
             HandleRegisteredCaseReporters(arende, userName);
 
             //Hantera oreggade rapportörer för ärendet
-            HandleUnRegisteredCaseReporters(arende, userName);
-            
+            if (arende.Rapportorer != null)
+            {
+                HandleUnRegisteredCaseReporters(arende, userName);
+            }
         }
 
         public void SkapaOrganisationstyp(AdmOrganisationstyp orgtyp, string userName)

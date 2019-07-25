@@ -9,7 +9,6 @@ namespace InrappSos.DomainModel
     public class ArendeAnsvarig
     {
         public int Id { get; set; }
-        public string Namn { get; set; }
         public string Epostadress { get; set; }
         public DateTime SkapadDatum { get; set; }
         public string SkapadAv { get; set; }

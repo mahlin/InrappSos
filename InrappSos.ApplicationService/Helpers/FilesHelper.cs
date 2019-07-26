@@ -426,7 +426,17 @@ namespace InrappSos.ApplicationService.Helpers
                     }
                     var fullPath = Path.Combine(pathOnServer, Path.GetFileName(extendedFileName));
                     file.SaveAs(fullPath);
-                    statuses.Add(UploadResult(file.FileName, file.ContentLength, file.FileName, (extendedFileName), levId, i + 1));
+                    var filelength = 0;
+
+                    if (file.ContentLength > 2147483647)
+                    {
+                        filelength = 9999;
+                    }
+                    else
+                    {
+                        filelength = Convert.ToInt32(file.ContentLength);
+                    }
+                    statuses.Add(UploadResult(file.FileName, filelength, file.FileName, (extendedFileName), levId, i + 1));
                 }
             }
         }
@@ -456,7 +466,17 @@ namespace InrappSos.ApplicationService.Helpers
 
                     var fullPath = Path.Combine(pathOnServer, Path.GetFileName(extendedFileName));
                     file.SaveAs(fullPath);
-                    statuses.Add(UploadResult(file.FileName, file.ContentLength, file.FileName, file.FileName, filedropId, i + 1));
+                    //Stop using file.length in statuses? Only presented in Filip upload-page, so for SFTP-files it will nerver show?
+                    var filelength = 0;
+                    if (file.ContentLength > 2147483647)
+                    {
+                        filelength = 9999;
+                    }
+                    else
+                    {
+                        filelength = Convert.ToInt32(file.ContentLength);
+                    }
+                    statuses.Add(UploadResult(file.FileName, filelength, file.FileName, file.FileName, filedropId, i + 1));
                 }
             }
         }

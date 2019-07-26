@@ -240,7 +240,7 @@ function getTableRows() {
                 incorrectKommunKodInFileName: '@',
                 incorrectFilkodInFileName: '@',
                 incorrectPeriodInFileName: '@',
-                filetypAlreadySelected: '@',
+                filetypeAlreadySelected: '@',
             disabled: '@disableValidation'
         }
     );
@@ -276,7 +276,7 @@ function getTableRows() {
                 incorrectKommunKodInFileName: ('Felaktig kommunkod i filnamnet'),
                 incorrectFilkodInFileName: ('Felaktig filkod i filnamnet'),
                 incorrectPeriodInFileName: ('Felaktig period i filnamnet'),
-                filetypAlreadySelected: ('En fil av denna typ är redan vald'),
+                filetypeAlreadySelected: ('En fil av denna typ är redan vald'),
             }
         },
 
@@ -327,7 +327,7 @@ function getTableRows() {
                     else if (!CheckPeriodInFileName(data.selectedRegister, regexMatch)) {
                         file.error = settings.i18n('incorrectPeriodInFileName');
                     } else if (DoubletFiles(data.selectedRegister, file.name)) {
-                        file.error = settings.i18n('filetypAlreadySelected');
+                        file.error = settings.i18n('filetypeAlreadySelected');
                     } else {
                         delete file.error;
                     }

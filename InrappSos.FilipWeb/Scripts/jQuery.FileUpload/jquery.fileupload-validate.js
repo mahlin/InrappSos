@@ -239,7 +239,7 @@ function getTableRows() {
                 incorrectKommunKodInFileName: '@',
                 incorrectFilkodInFileName: '@',
                 incorrectPeriodInFileName: '@',
-                filetypAlreadySelected: '@',
+                filetypeAlreadySelected: '@',
             disabled: '@disableValidation'
         }
     );
@@ -254,7 +254,7 @@ function getTableRows() {
             // against either file type or file name:
             acceptFileTypes: /(\.|\/)(txt|xls|xlsx)$/i,
             // The maximum allowed file size in bytes:
-            maxFileSize: 1000000000, // 1000 MB = 1GB
+            maxFileSize: 2000000000, // 2000 MB = 2GB
             // The minimum allowed file size in bytes:
             minFileSize: 1, // No minimal file size
             // The limit of files to be uploaded:
@@ -275,7 +275,7 @@ function getTableRows() {
                 incorrectKommunKodInFileName: 'Felaktig kommunkod i filnamnet',
                 incorrectFilkodInFileName: 'Felaktig filkod i filnamnet',
                 incorrectPeriodInFileName: 'Felaktig period i filnamnet',
-                filetypAlreadySelected: 'En fil av denna typ är redan vald'
+                filetypeAlreadySelected: 'En fil av denna typ är redan vald'
             }
         },
 
@@ -307,7 +307,7 @@ function getTableRows() {
                     fileSize < options.minFileSize) {
                     file.error = settings.i18n('minFileSize');
                 }
-                if (!file.error) {
+                if (!file.error && file.custom !== "Arende") {
                     //Regexp-kontroller
                     var currRegister = file.name.substring(0, 3);
                     var selectedOrgUnitId = $('#SelectedUnitId').val();
@@ -322,7 +322,7 @@ function getTableRows() {
                     else if (!CheckPeriodInFileName(data.selectedRegister, regexMatch)) {
                         file.error = settings.i18n('incorrectPeriodInFileName');
                     } else if (DoubletFiles(data.selectedRegister, file.name)) {
-                        file.error = settings.i18n('filetypAlreadySelected');
+                        file.error = settings.i18n('filetypeAlreadySelected');
                     } else {
                         delete file.error;
                     }

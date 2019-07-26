@@ -44,7 +44,8 @@ $(document).ready(function () {
         var jqXHR = $('#fileupload').fileupload('send', { files: filelist })
             .success(function (result, textStatus, jqXHR) {
                 $("#filTabell tbody tr.template-upload").remove();
-                $("#updateHistoryForm").submit();
+                updateHistory();
+                //$("#updateHistoryForm").submit();
             })
             .error(function (jqXHR, textStatus, errorThrown) {/* ... */ })
             .complete(function (result, textStatus, jqXHR) {
@@ -63,8 +64,26 @@ $(document).on('change', '#ddlCase', function () {
     updateHistory();
 });
 
+function checkIfDisabled(event) {
+    //alert('click egen check');
+    if ($('#fileinputButton').hasClass('disabled')) {
+        $('#filesExplorerOpener').prop('disabled', true);
+        $('#filesExplorerOpener').addClass('disabled');
+        return false;
+    } else {
+        $('#filesExplorerOpener').prop('disabled', false);
+        $('#filesExplorerOpener').removeClass('disabled');
+
+    }
+    return true;
+}
+
+
 function checkOkToUpload() {
     if (filelist.length > 0) {
+        for (var i = 0; i < filelist.length; i++) {
+            filelist[i].custom = "Arende";
+        }
         $('.start').show();
     } else {
         $('.start').hide();

@@ -45,7 +45,7 @@ $(document).ready(function () {
             .success(function (result, textStatus, jqXHR) {
                 $("#filTabell tbody tr.template-upload").remove();
                 updateHistory();
-                //$("#updateHistoryForm").submit();
+                $('#ddlCase').val("");
             })
             .error(function (jqXHR, textStatus, errorThrown) {/* ... */ })
             .complete(function (result, textStatus, jqXHR) {
@@ -55,6 +55,9 @@ $(document).ready(function () {
 });
 
 $(document).on('change', '#ddlCase', function () {
+    filelist = [];
+    $("#filTabell tbody tr").remove();
+    $("#thTextFildropp").text("Filer för uppladdning");
     $("#SelectedCaseId").val($('#ddlCase').val());
     if ($("#SelectedCaseId").val() !== "") {
         $('.fileinput-button').show();

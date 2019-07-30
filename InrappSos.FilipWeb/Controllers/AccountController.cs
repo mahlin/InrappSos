@@ -355,6 +355,9 @@ namespace InrappSos.FilipWeb.Controllers
                             //Register user
                             var undantagEpost = _portalService.HamtaUndantagEpostadress(model.Email);
                             await RegisterUser(undantagEpost.OrganisationsId, model);
+                            //Sätt roll registeruppgiftslämnare
+                            var user = UserManager.FindByEmail(model.Email);
+                            _portalService.KopplaFilipAnvändareTillFilipRollNamn(user.UserName, user.Id, "RegUpp");
                             ViewBag.Email = model.Email;
                             return View("DisplayEmail");
                         }
@@ -367,7 +370,6 @@ namespace InrappSos.FilipWeb.Controllers
                             await RegisterUser(orgId, model);
                             var user = UserManager.FindByEmail(model.Email);
                             _portalService.HandlePrekontaktUserRegistration(user, preKontakt);
-
                             ViewBag.Email = model.Email;
                             return View("DisplayEmail");
 
@@ -382,6 +384,17 @@ namespace InrappSos.FilipWeb.Controllers
                     else
                     {
                         await RegisterUser(organisation.Id, model);
+                        //Sätt roll
+                        var user = UserManager.FindByEmail(model.Email);
+                        var preKontakt = _portalService.HamtaPrekontakt(model.Email);
+                        if (preKontakt != null)
+                        {
+                            _portalService.HandlePrekontaktUserRegistration(user, preKontakt);
+                        }
+                        else
+                        {
+                            _portalService.KopplaFilipAnvändareTillFilipRollNamn(user.UserName,user.Id,"RegUpp");
+                        }
                         ViewBag.Email = model.Email;
                         return View("DisplayEmail");
                         //var user = new ApplicationUser {UserName = model.Email, Email = model.Email};

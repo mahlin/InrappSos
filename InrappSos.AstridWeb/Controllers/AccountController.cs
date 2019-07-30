@@ -536,7 +536,7 @@ namespace InrappSos.AstridWeb.Controllers
                 var roleVM = new IdentityRoleViewModel()
                 {
                     Id = roll.Id,
-                    Name = roll.Name,
+                    Name = roll.BeskrivandeNamn,
                     Selected = false
                 };
                 rollerList.Add(roleVM);

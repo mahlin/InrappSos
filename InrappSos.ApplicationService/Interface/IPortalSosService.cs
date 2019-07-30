@@ -300,6 +300,8 @@ namespace InrappSos.ApplicationService.Interface
 
         void KopplaFilipAnvändareTillFilipRoll(string userName, string filipUserId, string rollId);
 
+        void KopplaFilipAnvändareTillFilipRollNamn(string userName, string filipUserId, string rollnamn);
+
         void KopplaKontaktpersonTillArende(string userName, int arendeId, string kontaktId);
 
         void HanteraArendesEjReggadeKontaktpersoner(ArendeDTO arende, string userName);

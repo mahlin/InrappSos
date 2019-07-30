@@ -107,14 +107,14 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Arendenamn, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.TextBoxFor(model => model.Arendenamn, htmlAttributes: new { @class = "form-control", placeholder = "99999/ÅÅÅÅ (ex 12345/2019)" })
+                @Html.TextBoxFor(model => model.Arendenamn, htmlAttributes: new { @class = "form-control" })
             </div>
         </div>
 
         <div class="form-group">
             @Html.LabelFor(model => model.Arendenr, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Arendenr, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.EditorFor(model => model.Arendenr, new { htmlAttributes = new { @class = "form-control", placeholder = "99999/ÅÅÅÅ (ex 12345/2019)" } })
                 @Html.ValidationMessageFor(model => model.Arendenr, "", new { @class = "text-danger" })
             </div>
         </div>

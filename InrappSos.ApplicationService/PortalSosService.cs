@@ -1966,6 +1966,12 @@ namespace InrappSos.ApplicationService
             _portalSosRepository.SetFilipRoleForFilipUser(userRole);
         }
 
+        public void KopplaFilipAnvändareTillFilipRollNamn(string userName, string filipUserId, string rollnamn)
+        {
+            var rollId = _portalSosRepository.GetFilipRoleByName(rollnamn).Id;
+            KopplaFilipAnvändareTillFilipRoll(userName,filipUserId,rollId);
+        }
+
         public void KopplaKontaktpersonTillArende(string userName, int arendeId, string kontaktId)
         {
             //check if already exists

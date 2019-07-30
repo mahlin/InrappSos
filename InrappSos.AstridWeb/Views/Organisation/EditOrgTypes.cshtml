@@ -140,10 +140,10 @@
                     mode: WebGridPagerModes.All,
                     columns: grid.Columns(
                         grid.Column("ID", format: @<text><span class="display-mode">@item.Id</span><label id="OrgTypeId" class="edit-mode colMinWidth">@item.Id</label></text>, style: "colMinWidth"),
-                        grid.Column("Typnamn", "Typnamn", format: @<text><span class="display-mode"><label id="lblName">@item.Typnamn</label></span>
-                                                                      <input type="text" id="OrgTypeName" value="@item.Typnamn" class="edit-mode form-control"/></text>, style: "col1Width"),
+                        grid.Column("Typnamn", "Typnamn", format: @<text><span class="display-mode col3Width"><label id="lblName">@item.Typnamn</label></span>
+                                                <input type="text" id="OrgTypeName" value="@item.Typnamn" class="edit-mode form-control"/></text>, style: "col3Width"),
                         grid.Column("Beskrivning", "Beskrivning", format: @<text><span class="display-mode"><label id="lblDesc" style="width: 450px !important;">@item.Beskrivning</label></span>
-                                                                              <input type="text" id="OrgTypeDesc" value="@item.Beskrivning" class="edit-mode form-control" style="max-width: 450px !important;"/></text>, style: "col500Width"),
+                                        <input type="text" id="OrgTypeDesc" value="@item.Beskrivning" class="edit-mode form-control" style="max-width: 450px !important;"/></text>, style: "col500Width"),
                         grid.Column(null, format: @<text>
                                                       <button class="edit-user display-mode btn btn-default">Ändra</button>
                                                       @*<button class="display-mode btn btn-default" onclick="deleteOrgType(@item.Id, '@item.Typnamn');return false;">Ta bort</button>*@

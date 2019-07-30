@@ -87,6 +87,7 @@ function checkOkToUpload() {
         for (var i = 0; i < filelist.length; i++) {
             filelist[i].custom = "Arende";
         }
+        $('.start').prop('disabled', false);
         $('.start').show();
     } else {
         $('.start').hide();

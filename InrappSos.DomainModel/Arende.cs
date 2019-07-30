@@ -28,6 +28,6 @@ namespace InrappSos.DomainModel
         public virtual ICollection<ArendeKontaktperson> ArendeKontaktperson { get; set; }
         public virtual ICollection<DroppadFil> DroppadFil { get; set; }
         public virtual ICollection<PreKontakt> PreKontakt { get; set; }
-        public virtual ICollection<UndantagEpostadress> UndantagEpostadress { get; set; }
+
     }
 }

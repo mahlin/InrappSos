@@ -19,6 +19,5 @@ namespace InrappSos.DomainModel
         public DateTime AndradDatum { get; set; }
         public string AndradAv { get; set; }
         public virtual Organisation Organisation { get; set; }
-        public virtual Arende Arende { get; set; }
     }
 }

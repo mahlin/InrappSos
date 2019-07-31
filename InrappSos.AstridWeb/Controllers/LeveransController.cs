@@ -704,7 +704,7 @@ namespace InrappSos.AstridWeb.Controllers
 
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Admin, InrappAdmin")]
         public ActionResult UpdateForvantadLeverans(LeveransViewModels.AdmForvantadleveransViewModel forvLevModel, bool filterPgnde = false, string regId = "0")
         {
             if (ModelState.IsValid)
@@ -978,7 +978,7 @@ namespace InrappSos.AstridWeb.Controllers
         // POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
+        [Authorize(Roles = "Admin, InrappAdmin")]
         public ActionResult CreateForvantadLeverans(LeveransViewModels.AdmForvantadleveransViewModel forvantadLeverans)
         {
             if (ModelState.IsValid)

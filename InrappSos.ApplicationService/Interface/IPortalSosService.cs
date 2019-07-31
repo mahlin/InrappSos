@@ -26,6 +26,8 @@ namespace InrappSos.ApplicationService.Interface
         string SpecialdagComingWeek();
         List<List<Organisation>> SokOrganisation(string sokStr);
 
+        List<List<Organisation>> SokCaseOrganisation(string sokStr);
+
         List<List<ApplicationUser>> SokKontaktperson(string sokStr);
 
         IEnumerable<FilloggDetaljDTO> FiltreraHistorikForAnvandare(string userId, List<RegisterInfo> valdaDelregisterList, List<FilloggDetaljDTO> historikForOrganisation);

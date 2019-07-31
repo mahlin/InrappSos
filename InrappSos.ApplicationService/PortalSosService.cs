@@ -1409,6 +1409,30 @@ namespace InrappSos.ApplicationService
 
         }
 
+        public List<List<Organisation>> SokCaseOrganisation(string sokStr)
+        {
+            var orgtypeId = _portalSosRepository.GetOrgtypeByName("Ärendeorganisation").Id;
+            var caseOrgList = new List<List<Organisation>>();
+            var orgList = new List<Organisation>();
+
+            string[] searchstring = sokStr.Split(' ');
+            var orgSearchList = _portalSosRepository.SearchOrganisation(searchstring);
+
+            foreach (var orgs in orgSearchList)
+            {
+                foreach (var org in orgs)
+                {
+                    var orgtypes = _portalSosRepository.GetOrgTypesIdsForOrg(org.Id);
+                    if (orgtypes.Contains(orgtypeId))
+                    {
+                        orgList.Add(org);
+                    }
+                }
+                caseOrgList.Add(orgList);
+            }
+            return caseOrgList;
+        }
+
         public List<List<ApplicationUser>> SokKontaktperson(string sokStr)
         {
             string[] searchstring = sokStr.Split(' ');

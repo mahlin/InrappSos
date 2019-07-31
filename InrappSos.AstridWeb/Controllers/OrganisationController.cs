@@ -74,6 +74,16 @@ namespace InrappSos.AstridWeb.Controllers
         }
 
         [Authorize]
+        public ActionResult GetCaseOrganisations()
+        {
+            var model = new OrganisationViewModels.OrganisationViewModel();
+            model.OrgtypesForOrgList = new List<OrganisationstypDTO>();
+            model.SearchResult = new List<List<Organisation>>();
+            model.ContactSearchResult = new List<List<OrganisationViewModels.ApplicationUserViewModel>>();
+            return View("CaseOrganisation",model);
+        }
+
+        [Authorize]
         // GET: Organisation
         public ActionResult SearchOrganisation(string searchText, string origin)
         {
@@ -81,7 +91,16 @@ namespace InrappSos.AstridWeb.Controllers
 
             try
             {
-                var orgList = _portalSosService.SokOrganisation(searchText);
+                var orgList = new List<List<Organisation>>();
+                if (origin == "caseOrganisations")
+                {
+                    orgList = _portalSosService.SokCaseOrganisation(searchText);
+                }
+                else
+                {
+                    orgList = _portalSosService.SokOrganisation(searchText);
+
+                }
                 model.Origin = origin;
 
                 //Then you just need to see if you want ANY matches or COMPLETE matches.
@@ -110,6 +129,8 @@ namespace InrappSos.AstridWeb.Controllers
                             return RedirectToAction("GetOrganisationsCases", new { selectedOrganisationId = orgList[0][0].Id });
                         case "sftpAccounts":
                             return RedirectToAction("GetOrganisationsSFTPAccounts", new { selectedOrganisationId = orgList[0][0].Id });
+                        case "caseOrganisations":
+                            return RedirectToAction("GetOrganisation", new { selectedOrganisationId = orgList[0][0].Id });
 
 
                         default:

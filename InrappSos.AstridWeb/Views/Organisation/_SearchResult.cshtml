@@ -37,6 +37,9 @@
             case "sftpAccounts":
                 @Html.ActionLink(org.Organisationsnamn, "GetOrganisationsSFTPAccounts", "Organisation", new { selectedOrganisationId = org.Id}, new {@class = "btn"})<br/>
                 break;
+            case "caseOrganisations":
+                @Html.ActionLink(org.Organisationsnamn, "GetOrganisation", "Organisation", new { selectedOrganisationId = org.Id}, new {@class = "btn"})<br/>
+                break;
             default:
                 break;;
         }

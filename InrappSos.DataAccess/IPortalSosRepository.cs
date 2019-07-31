@@ -145,6 +145,7 @@ namespace InrappSos.DataAccess
         List<int> GetOrgTypesIdsForSubDir(int subdirId);
 
         AdmOrganisationstyp GetOrgtype(int orgtypeId);
+        AdmOrganisationstyp GetOrgtypeByName(string orgtypeName);
 
         int GetOrganisationsenhetsId(string orgUnitCode, int orgId);
         Organisationsenhet GetOrganisationUnitByCode(string code, int orgId);

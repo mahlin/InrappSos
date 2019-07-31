@@ -302,7 +302,7 @@
                 }
             }
 
-            if (Model.Kontaktpersoner!= null)
+            if (Model.Kontaktpersoner != null)
             {
                 for (int i = 0; i < Model.Kontaktpersoner.Count; i++)
                 {
@@ -313,67 +313,120 @@
             }
 
             <div style="font-size: 1.2em; padding-left: 20px; padding-bottom: 20px;"><b>@Model.Organisation.Organisationsnamn</b></div>
-
-            @Html.ActionLink("Lägg till nytt ärende", "CreateCase", "Organisation", new { selectedOrganisationId = Model.SelectedOrganisationId }, new { style = "padding-left:20px;" })
-
-
-            if (Model.Arenden != null)
+            if (Request.IsAuthenticated)
             {
-                <div id="gridContent" style="font-family: Arial; padding: 20px;">
+                if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin") || User.IsInRole("ArendeAdmin"))
+                {
+                    @Html.ActionLink("Lägg till nytt ärende", "CreateCase", "Organisation", new { selectedOrganisationId = Model.SelectedOrganisationId }, new { style = "padding-left:20px;" })
 
-                    @{
-                        ViewBag.Title = "Administrera ärenden";
-                        var grid = new WebGrid(source: Model.Arenden, canPage: false, rowsPerPage: 10, ajaxUpdateContainerId: "casesGrid");
+
+                    if (Model.Arenden != null)
+                    {
+                        <div id="gridContent" style="font-family: Arial; padding: 20px;">
+
+                            @{
+                                ViewBag.Title = "Administrera ärenden";
+                                var grid = new WebGrid(source: Model.Arenden, canPage: false, rowsPerPage: 10, ajaxUpdateContainerId: "casesGrid");
+                            }
+
+                            @grid.GetHtml(htmlAttributes: new {id = "caseTable"},
+                                tableStyle: "webgrid-table1700",
+                                headerStyle: "webgrid-header",
+                                footerStyle: "webgrid-footer",
+                                alternatingRowStyle: "webgrid-alternating-row",
+                                selectedRowStyle: "webgrid-selected-row",
+                                rowStyle: "webgrid-row-style",
+                                mode: WebGridPagerModes.All,
+                                columns: grid.Columns(
+                                    grid.Column(null, null, format: @<input type="hidden" id="Id" name="IDHidden" value="@item.Id" />),
+                                             grid.Column(null, null, format: @<text><input type="hidden" id="ArendetypId" value="@item.ArendetypId" class="edit-mode form-control hide" /></text>, style: "colZeroWidth"),
+                                                 grid.Column(null, null, format: @<text><input type="hidden" id="ArendestatusId" value="@item.ArendestatusId" class="edit-mode form-control hide" /></text>, style: "colZeroWidth"),
+                                                     grid.Column(null, null, format: @<text><input type="hidden" id="ArendeansvarId" value="@item.ArendeansvarId" class="edit-mode form-control hide" /></text>, style: "colZeroWidth"),
+                                                         grid.Column("Arendenamn", "Ärendenamn", format: @<text><span class="display-mode col2Width"><label id="lblArendenamn">@item.Arendenamn</label></span>
+                                                        <input type="text" id="Arendenamn" value="@item.Arendenamn" class="edit-mode col2Width form-control" /> </text>, style: "col2Width"),
+                                                             grid.Column("ArendeNr", "Ärendenr", format: @<text><span class="display-mode colMinWidth">@item.ArendeNr</span><label id="lblArendeNr" class="edit-mode col1Width">@item.ArendeNr</label></text>, style: "col1Width"),
+
+                                                                 grid.Column("Arendetyp", "Ärendetyp", format: @<text><span class="display-mode"><label id="lblArendetyp">@item.Arendetyp</label></span></text>, style: "col1Width"),
+                                                                     grid.Column("Ärendetyp", format: @item => Html.DropDownListFor(m => m.SelectedArendetypId, ViewBag.ArendetypDDL as SelectList, " - Välj -", new { id = "ddlArendetyp", @class = "form-control edit-mode", style = "min-width:120px !important" })),
+
+                                                                     grid.Column("Arendestatus", "Ärendestatus", format: @<text><span class="display-mode"><label id="lblArendestatus">@item.Arendestatus</label></span></text>, style: "col110Width"),
+                                                                         grid.Column("Ärendestatus", format: @item => Html.DropDownListFor(m => m.SelectedArendestatusId, ViewBag.ArendestatusDDL as SelectList, " - Välj -", new { id = "ddlArendestatus", @class = "form-control edit-mode", style = "min-width:110px !important" })),
+
+                                                                         grid.Column("Arendeansvarig", "Ansvarig", format: @<text><span class="display-mode"><label id="lblAnsvarig" style="width: 200px;">@item.Arendeansvarig</label></span></text>, style: "col110Width"),
+                                                                             grid.Column("Ansvarig", format: @item => Html.DropDownListFor(m => m.SelectedArendeansvarigId, ViewBag.ArendeansvarigDDL as SelectList, " - Välj ärendeansvarig -", new { id = "ddlArendeansvarig", @class = "form-control edit-mode", style = "max width:250px !important" })),
+
+                                                                             grid.Column("Kontaktpersoner", "Kontaktpersoner", format: @<text><label id="lblKontaktpersoner" class="display-mode col2Width" style="display: inline-block;">@item.KontaktpersonerStr</label></text>, style: "col2Width"),
+                                                                                 grid.Column("Kontaktpersoner", format: @item => Html.DropDownListFor(m => m.Kontaktpersoner, new SelectList(@item.Kontaktpersoner, "Id", "Email"), new { id = "ddlKontakter", @class = "form-control edit-mode ddl", multiple = "multiple", style = "min-width:100px !important" })),
+
+                                                                                 grid.Column("Rapportorer", "Ej registrerade kontaktpersoner", format: @<text><span class="display-mode col2Width"><label id="lblRapportorer" style="width: 200px;">@item.Rapportorer</label></span>
+                                                                                <textarea id="Rapportorer" value="" class="edit-mode form-control" style="height: 100px; width: 200px;" placeholder="Om flera kontaktpersoner, separera med kommatecken.">@item.Rapportorer</textarea></text>, style: "col2Width"),
+
+                                                                                     grid.Column("StartDatum", "Startdatum", format: @<text><span class="display-mode"><label id="lblStartDatum">@( item.StartDatum != null ? item.StartDatum.ToString("yyyy-MM-dd") : item.StartDatum)</label></span>
+                                                                                    <input type="text" id="StartDatum" value="@( item.StartDatum != null ? item.StartDatum.ToString("yyyy-MM-dd") : item.StartDatum)" class="edit-mode col1Width form-control" /></text>, style: "col1Width"),
+                                                                                         grid.Column("SlutDatum", "Slutdatum", format: @<text><span class="display-mode"><label id="lblSlutDatum">@( item.SlutDatum != null ? item.SlutDatum.ToString("yyyy-MM-dd") : item.SlutDatum)</label></span>
+                                                                                        <input type="text" id="SlutDatum" value="@( item.SlutDatum != null ? item.SlutDatum.ToString("yyyy-MM-dd") : item.SlutDatum)" class="edit-mode col1Width form-control" /></text>, style: "col1Width"),
+                                                                                             grid.Column(null, format: @<text>
+                                                                                                <button class="edit-user display-mode btn btn-default">Ändra</button>
+                                                                                                <button class="save-user edit-mode btn btn-default">Spara</button>
+                                                                                                <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
+                                                                                            </text>, style: "col3Width", canSort: false)))
+
+                        </div>
                     }
 
-                    @grid.GetHtml(htmlAttributes: new {id = "caseTable"},
-                        tableStyle: "webgrid-table1700",
-                        headerStyle: "webgrid-header",
-                        footerStyle: "webgrid-footer",
-                        alternatingRowStyle: "webgrid-alternating-row",
-                        selectedRowStyle: "webgrid-selected-row",
-                        rowStyle: "webgrid-row-style",
-                        mode: WebGridPagerModes.All,
-                        columns: grid.Columns(
-                            grid.Column(null, null, format: @<input type="hidden" id="Id" name="IDHidden" value="@item.Id" />),
-                            grid.Column(null, null, format: @<text><input type="hidden" id="ArendetypId" value="@item.ArendetypId" class="edit-mode form-control hide" /></text>, style: "colZeroWidth"),
-                            grid.Column(null, null, format: @<text><input type="hidden" id="ArendestatusId" value="@item.ArendestatusId" class="edit-mode form-control hide" /></text>, style: "colZeroWidth"),
-                            grid.Column(null, null, format: @<text><input type="hidden" id="ArendeansvarId" value="@item.ArendeansvarId" class="edit-mode form-control hide" /></text>, style: "colZeroWidth"),
-                            grid.Column("Arendenamn", "Ärendenamn", format: @<text><span class="display-mode col2Width"><label id="lblArendenamn">@item.Arendenamn</label></span>
-                                <input type="text" id="Arendenamn" value="@item.Arendenamn" class="edit-mode col2Width form-control" /> </text>, style: "col2Width"),
-                            grid.Column("ArendeNr", "Ärendenr", format: @<text><span class="display-mode colMinWidth">@item.ArendeNr</span><label id="lblArendeNr" class="edit-mode col1Width">@item.ArendeNr</label></text>, style: "col1Width"),
+                    else
+                    {
+                        <br />
+                        <br />
+                        <div style="font-size: 1.2em; padding-left: 20px;">Inga ärenden hittades för vald organisation</div>
+                    }
+                }
+                else
+                {
+                    if (Model.Arenden != null)
+                    {
+                        <div id="gridContent" style="font-family: Arial; padding: 20px;">
+                            @{
+                                ViewBag.Title = "Ärenden";
+                                var grid = new WebGrid(source: Model.Arenden, canPage: false, rowsPerPage: 10, ajaxUpdateContainerId: "casesGrid");
+                            }
 
-                            grid.Column("Arendetyp", "Ärendetyp", format: @<text><span class="display-mode"><label id="lblArendetyp">@item.Arendetyp</label></span></text>, style: "col1Width"),
-                            grid.Column("Ärendetyp", format: @item => Html.DropDownListFor(m => m.SelectedArendetypId, ViewBag.ArendetypDDL as SelectList, " - Välj -", new { id = "ddlArendetyp", @class = "form-control edit-mode", style = "min-width:120px !important" })),
-
-                            grid.Column("Arendestatus", "Ärendestatus", format: @<text><span class="display-mode"><label id="lblArendestatus">@item.Arendestatus</label></span></text>, style: "col110Width"),
-                            grid.Column("Ärendestatus", format: @item => Html.DropDownListFor(m => m.SelectedArendestatusId, ViewBag.ArendestatusDDL as SelectList, " - Välj -", new { id = "ddlArendestatus", @class = "form-control edit-mode", style = "min-width:110px !important" })),
-
-                            grid.Column("Arendeansvarig", "Ansvarig", format: @<text><span class="display-mode"><label id="lblAnsvarig" style="width: 200px;">@item.Arendeansvarig</label></span></text>, style: "col110Width"),
-                            grid.Column("Ansvarig", format: @item => Html.DropDownListFor(m => m.SelectedArendeansvarigId, ViewBag.ArendeansvarigDDL as SelectList, " - Välj ärendeansvarig -", new { id = "ddlArendeansvarig", @class = "form-control edit-mode", style = "max width:250px !important" })),
-
-                            grid.Column("Kontaktpersoner", "Kontaktpersoner", format: @<text><label id="lblKontaktpersoner" class="display-mode col2Width" style="display: inline-block;">@item.KontaktpersonerStr</label></text>, style: "col2Width"),
-                            grid.Column("Kontaktpersoner", format: @item => Html.DropDownListFor(m => m.Kontaktpersoner, new SelectList(@item.Kontaktpersoner, "Id", "Email"), new { id = "ddlKontakter", @class = "form-control edit-mode ddl", multiple = "multiple", style = "min-width:100px !important" })),
-
-                            grid.Column("Rapportorer", "Ej registrerade kontaktpersoner", format: @<text><span class="display-mode col2Width"><label id="lblRapportorer" style="width: 200px;">@item.Rapportorer</label></span>
-                                <textarea id="Rapportorer" value="" class="edit-mode form-control" style="height: 100px; width: 200px;" placeholder="Om flera kontaktpersoner, separera med kommatecken.">@item.Rapportorer</textarea></text>, style: "col2Width"),
-
-                            grid.Column("StartDatum", "Startdatum", format: @<text><span class="display-mode"><label id="lblStartDatum">@( item.StartDatum != null ? item.StartDatum.ToString("yyyy-MM-dd") : item.StartDatum)</label></span>
-                                <input type="text" id="StartDatum" value="@( item.StartDatum != null ? item.StartDatum.ToString("yyyy-MM-dd") : item.StartDatum)" class="edit-mode col1Width form-control" /></text>, style: "col1Width"),
-                            grid.Column("SlutDatum", "Slutdatum", format: @<text><span class="display-mode"><label id="lblSlutDatum">@( item.SlutDatum != null ? item.SlutDatum.ToString("yyyy-MM-dd") : item.SlutDatum)</label></span>
-                                    <input type="text" id="SlutDatum" value="@( item.SlutDatum != null ? item.SlutDatum.ToString("yyyy-MM-dd") : item.SlutDatum)" class="edit-mode col1Width form-control" /></text>, style: "col1Width"),
-                            grid.Column(null, format: @<text>
-                            <button class="edit-user display-mode btn btn-default">Ändra</button>
-                            <button class="save-user edit-mode btn btn-default">Spara</button>
-                                    <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
-                                 </text>, style: "col3Width", canSort: false)))
-
-                </div>
-            }
-            else
-            {
-                <br /><br />
-                <div style="font-size: 1.2em;padding-left: 20px;">Inga ärenden hittades för vald organisation</div>
+                            @grid.GetHtml(htmlAttributes: new {id = "caseTable"},
+                                tableStyle: "webgrid-table1700",
+                                headerStyle: "webgrid-header",
+                                footerStyle: "webgrid-footer",
+                                alternatingRowStyle: "webgrid-alternating-row",
+                                selectedRowStyle: "webgrid-selected-row",
+                                rowStyle: "webgrid-row-style",
+                                mode: WebGridPagerModes.All,
+                                columns: grid.Columns(
+                                    grid.Column(null, null, format: @<input type="hidden" id="Id" name="IDHidden" value="@item.Id" />),
+                                    grid.Column(null, null, format: @<text><input type="hidden" id="ArendetypId" value="@item.ArendetypId" class="edit-mode form-control hide" /></text>, style: "colZeroWidth"),
+                                    grid.Column(null, null, format: @<text><input type="hidden" id="ArendestatusId" value="@item.ArendestatusId" class="edit-mode form-control hide" /></text>, style: "colZeroWidth"),
+                                    grid.Column(null, null, format: @<text><input type="hidden" id="ArendeansvarId" value="@item.ArendeansvarId" class="edit-mode form-control hide" /></text>, style: "colZeroWidth"),
+                                    grid.Column("Arendenamn", "Ärendenamn", format: @<text><span class="display-mode col2Width"><label id="lblArendenamn">@item.Arendenamn</label></span></text>, style: "col2Width"),
+                                    grid.Column("ArendeNr", "Ärendenr", format: @<text><span class="display-mode colMinWidth">@item.ArendeNr</span><label id="lblArendeNr" class="edit-mode col1Width">@item.ArendeNr</label></text>, style: "col1Width"),
+                                    grid.Column("Arendetyp", "Ärendetyp", format: @<text><span class="display-mode"><label id="lblArendetyp">@item.Arendetyp</label></span></text>, style: "col1Width"),
+                                    grid.Column("Ärendetyp", format: @item => Html.DropDownListFor(m => m.SelectedArendetypId, ViewBag.ArendetypDDL as SelectList, " - Välj -", new { id = "ddlArendetyp", @class = "form-control edit-mode", style = "min-width:120px !important" })),
+                                    grid.Column("Arendestatus", "Ärendestatus", format: @<text><span class="display-mode"><label id="lblArendestatus">@item.Arendestatus</label></span></text>, style: "col110Width"),
+                                    grid.Column("Ärendestatus", format: @item => Html.DropDownListFor(m => m.SelectedArendestatusId, ViewBag.ArendestatusDDL as SelectList, " - Välj -", new { id = "ddlArendestatus", @class = "form-control edit-mode", style = "min-width:110px !important" })),
+                                    grid.Column("Arendeansvarig", "Ansvarig", format: @<text><span class="display-mode"><label id="lblAnsvarig" style="width: 200px;">@item.Arendeansvarig</label></span></text>, style: "col110Width"),
+                                    grid.Column("Ansvarig", format: @item => Html.DropDownListFor(m => m.SelectedArendeansvarigId, ViewBag.ArendeansvarigDDL as SelectList, " - Välj ärendeansvarig -", new { id = "ddlArendeansvarig", @class = "form-control edit-mode", style = "max width:250px !important" })),
+                                    grid.Column("Kontaktpersoner", "Kontaktpersoner", format: @<text><label id="lblKontaktpersoner" class="display-mode col2Width" style="display: inline-block;">@item.KontaktpersonerStr</label></text>, style: "col2Width"),
+                                    grid.Column("Kontaktpersoner", format: @item => Html.DropDownListFor(m => m.Kontaktpersoner, new SelectList(@item.Kontaktpersoner, "Id", "Email"), new { id = "ddlKontakter", @class = "form-control edit-mode ddl", multiple = "multiple", style = "min-width:100px !important" })),
+                                    grid.Column("Rapportorer", "Ej registrerade kontaktpersoner", format: @<text><span class="display-mode col2Width"><label id="lblRapportorer" style="width: 200px;">@item.Rapportorer</label></span></text>, style: "col2Width"),
+                                    grid.Column("StartDatum", "Startdatum", format: @<text><span class="display-mode"><label id="lblStartDatum">@( item.StartDatum != null ? item.StartDatum.ToString("yyyy-MM-dd") : item.StartDatum)</label></span></text>, style: "col1Width"),
+                                    grid.Column("SlutDatum", "Slutdatum", format: @<text><span class="display-mode"><label id="lblSlutDatum">@( item.SlutDatum != null ? item.SlutDatum.ToString("yyyy-MM-dd") : item.SlutDatum)</label></span></text>, style: "col1Width")
+                                    ))
+                        </div>
+                    }
+                    else
+                    {
+                        <br />
+                        <br />
+                        <div style="font-size: 1.2em; padding-left: 20px;">Inga ärenden hittades för vald organisation</div>
+                    }
+                }
             }
         }
     }

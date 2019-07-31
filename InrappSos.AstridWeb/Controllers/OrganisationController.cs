@@ -736,7 +736,7 @@ namespace InrappSos.AstridWeb.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Admin, InrappAdmin")]
         public ActionResult UpdateOrganisationsContact(OrganisationViewModels.ApplicationUserViewModel user, bool visaInaktiva)
         {
             var org = new Organisation();
@@ -805,7 +805,7 @@ namespace InrappSos.AstridWeb.Controllers
 
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Admin, InrappAdmin")]
         public ActionResult UpdateOrganisationSFTPAccount(OrganisationViewModels.SFTPkontoViewModel account)
         {
             //var org = new Organisation();
@@ -837,7 +837,7 @@ namespace InrappSos.AstridWeb.Controllers
 
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Admin, InrappAdmin")]
         public ActionResult UpdateOrganisationPrivateEmailAdress(OrganisationViewModels.UndantagEpostadressViewModel privEmailAdressVM)
         {
             try
@@ -865,7 +865,7 @@ namespace InrappSos.AstridWeb.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Admin, InrappAdmin, ArendeAdmin")]
         public async Task<ActionResult> UpdateOrganisationCase(OrganisationViewModels.ArendeViewModel arendeVM)
         {
             try
@@ -932,7 +932,7 @@ namespace InrappSos.AstridWeb.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Admin, InrappAdmin")]
         public ActionResult UpdateExceptionsExpectedFiles(OrganisationViewModels.OrganisationViewModel model)
         {
             try
@@ -961,7 +961,7 @@ namespace InrappSos.AstridWeb.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Admin, InrappAdmin")]
         public ActionResult UpdateOrganisationsOrgUnit(Organisationsenhet orgUnit)
         {
             var org = new Organisation();
@@ -991,7 +991,7 @@ namespace InrappSos.AstridWeb.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Admin, InrappAdmin")]
         public ActionResult UpdateOrganisationsReportObligation(OrganisationViewModels.ReportObligationsViewModel admUppgSkyldighet)
         {
             var org = new Organisation();
@@ -1022,7 +1022,7 @@ namespace InrappSos.AstridWeb.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Admin, InrappAdmin")]
         public ActionResult UpdateOrganisationsUnitReportObligation(AdmEnhetsUppgiftsskyldighet admEnhetsUppgSkyldighet)
         {
             var org = new Organisation();
@@ -1080,7 +1080,7 @@ namespace InrappSos.AstridWeb.Controllers
         // POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
+        [Authorize(Roles = "Admin, InrappAdmin")]
         public ActionResult CreateOrganisation(OrganisationViewModels.OrganisationViewModel model)
         {
             var kommunkod = String.Empty;
@@ -1124,7 +1124,7 @@ namespace InrappSos.AstridWeb.Controllers
             return View(model);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin, InrappAdmin")]
         public ActionResult CreateOrganisationSFTPAccount(int selectedOrganisationId = 0)
         {
             var model = new OrganisationViewModels.SFTPkontoViewModel();
@@ -1160,7 +1160,7 @@ namespace InrappSos.AstridWeb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
+        [Authorize(Roles = "Admin, InrappAdmin")]
         public ActionResult CreateOrganisationSFTPAccount(OrganisationViewModels.SFTPkontoViewModel accountVM, int selectedOrganisationId = 0)
         {
             var accountId = 0;
@@ -1243,7 +1243,7 @@ namespace InrappSos.AstridWeb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
+        [Authorize(Roles = "Admin, InrappAdmin")]
         public ActionResult CreatePrivateEmailAdress(OrganisationViewModels.UndantagEpostadressViewModel privEmail)
         {
             var org = new Organisation();
@@ -1297,7 +1297,7 @@ namespace InrappSos.AstridWeb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
+        [Authorize(Roles = "Admin, InrappAdmin, ArendeAdmin")]
         public async Task<ActionResult> CreateCase(OrganisationViewModels.ArendeViewModel arendeVM)
         {
             var org = new Organisation();
@@ -1365,7 +1365,7 @@ namespace InrappSos.AstridWeb.Controllers
         // POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
+        [Authorize(Roles = "Admin, InrappAdmin")]
         public ActionResult CreateOrganisationUnit(Organisationsenhet orgenhet)
         {
             var org = new Organisation();
@@ -1419,7 +1419,7 @@ namespace InrappSos.AstridWeb.Controllers
         // POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
+        [Authorize(Roles = "Admin, InrappAdmin")]
         public ActionResult CreateReportObligation(OrganisationViewModels.ReportObligationsViewModel uppgSk, int selectedOrganisationId)
         {
             if (ModelState.IsValid)
@@ -1448,7 +1448,9 @@ namespace InrappSos.AstridWeb.Controllers
             return View();
         }
 
-        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin, InrappAdmin")]
         public ActionResult CreateUnitReportObligation(int selectedOrganisationId = 0, int selectedOrgenhetsId = 0)
         {
             var model = new OrganisationViewModels.UnitReportObligationsViewModel();

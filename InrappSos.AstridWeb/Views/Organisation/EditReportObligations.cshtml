@@ -123,32 +123,6 @@
     <br />
 
 
-    @*<div class="row">
-            <div class="col-md-8 padding-top-55">
-                <h4>Administrera uppgiftsskyldighet för organisation</h4>
-                <br />
-                <section id="orgForm">
-                    @using (Html.BeginForm("GetOrganisationsReportObligations", "Organisation", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-                    {
-                        @Html.AntiForgeryToken()
-                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                        <div class="form-group">
-                            @Html.Label("Organisation", new { @class = "col-md-2 control-label" })
-                            <div class="col-md-10">
-                                @Html.DropDownListFor(m => m.SelectedOrganisationId, ViewBag.OrganisationList as SelectList, " - Välj kommunkod -", new { @class = "form-control", id = "ddlOrganisation" })
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-md-offset-2 col-md-10">
-                                <input type="submit" id="searchBtn" value="Sök uppgiftskyldighet" class="btn btn-default" />
-                            </div>
-                        </div>
-                    }
-                </section>
-            </div>
-        </div>*@
-
-
     @if (Model != null)
     {
         @* Om sökresultat finns, visa listan *@
@@ -167,54 +141,98 @@
 
             @Html.HiddenFor(m => m.SelectedOrganisationId)
             <div style="font-size: 1.2em; padding-left: 20px; padding-bottom: 20px;"><b>@Model.Organisation.Organisationsnamn</b></div>
-            <div class="row">
-                <div class="col-md-8">
-                    @Html.ActionLink("Skapa ny uppgiftsskyldighet", "CreateReportObligation", "Organisation", new {selectedOrganisationId = Model.SelectedOrganisationId}, new {style = "padding-left:20px;"})
-                </div>
-                @Html.ActionLink("Till organisationssidan", "GetOrganisation", "Organisation", new {selectedOrganisationId = Model.SelectedOrganisationId }, null)
-            </div>
 
-            <div id="gridContent" style="font-family: Arial; padding: 20px;">
-                @{
-                    ViewBag.Title = "Administrera uppgiftsskyldighet";
-                    var grid = new WebGrid(source: Model.ReportObligations, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "reportObligationsGrid");
-                    grid.Pager(WebGridPagerModes.All);
+            if (Request.IsAuthenticated)
+            {
+                if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin"))
+                {
+                    <div class="row">
+                        <div class="col-md-8">
+                            @Html.ActionLink("Skapa ny uppgiftsskyldighet", "CreateReportObligation", "Organisation", new {selectedOrganisationId = Model.SelectedOrganisationId}, new {style = "padding-left:20px;"})
+                        </div>
+                        @Html.ActionLink("Till organisationssidan", "GetOrganisation", "Organisation", new {selectedOrganisationId = Model.SelectedOrganisationId}, null)
+                    </div>
+
+                    <div id="gridContent" style="font-family: Arial; padding: 20px;">
+                        @{
+                            ViewBag.Title = "Administrera uppgiftsskyldighet";
+                            var grid = new WebGrid(source: Model.ReportObligations, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "reportObligationsGrid");
+                            grid.Pager(WebGridPagerModes.All);
+                        }
+
+
+                        @grid.GetHtml(tableStyle: "webgrid-table",
+                            headerStyle: "webgrid-header",
+                            footerStyle: "webgrid-footer",
+                            alternatingRowStyle: "webgrid-alternating-row",
+                            selectedRowStyle: "webgrid-selected-row",
+                            rowStyle: "webgrid-row-style",
+                            mode: WebGridPagerModes.All,
+                            columns: grid.Columns(
+                                grid.Column(null, null, format: @<text><input type="hidden" id="RepDelRegId" value="@item.DelregisterId" class="edit-mode form-control"/></text>, style: "colMiniminiWidth"),
+
+                                grid.Column("Id", format: @<text><span class="display-mode">@item.ID</span><label id="RepId" class="edit-mode colMinWidth">@item.Id</label></text>, style: "colMinWidth"),
+                                grid.Column("DelregisterKortnamn", "Delregister", format: @<text><span class="display-mode"><label id="lblDelregister">@item.DelregisterKortnamn</label></span>
+                                                                                              <input type="text" id="Delregister" value="@item.DelregisterKortnamn" class="edit-mode form-control"/></text>, style: "colMinWidth"),
+                                grid.Column("SkyldigFrom", "Fr.o.m", format: @<text><span class="display-mode"><label id="lblSkyldigFrom">@( item.SkyldigFrom != null ? item.SkyldigFrom.ToString("yyyy-MM-dd") : item.SkyldigFrom)</label></span>
+                                                                                 <input type="text" id="RepSkyldigFrom" value="@( item.SkyldigFrom != null ? item.SkyldigFrom.ToString("yyyy-MM-dd") : item.SkyldigFrom)" class="edit-mode form-control"/></text>, style: "col2Width"),
+
+                                grid.Column("SkyldigTom", "T.o.m", format: @<text><span class="display-mode"><label id="lblSkyldigTom">@( item.SkyldigTom != null ? item.SkyldigTom.ToString("yyyy-MM-dd") : item.SkyldigTom)</label></span>
+                                                                               <input type="text" id="RepSkyldigTom" value="@( item.SkyldigTom != null ? item.SkyldigTom.ToString("yyyy-MM-dd") : item.SkyldigTom)" class="edit-mode form-control"/></text>, style: "col2Width"),
+
+                                grid.Column("RapporterarPerEnhet", "Per enhet", format: @<text>
+                                                                                            <span class="display-mode"><input id="lblRappPerEnhet" class="checkbox" name="select" type="checkbox" disabled @( item.RapporterarPerEnhet ? "checked='checked'" : "") value="@item.RapporterarPerEnhet"/></span>
+                                                                                            <input id="RepRapporterarPerEnhet" class="edit-mode checkbox" name="select" type="checkbox" @( item.RapporterarPerEnhet ? "checked='checked'" : "") value="@item.RapporterarPerEnhet"/></text>, style: "colMinWidth centered"),
+
+
+                                grid.Column(null, format: @<text>
+                                                              <button class="edit-user display-mode btn btn-default">Ändra</button>
+                                                              <button class="save-user edit-mode btn btn-default">Spara</button>
+                                                              <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
+                                                           </text>, style: "col3Width", canSort: false)
+                                ))
+
+                    </div>
                 }
+                else
+                {
+                    <div class="row">
+                        <div class="col-md-8">
+                            @Html.ActionLink("Till organisationssidan", "GetOrganisation", "Organisation", new {selectedOrganisationId = Model.SelectedOrganisationId}, new { style = "padding-left:20px;" })
+                        </div>
+                        </div>
+
+                        <div id="gridContent" style="font-family: Arial; padding: 20px;">
+                            @{
+                                ViewBag.Title = "Uppgiftsskyldighet";
+                                var grid = new WebGrid(source: Model.ReportObligations, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "reportObligationsGrid");
+                                grid.Pager(WebGridPagerModes.All);
+                            }
 
 
-                @grid.GetHtml(tableStyle: "webgrid-table",
-                    headerStyle: "webgrid-header",
-                    footerStyle: "webgrid-footer",
-                    alternatingRowStyle: "webgrid-alternating-row",
-                    selectedRowStyle: "webgrid-selected-row",
-                    rowStyle: "webgrid-row-style",
-                    mode: WebGridPagerModes.All,
-                    columns: grid.Columns(
-                        grid.Column(null, null, format: @<text><input type="hidden" id="RepDelRegId" value="@item.DelregisterId" class="edit-mode form-control"/></text>, style: "colMiniminiWidth"),
+                            @grid.GetHtml(tableStyle: "webgrid-table",
+                                headerStyle: "webgrid-header",
+                                footerStyle: "webgrid-footer",
+                                alternatingRowStyle: "webgrid-alternating-row",
+                                selectedRowStyle: "webgrid-selected-row",
+                                rowStyle: "webgrid-row-style",
+                                mode: WebGridPagerModes.All,
+                                columns: grid.Columns(
+                                    grid.Column(null, null, format: @<text><input type="hidden" id="RepDelRegId" value="@item.DelregisterId" class="edit-mode form-control"/></text>, style: "colMiniminiWidth"),
+                                    grid.Column("Id", format: @<text><span class="display-mode">@item.ID</span><label id="RepId" class="edit-mode colMinWidth">@item.Id</label></text>, style: "colMinWidth"),
+                                    grid.Column("DelregisterKortnamn", "Delregister", format: @<text><span class="display-mode"><label id="lblDelregister">@item.DelregisterKortnamn</label></span></text>, style: "colMinWidth"),
+                                    grid.Column("SkyldigFrom", "Fr.o.m", format: @<text><span class="display-mode"><label id="lblSkyldigFrom">@( item.SkyldigFrom != null ? item.SkyldigFrom.ToString("yyyy-MM-dd") : item.SkyldigFrom)</label></span></text>, style: "col2Width"),
+                                    grid.Column("SkyldigTom", "T.o.m", format: @<text><span class="display-mode"><label id="lblSkyldigTom">@( item.SkyldigTom != null ? item.SkyldigTom.ToString("yyyy-MM-dd") : item.SkyldigTom)</label></span></text>, style: "col2Width"),
+                                    grid.Column("RapporterarPerEnhet", "Per enhet", format: @<text>
+                                                                                                <span class="display-mode"><input id="lblRappPerEnhet" class="checkbox" name="select" type="checkbox" disabled @( item.RapporterarPerEnhet ? "checked='checked'" : "") value="@item.RapporterarPerEnhet"/></span></text>, style: "colMinWidth centered")
+                                    ))
 
-                        grid.Column("Id", format: @<text><span class="display-mode">@item.ID</span><label id="RepId" class="edit-mode colMinWidth">@item.Id</label></text>, style: "colMinWidth"),
-                        grid.Column("DelregisterKortnamn", "Delregister", format: @<text><span class="display-mode"><label id="lblDelregister">@item.DelregisterKortnamn</label></span>
-                                                                                      <input type="text" id="Delregister" value="@item.DelregisterKortnamn" class="edit-mode form-control"/></text>, style: "colMinWidth"),
-                        grid.Column("SkyldigFrom", "Fr.o.m", format: @<text><span class="display-mode"><label id="lblSkyldigFrom">@( item.SkyldigFrom != null ? item.SkyldigFrom.ToString("yyyy-MM-dd") : item.SkyldigFrom)</label></span>
-                                                                         <input type="text" id="RepSkyldigFrom" value="@( item.SkyldigFrom != null ? item.SkyldigFrom.ToString("yyyy-MM-dd") : item.SkyldigFrom)" class="edit-mode form-control"/></text>, style: "col2Width"),
+                        </div>
+                        }
 
-                        grid.Column("SkyldigTom", "T.o.m", format: @<text><span class="display-mode"><label id="lblSkyldigTom">@( item.SkyldigTom != null ? item.SkyldigTom.ToString("yyyy-MM-dd") : item.SkyldigTom)</label></span>
-                                                                       <input type="text" id="RepSkyldigTom" value="@( item.SkyldigTom != null ? item.SkyldigTom.ToString("yyyy-MM-dd") : item.SkyldigTom)" class="edit-mode form-control"/></text>, style: "col2Width"),
+                        }
 
-                        grid.Column("RapporterarPerEnhet", "Per enhet", format: @<text>
-                                                                                    <span class="display-mode"><input id="lblRappPerEnhet" class="checkbox" name="select" type="checkbox" disabled @( item.RapporterarPerEnhet ? "checked='checked'" : "") value="@item.RapporterarPerEnhet"/></span>
-                                                                                    <input id="RepRapporterarPerEnhet" class="edit-mode checkbox" name="select" type="checkbox" @( item.RapporterarPerEnhet ? "checked='checked'" : "") value="@item.RapporterarPerEnhet"/></text>, style: "colMinWidth centered"),
-
-
-                        grid.Column(null, format: @<text>
-                                                      <button class="edit-user display-mode btn btn-default">Ändra</button>
-                                                      <button class="save-user edit-mode btn btn-default">Spara</button>
-                                                      <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
-                                                   </text>, style: "col3Width", canSort: false)
-                        ))
-
-            </div>
-        }
-    }
-    </div>
+                        }
+                        }
+                    </div>
 

@@ -257,42 +257,77 @@
 
             <div style="font-size: 1.2em; padding-left: 20px; padding-bottom: 20px;"><b>@Model.Organisation.Organisationsnamn</b></div>
 
-            <div style="padding-left: 20px; padding-bottom: 20px;">@Html.ActionLink("Skapa nytt SFTP-konto", "CreateOrganisationSFTPAccount", "Organisation", new { selectedOrganisationId = Model.SelectedOrganisationId }, null)</div>
+            if (Request.IsAuthenticated)
+            {
+                if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin"))
+                {
+                    <div style="padding-left: 20px; padding-bottom: 20px;">@Html.ActionLink("Skapa nytt SFTP-konto", "CreateOrganisationSFTPAccount", "Organisation", new { selectedOrganisationId = Model.SelectedOrganisationId }, null)</div>
 
 
-            <div id="gridContent" style="font-family: Arial; padding: 20px;">
+                    <div id="gridContent" style="font-family: Arial; padding: 20px;">
 
-                @{
-                    ViewBag.Title = "Administrera SFTP-konton";
-                    var grid = new WebGrid(source: Model.SFTPAccounts, canPage: false, rowsPerPage: 10, ajaxUpdateContainerId: "accountsGrid");
+                        @{
+                            ViewBag.Title = "Administrera SFTP-konton";
+                            var grid = new WebGrid(source: Model.SFTPAccounts, canPage: false, rowsPerPage: 10, ajaxUpdateContainerId: "accountsGrid");
+                        }
+
+                        @grid.GetHtml(htmlAttributes: new {id = "accountsTable"},
+                            tableStyle: "webgrid-table900",
+                            headerStyle: "webgrid-header",
+                            footerStyle: "webgrid-footer",
+                            alternatingRowStyle: "webgrid-alternating-row",
+                            selectedRowStyle: "webgrid-selected-row",
+                            rowStyle: "webgrid-row-style",
+                            mode: WebGridPagerModes.All,
+                            columns: grid.Columns(
+                                grid.Column(null, null, format: @<input type="hidden" id="AccountId" name="IDHidden" value="@item.Id" />),
+                                         grid.Column(null, null, format: @<input type="hidden" id="RegisterId" value="@item.RegisterId" />),
+                                             grid.Column("Kontonamn", "Namn", format: @<text><span class="display-mode"><label id="lblRAccountName">@item.Kontonamn</label></span>
+                                            <input type="text" id="AccountName" value="@item.Kontonamn" class="edit-mode form-control" /></text>, style: "col3Width"),
+                                                 grid.Column("Registernamn", "Register", format: @<text><span class="display-mode"><label id="lblRegister" style="width: 50px;">@item.Registernamn</label></span></text>, style: "colMinWidth"),
+                                                     grid.Column("Registernamn", format: @item => Html.DropDownListFor(m => m.SelectedRegisterId, ViewBag.RegisterList as SelectList, " - Välj -", new { id = "ddlRegister", @class = "form-control edit-mode", style = "min-width:100px !important" })),
+
+                                                     grid.Column("Kontakter", "Kontakter", format: @<text><label id="lblContacts" style="display: inline-block;">@item.StringOfChosenContacts</label></text>, style: "col3Width"),
+                                                         grid.Column("Kontakter", format: @item => Html.DropDownListFor(m => m.ContactPersons, new SelectList(@item.ListOfContacts, "Id", "Email"), new { id = "ddlContactList", @class = "form-control edit-mode ddl", multiple = "multiple", style = "min-width:100px !important" })),
+
+                                                         grid.Column(null, format: @<text>
+                                                            <button class="edit-user display-mode btn btn-default">Ändra</button>
+                                                            <button class="save-user edit-mode btn btn-default">Spara</button>
+                                                            <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
+                                                        </text>, style: "col3Width", canSort: false)))
+
+                    </div>
                 }
+                else
+                {
+                    <div id="gridContent" style="font-family: Arial; padding: 20px;">
 
-                @grid.GetHtml(htmlAttributes: new { id = "accountsTable" },
-                                   tableStyle: "webgrid-table900",
-                                   headerStyle: "webgrid-header",
-                                   footerStyle: "webgrid-footer",
-                                   alternatingRowStyle: "webgrid-alternating-row",
-                                   selectedRowStyle: "webgrid-selected-row",
-                                   rowStyle: "webgrid-row-style",
-                                   mode: WebGridPagerModes.All,
-                                   columns: grid.Columns(
-                                     grid.Column(null, null, format: @<input type="hidden" id="AccountId" name="IDHidden" value="@item.Id" />),
-                                     grid.Column(null, null, format: @<input type="hidden" id="RegisterId" value="@item.RegisterId" />),
-                                     grid.Column("Kontonamn", "Namn", format: @<text><span class="display-mode"><label id="lblRAccountName">@item.Kontonamn</label></span>
-                                        <input type="text" id="AccountName" value="@item.Kontonamn" class="edit-mode form-control" /></text>, style: "col3Width"),
-                                    grid.Column("Registernamn", "Register", format: @<text><span class="display-mode"><label id="lblRegister" style="width: 50px;">@item.Registernamn</label></span></text>, style: "colMinWidth"),
-                                    grid.Column("Registernamn", format: @item => Html.DropDownListFor(m => m.SelectedRegisterId, ViewBag.RegisterList as SelectList, " - Välj -", new { id = "ddlRegister", @class = "form-control edit-mode", style = "min-width:100px !important" })),
+                        @{
+                            ViewBag.Title = "SFTP-konton";
+                            var grid = new WebGrid(source: Model.SFTPAccounts, canPage: false, rowsPerPage: 10, ajaxUpdateContainerId: "accountsGrid");
+                        }
 
-                                    grid.Column("Kontakter", "Kontakter", format: @<text><label id="lblContacts" style="display: inline-block;">@item.StringOfChosenContacts</label></text>, style: "col3Width"),
-                                    grid.Column("Kontakter", format: @item => Html.DropDownListFor(m => m.ContactPersons, new SelectList(@item.ListOfContacts, "Id", "Email"), new { id = "ddlContactList", @class = "form-control edit-mode ddl", multiple = "multiple", style = "min-width:100px !important" })),
+                        @grid.GetHtml(htmlAttributes: new {id = "accountsTable"},
+                            tableStyle: "webgrid-table900",
+                            headerStyle: "webgrid-header",
+                            footerStyle: "webgrid-footer",
+                            alternatingRowStyle: "webgrid-alternating-row",
+                            selectedRowStyle: "webgrid-selected-row",
+                            rowStyle: "webgrid-row-style",
+                            mode: WebGridPagerModes.All,
+                            columns: grid.Columns(
+                                grid.Column(null, null, format: @<input type="hidden" id="AccountId" name="IDHidden" value="@item.Id" />),
+                                grid.Column(null, null, format: @<input type="hidden" id="RegisterId" value="@item.RegisterId" />),
+                                grid.Column("Kontonamn", "Namn", format: @<text><span class="display-mode"><label id="lblRAccountName">@item.Kontonamn</label></span></text>, style: "col3Width"),
+                                grid.Column("Registernamn", "Register", format: @<text><span class="display-mode"><label id="lblRegister" style="width: 50px;">@item.Registernamn</label></span></text>, style: "colMinWidth"),
+                                grid.Column("Registernamn", format: @item => Html.DropDownListFor(m => m.SelectedRegisterId, ViewBag.RegisterList as SelectList, " - Välj -", new { id = "ddlRegister", @class = "form-control edit-mode", style = "min-width:100px !important" })),
+                                grid.Column("Kontakter", "Kontakter", format: @<text><label id="lblContacts" style="display: inline-block;">@item.StringOfChosenContacts</label></text>, style: "col3Width"),
+                                grid.Column("Kontakter", format: @item => Html.DropDownListFor(m => m.ContactPersons, new SelectList(@item.ListOfContacts, "Id", "Email"), new { id = "ddlContactList", @class = "form-control edit-mode ddl", multiple = "multiple", style = "min-width:100px !important" }))
+                                ))
 
-                                    grid.Column(null, format: @<text>
-                                        <button class="edit-user display-mode btn btn-default">Ändra</button>
-                                        <button class="save-user edit-mode btn btn-default">Spara</button>
-                                        <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
-                                </text>, style: "col3Width", canSort: false)))
-
-            </div>
+                    </div>
+                }
+            }
         }
     }
 

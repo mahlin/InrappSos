@@ -79,20 +79,20 @@
 <div id="pageContainer">
 
     @*<div class="modal fade ui-widget-content" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" id="mi-modal">
-        <div class="modal-dialog modal-sm">
-            <div class="modal-content">
-                <div class="modal-body" id="modal-body">
-                    <p>
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-body" id="modal-body">
+                        <p>
 
-                    </p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" id="modal-btn-si">Ja</button>
-                    <button type="button" class="btn btn-default" id="modal-btn-no">Avbryt</button>
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" id="modal-btn-si">Ja</button>
+                        <button type="button" class="btn btn-default" id="modal-btn-no">Avbryt</button>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>*@
+        </div>*@
     <br />
 
     <div class="row">
@@ -100,8 +100,8 @@
             <h4>Administrera privata epostadresser</h4>
             <section id="orgForm">
                 @Html.AntiForgeryToken()
-                <hr/>
-                @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+                <hr />
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
                 @using (Html.BeginForm("SearchOrganisation", "Organisation", new { origin = "privateEmailAdresses" }, FormMethod.Post, null))
                 {
@@ -147,42 +147,74 @@
             @Html.HiddenFor(m => m.SelectedOrganisationId)
 
             <div style="font-size: 1.2em; padding-left: 20px; padding-bottom: 20px;"><b>@Model.Organisation.Organisationsnamn</b></div>
+            if (Request.IsAuthenticated)
+            {
+                if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin"))
+                {
+                    @Html.ActionLink("Lägg till ny privat epostadress", "CreatePrivateEmailAdress", "Organisation", new { selectedOrganisationId = Model.SelectedOrganisationId }, new { style = "padding-left:20px;" })
 
-            @Html.ActionLink("Lägg till ny privat epostadress", "CreatePrivateEmailAdress", "Organisation", new { selectedOrganisationId = Model.SelectedOrganisationId}, new { style = "padding-left:20px;" })
+                    <div id="gridContent" style="font-family: Arial; padding: 20px;">
 
-            <div id="gridContent" style="font-family: Arial; padding: 20px;">
+                        @{
+                            ViewBag.Title = "Administrera privata epostadresser";
+                            var grid = new WebGrid(source: Model.UndantagEpostadresser, canPage: false, rowsPerPage: 10, ajaxUpdateContainerId: "privateEmailAdressesGrid");
+                        }
 
-                @{
-                    ViewBag.Title = "Administrera privata epostadresser";
-                    var grid = new WebGrid(source: Model.UndantagEpostadresser, canPage: false, rowsPerPage: 10, ajaxUpdateContainerId: "privateEmailAdressesGrid");
-                }
-                
-            @grid.GetHtml(htmlAttributes: new { id = "privEmailsTable" },
+                        @grid.GetHtml(htmlAttributes: new { id = "privEmailsTable" },
                             tableStyle: "webgrid-table",
-                              headerStyle: "webgrid-header",
-                              footerStyle: "webgrid-footer",
-                              alternatingRowStyle: "webgrid-alternating-row",
-                              selectedRowStyle: "webgrid-selected-row",
-                              rowStyle: "webgrid-row-style",
-                              mode: WebGridPagerModes.All,
-                              columns: grid.Columns(
+                            headerStyle: "webgrid-header",
+                            footerStyle: "webgrid-footer",
+                            alternatingRowStyle: "webgrid-alternating-row",
+                            selectedRowStyle: "webgrid-selected-row",
+                            rowStyle: "webgrid-row-style",
+                            mode: WebGridPagerModes.All,
+                            columns: grid.Columns(
+                                grid.Column(null, null, format: @<input type="hidden" id="Id" name="IDHidden" value="@item.Id" />),
+                                         grid.Column(null, null, format: @<input type="hidden" id="orgId" name="IDHidden" value="@item.OrganisationsId" />),
+                                             grid.Column("PrivatEpostAdress", "E-post", format: @<text><span class="display-mode col2Width"><label id="lblEpost" style="width: 300px;">@item.PrivatEpostAdress</label></span>
+                                            <input type="text" id="Epost" value="@item.PrivatEpostAdress" class="edit-mode form-control" /> </text>, style: "col4Width"),
+                                                 grid.Column("AktivFrom", "Aktiv fr.o.m", format: @<text><span class="display-mode"><label id="lblAktivFrom">@( item.AktivFrom != null ? item.AktivFrom.ToString("yyyy-MM-dd") : item.AktivFrom)</label></span>
+                                                <input type="text" id="AktivFrom" value="@( item.AktivFrom != null ? item.AktivFrom.ToString("yyyy-MM-dd") : item.AktivFrom)" class="edit-mode form-control" /></text>, style: "col2Width"),
+                                                     grid.Column("AktivTom", "Aktiv t.o.m", format: @<text><span class="display-mode"><label id="lblAktivTom">@( item.AktivTom != null ? item.AktivTom.ToString("yyyy-MM-dd") : item.AktivTom)</label></span>
+                                                    <input type="text" id="AktivTom" value="@( item.AktivTom != null ? item.AktivTom.ToString("yyyy-MM-dd") : item.AktivTom)" class="edit-mode form-control" /></text>, style: "col2Width"),
+                                                         grid.Column("Status", "Status", format: @<text><span class="display-mode col1Width"><label id="lblStatus">@item.Status</label></span>
+                                                        <input type="text" id="Status" value="@item.Status" class="edit-mode form-control" /></text>, style: "col1Width"),
+                                                             grid.Column(null, format: @<text>
+                                                                <button class="edit-user display-mode btn btn-default">Ändra</button>
+                                                                <button class="save-user edit-mode btn btn-default">Spara</button>
+                                                                <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
+                                                            </text>, style: "col3Width", canSort: false)))
+
+                    </div>
+                }
+                else
+                {
+                    <div id="gridContent" style="font-family: Arial; padding: 20px;">
+
+                        @{
+                            ViewBag.Title = "Privata epostadresser";
+                            var grid = new WebGrid(source: Model.UndantagEpostadresser, canPage: false, rowsPerPage: 10, ajaxUpdateContainerId: "privateEmailAdressesGrid");
+                        }
+
+                        @grid.GetHtml(htmlAttributes: new { id = "privEmailsTable" },
+                            tableStyle: "webgrid-table",
+                            headerStyle: "webgrid-header",
+                            footerStyle: "webgrid-footer",
+                            alternatingRowStyle: "webgrid-alternating-row",
+                            selectedRowStyle: "webgrid-selected-row",
+                            rowStyle: "webgrid-row-style",
+                            mode: WebGridPagerModes.All,
+                            columns: grid.Columns(
                                 grid.Column(null, null, format: @<input type="hidden" id="Id" name="IDHidden" value="@item.Id" />),
                                 grid.Column(null, null, format: @<input type="hidden" id="orgId" name="IDHidden" value="@item.OrganisationsId" />),
-                                grid.Column("PrivatEpostAdress", "E-post", format: @<text><span class="display-mode col2Width"><label id="lblEpost" style="width: 300px;">@item.PrivatEpostAdress</label></span>
-                                            <input type="text" id="Epost" value="@item.PrivatEpostAdress" class="edit-mode form-control" /> </text>, style: "col4Width"),
-                                grid.Column("AktivFrom", "Aktiv fr.o.m", format: @<text><span class="display-mode"><label id="lblAktivFrom">@( item.AktivFrom != null ? item.AktivFrom.ToString("yyyy-MM-dd") : item.AktivFrom)</label></span>
-                                            <input type="text" id="AktivFrom" value="@( item.AktivFrom != null ? item.AktivFrom.ToString("yyyy-MM-dd") : item.AktivFrom)" class="edit-mode form-control" /></text>, style: "col2Width"),
-                                grid.Column("AktivTom", "Aktiv t.o.m", format: @<text><span class="display-mode"><label id="lblAktivTom">@( item.AktivTom != null ? item.AktivTom.ToString("yyyy-MM-dd") : item.AktivTom)</label></span>
-                                            <input type="text" id="AktivTom" value="@( item.AktivTom != null ? item.AktivTom.ToString("yyyy-MM-dd") : item.AktivTom)" class="edit-mode form-control" /></text>, style: "col2Width"),
-                                grid.Column("Status", "Status", format: @<text><span class="display-mode col1Width"><label id="lblStatus">@item.Status</label></span>
-                                            <input type="text" id="Status" value="@item.Status" class="edit-mode form-control" /></text>, style: "col1Width"),
-                                grid.Column(null, format: @<text>
-                                        <button class="edit-user display-mode btn btn-default">Ändra</button>
-                                        <button class="save-user edit-mode btn btn-default">Spara</button>
-                                        <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
-                                        </text>, style: "col3Width", canSort: false)))
-
-            </div>
+                                grid.Column("PrivatEpostAdress", "E-post", format: @<text><span class="display-mode col2Width"><label id="lblEpost" style="width: 300px;">@item.PrivatEpostAdress</label></span></text>, style: "col4Width"),
+                                grid.Column("AktivFrom", "Aktiv fr.o.m", format: @<text><span class="display-mode"><label id="lblAktivFrom">@( item.AktivFrom != null ? item.AktivFrom.ToString("yyyy-MM-dd") : item.AktivFrom)</label></span></text>, style: "col2Width"),
+                                grid.Column("AktivTom", "Aktiv t.o.m", format: @<text><span class="display-mode"><label id="lblAktivTom">@( item.AktivTom != null ? item.AktivTom.ToString("yyyy-MM-dd") : item.AktivTom)</label></span></text>, style: "col2Width"),
+                                grid.Column("Status", "Status", format: @<text><span class="display-mode col1Width"><label id="lblStatus">@item.Status</label></span></text>, style: "col1Width")
+                                ))
+                    </div>
+                }
+            }
         }
     }
 

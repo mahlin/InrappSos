@@ -166,36 +166,68 @@
                             @Html.HiddenFor(m => m.UndantagForvantadfiler[index].Selected)
                         }
 
-                        <div id="gridContent" style="font-family: Arial; padding: 20px;">
+                        if (Request.IsAuthenticated)
+                        {
+                            if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin"))
+                            {
 
-                            @{
-                                ViewBag.Title = "Administrera undantag av förväntade filer";
-                                var grid = new WebGrid(source: Model.UndantagForvantadfiler, canPage: false, rowsPerPage: 10, ajaxUpdateContainerId: "exceptionsExpectedFilesGrid");
+                                <div id="gridContent" style="font-family: Arial; padding: 20px;">
+
+                                    @{
+                                        ViewBag.Title = "Administrera undantag av förväntade filer";
+                                        var grid = new WebGrid(source: Model.UndantagForvantadfiler, canPage: false, rowsPerPage: 10, ajaxUpdateContainerId: "exceptionsExpectedFilesGrid");
+                                    }
+
+                                    @grid.GetHtml(htmlAttributes: new {id = "exceptionsTable"},
+                                        tableStyle: "webgrid-table500",
+                                        headerStyle: "webgrid-header",
+                                        footerStyle: "webgrid-footer",
+                                        alternatingRowStyle: "webgrid-alternating-row",
+                                        selectedRowStyle: "webgrid-selected-row",
+                                        rowStyle: "webgrid-row-style",
+                                        mode: WebGridPagerModes.All,
+                                        columns: grid.Columns(
+                                            grid.Column(null, null, format: @<input type="hidden" id="Id" name="IDHidden" value="@item.DelregisterId"/>),
+                                            grid.Column(null, null, format: @<input type="hidden" id="Id" name="IDHidden" value="@item.ForvantadfilId"/>),
+
+                                            grid.Column("Filmask", "Filmask", format: @<text><label id="Filmask" class="col3Width">@item.Filmask</label></text>, style: "col3Width"),
+                                            grid.Column("Selected", "Undanta", format: @<text><span class=""><input id="chkbxUndanta" class="checkbox centered" onchange="setException('@item.ForvantadfilId');" name="select" type="checkbox" @( item.Selected ? "checked='checked'" : "") value="@item.Selected"/></span></text>, style: "colMinWidth centered", canSort: false)))
+
+                                </div>
+                                <div class="row col-md-6">
+                                    <div class="col-md-10 padding-top-15" id="headerText" style="padding-left: 20px;">
+                                    </div>
+                                    <div class="" style="">
+                                        <input type="submit" value="Spara" class="btn btn-default"/>
+                                    </div>
+                                </div>
                             }
+                            else
+                            {
+                                <div id="gridContent" style="font-family: Arial; padding: 20px;">
 
-                            @grid.GetHtml(htmlAttributes: new { id = "exceptionsTable" },
-                                     tableStyle: "webgrid-table500",
-                                     headerStyle: "webgrid-header",
-                                     footerStyle: "webgrid-footer",
-                                     alternatingRowStyle: "webgrid-alternating-row",
-                                     selectedRowStyle: "webgrid-selected-row",
-                                     rowStyle: "webgrid-row-style",
-                                     mode: WebGridPagerModes.All,
-                                     columns: grid.Columns(
-                                         grid.Column(null, null, format: @<input type="hidden" id="Id" name="IDHidden" value="@item.DelregisterId" />),
-                                             grid.Column(null, null, format: @<input type="hidden" id="Id" name="IDHidden" value="@item.ForvantadfilId" />),
+                                    @{
+                                        ViewBag.Title = "Undantag av förväntade filer";
+                                        var grid = new WebGrid(source: Model.UndantagForvantadfiler, canPage: false, rowsPerPage: 10, ajaxUpdateContainerId: "exceptionsExpectedFilesGrid");
+                                    }
 
-                                                 grid.Column("Filmask", "Filmask", format: @<text><label id="Filmask" class="col3Width">@item.Filmask</label></text>, style: "col3Width"),
-                                                     grid.Column("Selected", "Undanta", format: @<text><span class=""><input id="chkbxUndanta" class="checkbox centered" onchange="setException('@item.ForvantadfilId');" name="select" type="checkbox" @( item.Selected ? "checked='checked'" : "") value="@item.Selected" /></span></text>, style: "colMinWidth centered", canSort: false)))
+                                    @grid.GetHtml(htmlAttributes: new {id = "exceptionsTable"},
+                                        tableStyle: "webgrid-table500",
+                                        headerStyle: "webgrid-header",
+                                        footerStyle: "webgrid-footer",
+                                        alternatingRowStyle: "webgrid-alternating-row",
+                                        selectedRowStyle: "webgrid-selected-row",
+                                        rowStyle: "webgrid-row-style",
+                                        mode: WebGridPagerModes.All,
+                                        columns: grid.Columns(
+                                            grid.Column(null, null, format: @<input type="hidden" id="Id" name="IDHidden" value="@item.DelregisterId" />),
+                                            grid.Column(null, null, format: @<input type="hidden" id="Id" name="IDHidden" value="@item.ForvantadfilId" />),
+                                            grid.Column("Filmask", "Filmask", format: @<text><label id="Filmask" class="col3Width">@item.Filmask</label></text>, style: "col3Width"),
+                                            grid.Column("Selected", "Undanta", format: @<text><span class=""><input id="chkbxUndanta" class="checkbox centered" name="select" type="checkbox" @( item.Selected ? "checked='checked'" : "") value="@item.Selected" disabled/></span></text>, style: "colMinWidth centered", canSort: false)))
 
-                        </div>
-                        <div class="row col-md-6">
-                            <div class="col-md-10 padding-top-15" id="headerText" style="padding-left: 20px;">
-                            </div>
-                            <div class="" style="">
-                                <input type="submit" value="Spara" class="btn btn-default" />
-                            </div>
-                        </div>
+                                </div>   
+                            }
+                        }
                         <br /><br />
                     }
                 }

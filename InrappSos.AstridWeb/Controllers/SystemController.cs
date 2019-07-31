@@ -243,7 +243,7 @@ namespace InrappSos.AstridWeb.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Admin, InrappAdmin")]
         public ActionResult UpdateFAQCategory(AdmFAQKategori faqCategory)
         {
             if (ModelState.IsValid)
@@ -271,7 +271,7 @@ namespace InrappSos.AstridWeb.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Admin, InrappAdmin")]
         public ActionResult UpdateFAQ(SystemViewModels.SystemViewModel model)
         {
             if (ModelState.IsValid)
@@ -299,7 +299,7 @@ namespace InrappSos.AstridWeb.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Admin, InrappAdmin")]
         public ActionResult UpdateHoliday(SystemViewModels.AdmHelgdagViewModel holiday)
         {
             if (ModelState.IsValid)
@@ -355,7 +355,8 @@ namespace InrappSos.AstridWeb.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin, InrappAdmin")]
         public ActionResult UpdateInfoText(SystemViewModels.SystemViewModel model)
         {
             if (ModelState.IsValid)
@@ -389,7 +390,6 @@ namespace InrappSos.AstridWeb.Controllers
 
 
         [HttpPost]
-        [Authorize]
         public ActionResult UpdateDocument(SystemViewModels.SystemViewModel model)
         {
             if (ModelState.IsValid)
@@ -432,7 +432,7 @@ namespace InrappSos.AstridWeb.Controllers
         // POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
+        [Authorize(Roles = "Admin, InrappAdmin")]
         public ActionResult CreateFAQCategory(AdmFAQKategori faqCategory)
         {
             if (ModelState.IsValid)
@@ -476,7 +476,7 @@ namespace InrappSos.AstridWeb.Controllers
         // POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
+        [Authorize(Roles = "Admin, InrappAdmin")]
         public ActionResult CreateFAQ(SystemViewModels.FAQViewModel model)
         {
             if (ModelState.IsValid)
@@ -532,7 +532,7 @@ namespace InrappSos.AstridWeb.Controllers
         // POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
+        [Authorize(Roles = "Admin, InrappAdmin")]
         public ActionResult CreateHoliday(SystemViewModels.AdmHelgdagViewModel model)
         {
             if (ModelState.IsValid)
@@ -581,7 +581,7 @@ namespace InrappSos.AstridWeb.Controllers
         // POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
+        [Authorize(Roles = "Admin, InrappAdmin")]
         public ActionResult CreateSpecialDay(SystemViewModels.AdmSpecialdagViewModel model)
         {
             if (ModelState.IsValid)
@@ -749,7 +749,7 @@ namespace InrappSos.AstridWeb.Controllers
         // POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
+        [Authorize(Roles = "Admin, InrappAdmin")]
         public ActionResult CreateInformationText(SystemViewModels.InfoTextViewModel model)
         {
             if (ModelState.IsValid)
@@ -785,7 +785,7 @@ namespace InrappSos.AstridWeb.Controllers
         //POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
+        [Authorize(Roles = "Admin, InrappAdmin")]
         public ActionResult SaveOpeningHoursInfo(SystemViewModels.OpeningHours openHours )
         {
             if (ModelState.IsValid)

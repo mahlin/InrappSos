@@ -108,8 +108,13 @@
         @Html.HiddenFor(m => m.InfoPages)
         @Html.HiddenFor(x => Model.SelectedInfo)
         <hr />
-
-        @Html.ActionLink("Skapa ny informationstext", "CreateInformationText", "System")
+        if (Request.IsAuthenticated)
+        {
+            if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin"))
+            {
+                @Html.ActionLink("Skapa ny informationstext", "CreateInformationText", "System")
+            }
+        }
 
         <div id="gridContent" style="font-family: Arial; padding: 20px;">
             @{
@@ -134,23 +139,30 @@
 
         <div id="editInfoText">
             @using (Html.BeginForm("UpdateInfoText", "System", FormMethod.Post, new { id = "infoTextForm" }))
-    {
-        @Html.HiddenFor(x => Model.SelectedInfoId)
-        <div class="form-group">
-            <div class="row">
-                <div class="col-md-8">
-                    @Html.Label("Informationstext: ", new { @class = "control-label" })
-                    @Html.TextAreaFor(m => Model.SelectedInfoText, 10, 100, new { @class = "form-control", id = "textArea", style = "max-width:95% !important;" })
-                </div>
-            </div>
-        </div>
+            {
 
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Spara" class="btn btn-default" />
-            </div>
-        </div>
-}
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(x => Model.SelectedInfoId)
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-8">
+                            @Html.Label("Informationstext: ", new { @class = "control-label" })
+                            @Html.TextAreaFor(m => Model.SelectedInfoText, 10, 100, new { @class = "form-control", id = "textArea", style = "max-width:95% !important;" })
+                        </div>
+                    </div>
+                </div>
+                if (Request.IsAuthenticated)
+                {
+                    if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin"))
+                    {
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-10">
+                                <input type="submit" value="Spara" class="btn btn-default" />
+                            </div>
+                        </div>
+                    }
+                }
+            }
         </div>
     }
 

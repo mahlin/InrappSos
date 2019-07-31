@@ -269,45 +269,88 @@
         @Html.HiddenFor(m => m.SelectedFAQCategory)
 
         <div class="row">
-            <div class="col-md-8">
-                @Html.ActionLink("Skapa ny FAQ", "CreateFAQ", "System", routeValues: new { catId = Model.SelectedFAQCategory }, htmlAttributes: null)
-            </div>
+            @if (Request.IsAuthenticated)
+            {
+                if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin"))
+                {
+
+                    <div class="col-md-8">
+                        @Html.ActionLink("Skapa ny FAQ", "CreateFAQ", "System", routeValues: new { catId = Model.SelectedFAQCategory }, htmlAttributes: null)
+                    </div>
+                }
+            }
             @Html.ActionLink("Tillbaka till kategorier", "GetFAQCategories", "System", null, new { @style = "padding-left:90px;" })
         </div>
 
-        <div id="gridContent" style="font-family: Arial; padding: 20px;">
+        if (Request.IsAuthenticated)
+        {
+            if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin"))
+            {
+                <div id="gridContent" style="font-family: Arial; padding: 20px;">
 
-            @{
-                ViewBag.Title = "Administrera FAQs";
-                var grid = new WebGrid(source: Model.FAQs, canPage: false, rowsPerPage: 10, ajaxUpdateContainerId: "faqsGrid");
-                //grid.Pager(WebGridPagerModes.All);
+                    @{
+                        ViewBag.Title = "Administrera FAQs";
+                        var grid = new WebGrid(source: Model.FAQs, canPage: false, rowsPerPage: 10, ajaxUpdateContainerId: "faqsGrid");
+                        //grid.Pager(WebGridPagerModes.All);
+                    }
+
+
+                    @grid.GetHtml(htmlAttributes: new {id = "FAQAnswerTable"},
+                        tableStyle: "webgrid-table",
+                        headerStyle: "webgrid-header",
+                        footerStyle: "webgrid-footer",
+                        alternatingRowStyle: "webgrid-alternating-row",
+                        selectedRowStyle: "webgrid-selected-row",
+                        rowStyle: "webgrid-row-style",
+                        mode: WebGridPagerModes.All,
+                        columns: grid.Columns(
+                            grid.Column("Id", format: @<text><label id="FAQId">@item.Id</label></text>, style: "colMinWidth"),
+                                grid.Column("RegisterKortNamn", "Register", format: @<text><label id="lblRegister">@item.RegisterKortNamn</label></text>, style: "colMinWidth"),
+                                    grid.Column("Sortering", format: @<text><label id="lblSortering">@item.Sortering</label></text>, style: "colMinWidth"),
+                                        grid.Column("Fraga", "Fråga", format: @<text><label id="lblFraga" class="longColumnText" style="width: 200px;">@item.Fraga</label></text>, style: "col2Width"),
+                                            grid.Column("Svar", format: @<text> <label id="lblSvar" class="longColumnText" style="width: 200px;">@item.Svar</label></text>, style: "col3Width"),
+
+                                                grid.Column(null, format: @<text>
+                                                    <button class="edit-user display-mode btn btn-default" style="padding-left: 10px;" onclick="showEditForm('@item.Id');">Ändra</button>
+                                                    <button class="display-mode btn btn-default" onclick="deleteFAQ(@item.Id, '@item.Fraga');return false;">Ta bort</button>
+                                                    @*<button class="save-user edit-mode btn btn-default">Spara</button>*@
+                                                    <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
+                                                </text>, style: "col3Width", canSort: false)))
+                </div>
+            }
+            else
+            {
+                <div id="gridContent" style="font-family: Arial; padding: 20px;">
+
+                    @{
+                        ViewBag.Title = "FAQs";
+                        var grid = new WebGrid(source: Model.FAQs, canPage: false, rowsPerPage: 10, ajaxUpdateContainerId: "faqsGrid");
+                        //grid.Pager(WebGridPagerModes.All);
+                    }
+
+
+                    @grid.GetHtml(htmlAttributes: new {id = "FAQAnswerTable"},
+                        tableStyle: "webgrid-table",
+                        headerStyle: "webgrid-header",
+                        footerStyle: "webgrid-footer",
+                        alternatingRowStyle: "webgrid-alternating-row",
+                        selectedRowStyle: "webgrid-selected-row",
+                        rowStyle: "webgrid-row-style",
+                        mode: WebGridPagerModes.All,
+                        columns: grid.Columns(
+                            grid.Column("Id", format: @<text><label id="FAQId">@item.Id</label></text>, style: "colMinWidth"),
+                            grid.Column("RegisterKortNamn", "Register", format: @<text><label id="lblRegister">@item.RegisterKortNamn</label></text>, style: "colMinWidth"),
+                            grid.Column("Sortering", format: @<text><label id="lblSortering">@item.Sortering</label></text>, style: "colMinWidth"),
+                            grid.Column("Fraga", "Fråga", format: @<text><label id="lblFraga" class="longColumnText" style="width: 200px;">@item.Fraga</label></text>, style: "col2Width"),
+                            grid.Column("Svar", format: @<text> <label id="lblSvar" class="longColumnText" style="width: 200px;">@item.Svar</label></text>, style: "col3Width")
+                            ))
+                </div>
+
             }
 
+        }
 
-            @grid.GetHtml(htmlAttributes: new { id = "FAQAnswerTable" },
-                tableStyle: "webgrid-table",
-                headerStyle: "webgrid-header",
-                footerStyle: "webgrid-footer",
-                alternatingRowStyle: "webgrid-alternating-row",
-                selectedRowStyle: "webgrid-selected-row",
-                rowStyle: "webgrid-row-style",
-                mode: WebGridPagerModes.All,
-                columns: grid.Columns(
-                    grid.Column("Id", format: @<text><label id="FAQId">@item.Id</label></text>, style: "colMinWidth"),
-                    grid.Column("RegisterKortNamn","Register", format: @<text><label id="lblRegister">@item.RegisterKortNamn</label></text>, style: "colMinWidth"),
-                    grid.Column("Sortering", format: @<text><label id="lblSortering">@item.Sortering</label></text>, style: "colMinWidth"),
-                    grid.Column("Fraga", "Fråga", format: @<text><label id="lblFraga" class="longColumnText" style="width: 200px;">@item.Fraga</label></text>, style: "col2Width"),
-                    grid.Column("Svar", format: @<text> <label id="lblSvar" class="longColumnText" style="width: 200px;">@item.Svar</label></text>, style: "col3Width"),
-
-                    grid.Column(null, format: @<text>
-                                                  <button class="edit-user display-mode btn btn-default" style="padding-left: 10px;" onclick="showEditForm('@item.Id');">Ändra</button>
-                                                  <button class="display-mode btn btn-default" onclick="deleteFAQ(@item.Id,'@item.Fraga');return false;">Ta bort</button>
-                                                  @*<button class="save-user edit-mode btn btn-default">Spara</button>*@
-                                                  <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
-                                               </text>, style: "col3Width", canSort: false)))
-        </div>
-
-        <div id="Outer" >
+        <div id="Outer">
             <div id="GridHeader"></div>
             <div id="GridBody"></div>
             <div id="GridFooter"></div>

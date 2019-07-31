@@ -230,11 +230,18 @@
             </div>
             <br />
 
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10" style="margin-left: 475px;">
-                    <input type="submit" value="Spara" class="btn btn-default" />
-                </div>
-            </div>
+            if (Request.IsAuthenticated)
+            {
+                if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin"))
+                {
+
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10" style="margin-left: 475px;">
+                            <input type="submit" value="Spara" class="btn btn-default"/>
+                        </div>
+                    </div>
+                }
+            }
         }
     }
 </div>

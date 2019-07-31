@@ -158,41 +158,76 @@
 
             @if (Model != null)
             {
+
                 @Html.HiddenFor(m => m.SelectedFAQCategory)
-                @Html.ActionLink("Skapa ny FAQ-kategori", "CreateFAQCategory", "System")
+                if (Request.IsAuthenticated)
+                {
+                    if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin"))
+                    {
+                        @Html.ActionLink("Skapa ny FAQ-kategori", "CreateFAQCategory", "System")
 
-                <div id="gridContent" style="font-family: Arial; padding: 20px;">
-                    @{
-                        ViewBag.Title = "FAQ-kategorier";
-                        var grid = new WebGrid(source: Model.FAQCategories, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "faqCatsGrid");
-                        grid.Pager(WebGridPagerModes.All);
+
+                        <div id="gridContent" style="font-family: Arial; padding: 20px;">
+                            @{
+                                ViewBag.Title = "FAQ-kategorier";
+                                var grid = new WebGrid(source: Model.FAQCategories, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "faqCatsGrid");
+                                grid.Pager(WebGridPagerModes.All);
+                            }
+
+                            @grid.GetHtml(tableStyle: "webgrid-table",
+                                headerStyle: "webgrid-header",
+                                footerStyle: "webgrid-footer",
+                                alternatingRowStyle: "webgrid-alternating-row",
+                                selectedRowStyle: "webgrid-selected-row",
+                                rowStyle: "webgrid-row-style",
+                                mode: WebGridPagerModes.All,
+                                columns: grid.Columns(
+                                    grid.Column("Id", format: @<text><span class="display-mode">@item.Id</span>
+                                                                  <label id="FAQCatId" class="edit-mode colMinWidth">@item.Id</label></text>, style: "colMinWidth"),
+
+                                    grid.Column("Sortering", "Sortering", format: @<text><span class="display-mode"><label id="lblSortering" style="width: 70px;">@item.Sortering</label></span>
+                                                                                      <input type="text" id="Sortering" value="@item.Sortering" class="edit-mode form-control"/></text>, style: "colMinWidth"),
+                                    grid.Column("Kategori", "Kategori", format: @<text><span class="display-mode"><label id="lblFAQCategory" style="width: 200px;">@item.Kategori</label></span>
+                                                                                    <input type="text" id="FAQCategory" value="@item.Kategori" class="edit-mode form-control"/></text>, style: "col2Width"),
+                                    grid.Column(null, format: @<text>
+                                                                  <button class="edit-user display-mode btn btn-default">Ändra</button>
+                                                                  <button class="display-mode btn btn-default" onclick="deleteFAQCategory(@item.Id, '@item.Kategori');return false;">Ta bort</button>
+                                                                  <button class="save-user edit-mode btn btn-default">Spara</button>
+                                                                  <button class="cancel-user edit-mode btn btn-default">Avbryt</button>&nbsp;
+                                                                  @*<button class="btn btn-primary" onclick="showFAQs(@item.Id); return false;">@HttpUtility.HtmlDecode("Frågor och svar &raquo;")</button>*@
+                                                                  @Html.ActionLink(HttpUtility.HtmlDecode("Administrera faq-frågor &raquo;"), "GetFAQs", "System", new {faqCatId = item.Id, faqCatName = item.Kategori}, new {@class = "btn btn-primary"})
+                                                               </text>, style: "col3Width", canSort: false)))
+                        </div>
                     }
+                    else
+                    {
+                        <div id="gridContent" style="font-family: Arial; padding: 20px;">
+                            @{
+                                ViewBag.Title = "FAQ-kategorier";
+                                var grid = new WebGrid(source: Model.FAQCategories, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "faqCatsGrid");
+                                grid.Pager(WebGridPagerModes.All);
+                            }
 
-
-                    @grid.GetHtml(tableStyle: "webgrid-table",
-                      headerStyle: "webgrid-header",
-                      footerStyle: "webgrid-footer",
-                      alternatingRowStyle: "webgrid-alternating-row",
-                      selectedRowStyle: "webgrid-selected-row",
-                      rowStyle: "webgrid-row-style",
-                      mode: WebGridPagerModes.All,
-                      columns: grid.Columns(
-                         grid.Column("Id", format: @<text><span class="display-mode">@item.Id</span>
-                        <label id="FAQCatId" class="edit-mode colMinWidth">@item.Id</label></text>, style: "colMinWidth"),
-
-                        grid.Column("Sortering", "Sortering", format: @<text><span class="display-mode"><label id="lblSortering" style="width: 70px;">@item.Sortering</label></span>
-                        <input type="text" id="Sortering" value="@item.Sortering" class="edit-mode form-control" /></text>, style: "colMinWidth"),
-                        grid.Column("Kategori", "Kategori", format: @<text><span class="display-mode"><label id="lblFAQCategory" style="width: 200px;">@item.Kategori</label></span>
-                        <input type="text" id="FAQCategory" value="@item.Kategori" class="edit-mode form-control" /></text>, style: "col2Width"),
-                        grid.Column(null, format: @<text>
-                            <button class="edit-user display-mode btn btn-default">Ändra</button>
-                            <button class="display-mode btn btn-default" onclick="deleteFAQCategory(@item.Id, '@item.Kategori'); return false;">Ta bort</button>
-                            <button class="save-user edit-mode btn btn-default">Spara</button>
-                            <button class="cancel-user edit-mode btn btn-default">Avbryt</button>&nbsp;
-                            @*<button class="btn btn-primary" onclick="showFAQs(@item.Id); return false;">@HttpUtility.HtmlDecode("Frågor och svar &raquo;")</button>*@
-                            @Html.ActionLink(HttpUtility.HtmlDecode("Administrera faq-frågor &raquo;"), "GetFAQs", "System", new { faqCatId = item.Id, faqCatName = item.Kategori }, new { @class = "btn btn-primary" })
-                        </text>, style: "col3Width", canSort: false)))
-                </div>
+                            @grid.GetHtml(tableStyle: "webgrid-table900",
+                                headerStyle: "webgrid-header",
+                                footerStyle: "webgrid-footer",
+                                alternatingRowStyle: "webgrid-alternating-row",
+                                selectedRowStyle: "webgrid-selected-row",
+                                rowStyle: "webgrid-row-style",
+                                mode: WebGridPagerModes.All,
+                                columns: grid.Columns(
+                                    grid.Column("Id", format: @<text><span class="display-mode">@item.Id</span>
+                                    <label id="FAQCatId" class="edit-mode colMinWidth">@item.Id</label></text>, style: "colMinWidth"),
+                                    grid.Column("Sortering", "Sortering", format: @<text><span class="display-mode">@item.Sortering</span>
+                                    <label id="lblSortering" class="edit-mode colMinWidth">@item.Sortering</label></text>, style: "colMinWidth"),
+                                    grid.Column("Kategori", "Kategori", format: @<text><span class="display-mode">@item.Kategori</span>
+                                    <label id="lblFAQCategory" class="edit-mode" style="width: 200px;">@item.Kategori</label></text>, style: "col2Width"),
+                                 grid.Column(null, format: @<text>
+                                    @Html.ActionLink(HttpUtility.HtmlDecode("Visa faq-frågor &raquo;"), "GetFAQs", "System", new { faqCatId = item.Id, faqCatName = item.Kategori }, new { @class = "btn btn-primary" })
+                                </text>, style: "col1Width", canSort: false)))
+                        </div>
+                    }
+                }
             }
         </div>
     </div>

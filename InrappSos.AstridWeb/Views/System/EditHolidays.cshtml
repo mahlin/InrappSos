@@ -117,46 +117,77 @@
     @if (Model != null)
     {
         @Html.HiddenFor(m => m.SelectedHolidayId)
-        <div class="row">
-            <div class="col-md-8">
-                @Html.ActionLink("Lägg in ny helgdag", "CreateHoliday", "System")
-            </div>
-        </div>
 
-        <div id="gridContent" style="font-family: Arial; padding: 20px;">
+        if (Request.IsAuthenticated)
+        {
+            if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin"))
+            {
+                <div class="row">
+                    <div class="col-md-8">
+                        @Html.ActionLink("Lägg in ny helgdag", "CreateHoliday", "System")
+                    </div>
+                </div>
 
-            @{
-        ViewBag.Title = "Administrera helgdagar";
-        var grid = new WebGrid(source: Model.Holidays, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "holidaysGrid");
-        grid.Pager(WebGridPagerModes.All);
+                <div id="gridContent" style="font-family: Arial; padding: 20px;">
+                    @{
+                        ViewBag.Title = "Helgdagar";
+                        var grid = new WebGrid(source: Model.Holidays, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "holidaysGrid");
+                        grid.Pager(WebGridPagerModes.All);
+                    }
+
+                    @grid.GetHtml(htmlAttributes: new {id = "holidayTable"},
+                        tableStyle: "webgrid-table",
+                        headerStyle: "webgrid-header",
+                        footerStyle: "webgrid-footer",
+                        alternatingRowStyle: "webgrid-alternating-row",
+                        selectedRowStyle: "webgrid-selected-row",
+                        rowStyle: "webgrid-row-style",
+                        mode: WebGridPagerModes.All,
+                        columns: grid.Columns(
+                            grid.Column("ID", format: @<text><label id="HolidayId">@item.Id</label></text>, style: "colMinWidth"),
+                                 grid.Column("Informationstyp", format: @<text><label id="lblInfoTyp">@item.Informationstyp</label></text>, style: "colMinWidth"),
+
+                                     grid.Column("Helgdatum", "Helgdatum", format: @<text><span class="display-mode">
+                                            <label id="lblHelgdatum">@( item.Helgdatum != null ? item.Helgdatum.ToString("yyyy-MM-dd") : item.Helgdatum)</label>
+                                        </span>
+                                        <input type="text" id="HolidayDate" value="@( item.Helgdatum != null ? item.Helgdatum.ToString("yyyy-MM-dd") : item.Helgdatum)" class="edit-mode form-control" /></text>, style: "col1Width"),
+
+                                         grid.Column("Helgdag", "Helgdag", format: @<text><span class="display-mode"><label id="lblHelgdatum">@item.Helgdag</label></span>
+                                        <input type="text" id="Holiday" value="@item.Helgdag" class="edit-mode form-control" /></text>, style: "col2Width"),
+                                             grid.Column(null, format: @<text>
+                                                <button class="edit-user display-mode btn btn-default">Ändra</button>
+                                                <button class="display-mode btn btn-default" onclick="deleteHoliday(@item.Id, '@item.Helgdag');return false;">Ta bort</button>
+                                                <button class="save-user edit-mode btn btn-default">Spara</button>
+                                                <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
+                                            </text>, style: "col3Width", canSort: false)))
+                </div>
             }
+            else
+            {
+                <div id="gridContent" style="font-family: Arial; padding: 20px;">
+                    @{
+                        ViewBag.Title = "Administrera helgdagar";
+                        var grid = new WebGrid(source: Model.Holidays, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "holidaysGrid");
+                        grid.Pager(WebGridPagerModes.All);
+                    }
 
-            @grid.GetHtml(htmlAttributes: new { id = "holidayTable" },
-           tableStyle: "webgrid-table",
-           headerStyle: "webgrid-header",
-           footerStyle: "webgrid-footer",
-           alternatingRowStyle: "webgrid-alternating-row",
-           selectedRowStyle: "webgrid-selected-row",
-           rowStyle: "webgrid-row-style",
-           mode: WebGridPagerModes.All,
-           columns: grid.Columns(
-            grid.Column("ID", format: @<text><label id="HolidayId">@item.Id</label></text>, style: "colMinWidth"),
-            grid.Column("Informationstyp", format: @<text><label id="lblInfoTyp">@item.Informationstyp</label></text>, style: "colMinWidth"),
-
-            grid.Column("Helgdatum", "Helgdatum", format: @<text><span class="display-mode">
-            <label id="lblHelgdatum">@( item.Helgdatum != null ? item.Helgdatum.ToString("yyyy-MM-dd") : item.Helgdatum)</label>
-            </span>
-            <input type="text" id="HolidayDate" value="@( item.Helgdatum != null ? item.Helgdatum.ToString("yyyy-MM-dd") : item.Helgdatum)" class="edit-mode form-control" /></text>, style: "col1Width"),
-
-            grid.Column("Helgdag", "Helgdag", format: @<text><span class="display-mode"><label id="lblHelgdatum">@item.Helgdag</label></span>
-            <input type="text" id="Holiday" value="@item.Helgdag" class="edit-mode form-control" /></text>, style: "col2Width"),
-            grid.Column(null, format: @<text>
-                <button class="edit-user display-mode btn btn-default">Ändra</button>
-                <button class="display-mode btn btn-default" onclick="deleteHoliday(@item.Id,'@item.Helgdag');return false;">Ta bort</button>
-                <button class="save-user edit-mode btn btn-default">Spara</button>
-                <button class="cancel-user edit-mode btn btn-default">Avbryt</button>
-            </text>, style: "col3Width", canSort: false)))
-        </div>
+                    @grid.GetHtml(htmlAttributes: new {id = "holidayTable"},
+                        tableStyle: "webgrid-table",
+                        headerStyle: "webgrid-header",
+                        footerStyle: "webgrid-footer",
+                        alternatingRowStyle: "webgrid-alternating-row",
+                        selectedRowStyle: "webgrid-selected-row",
+                        rowStyle: "webgrid-row-style",
+                        mode: WebGridPagerModes.All,
+                        columns: grid.Columns(
+                            grid.Column("ID", format: @<text><label id="HolidayId">@item.Id</label></text>, style: "colMinWidth"),
+                            grid.Column("Informationstyp", format: @<text><label id="lblInfoTyp">@item.Informationstyp</label></text>, style: "colMinWidth"),
+                            grid.Column("Helgdatum", format: @<text> <label id="lblHelgdatum">@( item.Helgdatum != null ? item.Helgdatum.ToString("yyyy-MM-dd") : item.Helgdatum)</label></text>, style: "colMinWidth"),
+                            grid.Column("Helgdag", format: @<text><label id="lblHelgdag">@item.Helgdag</label></text>, style: "col2Width")
+                        ))
+                </div>
+            }
+        }
 
     }
 </div>

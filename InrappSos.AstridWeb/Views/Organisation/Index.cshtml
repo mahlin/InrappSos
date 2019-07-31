@@ -570,40 +570,47 @@
         }
         <br />
         <br />
-
         @Html.Partial("_Cases")
-        <p>
-            @Html.ActionLink(HttpUtility.HtmlDecode("Administrera ärenden &raquo;"), "GetOrganisationsCases", "Organisation", new { selectedOrganisationId = Model.SelectedOrganisationId }, new { @class = "btn btn-primary" })
-        </p>
-        <br />
-        <br />
+        if (Request.IsAuthenticated)
+        {
+            if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin"))
+            {
+                <p>
+                @Html.ActionLink(HttpUtility.HtmlDecode("Administrera ärenden &raquo;"), "GetOrganisationsCases", "Organisation", new {selectedOrganisationId = Model.SelectedOrganisationId}, new {@class = "btn btn-primary"})
+                </p>
+                <br/>
+                <br/>
+            }
+        }
 
         if (Request.IsAuthenticated)
-         {
-             if (User.IsInRole("Admin"))
-             {
+            {
+                if (User.IsInRole("Admin"))
+                {
 
-                 @Html.Partial("_OrgUnits")
-                 <p>
-                     @Html.ActionLink(HttpUtility.HtmlDecode("Administrera organisationsenheter &raquo;"), "GetOrganisationsOrgUnits", "Organisation", new {selectedOrganisationId = Model.SelectedOrganisationId}, new {@class = "btn btn-primary"})
-                 </p>
+                    @Html.Partial("_OrgUnits")
+                    <p>
+                        @Html.ActionLink(HttpUtility.HtmlDecode("Administrera organisationsenheter &raquo;"), "GetOrganisationsOrgUnits", "Organisation", new {selectedOrganisationId = Model.SelectedOrganisationId}, new {@class = "btn btn-primary"})
+                    </p>
+   
 
-                 <br/>
-                 <br/>
+                    <br/>
+   
+                    <br/>
 
-                 @Html.Partial("_ReportObligations")
-                 <p>
-                     @Html.ActionLink(HttpUtility.HtmlDecode("Administrera uppgiftsskyldighet &raquo;"), "GetOrganisationsReportObligations", "Organisation", new {selectedOrganisationId = Model.SelectedOrganisationId}, new {@class = "btn btn-primary"})
-                 </p>
-             }
-         }
+                    @Html.Partial("_ReportObligations")
+                    <p>
+                        @Html.ActionLink(HttpUtility.HtmlDecode("Administrera uppgiftsskyldighet &raquo;"), "GetOrganisationsReportObligations", "Organisation", new {selectedOrganisationId = Model.SelectedOrganisationId}, new {@class = "btn btn-primary"})
+                    </p>
+                }
+            }
+        }
+
     }
 
-}
-
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    
 }
 
 

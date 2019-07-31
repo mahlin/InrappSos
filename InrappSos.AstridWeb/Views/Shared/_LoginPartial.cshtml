@@ -87,7 +87,10 @@
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Organisation <span class="caret"></span></a>
                             <ul class="dropdown-menu">
                                 <li>@Html.ActionLink("Sök organisation", "Index", "Organisation")</li>
-                                <li>@Html.ActionLink("Skapa ny organisation", "CreateOrganisation", "Organisation")</li>
+                                @if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin"))
+                                {
+                                    <li>@Html.ActionLink("Skapa ny organisation", "CreateOrganisation", "Organisation")</li>
+                                }
                                 <li>@Html.ActionLink("Kontaktpersoner", "GetContacts", "Organisation")</li>
                                 <li>@Html.ActionLink("Uppgiftsskyldighet", "GetReportObligations", "Organisation")</li>
                                 <li class="dropdown dropdown-submenu">

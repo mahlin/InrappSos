@@ -231,7 +231,7 @@ namespace InrappSos.AstridWeb.Controllers
                 model.ContactPersons = ConvertUsersViewModelUser(contacts, roller);
 
                 var cases = _portalSosService.HamtaArendenForOrg(model.Organisation.Id);
-                var contactsForOrg = _portalSosService.HamtaKontaktpersonerForOrg(model.Organisation.Id);
+                var contactsForOrg = _portalSosService.HamtaKontaktpersonerForOrg(model.Organisation.Id).OrderBy(x => x.Email);
                 model.Arenden = ConvertArendeToVM(cases.ToList(), contactsForOrg.ToList());
                 model.OrgUnits = _portalSosService.HamtaOrgEnheterForOrg(model.Organisation.Id).ToList();
                 var reportObligationsDb = _portalSosService.HamtaUppgiftsskyldighetForOrg(model.Organisation.Id);
@@ -498,7 +498,7 @@ namespace InrappSos.AstridWeb.Controllers
                 }
                 model.Organisation = _portalSosService.HamtaOrganisation(model.SelectedOrganisationId);
                 var cases = _portalSosService.HamtaArendenForOrg(model.Organisation.Id);
-                var contactPersons = _portalSosService.HamtaAktivaKontaktpersonerForOrg(model.Organisation.Id);
+                var contactPersons = _portalSosService.HamtaAktivaKontaktpersonerForOrg(model.Organisation.Id).OrderBy(x => x.Email);
                 model.Arenden = ConvertArendeToVM(cases.ToList(), contactPersons.ToList());
                 model.SearchResult = new List<List<Organisation>>();
                 // Ladda drop down lists. 
@@ -2157,9 +2157,8 @@ namespace InrappSos.AstridWeb.Controllers
                 arendeVM.Rapportorer =
                     _portalSosService.HamtaArendesEjRegistreradeKontaktpersoner(arendeVM.OrganisationsId, arendeDb.Id);
 
-                //Hämta kontaktpersoner och markera valda kontaktpersoner
-                var contactsForOrg = _portalSosService.HamtaKontaktpersonerForOrg(arendeVM.OrganisationsId).ToList();
-                arendeVM.Kontaktpersoner = ConvertContactsForOrgToDropdownList(contactsForOrg);
+                //Markera valda kontaktpersoner
+                arendeVM.Kontaktpersoner = ConvertContactsForOrgToDropdownList(kontaktpersoner);
                 var arendeKontakpersoner = _portalSosService.HamtaArendesKontaktpersoner(arendeVM.Id).ToList();
                 
                 foreach (var kontakt in arendeVM.Kontaktpersoner)
@@ -2386,7 +2385,7 @@ namespace InrappSos.AstridWeb.Controllers
         private IEnumerable<SelectListItem> CreateRegisterDropDownList(IEnumerable<AdmRegister> registerList)
         {
             SelectList lstobj = null;
-
+             
             var list = registerList
                 .Select(p =>
                     new SelectListItem
@@ -2407,13 +2406,16 @@ namespace InrappSos.AstridWeb.Controllers
 
             foreach (var orgContact in orgContactsList)
             {
-                var contact = new OrganisationViewModels.ContactViewModel
+                if (FilipUserManager.IsInRole(orgContact.Id, "ArendeUpp"))
                 {
-                    Id = orgContact.Id,
-                    Email = orgContact.Email,
-                    Selected = false
-                };
-                listOfContacts.Add(contact);
+                    var contact = new OrganisationViewModels.ContactViewModel
+                    {
+                        Id = orgContact.Id,
+                        Email = orgContact.Email,
+                        Selected = false
+                    };
+                    listOfContacts.Add(contact);
+                }
             }
             return listOfContacts;
         }

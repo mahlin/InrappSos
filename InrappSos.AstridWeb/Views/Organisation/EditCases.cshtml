@@ -330,7 +330,7 @@
                             }
 
                             @grid.GetHtml(htmlAttributes: new {id = "caseTable"},
-                                tableStyle: "webgrid-table1700",
+                                tableStyle: "webgrid-table1800",
                                 headerStyle: "webgrid-header",
                                 footerStyle: "webgrid-footer",
                                 alternatingRowStyle: "webgrid-alternating-row",
@@ -352,14 +352,14 @@
                                                                      grid.Column("Arendestatus", "Ärendestatus", format: @<text><span class="display-mode"><label id="lblArendestatus">@item.Arendestatus</label></span></text>, style: "col110Width"),
                                                                          grid.Column("Ärendestatus", format: @item => Html.DropDownListFor(m => m.SelectedArendestatusId, ViewBag.ArendestatusDDL as SelectList, " - Välj -", new { id = "ddlArendestatus", @class = "form-control edit-mode", style = "min-width:110px !important" })),
 
-                                                                         grid.Column("Arendeansvarig", "Ansvarig", format: @<text><span class="display-mode"><label id="lblAnsvarig" style="width: 200px;">@item.Arendeansvarig</label></span></text>, style: "col110Width"),
+                                                                         grid.Column("Arendeansvarig", "Ansvarig", format: @<text><span class="display-mode wordBreak"><label id="lblAnsvarig" style="width: 250px;">@item.Arendeansvarig</label></span></text>, style: "col4Width"),
                                                                              grid.Column("Ansvarig", format: @item => Html.DropDownListFor(m => m.SelectedArendeansvarigId, ViewBag.ArendeansvarigDDL as SelectList, " - Välj ärendeansvarig -", new { id = "ddlArendeansvarig", @class = "form-control edit-mode", style = "max width:250px !important" })),
 
-                                                                             grid.Column("Kontaktpersoner", "Kontaktpersoner", format: @<text><label id="lblKontaktpersoner" class="display-mode col2Width" style="display: inline-block;">@item.KontaktpersonerStr</label></text>, style: "col2Width"),
+                                                                             grid.Column("Kontaktpersoner", "Kontaktpersoner", format: @<text><label id="lblKontaktpersoner" class="display-mode col4Width wordBreak" style="width: 250px;">@item.KontaktpersonerStr</label></text>, style: "col4Width"),
                                                                                  grid.Column("Kontaktpersoner", format: @item => Html.DropDownListFor(m => m.Kontaktpersoner, new SelectList(@item.Kontaktpersoner, "Id", "Email"), new { id = "ddlKontakter", @class = "form-control edit-mode ddl", multiple = "multiple", style = "min-width:100px !important" })),
 
-                                                                                 grid.Column("Rapportorer", "Ej registrerade kontaktpersoner", format: @<text><span class="display-mode col2Width"><label id="lblRapportorer" style="width: 200px;">@item.Rapportorer</label></span>
-                                                                                <textarea id="Rapportorer" value="" class="edit-mode form-control" style="height: 100px; width: 200px;" placeholder="Om flera kontaktpersoner, separera med kommatecken.">@item.Rapportorer</textarea></text>, style: "col2Width"),
+                                                                                 grid.Column("Rapportorer", "Ej registrerade kontaktpersoner", format: @<text><span class="display-mode col4Width wordBreak"><label id="lblRapportorer" style="width: 250px;">@item.Rapportorer</label></span>
+                                                                                <textarea id="Rapportorer" value="" class="edit-mode form-control" style="height: 100px; width: 250px;" placeholder="Om flera kontaktpersoner, separera med kommatecken.">@item.Rapportorer</textarea></text>, style: "col4Width"),
 
                                                                                      grid.Column("StartDatum", "Startdatum", format: @<text><span class="display-mode"><label id="lblStartDatum">@( item.StartDatum != null ? item.StartDatum.ToString("yyyy-MM-dd") : item.StartDatum)</label></span>
                                                                                     <input type="text" id="StartDatum" value="@( item.StartDatum != null ? item.StartDatum.ToString("yyyy-MM-dd") : item.StartDatum)" class="edit-mode col1Width form-control" /></text>, style: "col1Width"),

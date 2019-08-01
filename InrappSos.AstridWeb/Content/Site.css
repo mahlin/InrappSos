@@ -163,6 +163,17 @@ textarea {
     background-color: white;
 }
 
+.webgrid-table1800 {
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    width: 1700px;
+    display: table;
+    border-collapse: collapse;
+    border: solid px #C5C5C5;
+    background-color: white;
+}
+
 .webgrid-table td, th {
     border: 1px solid #C5C5C5;
     padding: 3px 7px 2px;
@@ -190,12 +201,6 @@ textarea {
 /*#GridBody {
     width: 1140px;
 }*/
-
-.left100 {
-    width: 1000px;
-    text-align: left;
-    padding: 3px 7px 2px;
-}
 
 .colZeroWidth {
     width: 0px;
@@ -303,6 +308,10 @@ label {
     font-weight: normal;
     width: 100px;
     padding: 3px 7px 2px;
+}
+
+.wordBreak {
+    word-break: break-all;
 }
 
 .longColumnText {

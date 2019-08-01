@@ -1309,9 +1309,17 @@ namespace InrappSos.AstridWeb.Controllers
             ViewBag.ArendeansvarigList = CreateArendeansvarigDropDownList(arendeansvarigList);
             model.ArendetypId = 0;
             //Skapa lista över valbara kontaktpersoner 
+            var contacts = new List<ApplicationUser>();
             model.ChosenContactsStr = "";
-            var contacts = _portalSosService.HamtaKontaktpersonerForOrg(model.OrganisationsId);
-            model.Kontaktpersoner = ConvertContactsToVM(contacts.ToList());
+            var activeContactsForOrg = _portalSosService.HamtaAktivaKontaktpersonerForOrg(model.OrganisationsId).OrderBy(x => x.Email);
+            foreach (var activeContact in activeContactsForOrg)
+            {
+                if (FilipUserManager.IsInRole(activeContact.Id, "ArendeUpp"))
+                {
+                    contacts.Add(activeContact);
+                }
+            }
+            model.Kontaktpersoner = ConvertContactsToVM(contacts);
             return View(model);
         }
 

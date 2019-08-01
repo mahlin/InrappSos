@@ -198,6 +198,7 @@
     <Compile Include="Models\CustomIdentityResultErrorDescriber.cs" />
     <Compile Include="Models\CustomNavBarViewModel.cs" />
     <Compile Include="Models\ViewModels\AdminViewModels.cs" />
+    <Compile Include="Models\ViewModels\FileDropViewModel.cs" />
     <Compile Include="Models\ViewModels\LeveransViewModels.cs" />
     <Compile Include="Models\ViewModels\ManageViewModels.cs" />
     <Compile Include="Models\ViewModels\OrganisationViewModels.cs" />
@@ -370,6 +371,8 @@
     <Content Include="Views\Admin\EditCaseManagers.cshtml" />
     <Content Include="Views\Admin\CreateCaseManager.cshtml" />
     <Content Include="Views\Organisation\CaseOrganisation.cshtml" />
+    <Content Include="Views\Leverans\_FilesHistory.cshtml" />
+    <Content Include="Views\Leverans\CaseFiles.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

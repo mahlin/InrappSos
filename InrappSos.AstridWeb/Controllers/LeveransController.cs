@@ -6,6 +6,7 @@ using System.Net.Configuration;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.WebPages;
 using InrappSos.ApplicationService;
 using InrappSos.ApplicationService.DTOModel;
 using InrappSos.ApplicationService.Interface;
@@ -1529,6 +1530,22 @@ namespace InrappSos.AstridWeb.Controllers
             }
 
             return orgListDTO;
+        }
+
+        public ActionResult GetCaseFiles(FileDropViewModel model, string caseId)
+        {
+            List<FildroppDetaljDTO> historyFileList = new List<FildroppDetaljDTO>();
+            if (caseId != "")
+            {
+                //Hämta historik för valt ärende
+                var arende = _portalSosService.HamtaArendeById(Convert.ToInt32(caseId));
+                model.SelectedCase = arende;
+                model.KontaktpersonerStr = _portalSosService.HamtaArendesKontaktpersoner(arende.OrganisationsId, arende.Id);
+                model.EjRegKontaktpersoner = _portalSosService.HamtaArendesEjRegistreradeKontaktpersoner(arende.OrganisationsId, arende.Id);
+                historyFileList = _portalSosService.HamtaFildroppsHistorikForValtArende(Convert.ToInt32(caseId)).ToList();
+            }
+            model.HistorikLista = historyFileList;
+            return View("CaseFiles", model);
         }
     }
 }

@@ -1,0 +1,75 @@
+﻿@model InrappSos.AstridWeb.Models.ViewModels.FileDropViewModel
+
+
+<div class="padding-top-55">
+    <div>
+        @Html.ActionLink("Tillbaka", "GetOrganisationsCases", "Organisation", new { selectedOrganisationId = Model.SelectedCase.OrganisationsId }, null)
+    </div>
+<h4><b>Historik för ärende @Model.SelectedCase.Arendenamn , @Model.SelectedCase.Arendenr</b></h4>
+<div id="readOnlyOrg">
+    <div class="row">
+        <div class="col-md-2">
+            <b>@Html.DisplayNameFor(model => model.SelectedCase.Arendetyp.ArendetypNamn)</b>
+        </div>
+        <div class="col-md-6">
+            @Html.DisplayFor(model => model.SelectedCase.Arendetyp.ArendetypNamn)
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">
+            <b>@Html.DisplayNameFor(model => model.SelectedCase.ArendeStatus.ArendeStatusNamn)</b>
+        </div>
+        <div class="col-md-6">
+            @Html.DisplayFor(model => model.SelectedCase.ArendeStatus.ArendeStatusNamn)
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">
+            <b>@Html.DisplayNameFor(model => model.SelectedCase.ArendeAnsvarig.Epostadress)</b>
+        </div>
+        <div class="col-md-6">
+            @Html.DisplayFor(model => model.SelectedCase.ArendeAnsvarig.Epostadress)
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">
+            <b>@Html.DisplayNameFor(model => model.KontaktpersonerStr)</b>
+        </div>
+        <div class="col-md-6">
+            @Html.DisplayFor(model => model.KontaktpersonerStr)
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">
+            <b>@Html.DisplayNameFor(model => model.EjRegKontaktpersoner)</b>
+        </div>
+        <div class="col-md-6">
+            @Html.DisplayFor(model => model.EjRegKontaktpersoner)
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">
+            <b>@Html.DisplayNameFor(model => model.SelectedCase.StartDatum)</b>
+        </div>
+        <div class="col-md-6">
+            @Html.DisplayFor(model => model.SelectedCase.StartDatum)
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">
+            <b>@Html.DisplayNameFor(model => model.SelectedCase.SlutDatum)</b>
+        </div>
+        <div class="col-md-6">
+            @Html.DisplayFor(model => model.SelectedCase.SlutDatum)
+        </div>
+    </div>
+    
+
+    <hr />
+</div>
+
+
+
+
+
+@Html.Partial("_FilesHistory", Model)

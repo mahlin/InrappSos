@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ namespace InrappSos.DomainModel
     public class ArendeAnsvarig
     {
         public int Id { get; set; }
+        [DisplayName("Ärendeansvarig")]
         public string Epostadress { get; set; }
         public DateTime SkapadDatum { get; set; }
         public string SkapadAv { get; set; }

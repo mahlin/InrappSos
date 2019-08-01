@@ -1538,6 +1538,7 @@ namespace InrappSos.ApplicationService
                 fildroppDetalj.Arendenummer = arende.Arendenr;
                 fildroppDetalj.Arendenamn = arende.Arendenamn;
                 fildroppDetalj.Filnamn = leverans.Filnamn;
+                fildroppDetalj.NyttFilnamn = leverans.NyttFilnamn;
                 fildroppDetalj.Kontaktperson = _portalSosRepository.GetUserById(leverans.ApplicationUserId).Email;
                 fildroppDetalj.AndradDatum = leverans.AndradDatum;
                 historikLista.Add(fildroppDetalj);

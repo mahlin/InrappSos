@@ -365,6 +365,11 @@
                                                                                     <input type="text" id="StartDatum" value="@( item.StartDatum != null ? item.StartDatum.ToString("yyyy-MM-dd") : item.StartDatum)" class="edit-mode col1Width form-control" /></text>, style: "col1Width"),
                                                                                          grid.Column("SlutDatum", "Slutdatum", format: @<text><span class="display-mode"><label id="lblSlutDatum">@( item.SlutDatum != null ? item.SlutDatum.ToString("yyyy-MM-dd") : item.SlutDatum)</label></span>
                                                                                         <input type="text" id="SlutDatum" value="@( item.SlutDatum != null ? item.SlutDatum.ToString("yyyy-MM-dd") : item.SlutDatum)" class="edit-mode col1Width form-control" /></text>, style: "col1Width"),
+                                    grid.Column("Lämnade filer", format: @<text><span class="display-mode col1Width">
+                                                    @Html.ActionLink("Visa filer", "GetCaseFiles", "Leverans", new {caseId = item.Id}, new {style = ""})</span>
+                                            <label id="lblHistoryLink" class="edit-mode col1Width">
+                                                    @Html.ActionLink("Visa filer", "GetCaseFiles", "Leverans", new { caseId = item.Id }, new {style = ""})</label></text>, style: "col1Width"),
+
                                                                                              grid.Column(null, format: @<text>
                                                                                                 <button class="edit-user display-mode btn btn-default">Ändra</button>
                                                                                                 <button class="save-user edit-mode btn btn-default">Spara</button>

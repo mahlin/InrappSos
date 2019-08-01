@@ -206,7 +206,7 @@ namespace InrappSos.DataAccess
 
         public Arende GetArendeById(int arendeId)
         {
-            var arende = DbContext.Arende.SingleOrDefault(x => x.Id == arendeId);
+            var arende = DbContext.Arende.Include(x => x.Arendetyp).Include(x => x.ArendeStatus).Include(x => x.ArendeAnsvarig).SingleOrDefault(x => x.Id == arendeId);
             return arende;
         }
 

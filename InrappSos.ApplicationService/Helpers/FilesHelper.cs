@@ -455,7 +455,7 @@ namespace InrappSos.ApplicationService.Helpers
 
 
                 //Save to database
-                var filedropId = _portalSosRepository.SaveFiledropFile(file.FileName, file.FileName, selectedCaseId, userId, userName);
+                var filedropId = _portalSosRepository.SaveFiledropFile(file.FileName, extendedFileName, selectedCaseId, userId, userName);
 
                 //TODO - check filename depending on chosen registertype
                 if (file.ContentLength > 0 && (Path.GetExtension(file.FileName).ToLower() == ".txt"

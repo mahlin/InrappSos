@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,7 @@ namespace InrappSos.DomainModel
         public string ApplicationUserId { get; set; }
         public string Filnamn { get; set; }
         public string NyttFilnamn { get; set; }
+        public Int64 Filstorlek { get; set; }
         public DateTime SkapadDatum { get; set; }
         public string SkapadAv { get; set; }
         public DateTime AndradDatum { get; set; }

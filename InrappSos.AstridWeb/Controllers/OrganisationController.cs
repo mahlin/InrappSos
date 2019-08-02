@@ -1309,16 +1309,16 @@ namespace InrappSos.AstridWeb.Controllers
             ViewBag.ArendeansvarigList = CreateArendeansvarigDropDownList(arendeansvarigList);
             model.ArendetypId = 0;
             //Skapa lista över valbara kontaktpersoner 
-            var contacts = new List<ApplicationUser>();
+            //var contacts = new List<ApplicationUser>();
             model.ChosenContactsStr = "";
-            var activeContactsForOrg = _portalSosService.HamtaAktivaKontaktpersonerForOrg(model.OrganisationsId).OrderBy(x => x.Email);
-            foreach (var activeContact in activeContactsForOrg)
-            {
-                if (FilipUserManager.IsInRole(activeContact.Id, "ArendeUpp"))
-                {
-                    contacts.Add(activeContact);
-                }
-            }
+            var contacts = _portalSosService.HamtaAktivaKontaktpersonerForOrg(model.OrganisationsId).OrderBy(x => x.Email).ToList();
+            //foreach (var activeContact in activeContactsForOrg)
+            //{
+            //    if (FilipUserManager.IsInRole(activeContact.Id, "ArendeUpp"))
+            //    {
+            //        contacts.Add(activeContact);
+            //    }
+            //}
             model.Kontaktpersoner = ConvertContactsToVM(contacts);
             return View(model);
         }
@@ -2435,8 +2435,8 @@ namespace InrappSos.AstridWeb.Controllers
 
             foreach (var orgContact in orgContactsList)
             {
-                if (FilipUserManager.IsInRole(orgContact.Id, "ArendeUpp"))
-                {
+                //if (FilipUserManager.IsInRole(orgContact.Id, "ArendeUpp"))
+                //{
                     var contact = new OrganisationViewModels.ContactViewModel
                     {
                         Id = orgContact.Id,
@@ -2444,7 +2444,7 @@ namespace InrappSos.AstridWeb.Controllers
                         Selected = false
                     };
                     listOfContacts.Add(contact);
-                }
+                //}
             }
             return listOfContacts;
         }

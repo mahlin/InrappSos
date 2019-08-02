@@ -6,6 +6,7 @@ using System.Data.Entity;
 using System.Data.Entity.Core.Objects;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
@@ -262,7 +263,7 @@ namespace InrappSos.DataAccess
         }
 
 
-        public int SaveFiledropFile(string filename, string sosFilename, int caseId, string userId, string userName)
+        public int SaveFiledropFile(string filename, string sosFilename, Int64 filesize, int caseId, string userId, string userName)
         {
             var filedrop = new DroppadFil()
             {
@@ -270,6 +271,7 @@ namespace InrappSos.DataAccess
                 ApplicationUserId = userId,
                 Filnamn = filename,
                 NyttFilnamn = sosFilename,
+                Filstorlek = filesize,
                 SkapadDatum = DateTime.Now,
                 SkapadAv = userName,
                 AndradDatum = DateTime.Now,

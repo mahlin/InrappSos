@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using InrappSos.DomainModel;
@@ -69,7 +70,7 @@ namespace InrappSos.DataAccess
 
         int GetNewLeveransId(string userId, string userName, int orgId, int regId, int orgenhetsId, int forvLevId, string status, int sftpAccountId);
 
-        int SaveFiledropFile(string filename, string sosFilename, int caseId, string userId, string userName);
+        int SaveFiledropFile(string filename, string sosFilename, Int64 filesize, int caseId, string userId, string userName);
 
         int SaveCaseContact(ArendeKontaktperson contact);
 

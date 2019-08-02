@@ -625,6 +625,7 @@ namespace InrappSos.DataAccess
 
             modelBuilder.Entity<DroppadFil>().Property(e => e.Filnamn).HasColumnName("filnamn");
             modelBuilder.Entity<DroppadFil>().Property(e => e.NyttFilnamn).HasColumnName("nyttfilnamn");
+            modelBuilder.Entity<DroppadFil>().Property(e => e.Filstorlek).HasColumnName("filstorlek");
             modelBuilder.Entity<DroppadFil>()
                 .HasRequired(c => c.ApplicationUser)
                 .WithMany(d => d.DroppadFil)

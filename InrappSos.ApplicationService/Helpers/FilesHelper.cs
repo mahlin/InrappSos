@@ -6,7 +6,7 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Web;
-using System.Web.Hosting;
+using System.Numerics;
 using InrappSos.ApplicationService.Interface;
 using InrappSos.DomainModel;
 using System.Text.RegularExpressions;
@@ -455,7 +455,7 @@ namespace InrappSos.ApplicationService.Helpers
 
 
                 //Save to database
-                var filedropId = _portalSosRepository.SaveFiledropFile(file.FileName, extendedFileName, selectedCaseId, userId, userName);
+                var filedropId = _portalSosRepository.SaveFiledropFile(file.FileName, extendedFileName, file.ContentLength, selectedCaseId, userId, userName);
 
                 //TODO - check filename depending on chosen registertype
                 if (file.ContentLength > 0 && (Path.GetExtension(file.FileName).ToLower() == ".txt"

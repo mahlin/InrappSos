@@ -645,9 +645,9 @@ namespace InrappSos.ApplicationService.Helpers
             var arendeansvarig = _portalSosRepository.GetCaseResponsible(arende.ArendeansvarId);
             var arendeansvarigEpostadress = arendeansvarig.Epostadress;
 
-            string subject = "Fil till ärende " + arende.Arendenr + " " + arende.Arendenamn + " har kommit.";
+            string subject = "Fil till ärende " + arende.Arendenr + " " + arende.Arendenamn + " har kommit";
             string body = "Hej! <br><br>";
-            body += "Fil till ärende " + arende.Arendenr + " " + arende.Arendenamn + " har kommit<br><br>";
+            body += "Fil till ärende " + arende.Arendenr + " " + arende.Arendenamn + " har kommit.<br><br>";
             body += userName + " har skickat in filen/filerna: <br>";
             foreach (var result in uploadResult)
             {

@@ -6,7 +6,7 @@
 <script type="text/javascript">
     var faqLista = @Html.Raw(Json.Encode(Model.FAQs));
 
-    $(document).ready(function () {
+    $(document).ready(function() {
         //Sätt fast header och scroll om fler än 10 rader i listan
         if (faqLista.length > 10) {
             //Fix webgrid-header
@@ -23,18 +23,20 @@
         $("#editSelectedFAQForm").hide();
 
         var modalConfirm = function test(callback) {
-            $("#modal-btn-si").on("click", function () {
-                callback(true);
-                $("#mi-modal").modal('hide');
-            });
+            $("#modal-btn-si").on("click",
+                function() {
+                    callback(true);
+                    $("#mi-modal").modal('hide');
+                });
 
-            $("#modal-btn-no").on("click", function () {
-                callback(false);
-                $("#mi-modal").modal('hide');
-            });
+            $("#modal-btn-no").on("click",
+                function() {
+                    callback(false);
+                    $("#mi-modal").modal('hide');
+                });
         };
 
-        modalConfirm(function (confirm) {
+        modalConfirm(function(confirm) {
             if (confirm) {
                 var data = { 'faqId': $('#SelectedFAQId').val(), 'faqCatId': $('#SelectedFAQCategory').val() };
                 $.ajax({
@@ -42,7 +44,7 @@
                     type: 'POST',
                     contentType: 'application/json; charset=utf-8',
                     data: JSON.stringify(data),
-                    success: function (data) {
+                    success: function(data) {
                         //On ajax success do this
                         location.reload();
                         //$("#pageContainer").html(data);
@@ -63,7 +65,7 @@
         var $body = $('#GridBody table tbody');
         var $header = $('#GridHeader table tbody');
 
-        $body.find('tr:first-child').children().each(function (i) {
+        $body.find('tr:first-child').children().each(function(i) {
             $($header.find('tr:first-child').children()[i]).css('width', $(this).width() + 12);
 
             ////Dra bort 12 px från benämningskolumnen vid scroll för att få headern i linje med budgeten. Vet ej varför detta behövs. Nåt med i:et i konto-kolumnen?
@@ -86,47 +88,53 @@
 
         $.ajax({
             url: '/System/EditSelectedFAQ?faqId=' + y,
-            data: JSON.stringify({faqId: y}),
+            data: JSON.stringify({ faqId: y }),
             type: 'GET',
             contentType: 'application/json; charset=utf-8',
-            success: function (data) {
+            success: function(data) {
                 $("#editSelectedFAQForm").html(data);
                 $("#editSelectedFAQForm").show();
                 //location.reload();
                 $('#footer').hide();
             }
         });
+    }
 
-    $(function () {
+    $(function() {
         $('.edit-mode').hide();
-        $('.cancel-user').on('click', function () {
-            var tr = $(this).parents('tr:first');
-            tr.find('.edit-mode, .display-mode').toggle();
-            $("#editSelectedFAQForm").hide();
-        });
-        $('.edit-user').on('click', function () {
-            var tr = $(this).parents('tr:first');
-            tr.find('.edit-mode, .display-mode').toggle();
-            $("#editSelectedFAQForm").show();
-        });
-        $('.save-user').on('click', function () {
-            var tr = $(this).parents('tr:first');
-            var faqId = tr.find("#FAQId").html();
-            var faqRegisterId = tr.find("#FAQRegisterId").val();
-            var faqFraga = tr.find("#FAQFraga").val();
-            var faqSvar = tr.find("#FAQSvar").val();
+        $('.cancel-user').on('click',
+            function() {
+                var tr = $(this).parents('tr:first');
+                tr.find('.edit-mode, .display-mode').toggle();
+                $("#editSelectedFAQForm").hide();
+                //Menyerna hänger sig annars
+                location.reload();
+            });
+        $('.edit-user').on('click',
+            function() {
+                var tr = $(this).parents('tr:first');
+                tr.find('.edit-mode, .display-mode').toggle();
+                $("#editSelectedFAQForm").show();
+            });
+        $('.save-user').on('click',
+            function() {
+                var tr = $(this).parents('tr:first');
+                var faqId = tr.find("#FAQId").html();
+                var faqRegisterId = tr.find("#FAQRegisterId").val();
+                var faqFraga = tr.find("#FAQFraga").val();
+                var faqSvar = tr.find("#FAQSvar").val();
 
-            //Creating AdmFAQ JSON object
-            var admFAQ =
-            {
-                "Id": faqId,
-                "FAQkategoriId": $('#SelectedFAQCategory').val(),
-                "RegisterId": faqRegisterId,
-                "Fraga": faqFraga,
-                "Svar": faqSvar
-            };
-            //Posting AdmFAQ object to controller's Update action method
-            $.ajax({
+                //Creating AdmFAQ JSON object
+                var admFAQ =
+                {
+                    "Id": faqId,
+                    "FAQkategoriId": $('#SelectedFAQCategory').val(),
+                    "RegisterId": faqRegisterId,
+                    "Fraga": faqFraga,
+                    "Svar": faqSvar
+                };
+                //Posting AdmFAQ object to controller's Update action method
+                $.ajax({
                 url: '/System/UpdateFAQ',
                 data: JSON.stringify(admFAQ),
                 type: 'POST',

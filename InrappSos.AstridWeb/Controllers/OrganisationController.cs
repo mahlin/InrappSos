@@ -529,7 +529,7 @@ namespace InrappSos.AstridWeb.Controllers
                 var arendestatusList = _portalSosService.HamtaAllaArendestatusar();
                 ViewBag.ArendestatusDDL = CreateArendestatusDropDownList(arendestatusList);
                 model.SelectedArendestatusId = 0;
-                var arendeansvarigList = _portalSosService.HamtaAllaArendeansvariga();
+                var arendeansvarigList = _portalSosService.HamtaAllaArendeansvariga().ToList().OrderBy(x => x.Epostadress).ToList();
                 ViewBag.ArendeansvarigDDL = CreateArendeansvarigDropDownList(arendeansvarigList);
                 model.SelectedArendeansvarigId = 0;
             }
@@ -1305,7 +1305,7 @@ namespace InrappSos.AstridWeb.Controllers
             model.ArendetypId = 0;
             var arendestatusList = _portalSosService.HamtaAllaArendestatusar();
             ViewBag.ArendestatusList = CreateArendestatusDropDownList(arendestatusList);
-            var arendeansvarigList = _portalSosService.HamtaAllaArendeansvariga();
+            var arendeansvarigList = _portalSosService.HamtaAllaArendeansvariga().ToList().OrderBy(x => x.Epostadress).ToList();
             ViewBag.ArendeansvarigList = CreateArendeansvarigDropDownList(arendeansvarigList);
             model.ArendetypId = 0;
             //Skapa lista över valbara kontaktpersoner 
@@ -2238,7 +2238,7 @@ namespace InrappSos.AstridWeb.Controllers
             return lstobj;
         }
 
-        private IEnumerable<SelectListItem> CreateArendeansvarigDropDownList(IEnumerable<ArendeAnsvarig> userList)
+        private IEnumerable<SelectListItem> CreateArendeansvarigDropDownList(List<ArendeAnsvarig> userList)
         {
             SelectList lstobj = null;
             var list = userList

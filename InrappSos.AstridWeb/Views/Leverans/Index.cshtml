@@ -466,9 +466,12 @@
                 <div style="padding-left: 4px;">
                     @Html.ActionLink("Skapa förväntade leveranser (gäller f.n. endast månadsleveranser)", "CreateForvantadeLeveranser", "Leverans", new { filterPgnde = Model.FilterPagaende, selectedRegId = Model.SelectedRegisterId }, null)
                 </div>
+            }
 
+            if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin") || User.IsInRole("InlasAnsv"))
+            {
 
-                <div id="gridContent" style="font-family: Arial; padding-top: 20px;">
+            <div id="gridContent" style="font-family: Arial; padding-top: 20px;">
                     @{
                         ViewBag.Title = "Administrera förväntade leveranser";
                         var grid = new WebGrid(source: Model.ForvantadeLeveranser, canPage: false, ajaxUpdateCallback: "webGridUpdated");

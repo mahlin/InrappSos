@@ -19,8 +19,10 @@ namespace InrappSos.ApplicationService.Helpers
         public MailHelper()
         {
             _smtpClient = new SmtpClient(ConfigurationManager.AppSettings["MailServer"]);
-            _mailLogPath = _mailLogPath.Replace(".txt", "_" + DateTime.Now.ToString("yyyyMMdd") + ".txt");
-
+            if (_mailLogEnabled)
+            {
+                _mailLogPath = _mailLogPath.Replace(".txt", "_" + DateTime.Now.ToString("yyyyMMdd") + ".txt");
+            }
         }
 
 

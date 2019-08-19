@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Web;
 using System.Numerics;
 using InrappSos.ApplicationService.Interface;
@@ -18,6 +19,7 @@ namespace InrappSos.ApplicationService.Helpers
         private readonly IPortalSosRepository _portalSosRepository;
         private readonly IPortalSosService _portalSosService;
         private readonly InrappSosDbContext db = new InrappSosDbContext();
+        MailHelper _mailHelper;
         String DeleteURL = null;
         String DeleteType = null;
         String StorageRoot = null;
@@ -30,6 +32,7 @@ namespace InrappSos.ApplicationService.Helpers
         {
             _portalSosRepository = new PortalSosRepository(db);
             _portalSosService = new PortalSosService(_portalSosRepository);
+            _mailHelper = new MailHelper();
         }
 
         public FilesHelper(String DeleteURL, String DeleteType, String StorageRoot, String UrlBase, String tempPath, String serverMapPath)
@@ -42,6 +45,7 @@ namespace InrappSos.ApplicationService.Helpers
             this.serverMapPath = serverMapPath;
             _portalSosRepository = new PortalSosRepository(db);
             _portalSosService = new PortalSosService(_portalSosRepository);
+            _mailHelper = new MailHelper();
         }
 
         public FilesHelper(String StorageRoot)
@@ -49,7 +53,7 @@ namespace InrappSos.ApplicationService.Helpers
             this.StorageRoot = StorageRoot;
             _portalSosRepository = new PortalSosRepository(db);
             _portalSosService = new PortalSosService(_portalSosRepository);
-
+            _mailHelper = new MailHelper();
         }
 
         //public void DeleteFiles(String pathToDelete)
@@ -232,9 +236,10 @@ namespace InrappSos.ApplicationService.Helpers
             var slussmapp = _portalSosRepository.GetCaseType(arende.ArendetypId).Slussmapp;
 
             //Byt ut ev slashar(/\) i ärendenumret mot bindestreck (-)
-            var fixedCasenumber = arende.Arendenr.Replace('/', '_').Replace('\\', '_').Replace('.', '_').Replace('?', '_').Replace('*', '_').Replace('"', '_'); 
+            var fixedCasenumber = arende.Arendenr.Replace('/', '_').Replace('\\', '_').Replace('.', '_').Replace('?', '_').Replace('*', '_').Replace('"', '_');
 
-            StorageRoot = StorageRoot + slussmapp + "\\" + fixedCasenumber + "\\";
+            StorageRoot = StorageRoot + slussmapp + "\\";
+            //StorageRoot = StorageRoot + slussmapp + "\\" + fixedCasenumber + "\\";
             String fullPath = Path.Combine(StorageRoot);
             Directory.CreateDirectory(fullPath);
 
@@ -249,6 +254,7 @@ namespace InrappSos.ApplicationService.Helpers
             {
                 UploadPartialFile(headers["X-File-Name"], ContentBase, resultList); //Ej implementerat/testa
             }
+            NotifyCaseManager(resultList, arende, userName);
 
         }
 
@@ -630,6 +636,34 @@ namespace InrappSos.ApplicationService.Helpers
                     writer.WriteLine(levId + "," + fileName + ",0");
                 }
             }
+        }
+
+
+        private void NotifyCaseManager(List<ViewDataUploadFilesResult> uploadResult, Arende arende, string userName)
+        {
+            //List<FileInfo> filesInFolder = dir.GetFiles().OrderByDescending(p => p.CreationTime).ToList();
+            var arendeansvarig = _portalSosRepository.GetCaseResponsible(arende.ArendeansvarId);
+            var arendeansvarigEpostadress = arendeansvarig.Epostadress;
+
+            string subject = "Fil till ärende " + arende.Arendenr + " " + arende.Arendenamn + " har kommit.";
+            string body = "Hej! <br><br>";
+            body += "Fil till ärende " + arende.Arendenr + " " + arende.Arendenamn + " har kommit<br><br>";
+            body += userName + " har skickat in filen/filerna: <br>";
+            foreach (var result in uploadResult)
+            {
+                body += result.name + "<br> ";
+            }
+            body += "<br><br>Hälsningar inrapporteringsservice<br>";
+
+            MailMessage msg = new MailMessage();
+            MailAddress toMail = new MailAddress(arendeansvarigEpostadress);
+            msg.To.Add(toMail);
+            MailAddress fromMail = new MailAddress("no-reply.inrapportering@socialstyrelsen.se");
+            msg.From = fromMail;
+
+            msg.Subject = subject;
+            msg.Body = body;
+            _mailHelper.SendEmail(msg);
         }
 
 

@@ -148,7 +148,7 @@ namespace InrappSos.AstridWeb.Controllers
         public ActionResult GetCaseManagers()
         {
             var model = new AdminViewModels.AdminViewModel();
-            model.CaseManagers = _portalSosService.HamtaAllaArendeansvariga().ToList();
+            model.CaseManagers = _portalSosService.HamtaAllaArendeansvariga().OrderBy(x => x.Epostadress).ToList();
             return View("EditCaseManagers", model);
         }
 

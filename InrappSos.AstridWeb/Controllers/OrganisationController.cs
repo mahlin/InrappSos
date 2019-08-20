@@ -2139,15 +2139,18 @@ namespace InrappSos.AstridWeb.Controllers
             };
 
             var contactsDTO = new List<ArendeKontaktpersonDTO>();
-            foreach (var kontakt in arendeVM.Kontaktpersoner)
+            if (arendeVM.Kontaktpersoner != null)
             {
-                var contact = new ArendeKontaktpersonDTO
+                foreach (var kontakt in arendeVM.Kontaktpersoner)
                 {
-                    Id = kontakt.Id,
-                    Email = kontakt.Email,
-                    Selected = kontakt.Selected
-                };
-                contactsDTO.Add(contact);
+                    var contact = new ArendeKontaktpersonDTO
+                    {
+                        Id = kontakt.Id,
+                        Email = kontakt.Email,
+                        Selected = kontakt.Selected
+                    };
+                    contactsDTO.Add(contact);
+                }
             }
             arende.Kontaktpersoner = contactsDTO;
 

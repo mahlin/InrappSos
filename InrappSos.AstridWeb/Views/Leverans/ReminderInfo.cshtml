@@ -391,18 +391,26 @@
                 @Html.HiddenFor(m => m.SelectedDelregisterId)
                 @Html.HiddenFor(m => m.SelectedPeriod)
 
-                <div class="row col-md-12">
-                    <div class="col-md-10 padding-top-15" id="headerText" style="padding-left: 20px; ">
-                    </div>
-                    <div class="" style=""><input type="submit" value="Skicka påminnelse" class="btn btn-default" /></div>
-                </div>
-                <div class="row col-md-11">
-                    <div style="float: right;">
-                        <input type="checkbox" id="cbSelectAll" style="float: right;padding-right: 40px; margin-top: 7px;"/>
-                        <label for="cbSelectAll" style="width: 65px;">Välj alla</label>
-                    </div>
-                    @*<input type="checkbox" id="cbSelectAll" value="Välj alla TEST" class="btn btn-default" />*@
-                </div>
+                if (Request.IsAuthenticated)
+                 {
+                     if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin") || User.IsInRole("InlasAnsv"))
+                     {
+
+                         <div class="row col-md-12">
+                             <div class="col-md-10 padding-top-15" id="headerText" style="padding-left: 20px;">
+                             </div>
+                             <div class="" style=""><input type="submit" value="Skicka påminnelse" class="btn btn-default"/>
+                             </div>
+                         </div>
+                         <div class="row col-md-11">
+                             <div style="float: right;">
+                                 <input type="checkbox" id="cbSelectAll" style="float: right; padding-right: 40px; margin-top: 7px;"/>
+                                 <label for="cbSelectAll" style="width: 65px;">Välj alla</label>
+                             </div>
+                             @*<input type="checkbox" id="cbSelectAll" value="Välj alla TEST" class="btn btn-default" />*@
+                         </div>
+                     }
+                 }
 
                 @Html.HiddenFor(m => m.AntRader)
 

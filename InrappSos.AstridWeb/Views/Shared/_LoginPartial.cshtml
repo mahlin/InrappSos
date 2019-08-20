@@ -81,7 +81,7 @@
 
                 @if (Request.IsAuthenticated)
                 {
-                    if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin") || User.IsInRole("InlasAnsv"))
+                    if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin") || User.IsInRole("InlasAnsv") || User.IsInRole("KvalAnsv"))
                     {
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Organisation <span class="caret"></span></a>
@@ -103,7 +103,10 @@
                                 <li>@Html.ActionLink("Privata epostadresser", "GetPrivateEmailAdresses", "Organisation")</li>
                                 <li>@Html.ActionLink("SFTP-konton", "GetSFTPAccounts", "Organisation")</li>
                                 <li>@Html.ActionLink("Undantag av förväntad fil", "GetExceptionsExpectedFiles", "Organisation")</li>
+                                @if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin") || User.IsInRole("InlasAnsv"))
+                                {
                                 <li>@Html.ActionLink("Ärenden", "GetCases", "Organisation")</li>
+                                }
                             </ul>
                         </li>
                     }
@@ -111,12 +114,15 @@
 
                 @if (Request.IsAuthenticated)
                 {
-                    if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin") || User.IsInRole("InlasAnsv"))
+                    if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin") || User.IsInRole("InlasAnsv") || User.IsInRole("KvalAnsv"))
                     {
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Leverans <span class="caret"></span></a>
                             <ul class="dropdown-menu">
-                                <li>@Html.ActionLink("Förväntad leverans", "Index", "Leverans")</li>
+                                @if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin") || User.IsInRole("InlasAnsv"))
+                                {
+                                    <li>@Html.ActionLink("Förväntad leverans", "Index", "Leverans")</li>
+                                }
                                 <li class="dropdown dropdown-submenu">
                                     <a href="#" class="dropdown-submenu-toggle" data-toggle="dropdown">Leveranser</a>
                                     <ul class="dropdown-menu">

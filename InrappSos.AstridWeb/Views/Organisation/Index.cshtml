@@ -165,7 +165,8 @@
 
         @*@Html.HiddenFor(m => m.OrgtypesForOrgList)*@
 
-        <div style="font-size: 1.2em; padding-left: 20px; padding-bottom: 20px;"><b>@Model.Organisation.Organisationsnamn</b></div>
+        <div style="font-size: 1.2em; padding-left: 20px; padding-bottom: 20px;"><b>@Model.Organisation.Organisationsnamn</b>
+        </div>
         <div id="readOnlyOrg">
             <dl class="dl-horizontal">
                 <dt>
@@ -330,117 +331,117 @@
                     <input type="button" class="btn btn-primary" value="Ändra organisation" id="editLink" onclick="showEditableForm();return false;"/>
                 }
             }
-                
+
         </div>
 
         <div id="editOrg" class="form-horizontal">
-            @using (Html.BeginForm("UpdateOrganisation", "Organisation", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        @using (Html.BeginForm("UpdateOrganisation", "Organisation", FormMethod.Post, new {@class = "form-horizontal", role = "form"}))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+            @Html.HiddenFor(model => model.Organisation.Id)
+            @Html.HiddenFor(m => m.SelectedOrganisationId)
+            @Html.HiddenFor(m => m.ChosenOrganisationTypesNames)
+
+            if (Model.OrgtypesForOrgList != null)
             {
-                @Html.AntiForgeryToken()
-                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                @Html.HiddenFor(model => model.Organisation.Id)
-                @Html.HiddenFor(m => m.SelectedOrganisationId)
-                @Html.HiddenFor(m => m.ChosenOrganisationTypesNames)
-
-                if (Model.OrgtypesForOrgList != null)
+                for (int i = 0; i < Model.OrgtypesForOrgList.Count; i++)
                 {
-                    for (int i = 0; i < Model.OrgtypesForOrgList.Count; i++)
-                    {
-                        @Html.HiddenFor(x => x.OrgtypesForOrgList[i].Organisationstypid)
-                        @Html.HiddenFor(x => x.OrgtypesForOrgList[i].Typnamn)
-                        @Html.HiddenFor(x => x.OrgtypesForOrgList[i].Selected)
-                    }
+                    @Html.HiddenFor(x => x.OrgtypesForOrgList[i].Organisationstypid)
+                    @Html.HiddenFor(x => x.OrgtypesForOrgList[i].Typnamn)
+                    @Html.HiddenFor(x => x.OrgtypesForOrgList[i].Selected)
                 }
+            }
 
-                if (Model.ContactPersons != null)
+            if (Model.ContactPersons != null)
+            {
+                for (int i = 0; i < Model.ContactPersons.Count; i++)
                 {
-                    for (int i = 0; i < Model.ContactPersons.Count; i++)
-                    {
-                        @Html.HiddenFor(x => x.ContactPersons[i].ID)
-                        @Html.HiddenFor(x => x.ContactPersons[i].Namn)
-                        @Html.HiddenFor(x => x.ContactPersons[i].PhoneNumber)
-                        @Html.HiddenFor(x => x.ContactPersons[i].PhoneNumberConfirmed)
-                        @Html.HiddenFor(x => x.ContactPersons[i].Status)
-                        @Html.HiddenFor(x => x.ContactPersons[i].Email)
-                        @Html.HiddenFor(x => x.ContactPersons[i].AktivFrom)
-                        @Html.HiddenFor(x => x.ContactPersons[i].AktivTom)
-                        @Html.HiddenFor(x => x.ContactPersons[i].Kontaktnummer)
-                        @Html.HiddenFor(x => x.ContactPersons[i].ValdaDelregister)
-                        @Html.HiddenFor(x => x.ContactPersons[i].StringOfRoles)
-                        @Html.HiddenFor(x => x.ContactPersons[i].OkToDelete)
+                    @Html.HiddenFor(x => x.ContactPersons[i].ID)
+                    @Html.HiddenFor(x => x.ContactPersons[i].Namn)
+                    @Html.HiddenFor(x => x.ContactPersons[i].PhoneNumber)
+                    @Html.HiddenFor(x => x.ContactPersons[i].PhoneNumberConfirmed)
+                    @Html.HiddenFor(x => x.ContactPersons[i].Status)
+                    @Html.HiddenFor(x => x.ContactPersons[i].Email)
+                    @Html.HiddenFor(x => x.ContactPersons[i].AktivFrom)
+                    @Html.HiddenFor(x => x.ContactPersons[i].AktivTom)
+                    @Html.HiddenFor(x => x.ContactPersons[i].Kontaktnummer)
+                    @Html.HiddenFor(x => x.ContactPersons[i].ValdaDelregister)
+                    @Html.HiddenFor(x => x.ContactPersons[i].StringOfRoles)
+                    @Html.HiddenFor(x => x.ContactPersons[i].OkToDelete)
 
-                        if (Model.ContactPersons[i].ListOfRoles != null)
+                    if (Model.ContactPersons[i].ListOfRoles != null)
+                    {
+                        for (int idx = 0; idx < Model.ContactPersons[i].ListOfRoles.Count; idx++)
                         {
-                            for (int idx = 0; idx < Model.ContactPersons[i].ListOfRoles.Count; idx++)
-                            {
-                                @Html.HiddenFor(x => x.ContactPersons[i].ListOfRoles[idx].Id)
-                                @Html.HiddenFor(x => x.ContactPersons[i].ListOfRoles[idx].Name)
-                                @Html.HiddenFor(x => x.ContactPersons[i].ListOfRoles[idx].Selected)
-                            }
+                            @Html.HiddenFor(x => x.ContactPersons[i].ListOfRoles[idx].Id)
+                            @Html.HiddenFor(x => x.ContactPersons[i].ListOfRoles[idx].Name)
+                            @Html.HiddenFor(x => x.ContactPersons[i].ListOfRoles[idx].Selected)
                         }
-                        
                     }
-                }
 
-                if (Model.OrgUnits != null)
+                }
+            }
+
+            if (Model.OrgUnits != null)
+            {
+                for (int i = 0; i < Model.OrgUnits.Count; i++)
                 {
-                    for (int i = 0; i < Model.OrgUnits.Count; i++)
-                    {
-                        @Html.HiddenFor(x => x.OrgUnits[i].Id)
-                        @Html.HiddenFor(x => x.OrgUnits[i].OrganisationsId)
-                        @Html.HiddenFor(x => x.OrgUnits[i].Enhetsnamn)
-                        @Html.HiddenFor(x => x.OrgUnits[i].Enhetskod)
-                        @Html.HiddenFor(x => x.OrgUnits[i].Filkod)
-                        @Html.HiddenFor(x => x.OrgUnits[i].AktivFrom)
-                        @Html.HiddenFor(x => x.OrgUnits[i].AktivTom)
-                    }
+                    @Html.HiddenFor(x => x.OrgUnits[i].Id)
+                    @Html.HiddenFor(x => x.OrgUnits[i].OrganisationsId)
+                    @Html.HiddenFor(x => x.OrgUnits[i].Enhetsnamn)
+                    @Html.HiddenFor(x => x.OrgUnits[i].Enhetskod)
+                    @Html.HiddenFor(x => x.OrgUnits[i].Filkod)
+                    @Html.HiddenFor(x => x.OrgUnits[i].AktivFrom)
+                    @Html.HiddenFor(x => x.OrgUnits[i].AktivTom)
                 }
+            }
 
-                if (Model.ReportObligations != null)
+            if (Model.ReportObligations != null)
+            {
+                for (int i = 0; i < Model.ReportObligations.Count; i++)
                 {
-                    for (int i = 0; i < Model.ReportObligations.Count; i++)
-                    {
-                        @Html.HiddenFor(x => x.ReportObligations[i].Id)
-                        @Html.HiddenFor(x => x.ReportObligations[i].OrganisationId)
-                        @Html.HiddenFor(x => x.ReportObligations[i].DelregisterId)
-                        @Html.HiddenFor(x => x.ReportObligations[i].DelregisterKortnamn)
-                        @Html.HiddenFor(x => x.ReportObligations[i].RapporterarPerEnhet)
-                        @Html.HiddenFor(x => x.ReportObligations[i].SkyldigFrom)
-                        @Html.HiddenFor(x => x.ReportObligations[i].SkyldigTom)
-                    }
+                    @Html.HiddenFor(x => x.ReportObligations[i].Id)
+                    @Html.HiddenFor(x => x.ReportObligations[i].OrganisationId)
+                    @Html.HiddenFor(x => x.ReportObligations[i].DelregisterId)
+                    @Html.HiddenFor(x => x.ReportObligations[i].DelregisterKortnamn)
+                    @Html.HiddenFor(x => x.ReportObligations[i].RapporterarPerEnhet)
+                    @Html.HiddenFor(x => x.ReportObligations[i].SkyldigFrom)
+                    @Html.HiddenFor(x => x.ReportObligations[i].SkyldigTom)
                 }
+            }
 
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Organisation.Landstingskod, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-8">
-                        @Html.TextBoxFor(model => model.Organisation.Landstingskod, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.Organisation.Landstingskod, "", new { @class = "text-danger" })
-                    </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Organisation.Landstingskod, htmlAttributes: new {@class = "control-label col-md-2"})
+                <div class="col-md-8">
+                    @Html.TextBoxFor(model => model.Organisation.Landstingskod, new {@class = "form-control"})
+                    @Html.ValidationMessageFor(model => model.Organisation.Landstingskod, "", new {@class = "text-danger"})
                 </div>
+            </div>
 
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Organisation.Kommunkod, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-8">
-                        @Html.TextBoxFor(model => model.Organisation.Kommunkod, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.Organisation.Kommunkod, "", new { @class = "text-danger" })
-                    </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Organisation.Kommunkod, htmlAttributes: new {@class = "control-label col-md-2"})
+                <div class="col-md-8">
+                    @Html.TextBoxFor(model => model.Organisation.Kommunkod, new {@class = "form-control"})
+                    @Html.ValidationMessageFor(model => model.Organisation.Kommunkod, "", new {@class = "text-danger"})
                 </div>
+            </div>
 
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Organisation.Inrapporteringskod, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-8">
-                        @Html.TextBoxFor(model => model.Organisation.Inrapporteringskod, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.Organisation.Inrapporteringskod, "", new { @class = "text-danger" })
-                    </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Organisation.Inrapporteringskod, htmlAttributes: new {@class = "control-label col-md-2"})
+                <div class="col-md-8">
+                    @Html.TextBoxFor(model => model.Organisation.Inrapporteringskod, new {@class = "form-control"})
+                    @Html.ValidationMessageFor(model => model.Organisation.Inrapporteringskod, "", new {@class = "text-danger"})
                 </div>
+            </div>
 
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Organisation.Organisationstyp, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-3">
-                        @Html.TextBoxFor(model => model.ChosenOrganisationTypesNames, new { id = "orgTypeNames", @class = "form-control", disabled = "disabled" })
-                    </div>
-                    @if (Model.OrgtypesForOrgList != null)
-                    {
+            <div class="form-group">
+                @Html.LabelFor(model => model.Organisation.Organisationstyp, htmlAttributes: new {@class = "control-label col-md-2"})
+                <div class="col-md-3">
+                    @Html.TextBoxFor(model => model.ChosenOrganisationTypesNames, new {id = "orgTypeNames", @class = "form-control", disabled = "disabled"})
+                </div>
+                @if (Model.OrgtypesForOrgList != null)
+                {
                     <div class="col-md-7" style="padding-left: 20px; float: left;">
                         <select id="OrgtypList" multiple="multiple">
                             @for (var i = 0; i < Model.OrgtypesForOrgList.Count; i++)
@@ -448,115 +449,112 @@
                                 <option value=@Model.OrgtypesForOrgList[i].Organisationstypid>@Model.OrgtypesForOrgList[i].Typnamn</option>
                             }
                         </select>
-                        @Html.ValidationMessage("CustomError", new { @class = "text-danger" })
+                        @Html.ValidationMessage("CustomError", new {@class = "text-danger"})
                     </div>
-                    }
+                }
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Organisation.Organisationsnr, htmlAttributes: new {@class = "control-label col-md-2"})
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.Organisation.Organisationsnr, new {@class = "form-control"})
+                    @Html.ValidationMessageFor(model => model.Organisation.Organisationsnr, "", new {@class = "text-danger"})
                 </div>
+            </div>
 
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Organisation.Organisationsnr, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.TextBoxFor(model => model.Organisation.Organisationsnr, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.Organisation.Organisationsnr, "", new { @class = "text-danger" })
-                    </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Organisation.Organisationsnamn, htmlAttributes: new {@class = "control-label col-md-2"})
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.Organisation.Organisationsnamn, new {@class = "form-control"})
+                    @Html.ValidationMessageFor(model => model.Organisation.Organisationsnamn, "", new {@class = "text-danger"})
                 </div>
+            </div>
 
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Organisation.Organisationsnamn, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.TextBoxFor(model => model.Organisation.Organisationsnamn, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.Organisation.Organisationsnamn, "", new { @class = "text-danger" })
-                    </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Organisation.Hemsida, htmlAttributes: new {@class = "control-label col-md-2"})
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.Organisation.Hemsida, new {@class = "form-control"})
+                    @Html.ValidationMessageFor(model => model.Organisation.Hemsida, "", new {@class = "text-danger"})
                 </div>
+            </div>
 
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Organisation.Hemsida, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.TextBoxFor(model => model.Organisation.Hemsida, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.Organisation.Hemsida, "", new { @class = "text-danger" })
-                    </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Organisation.EpostAdress, htmlAttributes: new {@class = "control-label col-md-2"})
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.Organisation.EpostAdress, new {@class = "form-control"})
+                    @Html.ValidationMessageFor(model => model.Organisation.EpostAdress, "", new {@class = "text-danger"})
                 </div>
+            </div>
 
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Organisation.EpostAdress, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.TextBoxFor(model => model.Organisation.EpostAdress, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.Organisation.EpostAdress, "", new { @class = "text-danger" })
-                    </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Organisation.Telefonnr, htmlAttributes: new {@class = "control-label col-md-2"})
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.Organisation.Telefonnr, new {@class = "form-control"})
+                    @Html.ValidationMessageFor(model => model.Organisation.Telefonnr, "", new {@class = "text-danger"})
                 </div>
+            </div>
 
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Organisation.Telefonnr, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.TextBoxFor(model => model.Organisation.Telefonnr, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.Organisation.Telefonnr, "", new { @class = "text-danger" })
-                    </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Organisation.Adress, htmlAttributes: new {@class = "control-label col-md-2"})
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.Organisation.Adress, new {@class = "form-control"})
+                    @Html.ValidationMessageFor(model => model.Organisation.Adress, "", new {@class = "text-danger"})
                 </div>
+            </div>
 
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Organisation.Adress, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.TextBoxFor(model => model.Organisation.Adress, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.Organisation.Adress, "", new { @class = "text-danger" })
-                    </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Organisation.Postnr, htmlAttributes: new {@class = "control-label col-md-2"})
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.Organisation.Postnr, new {@class = "form-control"})
+                    @Html.ValidationMessageFor(model => model.Organisation.Postnr, "", new {@class = "text-danger"})
                 </div>
+            </div>
 
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Organisation.Postnr, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.TextBoxFor(model => model.Organisation.Postnr, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.Organisation.Postnr, "", new { @class = "text-danger" })
-                    </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Organisation.Postort, htmlAttributes: new {@class = "control-label col-md-2"})
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.Organisation.Postort, new {@class = "form-control"})
+                    @Html.ValidationMessageFor(model => model.Organisation.Postort, "", new {@class = "text-danger"})
                 </div>
+            </div>
 
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Organisation.Postort, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.TextBoxFor(model => model.Organisation.Postort, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.Organisation.Postort, "", new { @class = "text-danger" })
-                    </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Organisation.Epostdoman, htmlAttributes: new {@class = "control-label col-md-2"})
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.Organisation.Epostdoman, new {@class = "form-control"})
+                    @Html.ValidationMessageFor(model => model.Organisation.Epostdoman, "", new {@class = "text-danger"})
                 </div>
+            </div>
 
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Organisation.Epostdoman, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.TextBoxFor(model => model.Organisation.Epostdoman, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.Organisation.Epostdoman, "", new { @class = "text-danger" })
-                    </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Organisation.AktivFrom, htmlAttributes: new {@class = "control-label col-md-2"})
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.Organisation.AktivFrom, "{0:yyyy-MM-dd}", new {@class = "form-control"})
+                    @Html.ValidationMessageFor(model => model.Organisation.AktivFrom, "", new {@class = "text-danger"})
                 </div>
-
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Organisation.AktivFrom, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.TextBoxFor(model => model.Organisation.AktivFrom, "{0:yyyy-MM-dd}", new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.Organisation.AktivFrom, "", new { @class = "text-danger" })
-                    </div>
+            </div>
+            
+            <div class="form-group">
+                @Html.LabelFor(model => model.Organisation.AktivTom, htmlAttributes: new {@class = "control-label col-md-2"})
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.Organisation.AktivTom, "{0:yyyy-MM-dd}", new {@class = "form-control"})
+                    @Html.ValidationMessageFor(model => model.Organisation.AktivTom, "", new {@class = "text-danger"})
                 </div>
+            </div>
 
-
-
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Organisation.AktivTom, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.TextBoxFor(model => model.Organisation.AktivTom, "{0:yyyy-MM-dd}", new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.Organisation.AktivTom, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="btn-toolbar">
-                        <div class="col-md-offset-2">
-                            <input type="submit" value="Spara" class="btn btn-default" style="margin-right: 15px; margin-left: 20px;" />
-                            <input type="button" class="btn btn-default" value="Avbryt" id="cancelEditLink" onclick="hideEditableForm();return false;">
-                        </div>
+            <div class="form-group">
+                <div class="btn-toolbar">
+                    <div class="col-md-offset-2">
+                        <input type="submit" value="Spara" class="btn btn-default" style="margin-right: 15px; margin-left: 20px;"/>
+                        <input type="button" class="btn btn-default" value="Avbryt" id="cancelEditLink" onclick="hideEditableForm();return false;">
                     </div>
                 </div>
-            }
+            </div>
+        }
 
         </div>
-        <br />
-        <br />
-
+        <br/>
+        <br/>
 
         @Html.Partial("_Contactpersons")
         if (Request.IsAuthenticated)
@@ -568,15 +566,21 @@
                 </p>
             }
         }
-        <br />
-        <br />
-        @Html.Partial("_Cases")
+        <br/>
+        <br/>
+        if (Request.IsAuthenticated)
+        {
+            if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin") || User.IsInRole("InlasAnsv"))
+            {
+                @Html.Partial("_Cases")
+            }
+        }
         if (Request.IsAuthenticated)
         {
             if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin"))
             {
                 <p>
-                @Html.ActionLink(HttpUtility.HtmlDecode("Administrera ärenden &raquo;"), "GetOrganisationsCases", "Organisation", new {selectedOrganisationId = Model.SelectedOrganisationId}, new {@class = "btn btn-primary"})
+                    @Html.ActionLink(HttpUtility.HtmlDecode("Administrera ärenden &raquo;"), "GetOrganisationsCases", "Organisation", new {selectedOrganisationId = Model.SelectedOrganisationId}, new {@class = "btn btn-primary"})
                 </p>
                 <br/>
                 <br/>
@@ -584,52 +588,46 @@
         }
 
         if (Request.IsAuthenticated)
+        {
+            if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin") || User.IsInRole("InlasAnsv") || User.IsInRole("KvalAnsv"))
             {
-                if (User.IsInRole("Admin"))
-                {
-
-                    @Html.Partial("_OrgUnits")
-                    <p>
-                        @Html.ActionLink(HttpUtility.HtmlDecode("Administrera organisationsenheter &raquo;"), "GetOrganisationsOrgUnits", "Organisation", new {selectedOrganisationId = Model.SelectedOrganisationId}, new {@class = "btn btn-primary"})
-                    </p>
-   
-
-                    <br/>
-   
-                    <br/>
-
-                    @Html.Partial("_ReportObligations")
-                    <p>
-                        @Html.ActionLink(HttpUtility.HtmlDecode("Administrera uppgiftsskyldighet &raquo;"), "GetOrganisationsReportObligations", "Organisation", new {selectedOrganisationId = Model.SelectedOrganisationId}, new {@class = "btn btn-primary"})
-                    </p>
-                }
+                @Html.Partial("_OrgUnits")
             }
         }
+        if (Request.IsAuthenticated)
+        {
+            if (User.IsInRole("Admin"))
+            {
+                <p>
+                    @Html.ActionLink(HttpUtility.HtmlDecode("Administrera organisationsenheter &raquo;"), "GetOrganisationsOrgUnits", "Organisation", new {selectedOrganisationId = Model.SelectedOrganisationId}, new {@class = "btn btn-primary"})
+                </p>
+            }
+        }
+        <br/>
 
+        <br/>
+    if (Request.IsAuthenticated)
+    {
+        if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin") || User.IsInRole("InlasAnsv") || User.IsInRole("KvalAnsv"))
+        {
+
+                @Html.Partial("_ReportObligations")
+            }
+        }
+        if (Request.IsAuthenticated)
+        {
+            if (User.IsInRole("Admin"))
+            {
+                <p>
+                    @Html.ActionLink(HttpUtility.HtmlDecode("Administrera uppgiftsskyldighet &raquo;"), "GetOrganisationsReportObligations", "Organisation", new {selectedOrganisationId = Model.SelectedOrganisationId}, new {@class = "btn btn-primary"})
+                </p>
+            }
+        }
     }
+}
 
-    @section Scripts {
+ @section Scripts {
         @Scripts.Render("~/bundles/jqueryval")
     
 }
 
-
-@*<div class="row">
-        <div class="col-md-4">
-            <h2>jada jada</h2>
-            <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-            </p>
-            <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-        </div>
-        <div class="col-md-4">
-            <h2>bla bla</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum..</p>
-            <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-        </div>
-        <div class="col-md-4">
-            <h2>Överkurs</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum..</p>
-            <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-        </div>
-    </div>*@

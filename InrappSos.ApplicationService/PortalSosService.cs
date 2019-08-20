@@ -245,6 +245,21 @@ namespace InrappSos.ApplicationService
             return userCases;
         }
 
+        public IEnumerable<Arende> HamtaAnvandaresOppnaArenden(string userId)
+        {
+            var userOpenCases = new List<Arende>();
+            var userCases = _portalSosRepository.GetUserCases(userId);
+            foreach (var userCase in userCases)
+            {
+                if (userCase.SlutDatum == null)
+                {
+                    userOpenCases.Add(userCase);
+                }
+            }
+
+            return userOpenCases;
+        }
+
         public string HamtaAnvandaresMobilnummer(string userId)
         {
             var phoneNumber = _portalSosRepository.GetUserPhoneNumber(userId);

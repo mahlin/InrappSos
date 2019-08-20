@@ -60,6 +60,7 @@ namespace InrappSos.FilipWeb.Controllers
 
                 _model.HistorikLista = new List<FildroppDetaljDTO>();
                 var usersCases = _portalService.HamtaAnvandaresArenden(User.Identity.GetUserId()).ToList();
+                //var usersCases = _portalService.HamtaAnvandaresOppnaArenden(User.Identity.GetUserId()).ToList();
                 // Ladda drop down list.  
                 ViewBag.CaseList = CreateCaseDropDownList(usersCases);
                 _model.SelectedCaseId = "0";

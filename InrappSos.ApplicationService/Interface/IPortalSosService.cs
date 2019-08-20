@@ -50,6 +50,7 @@ namespace InrappSos.ApplicationService.Interface
         string HamtaAnvandaresKontaktnummer(string userId);
 
         IEnumerable<Arende> HamtaAnvandaresArenden(string userId);
+        IEnumerable<Arende> HamtaAnvandaresOppnaArenden(string userId);
 
         string HamtaAnvandaresMobilnummer(string userId);
 

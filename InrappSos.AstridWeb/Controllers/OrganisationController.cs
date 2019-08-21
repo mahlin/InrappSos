@@ -1477,8 +1477,7 @@ namespace InrappSos.AstridWeb.Controllers
             return View();
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+
         [Authorize(Roles = "Admin, InrappAdmin")]
         public ActionResult CreateUnitReportObligation(int selectedOrganisationId = 0, int selectedOrgenhetsId = 0)
         {
@@ -1536,7 +1535,7 @@ namespace InrappSos.AstridWeb.Controllers
         // POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
+        [Authorize(Roles = "Admin, InrappAdmin")]
         public ActionResult CreateUnitReportObligation(OrganisationViewModels.UnitReportObligationsViewModel enhetsUppgSk)
         {
             var kommunkod = String.Empty;

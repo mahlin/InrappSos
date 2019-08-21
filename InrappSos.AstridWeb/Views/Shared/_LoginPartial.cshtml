@@ -100,7 +100,10 @@
                                         <li>@Html.ActionLink("Enhetsuppgiftsskyldighet", "GetUnitReportObligations", "Organisation")</li>
                                     </ul>
                                 </li>
-                                <li>@Html.ActionLink("Privata epostadresser", "GetPrivateEmailAdresses", "Organisation")</li>
+                                @if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin") || User.IsInRole("InlasAnsv"))
+                                {
+                                    <li>@Html.ActionLink("Privata epostadresser", "GetPrivateEmailAdresses", "Organisation")</li>
+                                }
                                 <li>@Html.ActionLink("SFTP-konton", "GetSFTPAccounts", "Organisation")</li>
                                 <li>@Html.ActionLink("Undantag av förväntad fil", "GetExceptionsExpectedFiles", "Organisation")</li>
                                 @if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin") || User.IsInRole("InlasAnsv"))

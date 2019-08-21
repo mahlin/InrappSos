@@ -705,7 +705,7 @@ namespace InrappSos.AstridWeb.Controllers
 
 
         [HttpPost]
-        [Authorize(Roles = "Admin, InrappAdmin")]
+        [Authorize(Roles = "Admin, InrappAdmin, InlasAnsv")]
         public ActionResult UpdateForvantadLeverans(LeveransViewModels.AdmForvantadleveransViewModel forvLevModel, bool filterPgnde = false, string regId = "0")
         {
             if (ModelState.IsValid)

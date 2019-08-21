@@ -31,6 +31,16 @@
             }
         });
 
+        $('#usersTableReadOnly tr th:eq(0)').hide();
+        $("#usersTableReadOnly tbody tr").each(function (i, row) {
+            $(row).find('td:eq(0)').hide();
+            if (!$('#chbxInaktiva').is(':checked')) {
+                if ($(row).find("#ContactAktivTom").val() !== "") {
+                    $(row).hide();
+                }  
+            }
+        });
+
         var modalConfirm = function test(callback) {
             $("#modal-btn-si").on("click", function () {
                 callback(true);
@@ -75,6 +85,17 @@
         }
 
         $("#usersTable tbody tr").each(function (i, row) {
+            var $actualRow = $(row);
+            if ($('#chbxInaktiva').is(':checked')) {
+                $actualRow.show();
+            } else {
+                if ($actualRow.find("#ContactAktivTom").val() !== "") {
+                    $actualRow.hide();
+                }
+            }
+        });
+
+        $("#usersTableReadOnly tbody tr").each(function (i, row) {
             var $actualRow = $(row);
             if ($('#chbxInaktiva').is(':checked')) {
                 $actualRow.show();
@@ -441,7 +462,7 @@
                             var grid = new WebGrid(source: Model.ContactPersons, canPage: false, rowsPerPage: 10, ajaxUpdateContainerId: "contatcsGrid");
                         }
 
-                        @grid.GetHtml(htmlAttributes: new {id = "usersTable"},
+                        @grid.GetHtml(htmlAttributes: new {id = "usersTableReadOnly"},
                             tableStyle: "webgrid-table1500",
                             headerStyle: "webgrid-header",
                             footerStyle: "webgrid-footer",
@@ -453,17 +474,13 @@
                                 grid.Column(null, null, format: @<input type="hidden" id="ContactId" name="IDHidden" value="@item.ID" />),
                                 grid.Column("Namn", format: @<text><label id="ContactName" class="display-mode">@item.Namn</label></text>, style: "col3Width"),
                                 grid.Column("Email", "E-post", format: @<text><span class="display-mode col3Width">@item.Email</span><label id="Epost" class="edit-mode col3Width">@item.Email</label></text>, style: "col3Width"),
-                                grid.Column("PhoneNumber", "Telefon", format: @<text><span class="display-mode col2Width">@item.PhoneNumber</span><label id="lblPhoneNumber" class="edit-mode">@item.PhoneNumber</label></text>, style: "col2Width"),
-                                grid.Column("PhoneNumberConfirmed", "Telefonnr verifierat", format: @<text><span class="display-mode"><input id="lblContactPhoneNumberVerified" class="checkbox" name="select" type="checkbox" disabled @( item.PhoneNumberConfirmed ? "checked='checked'" : "") value="@item.PhoneNumberConfirmed" /></span>
-                                                        </text>, style: "colMinWidth centered"),
                                 grid.Column("Kontaktnummer", "Kontaktnummer", format: @<text><span class="display-mode col2Width">@item.Kontaktnummer</span><label id="lblContactNumber">@item.Kontaktnummer</label></text>, style: "col2Width"),
                                 grid.Column("AktivFrom", "Aktiv fr.o.m", format: @<text><span class="display-mode"><label id="lblAktivFrom">@( item.AktivFrom != null ? item.AktivFrom.ToString("yyyy-MM-dd") : item.AktivFrom)</label></span></text>, style: "col2Width"),
                                 grid.Column("AktivTom", "Aktiv t.o.m", format: @<text><span class="display-mode"><label id="lblAktivTom">@( item.AktivTom != null ? item.AktivTom.ToString("yyyy-MM-dd") : item.AktivTom)</label></span>
                                                 <input type="hidden" id="ContactAktivTom" value="@( item.AktivTom != null ? item.AktivTom.ToString("yyyy-MM-dd") : item.AktivTom)" class="edit-mode form-control" /></text>, style: "col2Width"),
                                 grid.Column("Status", "Status", format: @<text><span class="display-mode colMinWidth"><label id="lblStatus">@item.Status</label></span></text>, style: "colMinWidth"),
                                 grid.Column("Valda delregister", "Valda delregister", format: @<text><span class="display-mode col2Width" style="display: inline-block;">@item.ValdaDelregister</span><label id="lblValdaDelreg" class="edit-mode col3Width">@item.ValdaDelregister</label></text>, style: "col2Width"),
-                                grid.Column("Roller", "Roller", format: @<text><label id="lblRoller" class="display-mode col2Width" style="display: inline-block;">@item.StringOfRoles</label></text>, style: "col2Width"),
-                                grid.Column("Roller", format: @item => Html.DropDownListFor(m => m.Roller, new SelectList(@item.ListOfRoles, "Id", "Name"), new {id = "ddlRoleList", @class = "form-control edit-mode ddl", multiple = "multiple", style = "min-width:100px !important"}))
+                                grid.Column("Roller", "Roller", format: @<text><label id="lblRoller" class="display-mode col2Width" style="display: inline-block;">@item.StringOfRoles</label></text>, style: "col2Width")
                                 ))
 
                     </div>

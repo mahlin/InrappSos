@@ -326,7 +326,7 @@
             </dl>
             @if (Request.IsAuthenticated)
             {
-                if (User.IsInRole("Admin"))
+                if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin"))
                 {
                     <input type="button" class="btn btn-primary" value="Ändra organisation" id="editLink" onclick="showEditableForm();return false;"/>
                 }
@@ -557,10 +557,10 @@
         <br/>
 
         @Html.Partial("_Contactpersons")
-        if (Request.IsAuthenticated)
+    if (Request.IsAuthenticated)
+    {
+        if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin"))
         {
-            if (User.IsInRole("Admin"))
-            {
                 <p>
                     @Html.ActionLink(HttpUtility.HtmlDecode("Administrera kontaktpersoner &raquo;"), "GetOrganisationsContacts", "Organisation", new {selectedOrganisationId = Model.SelectedOrganisationId}, new {@class = "btn btn-primary"})
                 </p>
@@ -592,12 +592,12 @@
             if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin") || User.IsInRole("InlasAnsv") || User.IsInRole("KvalAnsv"))
             {
                 @Html.Partial("_OrgUnits")
-            }
         }
-        if (Request.IsAuthenticated)
+    }
+    if (Request.IsAuthenticated)
+    {
+        if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin"))
         {
-            if (User.IsInRole("Admin"))
-            {
                 <p>
                     @Html.ActionLink(HttpUtility.HtmlDecode("Administrera organisationsenheter &raquo;"), "GetOrganisationsOrgUnits", "Organisation", new {selectedOrganisationId = Model.SelectedOrganisationId}, new {@class = "btn btn-primary"})
                 </p>
@@ -612,12 +612,12 @@
         {
 
                 @Html.Partial("_ReportObligations")
-            }
         }
-        if (Request.IsAuthenticated)
+    }
+    if (Request.IsAuthenticated)
+    {
+        if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin"))
         {
-            if (User.IsInRole("Admin"))
-            {
                 <p>
                     @Html.ActionLink(HttpUtility.HtmlDecode("Administrera uppgiftsskyldighet &raquo;"), "GetOrganisationsReportObligations", "Organisation", new {selectedOrganisationId = Model.SelectedOrganisationId}, new {@class = "btn btn-primary"})
                 </p>

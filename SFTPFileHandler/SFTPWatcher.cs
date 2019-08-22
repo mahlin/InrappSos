@@ -586,7 +586,7 @@ namespace SFTPFileHandler
             }
             string subject = "SFTP-leverans - fil med felaktig period";
             string body = "Hej! <br>";
-            body += "Leveransen innehåller fil med felaktigt period:  <br>";
+            body += "Leveransen innehåller fil med felaktig period:  <br>";
             foreach (var incorrectFile in incorrectPeriodList)
             {
                 body += incorrectFile.Name + "<br> ";

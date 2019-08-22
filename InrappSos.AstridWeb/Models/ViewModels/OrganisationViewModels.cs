@@ -112,6 +112,7 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public string DelregisterKortnamn { get; set; }
             public string Organisationsnamn { get; set; }
             public int UppgiftsskyldighetId { get; set; }
+            [Required(ErrorMessage = "Fältet är obligatoriskt.")]
             public DateTime? SkyldigFrom { get; set; }
             public DateTime? SkyldigTom { get; set; }
             public List<List<Organisation>> SearchResult { get; set; }

@@ -120,8 +120,6 @@ namespace InrappSos.DataAccess
 
         Arendetyp GetCaseType(int casetypeId);
 
-        ArendeStatus GetCaseStatus(int casestatusId);
-
         IEnumerable<ArendeKontaktperson> GetCaseContacts(int caseId);
         IEnumerable<ApplicationUser> GetContactPersonsForOrg(int orgId);
 
@@ -229,8 +227,6 @@ namespace InrappSos.DataAccess
         IEnumerable<AdmInsamlingsfrekvens> GetAllCollectionFrequencies();
 
         IEnumerable<Arendetyp> GetAllCaseTypes();
-
-        IEnumerable<ArendeStatus> GetAllCaseStatuses();
 
         IEnumerable<AdmForvantadleverans> GetExpectedDeliveriesForDirectory(int dirId);
         IEnumerable<AdmForvantadleverans> GetExpectedDeliveriesForSubDirectory(int subdirId);
@@ -378,7 +374,6 @@ namespace InrappSos.DataAccess
         void CreateCaseType(Arendetyp caseType);
 
         void CreateCaseManager(ArendeAnsvarig caseManager);
-        void CreateCaseStatus(ArendeStatus caseStatus);
 
         void CreateFAQCategory(AdmFAQKategori faqCategory);
 
@@ -425,8 +420,6 @@ namespace InrappSos.DataAccess
         void UpdateCaseType(Arendetyp caseType);
 
         void UpdateCaseManager(ArendeAnsvarig caseManager);
-
-        void UpdateCaseStatus(ArendeStatus caseStatus);
 
         void UpdateReportObligation(AdmUppgiftsskyldighet repObligation);
 

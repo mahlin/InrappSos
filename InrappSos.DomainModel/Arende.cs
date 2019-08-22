@@ -14,20 +14,13 @@ namespace InrappSos.DomainModel
         public string Arendenamn { get; set; }
         public string Arendenr { get; set; }
         public int ArendetypId { get; set; }
-        public int ArendestatusId { get; set; }
         public int ArendeansvarId { get; set; }
-        [Display(Name = "Startdatum")]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        public DateTime StartDatum { get; set; }
-        [Display(Name = "Slutdatum")]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        public DateTime? SlutDatum { get; set; }
+        public bool Aktiv { get; set; }
         public DateTime SkapadDatum { get; set; }
         public string SkapadAv { get; set; }
         public DateTime AndradDatum { get; set; }
         public string AndradAv { get; set; }
         public virtual Organisation Organisation { get; set; }
-        public virtual ArendeStatus ArendeStatus { get; set; }
         public virtual Arendetyp Arendetyp { get; set; }
         public virtual ArendeAnsvarig ArendeAnsvarig { get; set; }
         public virtual ICollection<ArendeKontaktperson> ArendeKontaktperson { get; set; }

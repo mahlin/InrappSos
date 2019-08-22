@@ -136,15 +136,6 @@ namespace InrappSos.AstridWeb.Controllers
 
         //GET
         [Authorize]
-        public ActionResult GetCaseStatuses()
-        {
-            var model = new AdminViewModels.AdminViewModel();
-            model.CaseStatuses = _portalSosService.HamtaAllaArendestatusar().ToList();
-            return View("EditcaseStatus", model);
-        }
-
-        //GET
-        [Authorize]
         public ActionResult GetCaseManagers()
         {
             var model = new AdminViewModels.AdminViewModel();
@@ -199,33 +190,6 @@ namespace InrappSos.AstridWeb.Controllers
                 var errorModel = new CustomErrorPageModel
                 {
                     Information = "Ett fel inträffade vid uppdatering av ärendetyp.",
-                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
-                };
-                return View("CustomError", errorModel);
-            }
-            return RedirectToAction("GetCasetypes");
-        }
-
-        [HttpPost]
-        [Authorize]
-        public ActionResult UpdateCaseStatus(ArendeStatus caseStatus)
-        {
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    var userName = User.Identity.GetUserName();
-                    _portalSosService.UppdateraArendestatus(caseStatus, userName);
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                ErrorManager.WriteToErrorLog("OrganisationController", "UpdateCaseStatus", e.ToString(), e.HResult,
-                    User.Identity.Name);
-                var errorModel = new CustomErrorPageModel
-                {
-                    Information = "Ett fel inträffade vid uppdatering av ärendestatus.",
                     ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
                 };
                 return View("CustomError", errorModel);
@@ -380,37 +344,6 @@ namespace InrappSos.AstridWeb.Controllers
         {
             var model = new AdminViewModels.ArendeStatusViewModel();
             return View(model);
-        }
-
-        // POST
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize]
-        public ActionResult CreateCaseStatus(ArendeStatus arendeStatus)
-        {
-            var org = new Organisation();
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    var userName = User.Identity.GetUserName();
-                    _portalSosService.SkapaArendestatus(arendeStatus, userName);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                    ErrorManager.WriteToErrorLog("OrganisationController", "CreateCaseStatus", e.ToString(), e.HResult, User.Identity.Name);
-                    var errorModel = new CustomErrorPageModel
-                    {
-                        Information = "Ett fel inträffade när ny ärendestatus skulle sparas.",
-                        ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
-                    };
-                    return View("CustomError", errorModel);
-                }
-                return RedirectToAction("GetCaseStatuses");
-            }
-
-            return View();
         }
 
 

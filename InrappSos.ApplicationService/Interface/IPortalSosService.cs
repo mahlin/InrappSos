@@ -234,8 +234,6 @@ namespace InrappSos.ApplicationService.Interface
 
         IEnumerable<Arendetyp> HamtaAllaArendetyper();
 
-        IEnumerable<ArendeStatus> HamtaAllaArendestatusar();
-
         IEnumerable<Organisation> HamtaAllaOrganisationer();
 
         string HamtaKortnamnForDelregisterMedFilkravsId(int filkravsId);
@@ -329,8 +327,6 @@ namespace InrappSos.ApplicationService.Interface
 
         Arendetyp HamtaArendetyp(int arendetypId);
 
-        ArendeStatus HamtaArendestatus(int arendestatusId);
-
         ArendeAnsvarig HamtaArendeAnsvarig(int arendeAnsvId);
 
         string HamtaArendesKontaktpersoner(int orgId, int arendeId);
@@ -363,8 +359,6 @@ namespace InrappSos.ApplicationService.Interface
         void SkapaArendetyp(Arendetyp arendetyp, string userName);
 
         void SkapaArendeAnsvarig(ArendeAnsvarig arendeAnsvarig, string userName);
-
-        void SkapaArendestatus(ArendeStatus arendeStatus, string userName);
 
         void SkapaFAQKategori(AdmFAQKategori faqKategori, string userName);
 
@@ -417,8 +411,6 @@ namespace InrappSos.ApplicationService.Interface
         void UppdateraArendetyp(Arendetyp caseType, string userName);
 
         void UppdateraArendeAnsvarig(ArendeAnsvarig caseManager, string userName);
-
-        void UppdateraArendestatus(ArendeStatus caseStatus, string userName);
 
         void UppdateraUppgiftsskyldighet(AdmUppgiftsskyldighet uppgSkyldighet, string userName);
 

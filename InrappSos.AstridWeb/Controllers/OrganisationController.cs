@@ -526,9 +526,6 @@ namespace InrappSos.AstridWeb.Controllers
                 var arendetypList = _portalSosService.HamtaAllaArendetyper();
                 ViewBag.ArendetypDDL = CreateArendetypDropDownList(arendetypList);
                 model.SelectedArendetypId = 0;
-                var arendestatusList = _portalSosService.HamtaAllaArendestatusar();
-                ViewBag.ArendestatusDDL = CreateArendestatusDropDownList(arendestatusList);
-                model.SelectedArendestatusId = 0;
                 var arendeansvarigList = _portalSosService.HamtaAllaArendeansvariga().OrderBy(x => x.Epostadress).ToList();
                 ViewBag.ArendeansvarigDDL = CreateArendeansvarigDropDownList(arendeansvarigList);
                 model.SelectedArendeansvarigId = 0;
@@ -1303,8 +1300,6 @@ namespace InrappSos.AstridWeb.Controllers
             var arendetypList = _portalSosService.HamtaAllaArendetyper();
             ViewBag.ArendetypList = CreateArendetypDropDownList(arendetypList);
             model.ArendetypId = 0;
-            var arendestatusList = _portalSosService.HamtaAllaArendestatusar();
-            ViewBag.ArendestatusList = CreateArendestatusDropDownList(arendestatusList);
             var arendeansvarigList = _portalSosService.HamtaAllaArendeansvariga().OrderBy(x => x.Epostadress).ToList();
             ViewBag.ArendeansvarigList = CreateArendeansvarigDropDownList(arendeansvarigList);
             model.ArendetypId = 0;
@@ -2130,11 +2125,9 @@ namespace InrappSos.AstridWeb.Controllers
                 Arendenamn = arendeVM.Arendenamn,
                 Arendenr = arendeVM.Arendenr,
                 ArendetypId = arendeVM.ArendetypId,
-                ArendestatusId = arendeVM.ArendestatusId,
                 ArendeanvsarId = arendeVM.ArendeansvarId,
+                Aktiv = arendeVM.Aktiv,
                 Rapportorer = arendeVM.Rapportorer,
-                StartDatum = arendeVM.StartDatum,
-                SlutDatum = arendeVM.SlutDatum
             };
 
             var contactsDTO = new List<ArendeKontaktpersonDTO>();
@@ -2169,17 +2162,12 @@ namespace InrappSos.AstridWeb.Controllers
                     Arendenamn = arendeDb.Arendenamn,
                     Arendenr = arendeDb.Arendenr,
                     ArendetypId = arendeDb.ArendetypId,
-                    ArendestatusId = arendeDb.ArendestatusId,
-                    StartDatum = arendeDb.StartDatum,
-                    SlutDatum = arendeDb.SlutDatum
+                    Aktiv = arendeDb.Aktiv
                 };
 
                 //Hämta ärentyp, klartext 
                 arendeVM.Arendetyp = _portalSosService.HamtaArendetyp(arendeDb.ArendetypId).ArendetypNamn;
                 arendeVM.ArendetypId = arendeDb.ArendetypId;
-                //Hämta ärendestatus, klartext
-                arendeVM.Arendestatus = _portalSosService.HamtaArendestatus(arendeDb.ArendestatusId).ArendeStatusNamn;
-                arendeVM.ArendestatusId = arendeDb.ArendestatusId;
                 //Hämta ärendeansvarigs epost
                 arendeVM.Arendeansvarig = _portalSosService.HamtaArendeAnsvarig(arendeDb.ArendeansvarId).Epostadress;
                 arendeVM.ArendeansvarId = arendeDb.ArendeansvarId;
@@ -2249,23 +2237,6 @@ namespace InrappSos.AstridWeb.Controllers
                     {
                         Value = p.Id.ToString(),
                         Text = p.Epostadress
-                    });
-            // Setting.  
-            lstobj = new SelectList(list, "Value", "Text");
-            var y = lstobj.ToList();
-            return lstobj;
-        }
-
-
-        private IEnumerable<SelectListItem> CreateArendestatusDropDownList(IEnumerable<ArendeStatus> arendestatusList)
-        {
-            SelectList lstobj = null;
-            var list = arendestatusList
-                .Select(p =>
-                    new SelectListItem
-                    {
-                        Value = p.Id.ToString(),
-                        Text = p.ArendeStatusNamn
                     });
             // Setting.  
             lstobj = new SelectList(list, "Value", "Text");

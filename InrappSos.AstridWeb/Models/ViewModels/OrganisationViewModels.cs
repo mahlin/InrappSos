@@ -33,7 +33,6 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public int SelectedOrganisationId { get; set; }
             public int SelectedOrgTypId { get; set; }
             public int SelectedArendetypId { get; set; }
-            public int SelectedArendestatusId { get; set; }
 
             public int SelectedArendeId { get; set; }
 
@@ -219,16 +218,11 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             [Display(Name = "Ärendetyp")]
             public string Arendetyp { get; set; }
 
-            public int ArendestatusId { get; set; }
-            [Display(Name = "Ärendestatus")]
-            //public SelectList ArendestatusDDL { get; set; }
-            public string Arendestatus { get; set; }
-
             public int ArendeansvarId { get; set; }
             //public SelectList ArendeansvarigDDL { get; set; }
             [Display(Name = "Ärendeansvarig")]
             public string Arendeansvarig { get; set; }
-
+            public bool Aktiv { get; set; }
             public string ChosenContactsStr { get; set; }
             public List<ContactViewModel> Kontaktpersoner { get; set; }
             public string KontaktpersonerStr { get; set; }

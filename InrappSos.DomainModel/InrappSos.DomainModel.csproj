@@ -85,7 +85,6 @@
     <Compile Include="AppUserAdmin.cs" />
     <Compile Include="Arende.cs" />
     <Compile Include="ArendeKontaktperson.cs" />
-    <Compile Include="ArendeStatus.cs" />
     <Compile Include="Arendetyp.cs" />
     <Compile Include="Aterkoppling.cs" />
     <Compile Include="DroppadFil.cs" />

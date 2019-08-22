@@ -118,18 +118,19 @@
                 @Html.ValidationMessageFor(model => model.Arendenr, "", new { @class = "text-danger" })
             </div>
         </div>
+        
+        <div class="form-group">
+            @Html.LabelFor(model => model.Aktiv, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => Model.Aktiv, new { htmlAttributes = new { @class = "checkbox" } })
+                @Html.ValidationMessageFor(model => model.Aktiv, "", new { @class = "text-danger" })
+            </div>
+        </div>
 
         <div class="form-group">
             @Html.Label("Ärendetyp", new { @class = "control-label col-md-2" })
             <div class="col-md-10" style="width: 255px !important;">
                 @Html.DropDownListFor(m => m.ArendetypId, ViewBag.ArendetypList as SelectList, " - Välj ärendetyp -", new { id = "ddlArendetyp", @class = "form-control", style = "max-width:250px !important" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.Label("Ärendestatus", new { @class = "control-label col-md-2" })
-            <div class="col-md-10" style="width: 255px !important;">
-                @Html.DropDownListFor(m => m.ArendestatusId, ViewBag.ArendestatusList as SelectList, " - Välj ärendestatus -", new { id = "ddlArendestatus", @class = "form-control", style = "max-width:250px !important" })
             </div>
         </div>
 

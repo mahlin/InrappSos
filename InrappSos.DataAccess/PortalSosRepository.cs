@@ -207,7 +207,7 @@ namespace InrappSos.DataAccess
 
         public Arende GetArendeById(int arendeId)
         {
-            var arende = DbContext.Arende.Include(x => x.Arendetyp).Include(x => x.ArendeStatus).Include(x => x.ArendeAnsvarig).SingleOrDefault(x => x.Id == arendeId);
+            var arende = DbContext.Arende.Include(x => x.Arendetyp).Include(x => x.ArendeAnsvarig).SingleOrDefault(x => x.Id == arendeId);
             return arende;
         }
 
@@ -461,12 +461,6 @@ namespace InrappSos.DataAccess
         {
             var caseType = DbContext.Arendetyp.SingleOrDefault(x => x.Id == casetypeId);
             return caseType;
-        }
-
-        public ArendeStatus GetCaseStatus(int casestatusId)
-        {
-            var caseStatus = DbContext.ArendeStatus.SingleOrDefault(x => x.Id == casestatusId);
-            return caseStatus;
         }
 
         public IEnumerable<ArendeKontaktperson> GetCaseContacts(int caseId)
@@ -1201,12 +1195,6 @@ namespace InrappSos.DataAccess
             return caseTypes;
         }
 
-        public IEnumerable<ArendeStatus> GetAllCaseStatuses()
-        {
-            var caseStatuses = DbContext.ArendeStatus.ToList();
-            return caseStatuses;
-        }
-
         public string GetSubDirectoryShortNameForExpectedFile(int filkravId)
         {
             var subDirId = DbContext.AdmFilkrav.Where(x => x.Id == filkravId).Select(x => x.DelregisterId).SingleOrDefault();
@@ -1807,12 +1795,6 @@ namespace InrappSos.DataAccess
             DbContext.SaveChanges();
         }
 
-        public void CreateCaseStatus(ArendeStatus caseStatus)
-        {
-            DbContext.ArendeStatus.Add(caseStatus);
-            DbContext.SaveChanges();
-        }
-
         public void CreateFAQCategory(AdmFAQKategori faqCategory)
         {
             DbContext.AdmFAQKategori.Add(faqCategory);
@@ -2079,17 +2061,11 @@ namespace InrappSos.DataAccess
             var arendeDb = DbContext.Arende.SingleOrDefault(x => x.Id == arende.Id);
             arendeDb.Arendenamn = arende.Arendenamn;
             arendeDb.ArendeansvarId= arende.ArendeansvarId;
-            arendeDb.StartDatum = arende.StartDatum;
-            arendeDb.SlutDatum = arende.SlutDatum;
 
             //If areandestatus and arendetyp changed, e.g. != 0, update theese as well
             if (arende.ArendetypId != 0)
             {
                 arendeDb.ArendetypId = arende.ArendetypId;
-            }
-            if (arende.ArendestatusId != 0)
-            {
-                arendeDb.ArendestatusId= arende.ArendestatusId;
             }
             DbContext.SaveChanges();
         }
@@ -2183,13 +2159,6 @@ namespace InrappSos.DataAccess
         {
             var caseManagerDb = DbContext.ArendeAnsvarig.Where(u => u.Id == caseManager.Id).Select(u => u).SingleOrDefault();
             caseManagerDb.Epostadress = caseManager.Epostadress;
-            DbContext.SaveChanges();
-        }
-
-        public void UpdateCaseStatus(ArendeStatus caseStatus)
-        {
-            var caseStatusDb = DbContext.ArendeStatus.Where(u => u.Id == caseStatus.Id).Select(u => u).SingleOrDefault();
-            caseStatusDb.ArendeStatusNamn = caseStatus.ArendeStatusNamn;
             DbContext.SaveChanges();
         }
 

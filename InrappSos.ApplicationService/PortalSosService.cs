@@ -251,7 +251,7 @@ namespace InrappSos.ApplicationService
             var userCases = _portalSosRepository.GetUserCases(userId);
             foreach (var userCase in userCases)
             {
-                if (userCase.SlutDatum == null)
+                if (userCase.Aktiv)
                 {
                     userOpenCases.Add(userCase);
                 }
@@ -1008,12 +1008,6 @@ namespace InrappSos.ApplicationService
         {
             var arendetypList = _portalSosRepository.GetAllCaseTypes();
             return arendetypList;
-        }
-
-        public IEnumerable<ArendeStatus> HamtaAllaArendestatusar()
-        {
-            var arendestatusList = _portalSosRepository.GetAllCaseStatuses();
-            return arendestatusList;
         }
 
         public string HamtaKortnamnForDelregisterMedFilkravsId(int filkravId)
@@ -2246,13 +2240,7 @@ namespace InrappSos.ApplicationService
             var arendetyp = _portalSosRepository.GetCaseType(arendetypId);
             return arendetyp;
         }
-
-        public ArendeStatus HamtaArendestatus(int arendestatusId)
-        {
-            var arendestatus = _portalSosRepository.GetCaseStatus(arendestatusId);
-            return arendestatus;
-        }
-
+        
         public ArendeAnsvarig HamtaArendeAnsvarig(int arendeAnsvId)
         {
             var arendeansvarig = _portalSosRepository.GetCaseResponsible(arendeAnsvId);
@@ -2466,17 +2454,6 @@ namespace InrappSos.ApplicationService
             arendeAnsvarig.AndradAv = userName;
 
             _portalSosRepository.CreateCaseManager(arendeAnsvarig);
-        }
-
-        public void SkapaArendestatus(ArendeStatus arendeStatus, string userName)
-        {
-            //Sätt datum och användare
-            arendeStatus.SkapadDatum = DateTime.Now;
-            arendeStatus.SkapadAv = userName;
-            arendeStatus.AndradDatum = DateTime.Now;
-            arendeStatus.AndradAv = userName;
-
-            _portalSosRepository.CreateCaseStatus(arendeStatus); ;
         }
 
         public void SkapaFAQKategori(AdmFAQKategori faqKategori, string userName)
@@ -2758,14 +2735,6 @@ namespace InrappSos.ApplicationService
             caseManager.AndradDatum = DateTime.Now;
             caseManager.AndradAv = userName;
             _portalSosRepository.UpdateCaseManager(caseManager);
-        }
-
-        public void UppdateraArendestatus(ArendeStatus caseStatus, string userName)
-        {
-            //Sätt datum och användare
-            caseStatus.AndradDatum = DateTime.Now;
-            caseStatus.AndradAv = userName;
-            _portalSosRepository.UpdateCaseStatus(caseStatus);
         }
 
         public void UppdateraUppgiftsskyldighet(AdmUppgiftsskyldighet uppgSkyldighet, string userName)
@@ -3327,10 +3296,8 @@ namespace InrappSos.ApplicationService
                 Arendenamn = arendeDto.Arendenamn,
                 Arendenr = arendeDto.Arendenr,
                 ArendetypId = arendeDto.ArendetypId,
-                ArendestatusId = arendeDto.ArendestatusId,
                 ArendeansvarId = arendeDto.ArendeanvsarId,
-                StartDatum = arendeDto.StartDatum,
-                SlutDatum = arendeDto.SlutDatum,
+                Aktiv = arendeDto.Aktiv
             };
             return arende;
         }

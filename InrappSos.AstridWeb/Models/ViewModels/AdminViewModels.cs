@@ -16,9 +16,6 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public string SelectedUser { get; set; }
             public List<IdentityRoleViewModel> Roller { get; set; }
             public List<Arendetyp> CaseTypes { get; set; }
-
-            public List<ArendeStatus> CaseStatuses { get; set; }
-
             public List<ArendeAnsvarig> CaseManagers { get; set; }
         }
 

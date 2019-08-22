@@ -46,7 +46,9 @@
             nonSelectedText: 'Inget valt',
             allSelectedText: 'Alla valda',
             selectAllText: "Välj alla",
-            nSelectedText: "valda"
+            nSelectedText: "valda",
+            astridDefaultText: "Välj dag/dagar"
+
         });
 
     });
@@ -166,7 +168,17 @@
                 <div class="row">
                     <div class="col-md-12 padding-top-55">
                         @Html.LabelFor(m => m.ClosedAnyway, new { @class = "control-label-medium" })
-                        @Html.CheckBoxFor(m => m.ClosedAnyway)
+                        @if (Request.IsAuthenticated)
+                        {
+                            if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin"))
+                            {
+                                @Html.CheckBoxFor(m => m.ClosedAnyway)
+                            }
+                            else
+                            { 
+                                @Html.CheckBoxFor(m => m.ClosedAnyway, new { @disabled = "disabled"})
+                            }
+                        }
                     </div>
                 </div>
             </div>
@@ -175,12 +187,24 @@
                 <div class="row">
                     <div class="col-md-12">
                         @Html.Label("Dagar då portalen är stängd: ", new { @class = "control-label-medium" })
-                        <select id="ClDays" multiple="multiple">
-                            @for (var i = 0; i < Model.ClosedDaysList.Count; i++)
-                            {
-                                <option value=@Model.ClosedDaysList[i].NameEnglish>@Model.ClosedDaysList[i].NameSwedish</option>
-                            }
-                        </select>
+                        @if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin"))
+                        {
+                            <select id="ClDays" multiple="multiple">
+                                @for (var i = 0; i < Model.ClosedDaysList.Count; i++)
+                                {
+                                    <option value=@Model.ClosedDaysList[i].NameEnglish>@Model.ClosedDaysList[i].NameSwedish</option>
+                                }
+                            </select>
+                        }
+                        else
+                        {
+                            <select id="ClDays" multiple="multiple">
+                                @for (var i = 0; i < Model.ClosedDaysList.Count; i++)
+                                {
+                                    <option value=@Model.ClosedDaysList[i].NameEnglish disabled>@Model.ClosedDaysList[i].NameSwedish</option>
+                                }
+                            </select>
+                        }
                     </div>
                 </div>
             </div>
@@ -190,7 +214,14 @@
                     <div class="col-md-8">
                         @Html.Label("Öppet från", new { @class = "control-label-medium" })
                         @*@Html.EditorFor(model => model.OpeningTime, new { @class = "form-control", style = "border-radius:40px" })*@
-                        @Html.TextBoxFor(m => m.OpeningTimeStr, new { @class = "form-control openFrom", style = "display:inline;width:80px;" })
+                        @if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin"))
+                        {
+                            @Html.TextBoxFor(m => m.OpeningTimeStr, new { @class = "form-control openFrom",style = "display:inline;width:80px;" })
+                        }
+                        else
+                        {
+                            @Html.TextBoxFor(m => m.OpeningTimeStr, new { @class = "form-control openFrom", @disabled = "disabled", style = "display:inline;width:80px;" })
+                        }
                         @Html.ValidationMessageFor(m => m.OpeningTimeStr, "", new { @class = "text-danger" })
                     </div>
                 </div>
@@ -201,7 +232,14 @@
                     <div class="col-md-8">
                         @Html.Label("Öppet till", new { @class = "control-label-medium" })
                         @*@Html.EditorFor(model => model.OpeningTime, new { @class = "form-control", style = "border-radius:40px" })*@
-                        @Html.TextBoxFor(m => m.ClosingTimeStr, new { @class = "form-control openTo", style = "display:inline;width:80px;" })
+                        @if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin"))
+                        {
+                            @Html.TextBoxFor(m => m.ClosingTimeStr, new { @class = "form-control openTo", style = "display:inline;width:80px;" })
+                        }
+                        else
+                        {
+                            @Html.TextBoxFor(m => m.ClosingTimeStr, new { @class = "form-control openTo", @disabled = "disabled", style = "display:inline;width:80px;" })
+                        }
                         @Html.ValidationMessageFor(m => m.ClosingTimeStr, "", new { @class = "text-danger" })
                     </div>
                 </div>
@@ -224,7 +262,14 @@
                 <div class="row">
                     <div class="col-md-8">
                         @Html.Label("Informationstext då portalen är stängd: ", new { @class = "control-label-wide" })
-                        @Html.TextAreaFor(m => m.InfoTextForClosedPage, 5, 40, new { @class = "form-control required", style = "max-width:75% !important;" })
+                        @if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin"))
+                        {
+                            @Html.TextAreaFor(m => m.InfoTextForClosedPage, 5, 40, new { @class = "form-control required", style = "max-width:75% !important;" })
+                        }
+                        else
+                        {
+                            @Html.TextAreaFor(m => m.InfoTextForClosedPage, 5, 40, new { @class = "form-control required", @disabled = "disabled", style = "max-width:75% !important;" })
+                        }
                     </div>
                 </div>
             </div>

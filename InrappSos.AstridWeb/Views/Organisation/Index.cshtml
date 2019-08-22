@@ -561,13 +561,14 @@
     {
         if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin"))
         {
-                <p>
-                    @Html.ActionLink(HttpUtility.HtmlDecode("Administrera kontaktpersoner &raquo;"), "GetOrganisationsContacts", "Organisation", new {selectedOrganisationId = Model.SelectedOrganisationId}, new {@class = "btn btn-primary"})
-                </p>
+            <p>
+                @Html.ActionLink(HttpUtility.HtmlDecode("Administrera kontaktpersoner &raquo;"), "GetOrganisationsContacts", "Organisation", new {selectedOrganisationId = Model.SelectedOrganisationId}, new {@class = "btn btn-primary"})
+            </p>
+            <br/>
+            <br/>
             }
         }
-        <br/>
-        <br/>
+
         if (Request.IsAuthenticated)
         {
             if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin") || User.IsInRole("InlasAnsv"))
@@ -592,39 +593,39 @@
             if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin") || User.IsInRole("InlasAnsv") || User.IsInRole("KvalAnsv"))
             {
                 @Html.Partial("_OrgUnits")
+            }
         }
-    }
-    if (Request.IsAuthenticated)
-    {
-        if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin"))
+        if (Request.IsAuthenticated)
         {
+            if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin"))
+            {
                 <p>
                     @Html.ActionLink(HttpUtility.HtmlDecode("Administrera organisationsenheter &raquo;"), "GetOrganisationsOrgUnits", "Organisation", new {selectedOrganisationId = Model.SelectedOrganisationId}, new {@class = "btn btn-primary"})
                 </p>
+                <br/>
+                <br/>
             }
         }
-        <br/>
 
-        <br/>
-    if (Request.IsAuthenticated)
-    {
-        if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin") || User.IsInRole("InlasAnsv") || User.IsInRole("KvalAnsv"))
+        if (Request.IsAuthenticated)
         {
+            if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin") || User.IsInRole("InlasAnsv") || User.IsInRole("KvalAnsv"))
+            {
 
-                @Html.Partial("_ReportObligations")
+                    @Html.Partial("_ReportObligations")
+            }
         }
-    }
-    if (Request.IsAuthenticated)
-    {
-        if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin"))
+        if (Request.IsAuthenticated)
         {
-                <p>
-                    @Html.ActionLink(HttpUtility.HtmlDecode("Administrera uppgiftsskyldighet &raquo;"), "GetOrganisationsReportObligations", "Organisation", new {selectedOrganisationId = Model.SelectedOrganisationId}, new {@class = "btn btn-primary"})
-                </p>
+            if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin"))
+            {
+                    <p>
+                        @Html.ActionLink(HttpUtility.HtmlDecode("Administrera uppgiftsskyldighet &raquo;"), "GetOrganisationsReportObligations", "Organisation", new {selectedOrganisationId = Model.SelectedOrganisationId}, new {@class = "btn btn-primary"})
+                    </p>
+                }
             }
         }
     }
-}
 
  @section Scripts {
         @Scripts.Render("~/bundles/jqueryval")

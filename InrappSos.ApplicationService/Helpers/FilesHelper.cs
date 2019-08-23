@@ -644,6 +644,9 @@ namespace InrappSos.ApplicationService.Helpers
             //List<FileInfo> filesInFolder = dir.GetFiles().OrderByDescending(p => p.CreationTime).ToList();
             var arendeansvarig = _portalSosRepository.GetCaseResponsible(arende.ArendeansvarId);
             var arendeansvarigEpostadress = arendeansvarig.Epostadress;
+            var arendetyp = _portalSosRepository.GetCaseType(arende.ArendetypId);
+
+
 
             string subject = "Fil till ärende " + arende.Arendenr + " " + arende.Arendenamn + " har kommit";
             string body = "Hej! <br><br>";
@@ -660,6 +663,21 @@ namespace InrappSos.ApplicationService.Helpers
             msg.To.Add(toMail);
             MailAddress fromMail = new MailAddress("no-reply.inrapportering@socialstyrelsen.se");
             msg.From = fromMail;
+            //CC:a ev epostadresser för ärendetyp
+            if (!String.IsNullOrEmpty(arendetyp.KontaktpersonerStr))
+            {
+                //var contacts = arendetyp.KontaktpersonerStr.Replace(' ', ',');
+                var newEmailStr = arendetyp.KontaktpersonerStr.Split(',');
+
+                foreach (var email in newEmailStr)
+                {
+                    if (!String.IsNullOrEmpty(email.Trim()))
+                    {
+                        MailAddress emailadress = new MailAddress(email.Trim());
+                        msg.CC.Add(emailadress);
+                    }
+                }
+            }
 
             msg.Subject = subject;
             msg.Body = body;

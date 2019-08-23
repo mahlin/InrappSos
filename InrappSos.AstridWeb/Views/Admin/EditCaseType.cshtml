@@ -15,14 +15,16 @@
                 var caseTypeId = tr.find("#CaseTypeId").html();
                 var caseTypeName = tr.find("#CaseTypeName").val();
                 var caseTypefolder = tr.find("#CaseTypeFolder").val();
+                var contacts = tr.find("#Contacts").val();
 
                 //Creating Arendetyp JSON object
                 var caseType =
                 {
                     "Id": caseTypeId,
                     "ArendetypNamn": caseTypeName,
-                    "Slussmapp": caseTypefolder
-                };
+                    "Slussmapp": caseTypefolder,
+                    "KontaktpersonerStr": contacts
+            };
                 //Posting Arendetyp object to controller's Update action method
                 $.ajax({
                     url: '/Admin/UpdateCaseType',
@@ -46,8 +48,10 @@
                 var caseTypeId = tr.find("#CaseTypeId").html();
                 var caseTypeName = tr.find("#CaseTypeName").val();
                 var caseTypefolder = tr.find("#CaseTypeFolder").val();
+                var contacts = tr.find("#Contacts").val();
                 tr.find("#lblName").text(caseTypeName);
                 tr.find("#lblDesc").text(caseTypefolder);
+                tr.find("#lblContacts").text(contacts);
             });
     });
 

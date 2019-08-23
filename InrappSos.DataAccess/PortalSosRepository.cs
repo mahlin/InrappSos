@@ -2061,6 +2061,7 @@ namespace InrappSos.DataAccess
             var arendeDb = DbContext.Arende.SingleOrDefault(x => x.Id == arende.Id);
             arendeDb.Arendenamn = arende.Arendenamn;
             arendeDb.ArendeansvarId= arende.ArendeansvarId;
+            arendeDb.Aktiv = arende.Aktiv;
 
             //If areandestatus and arendetyp changed, e.g. != 0, update theese as well
             if (arende.ArendetypId != 0)
@@ -2152,6 +2153,7 @@ namespace InrappSos.DataAccess
             var caseTypeDb = DbContext.Arendetyp.Where(u => u.Id == caseType.Id).Select(u => u).SingleOrDefault();
             caseTypeDb.ArendetypNamn = caseType.ArendetypNamn;
             caseTypeDb.Slussmapp = caseType.Slussmapp;
+            caseTypeDb.KontaktpersonerStr = caseType.KontaktpersonerStr;
             DbContext.SaveChanges();
         }
 

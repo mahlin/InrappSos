@@ -2964,8 +2964,6 @@ namespace InrappSos.ApplicationService
 
         public void UppdateraArende(ArendeDTO arende,  string userName)
         {
-            var registeredReportersList = new List<string>();
-            var unregisteredReportersList = new List<UndantagEpostadress>();
             var arendeDb = ConvertArendeDTOToDb(arende);
             arendeDb.AndradAv = userName;
             arendeDb.AndradDatum = DateTime.Now;

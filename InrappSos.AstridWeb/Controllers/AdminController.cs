@@ -338,14 +338,7 @@ namespace InrappSos.AstridWeb.Controllers
 
             return View();
         }
-
-        [Authorize]
-        public ActionResult CreateCaseStatus()
-        {
-            var model = new AdminViewModels.ArendeStatusViewModel();
-            return View(model);
-        }
-
+        
 
         private IEnumerable<AdminViewModels.AppUserAdminViewModel> ConvertAdminUsersToViewModel(IEnumerable<AppUserAdmin> adminUsers, List<ApplicationRole> roller)
         {

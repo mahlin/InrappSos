@@ -33,6 +33,17 @@
                 @Html.ValidationMessageFor(model => model.Slussmapp, "", new { @class = "text-danger" })
             </div>
         </div>
+        
+        <div class="form-group">
+            @Html.Label("Kontaktperson", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.KontaktpersonerStr, new { htmlAttributes = new { @class = "form-control", placeholder = "Kontaktpersons epostadress" } })
+                <small id="passwordHelpBlock" class="form-text text-muted">
+                    Om flera kontaktpersoner, separera med kommatecken.
+                </small>
+                @Html.ValidationMessageFor(model => model.KontaktpersonerStr, "", new { @class = "text-danger" })
+            </div>
+        </div>
 
 
         <div class="form-group">

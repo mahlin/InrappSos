@@ -566,6 +566,8 @@ namespace InrappSos.DataAccess
             //Arendetyp
             modelBuilder.Entity<Arendetyp>().Property(e => e.Id).HasColumnName("arendetypid");
             modelBuilder.Entity<Arendetyp>().Property(e => e.ArendetypNamn).HasColumnName("arendetypnamn");
+            modelBuilder.Entity<Arendetyp>().Property(e => e.Slussmapp).HasColumnName("slussmapp");
+            modelBuilder.Entity<Arendetyp>().Property(e => e.KontaktpersonerStr).HasColumnName("epostadress");
             modelBuilder.Entity<Arendetyp>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
             modelBuilder.Entity<Arendetyp>().Property(e => e.SkapadAv).HasColumnName("skapadav");
             modelBuilder.Entity<Arendetyp>().Property(e => e.AndradDatum).HasColumnName("andraddatum");

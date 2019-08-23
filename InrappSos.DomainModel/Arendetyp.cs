@@ -13,6 +13,7 @@ namespace InrappSos.DomainModel
         [DisplayName("Ärendenamn")]
         public string ArendetypNamn { get; set; }
         public string Slussmapp { get; set; }
+        public string KontaktpersonerStr { get; set; }
         public DateTime SkapadDatum { get; set; }
         public string SkapadAv { get; set; }
         public DateTime AndradDatum { get; set; }

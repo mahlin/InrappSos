@@ -81,6 +81,8 @@
                         <input type="text" id="CaseTypeName" value="@item.ArendetypNamn" class="edit-mode form-control" /></text>, style: "col1Width"),
                          grid.Column("Slussmapp", "Slussmapp", format: @<text><span class="display-mode"><label id="lblDesc">@item.Slussmapp</label></span>
                         <input type="text" id="CaseTypeFolder" value="@item.Slussmapp" class="edit-mode form-control" /></text>, style: "col1Width"),
+                        grid.Column("KontaktpersonerStr", "Kontaktpersoner", format: @<text><span class="display-mode col4Width"><label id="lblContacts" style="width: 250px;">@item.KontaktpersonerStr</label></span>
+                                <textarea id="Contacts" value="" class="edit-mode form-control" style="height: 100px; width: 250px;" placeholder="Om flera kontaktpersoner, separera med kommatecken.">@item.KontaktpersonerStr</textarea></text>, style: "col4Width"),
                          grid.Column(null, format: @<text>
                             <button class="edit-user display-mode btn btn-default">Ändra</button>
                             @*<button class="display-mode btn btn-default" onclick="deleteOrgType(@item.Id, '@item.Typnamn');return false;">Ta bort</button>*@

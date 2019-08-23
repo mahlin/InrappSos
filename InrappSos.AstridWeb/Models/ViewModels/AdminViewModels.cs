@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 using InrappSos.ApplicationService.DTOModel;
@@ -46,6 +48,8 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public int Arendetypid { get; set; }
             public string ArendetypNamn { get; set; }
             public string Slussmapp { get; set; }
+            [Display(Name = "Kontaktpersoners epostadress")]
+            public string KontaktpersonerStr { get; set; }
             public bool Selected { get; set; } = false;
         }
 
@@ -53,13 +57,6 @@ namespace InrappSos.AstridWeb.Models.ViewModels
         {
             public int Id { get; set; }
             public string Epostadress { get; set; }
-        }
-
-        public class ArendeStatusViewModel
-        {
-            public int ArendeStatusid { get; set; }
-            public string ArendeStatusNamn { get; set; }
-            public bool Selected { get; set; } = false;
         }
     }
 }

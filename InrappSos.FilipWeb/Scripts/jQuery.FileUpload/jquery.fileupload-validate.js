@@ -10,6 +10,31 @@
  */
 
 /* global define, require, window */
+function CheckOkEmptyFile(selectedRegister, fileName) {
+    var allowEmpty = false;
+    var regexMatch = null;
+    var tmp = null;
+
+    registerLista.forEach(function (register, index) {
+        if (selectedRegister === register.Id.toString()) {
+            var selectedFilkrav = register.SelectedFilkrav;
+            register.Filkrav.forEach(function (filkrav, ix) {
+                if (selectedFilkrav === filkrav.Id) {
+                    filkrav.ForvantadeFiler.forEach(function (forvFil, idx) {
+                        var expression = new RegExp(forvFil.Regexp, "i");
+                        //Kolla om filnamn matchar regex
+                        tmp = fileName.match(expression);
+                        if (tmp !== null) {
+                            allowEmpty = forvFil.Tom;
+                        }
+                    });
+                }
+            });
+        }
+    });
+    return allowEmpty;
+}
+
 function CheckFileName(selectedRegister, fileName) {
     var result = false;
     var regexMatch = null;
@@ -28,14 +53,6 @@ function CheckFileName(selectedRegister, fileName) {
                             regexMatch = tmp;
                         }
                     });
-                    //filkrav.RegExper.forEach(function(regexp, idx) {
-                    //    var expression = new RegExp(regexp, "i");
-                    //    //Kolla om filnamn matchar regex
-                    //    tmp = fileName.match(expression);
-                    //    if (tmp != null) {
-                    //        regexMatch = tmp;
-                    //    }
-                    //});
                 }
             });
         }
@@ -289,6 +306,7 @@ function getTableRows() {
                     settings = this.options,
                     file = data.files[data.index],
                     fileSize;
+                var acceptEmptyFile = CheckOkEmptyFile(data.selectedRegister, file.name);
 
                 if (options.minFileSize || options.maxFileSize) {
                     fileSize = file.size;
@@ -303,8 +321,7 @@ function getTableRows() {
                     file.error = settings.i18n('acceptFileTypes');
                 } else if (fileSize > options.maxFileSize) {
                     file.error = settings.i18n('maxFileSize');
-                } else if ($.type(fileSize) === 'number' &&
-                    fileSize < options.minFileSize) {
+                } else if ($.type(fileSize) === 'number' && !acceptEmptyFile && fileSize < options.minFileSize) {
                     file.error = settings.i18n('minFileSize');
                 }
                 if (!file.error && file.custom !== "Arende") {

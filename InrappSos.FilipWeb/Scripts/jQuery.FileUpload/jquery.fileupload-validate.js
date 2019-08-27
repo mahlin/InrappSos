@@ -269,7 +269,7 @@ function getTableRows() {
             
             // The regular expression for allowed file types, matches
             // against either file type or file name:
-            acceptFileTypes: /(\.|\/)(txt|xls|xlsx)$/i,
+            acceptFileTypes: /(\.|\/)(txt|xls|xlsx|sa7bdat|xpt)$/i,
             // The maximum allowed file size in bytes:
             maxFileSize: 2000000000, // 2000 MB = 2GB
             // The minimum allowed file size in bytes:

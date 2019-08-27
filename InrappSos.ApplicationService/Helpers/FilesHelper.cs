@@ -363,9 +363,11 @@ namespace InrappSos.ApplicationService.Helpers
                 var file = fileList[i];
 
                 //TODO - check filename depending on chosen registertype
-                if (file.Length > 0 && (Path.GetExtension(file.Name).ToLower() == ".txt"
+                if (Path.GetExtension(file.Name).ToLower() == ".txt"
                                                || Path.GetExtension(file.Name).ToLower() == ".xls"
-                                               || Path.GetExtension(file.Name).ToLower() == ".xlsx"))
+                                               || Path.GetExtension(file.Name).ToLower() == ".xlsx"
+                                               || Path.GetExtension(file.Name).ToLower() == ".sas7bdat"
+                                               || Path.GetExtension(file.Name).ToLower() == ".xpt")
                 {
                     String pathOnServer = Path.Combine(StorageRoot);
                     var filOfFilesAddOn = "!" + (i + 1).ToString() + "!" + (fileList.Count).ToString();
@@ -412,7 +414,9 @@ namespace InrappSos.ApplicationService.Helpers
                 //TODO - check filename depending on chosen registertype
                 if (Path.GetExtension(file.FileName).ToLower() == ".txt" 
                     || Path.GetExtension(file.FileName).ToLower() == ".xls" 
-                    || Path.GetExtension(file.FileName).ToLower() == ".xlsx")
+                    || Path.GetExtension(file.FileName).ToLower() == ".xlsx"
+                    || Path.GetExtension(file.FileName).ToLower() == ".sas7bdat"
+                    || Path.GetExtension(file.FileName).ToLower() == ".xpt")
                 {
                     String pathOnServer = Path.Combine(StorageRoot);
                     var filOfFilesAddOn = "!" + (i + 1).ToString() + "!" + (request.Files.Count).ToString();
@@ -466,7 +470,9 @@ namespace InrappSos.ApplicationService.Helpers
                 //TODO - check filename depending on chosen registertype
                 if (Path.GetExtension(file.FileName).ToLower() == ".txt"
                     || Path.GetExtension(file.FileName).ToLower() == ".xls"
-                    || Path.GetExtension(file.FileName).ToLower() == ".xlsx")
+                    || Path.GetExtension(file.FileName).ToLower() == ".xlsx"
+                    || Path.GetExtension(file.FileName).ToLower() == ".sas7bdat"
+                    || Path.GetExtension(file.FileName).ToLower() == ".xpt")
                 {
                     String pathOnServer = Path.Combine(StorageRoot);
 

@@ -464,9 +464,9 @@ namespace InrappSos.ApplicationService.Helpers
                 var filedropId = _portalSosRepository.SaveFiledropFile(file.FileName, extendedFileName, file.ContentLength, selectedCaseId, userId, userName);
 
                 //TODO - check filename depending on chosen registertype
-                if (file.ContentLength > 0 && (Path.GetExtension(file.FileName).ToLower() == ".txt"
+                if (Path.GetExtension(file.FileName).ToLower() == ".txt"
                     || Path.GetExtension(file.FileName).ToLower() == ".xls"
-                    || Path.GetExtension(file.FileName).ToLower() == ".xlsx"))
+                    || Path.GetExtension(file.FileName).ToLower() == ".xlsx")
                 {
                     String pathOnServer = Path.Combine(StorageRoot);
 

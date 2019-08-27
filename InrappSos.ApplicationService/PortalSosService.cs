@@ -1988,16 +1988,22 @@ namespace InrappSos.ApplicationService
 
         public void KopplaFilipAnvändareTillFilipRoll(string userName, string filipUserId, string rollId)
         {
-            var userRole = new ApplicationUserRole
+            //Check if user already has role, then skip
+            var userRoles = _portalSosRepository.GetFilipUserRolesForUser(filipUserId).Select(x => x.RoleId);
+
+            if (!userRoles.Contains(rollId))
             {
-                UserId = filipUserId,
-                RoleId = rollId,
-                SkapadDatum = DateTime.Now,
-                SkapadAv = userName,
-                AndradDatum = DateTime.Now,
-                AndradAv = userName
-            };
-            _portalSosRepository.SetFilipRoleForFilipUser(userRole);
+                var userRole = new ApplicationUserRole
+                {
+                    UserId = filipUserId,
+                    RoleId = rollId,
+                    SkapadDatum = DateTime.Now,
+                    SkapadAv = userName,
+                    AndradDatum = DateTime.Now,
+                    AndradAv = userName
+                };
+                _portalSosRepository.SetFilipRoleForFilipUser(userRole);
+            }
         }
 
         public void KopplaFilipAnvändareTillFilipRollNamn(string userName, string filipUserId, string rollnamn)

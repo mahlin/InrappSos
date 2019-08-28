@@ -255,6 +255,7 @@ namespace InrappSos.ApplicationService.Helpers
                 UploadPartialFile(headers["X-File-Name"], ContentBase, resultList); //Ej implementerat/testa
             }
             NotifyCaseManager(resultList, arende, userName);
+            NotifyFileUploader(resultList, arende, userName);
 
         }
 
@@ -629,7 +630,7 @@ namespace InrappSos.ApplicationService.Helpers
 
         private void CreateAndUploadPARStatusFile(int levId, List<ViewDataUploadFilesResult> resultList )
         {
-            var datStr = DateTime.Now.ToString("yyyy-MM-dd_HH-mm");
+            var datStr = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
             String pathOnServer = Path.Combine(StorageRoot);
             var filepath = pathOnServer + "Filleverans_" + datStr + ".csv";
             using (StreamWriter writer = new StreamWriter(new FileStream(filepath, FileMode.Create, FileAccess.Write)))
@@ -685,6 +686,29 @@ namespace InrappSos.ApplicationService.Helpers
                 }
             }
 
+            msg.Subject = subject;
+            msg.Body = body;
+            _mailHelper.SendEmail(msg);
+        }
+
+        private void NotifyFileUploader(List<ViewDataUploadFilesResult> uploadResult, Arende arende, string userName)
+        {
+
+            string subject = "Fil till ärende " + arende.Arendenr + " " + arende.Arendenamn + " har mottagits";
+            string body = "Hej! <br><br>";
+            body += "Fil/filer till ärende " + arende.Arendenr + " " + arende.Arendenamn + " har mottagits av Socialstyrelsen.<br><br>";
+            body += "Följande filer har mottagits: <br>";
+            foreach (var result in uploadResult)
+            {
+                body += result.name + "<br> ";
+            }
+            body += "<br><br>Hälsningar inrapporteringsservice<br>";
+
+            MailMessage msg = new MailMessage();
+            MailAddress toMail = new MailAddress(userName);
+            msg.To.Add(toMail);
+            MailAddress fromMail = new MailAddress("no-reply.inrapportering@socialstyrelsen.se");
+            msg.From = fromMail;
             msg.Subject = subject;
             msg.Body = body;
             _mailHelper.SendEmail(msg);

@@ -1482,8 +1482,13 @@ namespace InrappSos.ApplicationService
 
                 //Hämta period för aktuell leverans
                 var period = _portalSosRepository.GetPeriodForAktuellLeverans(leverans.ForvantadleveransId);
-
                 var filer = _portalSosRepository.GetFilerForLeveransId(leverans.Id).ToList();
+                var sftpKonto = new SFTPkonto();
+                var sftpkontoId = leverans.SFTPkontoId.GetValueOrDefault();
+                if (sftpkontoId != 0)
+                {
+                    sftpKonto = _portalSosRepository.GetSFTPAccount(sftpkontoId);
+                }
                 var registerKortnamn = _portalSosRepository.GetSubDirectoryShortName(leverans.DelregisterId);
 
                 if (!filer.Any())
@@ -1500,6 +1505,7 @@ namespace InrappSos.ApplicationService
                     filloggDetalj.Resultatfil = " - ";
                     filloggDetalj.Enhetskod = enhetskod;
                     filloggDetalj.Period = period;
+                    filloggDetalj.SFTPkontoNamn = sftpKonto.Kontonamn;
                     if (aterkoppling != null)
                     {
                         //filloggDetalj.Leveransstatus = aterkoppling.Leveransstatus; //Skriv ej över leveransstatusen från återkopplingen. Beslut 20180912, ärende #128
@@ -1519,6 +1525,7 @@ namespace InrappSos.ApplicationService
                         filloggDetalj.Resultatfil = "Ej kontrollerad";
                         filloggDetalj.Enhetskod = enhetskod;
                         filloggDetalj.Period = period;
+                        filloggDetalj.SFTPkontoNamn = sftpKonto.Kontonamn;
                         if (aterkoppling != null)
                         {
                             filloggDetalj.Leveransstatus = aterkoppling.Leveransstatus;
@@ -3919,6 +3926,12 @@ namespace InrappSos.ApplicationService
 
             var filer = _portalSosRepository.GetFilerForLeveransId(senasteLeverans.Id).ToList();
             var registerKortnamn = _portalSosRepository.GetSubDirectoryShortName(senasteLeverans.DelregisterId);
+            var sftpKonto = new SFTPkonto();
+            var sftpkontoId = senasteLeverans.SFTPkontoId.GetValueOrDefault();
+            if (sftpkontoId != 0)
+            {
+                sftpKonto = _portalSosRepository.GetSFTPAccount(sftpkontoId);
+            }
 
             if (!filer.Any())
             {
@@ -3933,6 +3946,7 @@ namespace InrappSos.ApplicationService
                 filloggDetalj.RegisterKortnamn = registerKortnamn;
                 filloggDetalj.Resultatfil = " - ";
                 filloggDetalj.Period = senasteLeverans.AdmForvantadleverans.Period;
+                filloggDetalj.SFTPkontoNamn = sftpKonto.Kontonamn;
                 if (aterkoppling != null)
                 {
                     filloggDetalj.Leveransstatus = aterkoppling.Leveransstatus;
@@ -3955,6 +3969,7 @@ namespace InrappSos.ApplicationService
                     filloggDetalj.RegisterKortnamn = registerKortnamn;
                     filloggDetalj.Resultatfil = "Ej kontrollerad";
                     filloggDetalj.Period = senasteLeverans.AdmForvantadleverans.Period;
+                    filloggDetalj.SFTPkontoNamn = sftpKonto.Kontonamn;
                     if (aterkoppling != null)
                     {
                         //filloggDetalj.Leveransstatus = aterkoppling.Leveransstatus; //Skriv ej över leveransstatusen från återkopplingen. Beslut 20180912, ärende #128

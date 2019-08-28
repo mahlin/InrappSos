@@ -106,15 +106,16 @@
                     mode: WebGridPagerModes.All,
                     columns: grid.Columns(
                         grid.Column("RegisterKortnamn", "Register", format: @<text><label class="col1Width">@item.RegisterKortnamn</label></text>),
-                        grid.Column("Period", format: @<text><label class="colMinWidth">@item.Period</label></text>),
-                        grid.Column("Leveranstidpunkt", format: @<text><label class="col170Width">@item.Leveranstidpunkt</label></text>),
-                        grid.Column("Leveransid", format: @<text><label class="colMinWidth">@item.Leveransid</label></text>),
-                        grid.Column("Leveransstatus", format: @<text><label class="col1Width">@item.Leveransstatus</label></text>),
-                        grid.Column("Filnamn", format: @<text><label class="col350Width">@item.Filnamn</label></text>),
-                        grid.Column("Filstatus", format: @<text><label class="col1Width">@item.Filstatus</label></text>),
-                        //grid.Column("Test", format: (item) => (item.Resultatfil == "Ej kontrollerad") ? item.Resultatfil :
-                        //    Html.ActionLink("Visa återkopplingsfil", "DownloadFile", "FileUpload", new { fileName = item.Resultatfil }, null)),
-                        grid.Column("Återkoppling", format: @<text><label class="col3Width">@item.Resultatfil</label></text>)))
+                             grid.Column("Period", format: @<text><label class="colMinWidth">@item.Period</label></text>),
+                                 grid.Column("Leveranstidpunkt", format: @<text><label class="col170Width">@item.Leveranstidpunkt</label></text>),
+                                     grid.Column("Leveransid", format: @<text><label class="colMinWidth">@item.Leveransid</label></text>),
+                                         grid.Column("Leveransstatus", format: @<text><label class="col1Width">@item.Leveransstatus</label></text>),
+                                             grid.Column("Filnamn", format: @<text><label class="col350Width">@item.Filnamn</label></text>),
+                                                 grid.Column("Filstatus", format: @<text><label class="col1Width">@item.Filstatus</label></text>),
+                                                     grid.Column("SFTPkonto", format: @<text><label class="col1Width">@item.SFTPkontoNamn</label></text>),
+                                                         //grid.Column("Test", format: (item) => (item.Resultatfil == "Ej kontrollerad") ? item.Resultatfil :
+                                                         //    Html.ActionLink("Visa återkopplingsfil", "DownloadFile", "FileUpload", new { fileName = item.Resultatfil }, null)),
+                                                         grid.Column("Återkoppling", format: @<text><label class="col3Width">@item.Resultatfil</label></text>)))
 
             </div>
         }

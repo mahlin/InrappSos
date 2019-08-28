@@ -349,30 +349,41 @@ namespace InrappSos.FilipWeb.Controllers
                     var organisation = GetOrganisationForEmailDomain(model.Email);
                     if (organisation == null)
                     {
+                        var connectedViaPrivEmailOrArende = false;
                         //Check if user emailadress connected to organisation via private emails table (UntantagEpostDoman)
                         if (_portalService.IsConnectedViaPrivateEmailadress(model.Email))
                         {
+                            connectedViaPrivEmailOrArende = true;
                             //Register user
                             var undantagEpost = _portalService.HamtaUndantagEpostadress(model.Email);
                             await RegisterUser(undantagEpost.OrganisationsId, model);
                             //Sätt roll registeruppgiftslämnare
                             var user = UserManager.FindByEmail(model.Email);
                             _portalService.KopplaFilipAnvändareTillFilipRollNamn(user.UserName, user.Id, "RegUpp");
-                            ViewBag.Email = model.Email;
-                            return View("DisplayEmail");
                         }
                         //check if user emailadress connected to organisation via ärende/case (table PreKontakt)
-                        else if (_portalService.IsConnectedViaArende(model.Email))
+                        if (_portalService.IsConnectedViaArende(model.Email))
                         {
-                            //Register user, add role ArendeUpp and remove from PreKontakt
+                            connectedViaPrivEmailOrArende = true;
+                            //Register user if not already registred, add role ArendeUpp and remove from PreKontakt
                             var preKontakt = _portalService.HamtaPrekontakt(model.Email);
                             var orgId = _portalService.HamtaArendeById(preKontakt.ArendeId).OrganisationsId;
-                            await RegisterUser(orgId, model);
+                            //check if user already registred
                             var user = UserManager.FindByEmail(model.Email);
-                            _portalService.HandlePrekontaktUserRegistration(user, preKontakt);
+                            if (user == null)
+                            {
+                                await RegisterUser(orgId, model);
+                                user = UserManager.FindByEmail(model.Email);
+                            }
+                            if (user.OrganisationId == orgId)
+                            {
+                                _portalService.HandlePrekontaktUserRegistration(user, preKontakt);
+                            }
+                        }
+                        if (connectedViaPrivEmailOrArende)
+                        {
                             ViewBag.Email = model.Email;
                             return View("DisplayEmail");
-
                         }
                         else
                         {

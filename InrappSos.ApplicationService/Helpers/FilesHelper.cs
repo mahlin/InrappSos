@@ -632,7 +632,7 @@ namespace InrappSos.ApplicationService.Helpers
         {
             var datStr = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
             String pathOnServer = Path.Combine(StorageRoot);
-            var filepath = pathOnServer + "Filleverans_" + datStr + ".csv";
+            var filepath = pathOnServer + "Filleverans_" + levId + "_" + datStr + ".csv";
             using (StreamWriter writer = new StreamWriter(new FileStream(filepath, FileMode.Create, FileAccess.Write)))
             {
                 //writer.WriteLine("sep=,");

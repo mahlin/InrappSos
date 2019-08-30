@@ -83,6 +83,7 @@ namespace InrappSos.AstridWeb.Controllers
             return View("CaseOrganisation",model);
         }
 
+
         [Authorize]
         // GET: Organisation
         public ActionResult SearchOrganisation(string searchText, string origin)
@@ -500,6 +501,35 @@ namespace InrappSos.AstridWeb.Controllers
         {
             var model = new OrganisationViewModels.OrganisationViewModel();
             model.Arenden= new List<OrganisationViewModels.ArendeViewModel>();
+            model.SearchResult = new List<List<Organisation>>();
+            return View("EditCases", model);
+        }
+
+        // GET
+        [Authorize]
+        public ActionResult GetCase(int caseId)
+        {
+            var model = new OrganisationViewModels.OrganisationViewModel();
+            model.Arenden = new List<OrganisationViewModels.ArendeViewModel>();
+            var arendeList = new List<Arende>();
+            var arende = _portalSosService.HamtaArendeById(caseId);
+            var org = new Organisation();
+            if (arende != null)
+            {
+                arendeList.Add(arende);
+                org = _portalSosService.HamtaOrganisation(arende.OrganisationsId);
+                var contactPersons = _portalSosService.HamtaAktivaKontaktpersonerForOrg(org.Id).OrderBy(x => x.Email);
+                model.Arenden = ConvertArendeToVM(arendeList, contactPersons.ToList());
+            }
+
+            var arendetypList = _portalSosService.HamtaAllaArendetyper();
+            ViewBag.ArendetypDDL = CreateArendetypDropDownList(arendetypList);
+            model.SelectedArendetypId = 0;
+            var arendeansvarigList = _portalSosService.HamtaAllaArendeansvariga().OrderBy(x => x.Epostadress).ToList();
+            ViewBag.ArendeansvarigDDL = CreateArendeansvarigDropDownList(arendeansvarigList);
+            model.SelectedArendeansvarigId = 0;
+            model.SelectedOrganisationId = org.Id;
+            model.Organisation = org;
             model.SearchResult = new List<List<Organisation>>();
             return View("EditCases", model);
         }
@@ -1297,6 +1327,7 @@ namespace InrappSos.AstridWeb.Controllers
             model.OrganisationsId = selectedOrganisationId;
             model.Organisationsnamn = _portalSosService.HamtaOrganisation(selectedOrganisationId).Organisationsnamn;
             model.StartDatum = DateTime.Now;
+            model.Aktiv = true;
             var arendetypList = _portalSosService.HamtaAllaArendetyper();
             ViewBag.ArendetypList = CreateArendetypDropDownList(arendetypList);
             model.ArendetypId = 0;

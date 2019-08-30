@@ -1,0 +1,44 @@
+﻿@using System.Collections
+@using InrappSos.AstridWeb.Models.ViewModels
+@using InrappSos.DomainModel
+@model InrappSos.AstridWeb.Models.ViewModels.SearchViewModels.SearchViewModel
+@{
+    ViewBag.Title = "Sök";
+}
+
+<script type="text/javascript">
+
+</script>
+
+<div class="col-md-8 padding-top-25">
+
+    @if (Model != null)
+    {
+        @* Om sökresultat finns, visa listan *@
+        if (Model.SearchResultList.Count > 0)
+        {
+            <h4>Sökresultat</h4>
+
+            foreach (var item in Model.SearchResultList)
+            {
+                foreach (SearchViewModels.SearchResult searchRes in item as IEnumerable) //casting to IEnumerable will let you iterate
+                {
+                    switch (searchRes.DomainModelName)
+                    {
+                        case "Organisation":
+                            @Html.ActionLink(searchRes.Name, "GetOrganisationsCases", "Organisation", new { selectedOrganisationId = searchRes.Id }, new { @class = "btn" })<br />
+                            break;
+                        case "Arende":
+                            @Html.ActionLink(searchRes.Name, "GetCase", "Organisation", new { caseId = searchRes.Id }, new { @class = "btn" })<br />
+                            break;
+                    }
+                }
+            }
+        }
+        @* Om inga sökträffar *@
+        else if (Model.SearchResultList.Count == 0 && Model.SearchResultList[0].Count == 0)
+        {
+            <h2>Din sökning på gav inget resultat. </h2>
+        }
+    }
+ </div>

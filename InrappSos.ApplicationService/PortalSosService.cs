@@ -1442,6 +1442,13 @@ namespace InrappSos.ApplicationService
             return caseOrgList;
         }
 
+        public List<List<Arende>> SokArende(string sokStr)
+        {
+            string[] searchstring = sokStr.Split(' ');
+            var caseList = _portalSosRepository.SearchCase(searchstring);
+            return caseList;
+        }
+
         public List<List<ApplicationUser>> SokKontaktperson(string sokStr)
         {
             string[] searchstring = sokStr.Split(' ');

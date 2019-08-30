@@ -28,6 +28,8 @@ namespace InrappSos.ApplicationService.Interface
 
         List<List<Organisation>> SokCaseOrganisation(string sokStr);
 
+        List<List<Arende>> SokArende(string sokStr);
+
         List<List<ApplicationUser>> SokKontaktperson(string sokStr);
 
         IEnumerable<FilloggDetaljDTO> FiltreraHistorikForAnvandare(string userId, List<RegisterInfo> valdaDelregisterList, List<FilloggDetaljDTO> historikForOrganisation);

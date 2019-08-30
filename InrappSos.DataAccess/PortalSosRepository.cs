@@ -2409,6 +2409,17 @@ namespace InrappSos.DataAccess
             DbContext.SaveChanges();
         }
 
+        public List<List<Arende>> SearchCase(string[] searchString)
+        {
+            var caseList = new List<List<Arende>>();
+            foreach (string word in searchString)
+            {
+                var tmp = DbContext.Arende.Where(x => x.Arendenr.Contains(word));
+                caseList.Add(DbContext.Arende.Where(x => x.Arendenr.Contains(word)).ToList());
+            }
+            return caseList;
+        }
+
         public List<List<ApplicationUser>> SearchContact(string[] searchString)
         {
             var contactList = new List<List<ApplicationUser>>();

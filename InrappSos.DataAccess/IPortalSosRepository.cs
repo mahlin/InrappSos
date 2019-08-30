@@ -471,6 +471,8 @@ namespace InrappSos.DataAccess
 
         List<List<Organisation>> SearchOrganisation(string[] searchString);
 
+        List<List<Arende>> SearchCase(string[] searchString);
+
         List<List<ApplicationUser>> SearchContact(string[] searchString);
 
         void SetAstridRoleForAstridUser(ApplicationUserRole appUserRole);

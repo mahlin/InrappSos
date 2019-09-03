@@ -254,7 +254,7 @@ namespace InrappSos.AstridWeb.Controllers
 
                 var cases = _portalSosService.HamtaArendenForOrg(model.Organisation.Id);
                 var contactsForOrg = _portalSosService.HamtaKontaktpersonerForOrg(model.Organisation.Id).OrderBy(x => x.Email);
-                model.Arenden = ConvertArendeToVM(cases.ToList(), contactsForOrg.ToList());
+                model.Arenden = ConvertArendenToVM(cases.ToList(), contactsForOrg.ToList());
                 model.OrgUnits = _portalSosService.HamtaOrgEnheterForOrg(model.Organisation.Id).ToList();
                 var reportObligationsDb = _portalSosService.HamtaUppgiftsskyldighetForOrg(model.Organisation.Id);
                 model.ReportObligations = ConvertAdmUppgiftsskyldighetToViewModel(reportObligationsDb.ToList());
@@ -303,6 +303,7 @@ namespace InrappSos.AstridWeb.Controllers
             model.ContactPersons = new List<OrganisationViewModels.ApplicationUserViewModel>();
             model.SearchResult = new List<List<Organisation>>();
             model.ContactSearchResult = new List<List<OrganisationViewModels.ApplicationUserViewModel>>();
+            model.VisaInaktiva = false;
             return View("EditContacts", model);
         }
 
@@ -519,7 +520,7 @@ namespace InrappSos.AstridWeb.Controllers
                 arendeList.Add(arende);
                 org = _portalSosService.HamtaOrganisation(arende.OrganisationsId);
                 var contactPersons = _portalSosService.HamtaAktivaKontaktpersonerForOrg(org.Id).OrderBy(x => x.Email);
-                model.Arenden = ConvertArendeToVM(arendeList, contactPersons.ToList());
+                model.Arenden = ConvertArendenToVM(arendeList, contactPersons.ToList());
             }
 
             var arendetypList = _portalSosService.HamtaAllaArendetyper();
@@ -550,7 +551,7 @@ namespace InrappSos.AstridWeb.Controllers
                 model.Organisation = _portalSosService.HamtaOrganisation(model.SelectedOrganisationId);
                 var cases = _portalSosService.HamtaArendenForOrg(model.Organisation.Id);
                 var contactPersons = _portalSosService.HamtaAktivaKontaktpersonerForOrg(model.Organisation.Id).OrderBy(x => x.Email);
-                model.Arenden = ConvertArendeToVM(cases.ToList(), contactPersons.ToList());
+                model.Arenden = ConvertArendenToVM(cases.ToList(), contactPersons.ToList());
                 model.SearchResult = new List<List<Organisation>>();
                 // Ladda drop down lists. 
                 var arendetypList = _portalSosService.HamtaAllaArendetyper();
@@ -572,6 +573,52 @@ namespace InrappSos.AstridWeb.Controllers
                 };
                 return View("CustomError", errorModel);
             }
+            return View("EditCases", model);
+        }
+
+        //GET
+        [Authorize]
+        public ActionResult EditCasesForDifferentOrganisations(string searchText)
+        {
+            var model = new OrganisationViewModels.OrganisationViewModel();
+            model.Arenden = new List<OrganisationViewModels.ArendeViewModel>();
+
+            try
+            {
+                var searchResult = _portalSosService.SokArende(searchText);
+
+                foreach (var searchRes in searchResult)
+                {
+                    foreach (var arende in searchRes)
+                    {
+                        var contactPersons = _portalSosService.HamtaAktivaKontaktpersonerForOrg(arende.OrganisationsId).OrderBy(x => x.Email).ToList();
+                        var arendeVm = ConvertArendeToVM(arende, contactPersons);
+                        model.Arenden.Add(arendeVm);
+                    }
+
+                }
+                // Ladda drop down lists. 
+                var arendetypList = _portalSosService.HamtaAllaArendetyper();
+                ViewBag.ArendetypDDL = CreateArendetypDropDownList(arendetypList);
+                model.SelectedArendetypId = 0;
+                var arendeansvarigList = _portalSosService.HamtaAllaArendeansvariga().OrderBy(x => x.Epostadress).ToList();
+                ViewBag.ArendeansvarigDDL = CreateArendeansvarigDropDownList(arendeansvarigList);
+                model.SelectedArendeansvarigId = 0;
+                model.SearchResult = new List<List<Organisation>>();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("OrganisationController", "EditCasesForDifferentOrganisations", e.ToString(), e.HResult,
+                    User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade vid hämtning av ärenden.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
+            }
+
             return View("EditCases", model);
         }
 
@@ -2180,67 +2227,71 @@ namespace InrappSos.AstridWeb.Controllers
             return arende;
         }
 
-        private List<OrganisationViewModels.ArendeViewModel> ConvertArendeToVM(List<Arende> arendeDbList, List<ApplicationUser> kontaktpersoner)
+        private List<OrganisationViewModels.ArendeViewModel> ConvertArendenToVM(List<Arende> arendeDbList, List<ApplicationUser> kontaktpersoner)
         {
             var arendeList = new List<OrganisationViewModels.ArendeViewModel>();
 
             foreach (var arendeDb in arendeDbList)
             {
-                var arendeVM = new OrganisationViewModels.ArendeViewModel()
-                {
-                    Id = arendeDb.Id,
-                    OrganisationsId = arendeDb.OrganisationsId,
-                    Arendenamn = arendeDb.Arendenamn,
-                    Arendenr = arendeDb.Arendenr,
-                    ArendetypId = arendeDb.ArendetypId,
-                    Aktiv = arendeDb.Aktiv
-                };
-
-                //Hämta ärentyp, klartext 
-                arendeVM.Arendetyp = _portalSosService.HamtaArendetyp(arendeDb.ArendetypId).ArendetypNamn;
-                arendeVM.ArendetypId = arendeDb.ArendetypId;
-                //Hämta ärendeansvarigs epost
-                arendeVM.Arendeansvarig = _portalSosService.HamtaArendeAnsvarig(arendeDb.ArendeansvarId).Epostadress;
-                arendeVM.ArendeansvarId = arendeDb.ArendeansvarId;
-
-                //Hämta ej reggade kontaktpersoners (rapportörers) epostadress
-                arendeVM.Rapportorer =
-                    _portalSosService.HamtaArendesEjRegistreradeKontaktpersoner(arendeVM.OrganisationsId, arendeDb.Id);
-
-                //Markera valda kontaktpersoner
-                arendeVM.Kontaktpersoner = ConvertContactsForOrgToDropdownList(kontaktpersoner);
-                var arendeKontakpersoner = _portalSosService.HamtaArendesKontaktpersoner(arendeVM.Id).ToList();
-                
-                foreach (var kontakt in arendeVM.Kontaktpersoner)
-                {
-                    var exists = arendeKontakpersoner.SingleOrDefault(x => x.ApplicationUserId == kontakt.Id);
-                    if (exists != null)
-                    {
-                        kontakt.Selected = true;
-                    }
-                }
-
-                //Skapa kommaseparerad textsträng över valda kontaktpersoner 
-                var contactsStr = String.Empty;
-                foreach (var contact in arendeVM.Kontaktpersoner)
-                {
-                    if (contact.Selected)
-                    {
-                        if (contactsStr.IsEmpty())
-                        {
-                            contactsStr = contact.Email;
-                        }
-                        else
-                        {
-                            contactsStr = contactsStr + ", " + contact.Email;
-                        }
-                    }
-                }
-
-                arendeVM.KontaktpersonerStr = contactsStr;
+                var arendeVM = ConvertArendeToVM(arendeDb, kontaktpersoner);
                 arendeList.Add(arendeVM);
             }
             return arendeList;
+        }
+
+        private OrganisationViewModels.ArendeViewModel ConvertArendeToVM(Arende arendeDb,List<ApplicationUser> kontaktpersoner)
+        {
+            var arendeVM = new OrganisationViewModels.ArendeViewModel()
+            {
+                Id = arendeDb.Id,
+                OrganisationsId = arendeDb.OrganisationsId,
+                Arendenamn = arendeDb.Arendenamn,
+                Arendenr = arendeDb.Arendenr,
+                ArendetypId = arendeDb.ArendetypId,
+                Aktiv = arendeDb.Aktiv
+            };
+            //Hämta ärentyp, klartext 
+            arendeVM.Arendetyp = _portalSosService.HamtaArendetyp(arendeDb.ArendetypId).ArendetypNamn;
+            arendeVM.ArendetypId = arendeDb.ArendetypId;
+            //Hämta ärendeansvarigs epost
+            arendeVM.Arendeansvarig = _portalSosService.HamtaArendeAnsvarig(arendeDb.ArendeansvarId).Epostadress;
+            arendeVM.ArendeansvarId = arendeDb.ArendeansvarId;
+
+            //Hämta ej reggade kontaktpersoners (rapportörers) epostadress
+            arendeVM.Rapportorer =
+                _portalSosService.HamtaArendesEjRegistreradeKontaktpersoner(arendeVM.OrganisationsId, arendeDb.Id);
+
+            //Markera valda kontaktpersoner
+            arendeVM.Kontaktpersoner = ConvertContactsForOrgToDropdownList(kontaktpersoner);
+            var arendeKontakpersoner = _portalSosService.HamtaArendesKontaktpersoner(arendeVM.Id).ToList();
+            foreach (var kontakt in arendeVM.Kontaktpersoner)
+            {
+                var exists = arendeKontakpersoner.SingleOrDefault(x => x.ApplicationUserId == kontakt.Id);
+                if (exists != null)
+                {
+                    kontakt.Selected = true;
+                }
+            }
+
+            //Skapa kommaseparerad textsträng över valda kontaktpersoner 
+            var contactsStr = String.Empty;
+            foreach (var contact in arendeVM.Kontaktpersoner)
+            {
+                if (contact.Selected)
+                {
+                    if (contactsStr.IsEmpty())
+                    {
+                        contactsStr = contact.Email;
+                    }
+                    else
+                    {
+                        contactsStr = contactsStr + ", " + contact.Email;
+                    }
+                }
+            }
+
+            arendeVM.KontaktpersonerStr = contactsStr;
+            return arendeVM;
         }
 
         private IEnumerable<SelectListItem> CreateArendetypDropDownList(IEnumerable<Arendetyp> arendetypList)

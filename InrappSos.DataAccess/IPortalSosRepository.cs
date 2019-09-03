@@ -108,6 +108,12 @@ namespace InrappSos.DataAccess
 
         IEnumerable<Arende> GetCasesForOrg(int orgId);
 
+        List<Arende> GetCasesForContact(string userId);
+
+        List<Arende> GetCasesForCaseManager(int caseManagerId);
+
+        List<Arende> GetCasesByCaseType(int caseTypeId);
+
         IEnumerable<string> GetCaseRegisteredContactIds(int caseId);
 
         IEnumerable<PreKontakt> GetCaseNotRegisteredContact(int caseId);
@@ -474,6 +480,10 @@ namespace InrappSos.DataAccess
         List<List<Arende>> SearchCase(string[] searchString);
 
         List<List<ApplicationUser>> SearchContact(string[] searchString);
+
+        List<List<ArendeAnsvarig>> SearchCaseManager(string[] searchString);
+
+        List<List<Arendetyp>> SearchCaseType(string[] searchString);
 
         void SetAstridRoleForAstridUser(ApplicationUserRole appUserRole);
 

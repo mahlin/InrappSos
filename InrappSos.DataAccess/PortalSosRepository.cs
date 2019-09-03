@@ -427,6 +427,29 @@ namespace InrappSos.DataAccess
             return cases;
         }
 
+        public List<Arende> GetCasesForContact(string userId)
+        {
+            var cases = new List<Arende>();
+            var caseContacts = DbContext.ArendeKontaktperson.Where(x => x.ApplicationUserId == userId).ToList();
+            foreach (var caseContact in caseContacts)
+            {
+                cases = DbContext.Arende.Where(x => x.Id == caseContact.ArendeId).ToList();
+            }
+            return cases;
+        }
+
+        public List<Arende> GetCasesForCaseManager(int caseManagerId)
+        {
+            var cases = DbContext.Arende.Where(x => x.ArendeansvarId == caseManagerId).ToList();
+            return cases;
+        }
+
+        public List<Arende> GetCasesByCaseType(int caseTypeId)
+        {
+            var cases = DbContext.Arende.Where(x => x.ArendetypId == caseTypeId).ToList();
+            return cases;
+        }
+
         public IEnumerable<string> GetCaseRegisteredContactIds(int caseId)
         {
             var caseRepIds = DbContext.ArendeKontaktperson.Where(x => x.ArendeId == caseId).Select(x => x.ApplicationUserId).ToList();
@@ -2415,7 +2438,7 @@ namespace InrappSos.DataAccess
             foreach (string word in searchString)
             {
                 var tmp = DbContext.Arende.Where(x => x.Arendenr.Contains(word));
-                caseList.Add(DbContext.Arende.Where(x => x.Arendenr.Contains(word)).ToList());
+                caseList.Add(DbContext.Arende.Where(x => x.Arendenr.Contains(word) || x.Arendenamn.Contains(word)).ToList());
             }
             return caseList;
         }
@@ -2429,6 +2452,26 @@ namespace InrappSos.DataAccess
                 contactList.Add(DbContext.Users.Where(x => x.Namn.Contains(word) || x.Email.Contains(word)).ToList());
             }
             return contactList;
+        }
+
+        public List<List<ArendeAnsvarig>> SearchCaseManager(string[] searchString)
+        {
+            var caseManagerList = new List<List<ArendeAnsvarig>>();
+            foreach (string word in searchString)
+            {
+                caseManagerList.Add(DbContext.ArendeAnsvarig.Where(x => x.Epostadress.Contains(word)).ToList());
+            }
+            return caseManagerList;
+        }
+
+        public List<List<Arendetyp>> SearchCaseType(string[] searchString)
+        {
+            var caseTypeList = new List<List<Arendetyp>>();
+            foreach (string word in searchString)
+            {
+                caseTypeList.Add(DbContext.Arendetyp.Where(x => x.ArendetypNamn.Contains(word)).ToList());
+            }
+            return caseTypeList;
         }
 
         public void SetAstridRoleForAstridUser(ApplicationUserRole appUserRole)
@@ -2772,7 +2815,7 @@ namespace InrappSos.DataAccess
 
             foreach (string word in searchString)
             {
-                orgList.Add(DbContext.Organisation.Where(x => x.Organisationsnamn.Contains(word) || x.Kommunkod.Contains(word) || x.Landstingskod.Contains(word)).ToList());
+                orgList.Add(DbContext.Organisation.Where(x => x.Organisationsnamn.Contains(word) || x.Kommunkod.Contains(word) || x.Landstingskod.Contains(word) || x.Inrapporteringskod.Contains(word)).ToList());
             }
             return orgList;
         }

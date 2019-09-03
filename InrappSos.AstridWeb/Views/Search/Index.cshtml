@@ -10,7 +10,7 @@
 
 </script>
 
-<div class="col-md-8 padding-top-25">
+<div class="col-md-8 padding-top-25 row">
 
     @if (Model != null)
     {
@@ -23,7 +23,7 @@
             {
                 foreach (SearchViewModels.SearchResult searchRes in item as IEnumerable) //casting to IEnumerable will let you iterate
                 {
-                    switch (searchRes.DomainModelName)
+                    @*switch (searchRes.DomainModelName)
                     {
                         case "Organisation":
                             @Html.ActionLink(searchRes.Name, "GetOrganisationsCases", "Organisation", new { selectedOrganisationId = searchRes.Id }, new { @class = "btn" })<br />
@@ -31,6 +31,21 @@
                         case "Arende":
                             @Html.ActionLink(searchRes.Name, "GetCase", "Organisation", new { caseId = searchRes.Id }, new { @class = "btn" })<br />
                             break;
+                        case "ApplicationUser":
+                            @Html.ActionLink(searchRes.Name, "GetOrganisationsContacts", "Organisation", new { selectedOrganisationId = searchRes.Id }, new { @class = "btn" })<br />
+                        break;
+                }*@
+                    if (searchRes.DomainModelName == "Organisation" && searchRes.Origin == "cases")
+                    {
+                        @Html.ActionLink(searchRes.Name, "GetOrganisationsCases", "Organisation", new { selectedOrganisationId = searchRes.Id }, new { @class = "btn" })<br />
+                    }
+                    else if (searchRes.DomainModelName == "Organisation" && searchRes.Origin == "contacts")
+                    {
+                        @Html.ActionLink(searchRes.Name, "GetOrganisationsContacts", "Organisation", new { selectedOrganisationId = searchRes.Id }, new { @class = "btn" })<br />
+                    }
+                    else if(searchRes.DomainModelName == "ApplicationUser")
+                    {
+                        @Html.ActionLink(searchRes.Name, "GetOrganisationsContacts", "Organisation", new { selectedOrganisationId = searchRes.Id }, new { @class = "btn" })<br />
                     }
                 }
             }
@@ -41,4 +56,5 @@
             <h2>Din sökning på gav inget resultat. </h2>
         }
     }
- </div>
+</div>
+<br/>

@@ -1446,6 +1446,51 @@ namespace InrappSos.ApplicationService
         {
             string[] searchstring = sokStr.Split(' ');
             var caseList = _portalSosRepository.SearchCase(searchstring);
+            //Sök på kontaktpersoner
+            var contactList = _portalSosRepository.SearchContact(searchstring);
+            var allContactsCases = new List<Arende>();
+            foreach (var itemsList in contactList)
+            {
+                var contactCases = new List<Arende>();
+                foreach (var contact in itemsList)
+                {
+                    //Check if contact has any cases
+                    contactCases = _portalSosRepository.GetCasesForContact(contact.Id).ToList();
+                    allContactsCases.AddRange(contactCases);
+                }
+            }
+            caseList.Add(allContactsCases);
+
+            //Sök på ärendeansvariga
+            var caseManagerList = _portalSosRepository.SearchCaseManager(searchstring);
+            var allCaseManagerCases = new List<Arende>();
+            foreach (var itemsList in caseManagerList)
+            {
+                var caseManagerCases = new List<Arende>();
+                foreach (var caseManager in itemsList)
+                {
+                    //Check if caseManager has any cases
+                    caseManagerCases = _portalSosRepository.GetCasesForCaseManager(caseManager.Id);
+                    allCaseManagerCases.AddRange(caseManagerCases);
+                }
+            }
+            caseList.Add(allCaseManagerCases);
+
+            //Sök på ärendetyp
+            var caseTypeList = _portalSosRepository.SearchCaseType(searchstring);
+            var allCasesTypeCases = new List<Arende>();
+            foreach (var itemlist in caseTypeList)
+            {
+                var caseTypeCases = new List<Arende>();
+                foreach (var caseType in itemlist)
+                {
+                    //get all cases with current caseType
+                    caseTypeCases = _portalSosRepository.GetCasesByCaseType(caseType.Id);
+                    allCasesTypeCases.AddRange(caseTypeCases);
+                }
+            }
+            caseList.Add(allCasesTypeCases);
+
             return caseList;
         }
 

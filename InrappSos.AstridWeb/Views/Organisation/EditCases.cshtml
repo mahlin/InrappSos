@@ -290,7 +290,9 @@
             @Html.Partial("_SearchResult")
         }
         @* Om inga sökträffar *@
-        else if (Model.Origin != null && (Model.SearchResult.Count == 0 || (Model.SearchResult.Count == 1 && Model.SearchResult[0].Count == 0 && Model.Organisation == null)))
+        else if (Model.Origin != null &&
+        (Model.SearchResult.Count == 0 || (Model.SearchResult.Count == 1 && Model.SearchResult[0].Count == 0 && Model.Organisation == null)) &&
+        Model.Arenden.Count == 0)
         {
             <div class="col-md-6">
                 <h4>Din sökning gav inget resultat. </h4>

@@ -1521,6 +1521,7 @@ namespace InrappSos.ApplicationService
             foreach (var leverans in leveransList)
             {
                 var filloggDetalj = new FilloggDetaljDTO();
+                var aterkopplingskontakt = "";
                 //Kolla om återkopplingsfil finns för aktuell leverans
                 var aterkoppling = _portalSosRepository.GetAterkopplingForLeverans(leverans.Id);
 
@@ -1562,6 +1563,8 @@ namespace InrappSos.ApplicationService
                     {
                         //filloggDetalj.Leveransstatus = aterkoppling.Leveransstatus; //Skriv ej över leveransstatusen från återkopplingen. Beslut 20180912, ärende #128
                         filloggDetalj.Resultatfil = aterkoppling.Resultatfil;
+                        //Kontaktperson
+                        filloggDetalj.Aterkopplingskontakt = _portalSosRepository.GetUserEmail(leverans.ApplicationUserId);
                     }
                     historikLista.Add(filloggDetalj);
                 }
@@ -1582,6 +1585,8 @@ namespace InrappSos.ApplicationService
                         {
                             filloggDetalj.Leveransstatus = aterkoppling.Leveransstatus;
                             filloggDetalj.Resultatfil = aterkoppling.Resultatfil;
+                            //Kontaktperson
+                            filloggDetalj.Aterkopplingskontakt = _portalSosRepository.GetUserEmail(leverans.ApplicationUserId);
                         }
                         historikLista.Add(filloggDetalj);
                     }

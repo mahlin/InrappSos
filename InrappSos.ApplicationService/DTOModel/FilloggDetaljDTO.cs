@@ -22,6 +22,7 @@ namespace InrappSos.ApplicationService.DTOModel
         public bool Pagaende { get; set; }
         public bool Sen { get; set; }
         public string SFTPkontoNamn { get; set; }
+        public string Aterkopplingskontakt { get; set; }
 
 
         internal static FilloggDetaljDTO FromFillogg(LevereradFil fillogg)

@@ -113,9 +113,11 @@
                                              grid.Column("Filnamn", format: @<text><label class="col350Width">@item.Filnamn</label></text>),
                                                  grid.Column("Filstatus", format: @<text><label class="col1Width">@item.Filstatus</label></text>),
                                                      grid.Column("SFTPkonto", format: @<text><label class="col1Width">@item.SFTPkontoNamn</label></text>),
-                                                         //grid.Column("Test", format: (item) => (item.Resultatfil == "Ej kontrollerad") ? item.Resultatfil :
-                                                         //    Html.ActionLink("Visa återkopplingsfil", "DownloadFile", "FileUpload", new { fileName = item.Resultatfil }, null)),
-                                                         grid.Column("Återkoppling", format: @<text><label class="col3Width">@item.Resultatfil</label></text>)))
+                        grid.Column("Återkopplingskontakt", format: @<text><label class="col4Width">@item.Aterkopplingskontakt</label></text>),
+
+                        grid.Column(format: (item) => (item.Resultatfil == "Ej kontrollerad" || item.Resultatfil.Trim() == "-") ?
+                            item.Resultatfil :
+                            Html.ActionLink("Visa återkopplingsfil", "DownloadFile", "FileUpload", new { fileName = (string)item.Resultatfil }, null))))
 
             </div>
         }

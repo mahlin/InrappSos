@@ -180,6 +180,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\FileUploadController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LeveransController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
@@ -201,6 +202,7 @@
     <Compile Include="Models\CustomNavBarViewModel.cs" />
     <Compile Include="Models\ViewModels\AdminViewModels.cs" />
     <Compile Include="Models\ViewModels\FileDropViewModel.cs" />
+    <Compile Include="Models\ViewModels\FilesViewModel.cs" />
     <Compile Include="Models\ViewModels\LeveransViewModels.cs" />
     <Compile Include="Models\ViewModels\ManageViewModels.cs" />
     <Compile Include="Models\ViewModels\OrganisationViewModels.cs" />
@@ -375,6 +377,7 @@
     <Content Include="Views\Leverans\_FilesHistory.cshtml" />
     <Content Include="Views\Leverans\CaseFiles.cshtml" />
     <Content Include="Views\Search\Index.cshtml" />
+    <Content Include="Views\FileUpload\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

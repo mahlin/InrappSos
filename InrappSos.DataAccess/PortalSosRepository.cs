@@ -2437,8 +2437,7 @@ namespace InrappSos.DataAccess
             var caseList = new List<List<Arende>>();
             foreach (string word in searchString)
             {
-                var tmp = DbContext.Arende.Where(x => x.Arendenr.Contains(word));
-                caseList.Add(DbContext.Arende.Where(x => x.Arendenr.Contains(word) || x.Arendenamn.Contains(word)).ToList());
+                caseList.Add(DbContext.Arende.Where(x => x.Arendenr.StartsWith(word) || x.Arendenamn.Contains(word)).ToList());
             }
             return caseList;
         }

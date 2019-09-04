@@ -568,38 +568,29 @@
                         columns: grid.Columns(
                             grid.Column(null, null, format: @<text><input type="hidden" id="Pagaende" value="@item.Pagaende.ToString()" class="edit-mode form-control hide" /></text>, style: "colZeroWidth"),
                                  grid.Column(null, null, format: @<text><input type="hidden" id="Sen" value="@item.Sen.ToString()" class="edit-mode form-control hide" /></text>, style: "colZeroWidth"),
-                                     grid.Column(null, null, format: @<text><input type="hidden" id="DelregisterId" value="@item.DelregisterId" class="edit-mode form-control" /></text>, style: "colZeroWidth"),
-                                         grid.Column("Id", format: @<text><span class="display-mode" style="width: 50px; margin-left: 3px;">@item.ID</span><span id="Id" class="edit-mode" style="width: 50px; margin-left: 3px;">@item.Id</span></text>, style: "colMinWidth"),
-                                             grid.Column("DelregisterKortnamn", "Delregister", format: @<text><span class="display-mode" style="white-space: nowrap; margin-right: 5px;">@item.DelregisterKortnamn</span><span id="delregister" class="edit-mode" style="white-space: nowrap; padding-left: 2px; margin-right: -15px;">@item.DelregisterKortnamn</span></text>, style: "col1Width"),
-                                                 grid.Column("FilkravId", "Filkravid", format: @<text><span class="display-mode" style="margin-left: 20px; margin-right: 29px;">@item.Filkravid</span><span id="filkravId" class="edit-mode" style="margin-left: 20px; margin-right: 29px;">@item.FilkravId</span></text>, style: "col70Width"),
-                                                     grid.Column("FilkravNamn", "Filkravnamn", format: @<text><span class="display-mode">@item.FilkravNamn</span><span id="filkravNamn" class="edit-mode">@item.FilkravNamn</span></text>, style: "col3Width"),
+                                    grid.Column(null, null, format: @<text><input type="hidden" id="DelregisterId" value="@item.DelregisterId" class="edit-mode form-control" /></text>, style: "colZeroWidth"),
+                                    grid.Column("Id", format: @<text><span class="display-mode" style="width: 50px; margin-left: 3px;">@item.ID</span><span id="Id" class="edit-mode" style="width: 50px; margin-left: 3px;">@item.Id</span></text>, style: "colMinWidth"),
+                                    grid.Column("DelregisterKortnamn", "Delregister", format: @<text><span class="display-mode" style="white-space: nowrap; margin-right: 5px;">@item.DelregisterKortnamn</span><span id="delregister" class="edit-mode" style="white-space: nowrap; padding-left: 2px; margin-right: -15px;">@item.DelregisterKortnamn</span></text>, style: "col1Width"),
+                                    grid.Column("FilkravId", "Filkravid", format: @<text><span class="display-mode" style="margin-left: 20px; margin-right: 29px;">@item.Filkravid</span><span id="filkravId" class="edit-mode" style="margin-left: 20px; margin-right: 29px;">@item.FilkravId</span></text>, style: "col70Width"),
+                                    grid.Column("FilkravNamn", "Filkravnamn", format: @<text><span class="display-mode">@item.FilkravNamn</span><span id="filkravNamn" class="edit-mode">@item.FilkravNamn</span></text>, style: "col3Width"),
 
-                                                         grid.Column("Period", "Period", format: @<text><span class="display-mode"><label id="lblPeriod">@item.Period </label></span></text>, style: "col70Width"),
-                                                             grid.Column("Uppgiftsstart", "Uppgiftsstart", format: @<text><span class="display-mode">
+                                    grid.Column("Period", "Period", format: @<text><span class="display-mode"><label id="lblPeriod">@item.Period </label></span></text>, style: "col70Width"),
+                                    grid.Column("Uppgiftsstart", "Uppgiftsstart", format: @<text><span class="display-mode">
                                                                     <label id="lblUppgiftsstart">@( item.Uppgiftsstart != null ? item.Uppgiftsstart.ToString("yyyy-MM-dd") : item.Uppgiftsstart)</label>
                                                                 </span></text>, style: "col70Width"),
-                                                                 grid.Column("Uppgiftsslut", "Uppgiftsslut", format: @<text><span class="display-mode">
+                                    grid.Column("Uppgiftsslut", "Uppgiftsslut", format: @<text><span class="display-mode">
                                                                         <label id="lblUppgiftsslut">@( item.Uppgiftsslut != null ? item.Uppgiftsslut.ToString("yyyy-MM-dd") : item.Uppgiftsslut)</label>
                                                                     </span></text>, style: "col70Width"),
-                                                                     grid.Column("Rapporteringsstart", "Rapp.start", format: @<text><span class="display-mode">
+                                    grid.Column("Rapporteringsstart", "Rapp.start", format: @<text><span class="display-mode">
                                                                             <label id="lblRapporteringsstart">@( item.Rapporteringsstart != null ? item.Rapporteringsstart.ToString("yyyy-MM-dd") : item.Rapporteringsstart)</label>
                                                                         </span></text>, style: "col70Width"),
-                                                                         grid.Column("Rapporteringsslut", "Rapp.slut", format: @<text><span class="display-mode">
+                                    grid.Column("Rapporteringsslut", "Rapp.slut", format: @<text><span class="display-mode">
                                                                                 <label id="lblRapporteringsslut">@( item.Rapporteringsslut != null ? item.Rapporteringsslut.ToString("yyyy-MM-dd") : item.Rapporteringsslut)</label>
                                                                             </span></text>, style: "col70Width"),
-                                                                             grid.Column("Rapporteringsenast", "Rapp.senast", format: @<text><span class="display-mode">
+                                    grid.Column("Rapporteringsenast", "Rapp.senast", format: @<text><span class="display-mode">
                                                                                     <label id="lblRapporteringsenast">@( item.Rapporteringsenast != null ? item.Rapporteringsenast.ToString("yyyy-MM-dd") : item.Rapporteringsenast)</label>
                                                                                 </span></text>, style: "col70Width"),
-                                                                                 grid.Column("Paminnelse1", "Paminnelse1", format: @<text><span class="display-mode">
-                                                                                        <label id="lblPaminnelse1">@( item.Paminnelse1 != null ? item.Paminnelse1.ToString("yyyy-MM-dd") : item.Paminnelse1)</label>
-                                                                                    </span></text>, style: "col70Width"),
-                                                                                     grid.Column("Paminnelse2", "Paminnelse2", format: @<text><span class="display-mode">
-                                                                                            <label id="lblPaminnelse2">@( item.Paminnelse2 != null ? item.Paminnelse2.ToString("yyyy-MM-dd") : item.Paminnelse2)</label>
-                                                                                        </span></text>, style: "col70Width"),
-                                                                                         grid.Column("Paminnelse3", "Paminnelse3", format: @<text><span class="display-mode">
-                                                                                                <label id="lblPaminnelse3">@( item.Paminnelse3 != null ? item.Paminnelse3.ToString("yyyy-MM-dd") : item.Paminnelse3)</label>
-                                                                                            </span></text>, style: "col70Width"),
-                                                                                             grid.Column(null, format: @<text><span></span></text>, style: "col2Width", canSort: false)))
+                                    grid.Column(null, format: @<text><span></span></text>, style: "col2Width", canSort: false)))
                 </div>
                 <div id="Outer">
                     <div id="GridHeader"></div>

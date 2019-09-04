@@ -499,11 +499,12 @@ namespace InrappSos.AstridWeb.Controllers
 
         // GET
         [Authorize]
-        public ActionResult GetCases()
+        public ActionResult GetCases(string origin = null)
         {
             var model = new OrganisationViewModels.OrganisationViewModel();
             model.Arenden= new List<OrganisationViewModels.ArendeViewModel>();
             model.SearchResult = new List<List<Organisation>>();
+            model.Origin = origin;
             return View("EditCases", model);
         }
 

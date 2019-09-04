@@ -86,11 +86,17 @@ namespace InrappSos.AstridWeb.Controllers
                     case "cases":
                         model.SearchResultList = SearchCases(trimmedSearchText, origin);
                         //Om endats en träff, hämta datat direkt
-                        var oneHit = CheckIfOnlyOneHit(model.SearchResultList);
-                        if (oneHit)
+                        var hits = CheckNumberOfHits(model.SearchResultList);
+                        if (hits == 1)
                         {
                             return RedirectToAction("GetOrganisationsCases", "Organisation",
                                 new { selectedOrganisationId = model.SearchResultList[0][0].Id });
+                        }
+                        //Om inga träffar, tillbaka till söksidan
+                        else if (hits == 0)
+                        {
+                            return RedirectToAction("GetCases", "Organisation",
+                                new { origin = origin });
                         }
                         break;
                     case "contacts":
@@ -314,7 +320,7 @@ namespace InrappSos.AstridWeb.Controllers
             return searchResultList;
         }
 
-        private bool CheckIfOnlyOneHit(List<List<SearchViewModels.SearchResult>> searchResult)
+        private int CheckNumberOfHits(List<List<SearchViewModels.SearchResult>> searchResult)
         {
             var hits = 0;
             foreach (var itemList in searchResult)
@@ -324,9 +330,7 @@ namespace InrappSos.AstridWeb.Controllers
                     hits++;
                 }
             }
-            if (hits == 1)
-                return true;
-            return false;
+            return hits;
         }
     }
 }

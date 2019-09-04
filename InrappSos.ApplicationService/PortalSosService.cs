@@ -4008,6 +4008,8 @@ namespace InrappSos.ApplicationService
                 {
                     filloggDetalj.Leveransstatus = aterkoppling.Leveransstatus;
                     filloggDetalj.Resultatfil = aterkoppling.Resultatfil;
+                    filloggDetalj.Aterkopplingskontakt =
+                        _portalSosRepository.GetUserEmail(senasteLeverans.ApplicationUserId);
                 }
                 if (senasteLeverans.Organisationsenhet != null)
                 {
@@ -4031,6 +4033,9 @@ namespace InrappSos.ApplicationService
                     {
                         //filloggDetalj.Leveransstatus = aterkoppling.Leveransstatus; //Skriv ej över leveransstatusen från återkopplingen. Beslut 20180912, ärende #128
                         filloggDetalj.Resultatfil = aterkoppling.Resultatfil;
+                        filloggDetalj.Aterkopplingskontakt =
+                            _portalSosRepository.GetUserEmail(senasteLeverans.ApplicationUserId);
+
                     }
                     if (senasteLeverans.Organisationsenhet != null)
                     {

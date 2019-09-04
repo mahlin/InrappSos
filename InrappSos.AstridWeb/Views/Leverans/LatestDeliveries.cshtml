@@ -61,7 +61,7 @@
     ViewBag.Title = "Leveransstatus";
 }
 
-<div id="pageContainer">
+<div id="pageContainer" style="width: 1400px;">
 <div class="row">
     <div class="col-md-8 padding-top-55">
         <h4>Leveransstatus</h4>
@@ -172,6 +172,7 @@
                                                             <th>Filnamn</th>
                                                             <th>Filstatus</th>
                                                             <th>SFTPkonto</th>
+                                                            <th>Kontakt</th>
                                                             <th>Återkoppling</th>
                                                         </tr>
                                                     </thead>
@@ -197,8 +198,9 @@
                                                             <td>@loggRad.Filnamn</td>
                                                             <td>@loggRad.Filstatus</td>
                                                             <td>@loggRad.SFTPkontoNamn</td>
-                                                            <td>@loggRad.Resultatfil</td>
-                                                            <td></td>
+                                                            <td>@loggRad.Aterkopplingskontakt</td>
+                                                            <td>@Html.ActionLink(@loggRad.Resultatfil, "DownloadFile", "FileUpload", new { fileName = loggRad.Resultatfil }, null)
+                                                            </td>
                                                             <td></td>
                                                         </tr>
                                                     }

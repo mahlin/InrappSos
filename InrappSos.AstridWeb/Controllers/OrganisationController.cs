@@ -297,13 +297,14 @@ namespace InrappSos.AstridWeb.Controllers
 
         // GET
         [Authorize]
-        public ActionResult GetContacts()
+        public ActionResult GetContacts(string origin = null)
         {
             var model = new OrganisationViewModels.OrganisationViewModel();
             model.ContactPersons = new List<OrganisationViewModels.ApplicationUserViewModel>();
             model.SearchResult = new List<List<Organisation>>();
             model.ContactSearchResult = new List<List<OrganisationViewModels.ApplicationUserViewModel>>();
             model.VisaInaktiva = false;
+            model.Origin = origin;
             return View("EditContacts", model);
         }
 
@@ -578,10 +579,11 @@ namespace InrappSos.AstridWeb.Controllers
 
         //GET
         [Authorize]
-        public ActionResult EditCasesForDifferentOrganisations(string searchText)
+        public ActionResult EditCasesForDifferentOrganisations(string searchText, string origin)
         {
             var model = new OrganisationViewModels.OrganisationViewModel();
             model.Arenden = new List<OrganisationViewModels.ArendeViewModel>();
+            model.Origin = origin;
 
             try
             {

@@ -89,10 +89,16 @@ namespace InrappSos.AstridWeb.Controllers
                     case "contacts":
                         model.SearchResultList = SearchContacts(trimmedSearchText, origin);
                         //Om endats en träff, hämta datat direkt
-                        if (model.SearchResultList.Count == 1 && model.SearchResultList[0].Count == 1 )
+                        if (model.SearchResultList.Count == 1 && model.SearchResultList[0].Count == 1)
                         {
                             return RedirectToAction("GetOrganisationsContacts", "Organisation",
-                                new { selectedOrganisationId = model.SearchResultList[0][0].Id });
+                                new {selectedOrganisationId = model.SearchResultList[0][0].Id});
+                        }
+                        //Om inga träffar, tillbaka till söksidan
+                        else if (model.SearchResultList.Count == 0 || (model.SearchResultList.Count == 0 && model.SearchResultList[0].Count == 0))
+                        {
+                            return RedirectToAction("GetContacts", "Organisation",
+                                new { origin = origin });
                         }
                         break;
                     default:
@@ -223,7 +229,7 @@ namespace InrappSos.AstridWeb.Controllers
                 return View("CustomError", errorModel);
             }
             //return View("Organisation","EditContacts", model);
-            return RedirectToAction("EditCasesForDifferentOrganisations", "Organisation", new { searchText = searchText });
+            return RedirectToAction("EditCasesForDifferentOrganisations", "Organisation", new { searchText = searchText, origin = origin });
 
         }
 

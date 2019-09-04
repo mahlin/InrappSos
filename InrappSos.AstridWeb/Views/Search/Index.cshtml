@@ -51,9 +51,9 @@
             }
         }
         @* Om inga sökträffar *@
-        else if (Model.SearchResultList.Count == 0 && Model.SearchResultList[0].Count == 0)
+        else if (Model.SearchResultList.Count == 0 || (Model.SearchResultList.Count == 0 && Model.SearchResultList[0].Count == 0))
         {
-            <h2>Din sökning på gav inget resultat. </h2>
+            <h2>Din sökning gav inget resultat. </h2>
         }
     }
 </div>

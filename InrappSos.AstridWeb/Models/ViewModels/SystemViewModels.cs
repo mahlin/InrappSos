@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using System.Security.Permissions;
 using System.Web;
@@ -29,6 +30,7 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             [AllowHtml]
             public string SelectedInfoText { get; set; }
             public int SelectedInfoId { get; set; }
+            public string SelectedTemplateFile { get; set; }
 
             public int SelectedDocumentId { get; set; }
             public int SelectedHolidayId { get; set; }
@@ -38,7 +40,9 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public FAQViewModel SelectedFAQ { get; set; }
 
             public IEnumerable<AdmInformation> InfoPages { get; set; }
-            public IEnumerable<AdmDokument> Mallar { get; set; }
+            //public IEnumerable<AdmDokument> Mallar { get; set; }
+
+            public IEnumerable<FileInfoViewModel> Mallar { get; set; }
 
             public IEnumerable<AdmHelgdagViewModel> Holidays { get; set; }
 
@@ -47,6 +51,15 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public  AdmKonfiguration AdmConfig { get; set; }
 
             public OpeningHoursInfoDTO OpeningHours { get; set; }
+
+        }
+
+        public class FileInfoViewModel
+        {
+            public string Filename { get; set; }
+            public DateTime LastWriteTime { get; set; }
+            public DateTime CreationTime { get; set; }
+            public long Length { get; set; }
 
         }
 

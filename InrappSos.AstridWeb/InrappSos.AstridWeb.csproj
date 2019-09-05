@@ -361,7 +361,7 @@
     <Content Include="Views\Organisation\CreateOrganisationSFTPAccount.cshtml" />
     <Content Include="Views\Organisation\_ContactSearchResult.cshtml" />
     <Content Include="Views\System\EditDocuments.cshtml" />
-    <Content Include="Views\System\AddDocument.cshtml" />
+    <Content Include="Views\System\AddTemplateDocument.cshtml" />
     <Content Include="Views\System\_Files.cshtml" />
     <Content Include="Views\Register\EditSubDirectorysOrgtypes.cshtml" />
     <Content Include="Views\Home\NotImplementedPage.cshtml" />

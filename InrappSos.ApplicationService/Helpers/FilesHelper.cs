@@ -715,6 +715,47 @@ namespace InrappSos.ApplicationService.Helpers
         }
 
 
+        //************* Files on disk *******************//
+        public IEnumerable<FileInfo> GetAllTemplateFiles()
+        {
+            var tempaletFileList = new List<FileInfo>();
+            var _fileareaPath = ConfigurationManager.AppSettings["TemplatesNetworkPath"];
+            //var templateFiles = Directory.GetFiles(_fileareaPath);
+            DirectoryInfo dir = new DirectoryInfo(_fileareaPath);
+            var _filesInFolder = dir.GetFiles().OrderByDescending(p => p.CreationTime).ToList();
+
+            //foreach (var templateFile in _filesInFolder)
+            //{
+            //    var datCreate = templateFile.CreationTime;
+            //    var datModified = templateFile.LastWriteTime;
+            //    var size = templateFile.Length;
+            //    var name = templateFile.Name;
+            //}
+            return _filesInFolder;
+        }
+
+        public void DeleteTemplateFile(string filename)
+        {
+            var _fileareaPath = ConfigurationManager.AppSettings["TemplatesNetworkPath"];
+            DirectoryInfo dir = new DirectoryInfo(_fileareaPath);
+            var _filesInFolder = dir.GetFiles().OrderByDescending(p => p.CreationTime).ToList();
+
+            foreach (var templateFile in _filesInFolder)
+            {
+                if (templateFile.Name == filename)
+                {
+                    templateFile.Delete();
+                }
+            }
+        }
+
+        //public IEnumerable<FileInfo> GetAllErrorCodeFiles()
+        //{
+        //    var _fileareaPath = ConfigurationManager.AppSettings["ErrorCodesNetworkPath"];
+        //}
+
+
+
         //*************  Files in db  *******************//
 
         public IEnumerable<AdmDokument> GetAllFilesFromDb()

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -132,14 +133,13 @@ namespace InrappSos.AstridWeb.Controllers
         // GET: InformationTexts
         [Authorize]
         [ValidateInput(false)]
-        public ActionResult GetDocuments()
+        public ActionResult GetTemplateDocuments()
         {
             var model = new SystemViewModels.SystemViewModel();
             try
             {
-                model.Mallar = _filesHelper.GetAllFilesFromDb();
-                //model.SelectedInfo = selectedInfoType;
-                //model.SelectedInfoText = selectedText;
+                var mallar = _filesHelper.GetAllTemplateFiles().ToList();
+                model.Mallar = ConvertFileInfoToVM(mallar);
             }
             catch (Exception e)
             {
@@ -696,7 +696,7 @@ namespace InrappSos.AstridWeb.Controllers
 
         // GET
         [Authorize]
-        public ActionResult AddDocument()
+        public ActionResult AddTemplateDocument()
         {
             return View();
         }
@@ -706,7 +706,7 @@ namespace InrappSos.AstridWeb.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public ActionResult AddDocument(SystemViewModels.InfoTextViewModel model)
+        public ActionResult AddTemplateDocument(SystemViewModels.InfoTextViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -917,6 +917,27 @@ namespace InrappSos.AstridWeb.Controllers
             return RedirectToAction("GetSpecialDays");
         }
 
+        [HttpPost]
+        [Authorize]
+        public ActionResult DeleteTemplate(string filename)
+        {
+            try
+            {
+                _filesHelper.DeleteTemplateFile(filename);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("SystemController", "DeleteTemplate", e.ToString(), e.HResult, User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade när mall skulle tas bort.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
+            }
+            return RedirectToAction("GetTemplateDocuments");
+        }
 
         private DateTime SetTime(int hour, int minute)
         {
@@ -1072,6 +1093,24 @@ namespace InrappSos.AstridWeb.Controllers
             }
 
             return faqDb;
+        }
+
+        private List<SystemViewModels.FileInfoViewModel> ConvertFileInfoToVM(List<FileInfo> files)
+        {
+            var filesList = new List<SystemViewModels.FileInfoViewModel>();
+
+            foreach (var file in files)
+            {
+                var fileVM = new SystemViewModels.FileInfoViewModel
+                {
+                    Filename = file.Name,
+                    LastWriteTime = file.LastWriteTime,
+                    CreationTime = file.CreationTime,
+                    Length = file.Length
+                };
+                filesList.Add(fileVM);
+            };
+            return filesList;
         }
 
         private AdmHelgdag ConvertViewModelToAdmHelgdag(SystemViewModels.AdmHelgdagViewModel holiday)

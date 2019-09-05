@@ -6,11 +6,43 @@
 
 <script type="text/javascript">
 
-    var documentList = @Html.Raw(Json.Encode(Model.Mallar));
+    //var documentList = @Html.Raw(Json.Encode(Model.Mallar));
 
     $(document).ready(function () {
-        //alert("Här");
-        //$('#editInfoText').hide();
+
+        var modalConfirm = function test(callback) {
+            $("#modal-btn-si").on("click", function () {
+                callback(true);
+                $("#mi-modal").modal('hide');
+            });
+
+            $("#modal-btn-no").on("click", function () {
+                callback(false);
+                $("#mi-modal").modal('hide');
+            });
+        };
+
+        modalConfirm(function (confirm) {
+            if (confirm) {
+                var data = { 'filename': $('#SelectedTemplateFile').val() };
+                $.ajax({
+                    url: '/System/DeleteTemplate',
+                    type: 'POST',
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify(data),
+                    success: function (data) {
+                        location.reload();
+                        //On ajax success do this
+                        //$("#pageContainer").html(data);
+                        //tr.find('.edit-mode, .display-mode').toggle();
+                        //$('#footer').hide();
+                    }
+                });
+            } else {
+                //Do nothing
+                //$("#result").html("NO CONFIRMADO");
+            }
+        });
     });
 
     function showTextarea(docId) {
@@ -24,9 +56,11 @@
         });
     }
 
-    //$(document).on('submit', '#infoTextForm', function () {
-    //    alert($('#SelectedInfo').val());
-    //    });
+    function deleteTemplate(name) {
+        $('#SelectedTemplateFile').val(name);
+        $("#mi-modal").modal("show");
+        $('#modal-body').html("Vill du verkligen ta bort ta bort " + name + " ?");
+    }
 
     //$(function () {
     //    var tr = $('#documentsTable').find('tr');
@@ -38,55 +72,13 @@
 
 
 
+    //$('.edit-user').on('click', function () {
+    //    var tr = $(this).parents('tr:first');
+    //    var infoId = tr.find("#InfoId").html();
+    //    var informationsTyp = tr.find("#InfoTyp").val();
 
-    $(function () {
-        $('.edit-mode').hide();
-        $('.edit-user').on('click', function () {
-            var tr = $(this).parents('tr:first');
-            tr.find('.edit-mode, .display-mode').toggle();
-        });
-
-        $('.cancel-user').on('click', function () {
-            var tr = $(this).parents('tr:first');
-            tr.find('.edit-mode, .display-mode').toggle();
-            $('#textArea').html("");
-        });
-        $('.save-user').on('click', function () {
-            var tr = $(this).parents('tr:first');
-            var docId = tr.find("#DocId").html();
-            //var docType = $('#SelectedInfo').val();
-
-            //Creating AdmDokument JSON object
-            var doc =
-            {
-                "Id": docId,
-               // "Informationstyp": informationsTyp
-            };
-            //Posting AdmDokument object to controller's Update action method
-            $.ajax({
-                url: '/System/UpdateDocument',
-                data: JSON.stringify(doc),
-                type: 'POST',
-                contentType: 'application/json; charset=utf-8',
-                success: function (data) {
-                    location.reload();
-                    //$("#pageContainer").html(data);
-                    //tr.find('.edit-mode, .display-mode').toggle();
-                    //$('#footer').hide();
-                    //alert('Record updated Successfully!!');
-                }
-            });
-
-        });
-
-        //$('.edit-user').on('click', function () {
-        //    var tr = $(this).parents('tr:first');
-        //    var infoId = tr.find("#InfoId").html();
-        //    var informationsTyp = tr.find("#InfoTyp").val();
-
-        //    tr.find("#lblInfoTyp").text(informationsTyp);
-        //});
-    })
+    //    tr.find("#lblInfoTyp").text(informationsTyp);
+    //});
 </script>
 
 
@@ -102,38 +94,57 @@
             <h4>Administrera mallar</h4>
         </div>
     </div>
+    
+    <div class="modal fade ui-widget-content" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" id="mi-modal">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-body" id="modal-body">
+                    <p>
+
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" id="modal-btn-si">Ja</button>
+                    <button type="button" class="btn btn-default" id="modal-btn-no">Avbryt</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     @if (Model != null)
     {
-        @Html.HiddenFor(m => m.InfoPages)
-        @Html.HiddenFor(x => Model.SelectedDocumentId)
+        @Html.HiddenFor(x => Model.SelectedTemplateFile)
         <hr />
 
         @Html.ActionLink("Lägg till ny mall", "AddDocument", "System")
         <br/><br/>
 
-        <div id="gridContent" style="font-family: Arial; padding: 0px;">
-            @{
-                ViewBag.Title = "Administrera mallar";
-                var grid = new WebGrid(source: Model.Mallar, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "mallarGrid");
-                grid.Pager(WebGridPagerModes.All);
-            }
+             <div id="gridContent" style="font-family: Arial; padding: 0px;">
+                 @{
+                     ViewBag.Title = "Administrera mallar";
+                     var grid = new WebGrid(source: Model.Mallar, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "mallarGrid");
+                     grid.Pager(WebGridPagerModes.All);
+                 }
 
-
-            @grid.GetHtml(htmlAttributes: new { id = "documentsTable" },
-                            tableStyle: "webgrid-table",
-                            headerStyle: "webgrid-header",
-                            footerStyle: "webgrid-footer",
-                            alternatingRowStyle: "webgrid-alternating-row",
-                            selectedRowStyle: "webgrid-selected-row",
-                            rowStyle: "webgrid-row-style",
-                            mode: WebGridPagerModes.All,
-                            columns: grid.Columns(
-                                grid.Column("Id", format: @<text><label id="DocId">@item.Id</label></text>, style: "colMiniminiWidth"),
-                                grid.Column("Filnamn", format: @<text><label id="lblFileName">@item.Filnamn</label></text>, style: "col2Width")))
-        </div>
+                 @grid.GetHtml(htmlAttributes: new { id = "documentsTable" },
+                                 tableStyle: "webgrid-table700",
+                                 headerStyle: "webgrid-header",
+                                 footerStyle: "webgrid-footer",
+                                 alternatingRowStyle: "webgrid-alternating-row",
+                                 selectedRowStyle: "webgrid-selected-row",
+                                 rowStyle: "webgrid-row-style",
+                                 mode: WebGridPagerModes.All,
+                                 columns: grid.Columns(
+                                    grid.Column("Filnamn", format: @<text><label id="lblFileName">@item.Filename</label></text>, style: "col5Width"),
+                                    grid.Column("Senast ändrad", format: @<text><label id="lblEditDate">@item.LastWriteTime</label></text>, style: "col2Width"),
+                                    grid.Column("Storlek (bytes)", format: @<text><label id="lblSize">@item.Length</label></text>, style: "col2Width"),
+                                    grid.Column(null, format: @<text>
+                                        <button class="display-mode btn btn-default" onclick="deleteTemplate('@item.Filename');return false;">Ta bort</button>
+                                        @*<button class="cancel-user edit-mode btn btn-default">Avbryt</button>*@
+                                    </text>, style: "col2Width", canSort: false)))
+             </div>
         <br/><br/>
-        <div id="editInfoText">
+        @*<div id="editInfoText">
             @using (Html.BeginForm("UpdateInfoText", "System", FormMethod.Post, new { id = "infoTextForm" }))
             {
                 @Html.HiddenFor(x => Model.SelectedDocumentId)
@@ -145,14 +156,8 @@
                         </div>
                     </div>
                 </div>
-
-                @*<div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
-                        <input type="submit" value="Spara" class="btn btn-default" />
-                    </div>
-                </div>*@
             }
-        </div>
+        </div>*@
     }
 
 

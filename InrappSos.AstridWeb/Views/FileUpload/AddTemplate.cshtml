@@ -8,7 +8,7 @@
 </script>
 
 @{
-    ViewBag.Title = "Välkommen att ladda upp fil";
+    ViewBag.Title = "Välj filer att ladda upp";
     var fileTableHeader = "Filer för uppladdning";
 }
 
@@ -33,10 +33,12 @@
     <h4>@ViewBag.Title</h4>
 </div>
 
-<p>Välj filer att ladda upp</p>
-
 
 @Html.Partial("_Files")
+
+<div>
+    @Html.ActionLink("Tillbaka", "GetTemplateDocuments", "FileUpload")
+</div>
 
 
 @Scripts.Render("~/bundles/jQuery-File-Upload")

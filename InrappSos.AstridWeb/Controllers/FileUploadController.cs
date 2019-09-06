@@ -26,7 +26,7 @@ namespace InrappSos.AstridWeb.Controllers
     {
         private readonly IPortalSosService _portalSosService;
         private FilesViewModel _model = new FilesViewModel();
-        FilesHelper filesHelper;
+        FilesHelper _filesHelper;
         private GeneralHelper _generalHelper;
 
         private string StorageRoot
@@ -36,7 +36,7 @@ namespace InrappSos.AstridWeb.Controllers
         
         public FileUploadController()
         {
-            filesHelper = new FilesHelper(StorageRoot);
+            _filesHelper = new FilesHelper(StorageRoot);
             _generalHelper = new GeneralHelper();
             _portalSosService = new PortalSosService(new PortalSosRepository(new InrappSosDbContext(), new InrappSosAstridDbContext()));
         }
@@ -45,6 +45,131 @@ namespace InrappSos.AstridWeb.Controllers
         public ActionResult Index()
         {
             return View();
+        }
+
+        // GET: InformationTexts
+        [Authorize(Roles = "Admin")]
+        public ActionResult GetTemplateDocuments()
+        {
+            var model = new FileUploadViewModels.FileUploadViewModel();
+            try
+            {
+                var mallar = _filesHelper.GetAllTemplateFiles().ToList();
+                model.Mallar = ConvertFileInfoToVM(mallar);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("FileUploadController", "GetTemplateDocuments", e.ToString(), e.HResult, User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade vid hämtning av mallar.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
+
+            }
+            return View("HandleTemplates", model);
+        }
+
+        // GET
+        [Authorize(Roles = "Admin")]
+        public ActionResult AddTemplate()
+        {
+            return View();
+        }
+
+
+        // POST
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public ActionResult AddTemplate(FileUploadViewModels.FileInfoViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var userName = User.Identity.GetUserName();
+                    //var infoText = new AdmInformation
+                    //{
+                    //    Informationstyp = model.Informationstyp,
+                    //    Text = model.Text,
+                    //};
+                    //infoText.Text = model.Text;
+                    //_portalSosService.SkapaInformationsText(infoText, userName);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    ErrorManager.WriteToErrorLog("FileUploadController", "Addtemplate", e.ToString(), e.HResult, User.Identity.Name);
+                    var errorModel = new CustomErrorPageModel
+                    {
+                        Information = "Ett fel inträffade när ny mall skulle sparas.",
+                        ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                    };
+                    return View("CustomError", errorModel);
+                }
+                return RedirectToAction("GetTemplateDocuments");
+            }
+
+            return View();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public JsonResult Upload(FileDropViewModel model)
+        {
+            var userName = "";
+            var resultList = new List<ViewDataUploadFilesResult>();
+            try
+            {
+                userName = User.Identity.GetUserName();
+                var CurrentContext = HttpContext;
+
+                //Lägg till kontroll att antal filer > 0 (kan ha stoppats av användarens webbläsare (?))
+                var request = CurrentContext.Request;
+                var numFiles = request.Files.Count;
+                if (numFiles <= 0)
+                {
+                    throw new System.ArgumentException("Filer saknas vid uppladdning av fil.");
+                }
+
+                _filesHelper.UploadTemplateFileAndShowResults(CurrentContext, resultList, User.Identity.GetUserId(), userName);
+            }
+            catch (ArgumentException e)
+            {
+                ErrorManager.WriteToErrorLog("FileDropController", "Upload", e.ToString(), e.HResult, User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Filer saknas vid uppladdning av fil.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                RedirectToAction("CustomError", new { model = errorModel });
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("FileDropController", "Upload", e.ToString(), e.HResult, User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade vid uppladdning av fil.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                RedirectToAction("CustomError", new { model = errorModel });
+            }
+
+            JsonFiles files = new JsonFiles(resultList);
+
+            bool isEmpty = !resultList.Any();
+            if (isEmpty)
+            {
+                return Json("Error");
+            }
+            else
+            {
+                return Json(files);
+            }
         }
 
 
@@ -83,6 +208,24 @@ namespace InrappSos.AstridWeb.Controllers
                 return View("CustomError", errorModel);
 
             }
+        }
+
+        private List<FileUploadViewModels.FileInfoViewModel> ConvertFileInfoToVM(List<FileInfo> files)
+        {
+            var filesList = new List<FileUploadViewModels.FileInfoViewModel>();
+
+            foreach (var file in files)
+            {
+                var fileVM = new FileUploadViewModels.FileInfoViewModel
+                {
+                    Filename = file.Name,
+                    LastWriteTime = file.LastWriteTime,
+                    CreationTime = file.CreationTime,
+                    Length = file.Length
+                };
+                filesList.Add(fileVM);
+            };
+            return filesList;
         }
 
         public ActionResult CustomError(CustomErrorPageModel model)

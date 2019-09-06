@@ -30,7 +30,7 @@
 </script>
 
 
-@using (Html.BeginForm("AddTemplateDocument", "System", FormMethod.Post))
+@using (Html.BeginForm("AddTemplateDocument", "FileUpload", FormMethod.Post))
 {
     @Html.AntiForgeryToken()
 
@@ -43,7 +43,7 @@
     </div>
 
     <div>
-        @Html.ActionLink("Tillbaka", "GetTemplateDocuments", "System")
+        @Html.ActionLink("Tillbaka", "GetTemplateDocuments", "FileUpload")
     </div>
 }
 

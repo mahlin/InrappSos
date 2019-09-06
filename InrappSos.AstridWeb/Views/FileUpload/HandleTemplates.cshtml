@@ -1,12 +1,10 @@
 ﻿@using InrappSos.AstridWeb.Models.ViewModels
-@model InrappSos.AstridWeb.Models.ViewModels.SystemViewModels.SystemViewModel
+@model InrappSos.AstridWeb.Models.ViewModels.FileUploadViewModels.FileUploadViewModel
 <script src="~/Scripts/jquery-1.10.2.min.js"></script>
 @*<link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />*@
 
 
 <script type="text/javascript">
-
-    //var documentList = @Html.Raw(Json.Encode(Model.Mallar));
 
     $(document).ready(function () {
 
@@ -45,16 +43,6 @@
         });
     });
 
-    function showTextarea(docId) {
-        //$('#SelectedInfo').val(infoType);
-        //alert($('#SelectedInfo').val());
-        documentList.forEach(function (doc, index) {
-            if (doc.Id === docId) {
-                $('#SelectedDocId').val(doc.Id);
-                $('#textArea').html(doc.Fil);
-            }
-        });
-    }
 
     function deleteTemplate(name) {
         $('#SelectedTemplateFile').val(name);
@@ -116,7 +104,7 @@
         @Html.HiddenFor(x => Model.SelectedTemplateFile)
         <hr />
 
-        @Html.ActionLink("Lägg till ny mall", "AddTemplateDocument", "System")
+        @Html.ActionLink("Lägg till ny mall", "AddTemplate", "FileUpload")
         <br/><br/>
 
              <div id="gridContent" style="font-family: Arial; padding: 0px;">

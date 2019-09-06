@@ -130,31 +130,7 @@ namespace InrappSos.AstridWeb.Controllers
             return View("EditInfoTexts", model);
         }
 
-        // GET: InformationTexts
-        [Authorize]
-        [ValidateInput(false)]
-        public ActionResult GetTemplateDocuments()
-        {
-            var model = new SystemViewModels.SystemViewModel();
-            try
-            {
-                var mallar = _filesHelper.GetAllTemplateFiles().ToList();
-                model.Mallar = ConvertFileInfoToVM(mallar);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                ErrorManager.WriteToErrorLog("SystemController", "GetDocuments", e.ToString(), e.HResult, User.Identity.Name);
-                var errorModel = new CustomErrorPageModel
-                {
-                    Information = "Ett fel inträffade vid hämtning av mallar.",
-                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
-                };
-                return View("CustomError", errorModel);
 
-            }
-            return View("EditDocuments", model);
-        }
 
         // GET: OpeningHours (AdmKonfiguration)
         [Authorize]
@@ -696,51 +672,6 @@ namespace InrappSos.AstridWeb.Controllers
 
         // GET
         [Authorize]
-        public ActionResult AddTemplateDocument()
-        {
-            return View();
-        }
-
-
-        // POST
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize]
-        public ActionResult AddTemplateDocument(SystemViewModels.InfoTextViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    var userName = User.Identity.GetUserName();
-                    var infoText = new AdmInformation
-                    {
-                        Informationstyp = model.Informationstyp,
-                        Text = model.Text,
-                    };
-                    infoText.Text = model.Text;
-                    _portalSosService.SkapaInformationsText(infoText, userName);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                    ErrorManager.WriteToErrorLog("SystemController", "AddDocument", e.ToString(), e.HResult, User.Identity.Name);
-                    var errorModel = new CustomErrorPageModel
-                    {
-                        Information = "Ett fel inträffade när ny mall skulle sparas.",
-                        ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
-                    };
-                    return View("CustomError", errorModel);
-                }
-                return RedirectToAction("GetInformationTexts");
-            }
-
-            return View();
-        }
-
-
-        // GET
-        [Authorize]
         public ActionResult CreateInformationText()
         {
             return View();
@@ -1095,23 +1026,7 @@ namespace InrappSos.AstridWeb.Controllers
             return faqDb;
         }
 
-        private List<SystemViewModels.FileInfoViewModel> ConvertFileInfoToVM(List<FileInfo> files)
-        {
-            var filesList = new List<SystemViewModels.FileInfoViewModel>();
 
-            foreach (var file in files)
-            {
-                var fileVM = new SystemViewModels.FileInfoViewModel
-                {
-                    Filename = file.Name,
-                    LastWriteTime = file.LastWriteTime,
-                    CreationTime = file.CreationTime,
-                    Length = file.Length
-                };
-                filesList.Add(fileVM);
-            };
-            return filesList;
-        }
 
         private AdmHelgdag ConvertViewModelToAdmHelgdag(SystemViewModels.AdmHelgdagViewModel holiday)
         {

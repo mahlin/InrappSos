@@ -30,7 +30,6 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             [AllowHtml]
             public string SelectedInfoText { get; set; }
             public int SelectedInfoId { get; set; }
-            public string SelectedTemplateFile { get; set; }
 
             public int SelectedDocumentId { get; set; }
             public int SelectedHolidayId { get; set; }
@@ -40,9 +39,6 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public FAQViewModel SelectedFAQ { get; set; }
 
             public IEnumerable<AdmInformation> InfoPages { get; set; }
-            //public IEnumerable<AdmDokument> Mallar { get; set; }
-
-            public IEnumerable<FileInfoViewModel> Mallar { get; set; }
 
             public IEnumerable<AdmHelgdagViewModel> Holidays { get; set; }
 
@@ -54,14 +50,6 @@ namespace InrappSos.AstridWeb.Models.ViewModels
 
         }
 
-        public class FileInfoViewModel
-        {
-            public string Filename { get; set; }
-            public DateTime LastWriteTime { get; set; }
-            public DateTime CreationTime { get; set; }
-            public long Length { get; set; }
-
-        }
 
         public class FAQCategoryViewModel
         {

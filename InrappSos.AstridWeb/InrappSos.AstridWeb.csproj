@@ -180,7 +180,6 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
-    <Compile Include="Controllers\FileDropController.cs" />
     <Compile Include="Controllers\FileUploadController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LeveransController.cs" />
@@ -204,6 +203,7 @@
     <Compile Include="Models\ViewModels\AdminViewModels.cs" />
     <Compile Include="Models\ViewModels\FileDropViewModel.cs" />
     <Compile Include="Models\ViewModels\FilesViewModel.cs" />
+    <Compile Include="Models\ViewModels\FileUploadViewModels.cs" />
     <Compile Include="Models\ViewModels\LeveransViewModels.cs" />
     <Compile Include="Models\ViewModels\ManageViewModels.cs" />
     <Compile Include="Models\ViewModels\OrganisationViewModels.cs" />
@@ -415,9 +415,8 @@
     <Content Include="Views\Organisation\EditSFTPAccounts.cshtml" />
     <Content Include="Views\Organisation\CreateOrganisationSFTPAccount.cshtml" />
     <Content Include="Views\Organisation\_ContactSearchResult.cshtml" />
-    <Content Include="Views\System\EditDocuments.cshtml" />
-    <Content Include="Views\System\AddTemplateDocument.cshtml" />
-    <Content Include="Views\System\_Files.cshtml" />
+    <Content Include="Views\FileUpload\HandleTemplates.cshtml" />
+    <Content Include="Views\FileUpload\AddTemplateDocumentOLD.cshtml" />
     <Content Include="Views\Register\EditSubDirectorysOrgtypes.cshtml" />
     <Content Include="Views\Home\NotImplementedPage.cshtml" />
     <Content Include="Views\Role\CreateAstridRole.cshtml" />
@@ -433,7 +432,8 @@
     <Content Include="Views\Leverans\CaseFiles.cshtml" />
     <Content Include="Views\Search\Index.cshtml" />
     <Content Include="Views\FileUpload\Index.cshtml" />
-    <Content Include="Views\FileDrop\Index.cshtml" />
+    <Content Include="Views\FileUpload\_Files.cshtml" />
+    <Content Include="Views\FileUpload\AddTemplate.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

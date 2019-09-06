@@ -2,19 +2,8 @@
 
 $(document).ready(function () {
 
-    $(function () {
-        $('#ddlCase > option').each(function () {
-            $(this).attr("title", $(this).text());
-        });
-    });
-
-    $('.fileinput-button').hide();
+    $('.fileinput-button').show();
     $('.start').hide();
-   
-
-    if ($("#SelectedCaseId").val() !== "0" && $("#SelectedCaseId").val() !== "" ) {
-        $('.fileinput-button').show();
-    }
 
     window.filelist = [];
     $('#fileupload').fileupload({
@@ -44,27 +33,12 @@ $(document).ready(function () {
         var jqXHR = $('#fileupload').fileupload('send', { files: filelist })
             .success(function (result, textStatus, jqXHR) {
                 $("#filTabell tbody tr.template-upload").remove();
-                updateHistory();
-                $('#ddlCase').val("");
             })
             .error(function (jqXHR, textStatus, errorThrown) {/* ... */ })
             .complete(function (result, textStatus, jqXHR) {
             });
     });
     
-});
-
-$(document).on('change', '#ddlCase', function () {
-    filelist = [];
-    $("#filTabell tbody tr").remove();
-    $("#thTextFildropp").text("Filer för uppladdning");
-    $("#SelectedCaseId").val($('#ddlCase').val());
-    if ($("#SelectedCaseId").val() !== "") {
-        $('.fileinput-button').show();
-    } else {
-        $('.fileinput-button').hide();
-    }
-    updateHistory();
 });
 
 function checkIfDisabled(event) {
@@ -85,7 +59,7 @@ function checkIfDisabled(event) {
 function checkOkToUpload() {
     if (filelist.length > 0) {
         for (var i = 0; i < filelist.length; i++) {
-            filelist[i].custom = "Arende";
+            filelist[i].custom = "Mall";
         }
         $('.start').prop('disabled', false);
         $('.start').show();
@@ -93,34 +67,3 @@ function checkOkToUpload() {
         $('.start').hide();
     }
 }
-
-function updateHistory() {
-    $.ajax({ // create an AJAX call...'        
-        data: $(this).serialize(), // get the form data
-        cache: false,
-        type: 'post', // GET or POST
-        url: $('#StartUrl').val() + '/FileDrop/RefreshFilesHistory?caseId=' + $('#SelectedCaseId').val(),
-        success: function (response) { // on success..
-            $("#updateHistoryForm").html(response);
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            alert('error:' + errorThrown);
-        }
-    });  
-}
-
-$(document).on('submit', '#updateHistoryForm', function () {
-    $.ajax({ // create an AJAX call...'        
-        data: $(this).serialize(), // get the form data
-        cache: false,
-        type: 'post', // GET or POST
-        url: $('#StartUrl').val() + '/FileDrop/RefreshFilesHistory', // the file to call
-        success: function (response) { // on success..
-            $("#updateHistoryForm").html(response);
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            alert('error:' + errorThrown);
-        }
-    });
-    return false; // cancel original event to prevent form submitting
-});

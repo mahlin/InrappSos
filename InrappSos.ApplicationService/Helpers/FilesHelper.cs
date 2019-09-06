@@ -260,6 +260,22 @@ namespace InrappSos.ApplicationService.Helpers
         }
 
 
+        public void UploadTemplateFileAndShowResults(HttpContextBase ContentBase, List<ViewDataUploadFilesResult> resultList, string userId, string userName)
+        {
+            var httpRequest = ContentBase.Request;
+            var fileareaPath = ConfigurationManager.AppSettings["TemplatesNetworkPath"];
+
+            //Spara filerna
+            for (int i = 0; i < httpRequest.Files.Count; i++)
+            {
+                var file = httpRequest.Files[i];
+                Directory.CreateDirectory(fileareaPath);
+                var fullPath = Path.Combine(fileareaPath, Path.GetFileName(file.FileName));
+                file.SaveAs(fullPath);
+
+            }
+        }
+
         public void UploadSFTPFilesAndShowResults(List<FileInfo> fileList, List<ViewDataUploadFilesResult> resultList, SFTPkonto ftpAccount, int selectedRegisterId, string selectedUnitId, string selectedPeriod, List<RegisterInfo> registerList)
         {
 

@@ -8,7 +8,7 @@
     <div class="row fileupload-buttonbar">
         <div class="col-lg-7">
             <!-- The fileinput-button span is used to style the file input field as button -->
-            <span class="btn btn-success fileinput-button" id="fileinputButton" onclick="checkIfDisabled()">
+            <span class="btn btn-success fileinput-button" id="fileinputButton">
                 <i class="glyphicon glyphicon-plus"></i>
                 <span>Välj fil...</span>
                 <input type="file" name="files[]" accept="txt/xls" multiple id="filesExplorerOpener">
@@ -32,11 +32,11 @@
             <div class="progress-extended">&nbsp;</div>
         </div>
     </div>
-
+    <br /><br />
     <!-- The table listing the files available for upload/download -->
-    <table role="presentation" class="table table-striped" id="filTabell">
-        <thead>
-            <tr class="template-upload"><th id="thTextFildropp" colspan="4">Filer för uppladdning</th></tr>
+    <table role="presentation" class="table table-striped" id="filTabell" >
+        <thead style="border: 0px;">
+            <tr class="template-upload"><th id="thTextFildropp" colspan="4" style="border-left: 0px;border-right: 0px;">Filer för uppladdning</th></tr>
         </thead>
         <tbody class="files"></tbody>
     </table>

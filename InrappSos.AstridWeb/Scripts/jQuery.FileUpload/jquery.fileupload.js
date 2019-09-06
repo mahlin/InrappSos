@@ -911,7 +911,7 @@
                     $("#SelectedUnitId").val("");
                     $("#IngetAttRapporteraForSelectedUnitId").val("");
                     $('#registerInfo').html("");
-                    $('.fileinput-button').hide();
+                    $('.fileinput-button').show();
                     $('.start').hide();
                     response.result = options.result = result;
                     response.textStatus = options.textStatus = textStatus;

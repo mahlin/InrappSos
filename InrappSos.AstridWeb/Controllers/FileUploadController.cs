@@ -139,7 +139,7 @@ namespace InrappSos.AstridWeb.Controllers
             }
             catch (ArgumentException e)
             {
-                ErrorManager.WriteToErrorLog("FileDropController", "Upload", e.ToString(), e.HResult, User.Identity.Name);
+                ErrorManager.WriteToErrorLog("FileUploadController", "Upload", e.ToString(), e.HResult, User.Identity.Name);
                 var errorModel = new CustomErrorPageModel
                 {
                     Information = "Filer saknas vid uppladdning av fil.",
@@ -150,7 +150,7 @@ namespace InrappSos.AstridWeb.Controllers
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                ErrorManager.WriteToErrorLog("FileDropController", "Upload", e.ToString(), e.HResult, User.Identity.Name);
+                ErrorManager.WriteToErrorLog("FileUploadController", "Upload", e.ToString(), e.HResult, User.Identity.Name);
                 var errorModel = new CustomErrorPageModel
                 {
                     Information = "Ett fel inträffade vid uppladdning av fil.",

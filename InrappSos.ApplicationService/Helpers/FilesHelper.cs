@@ -272,7 +272,6 @@ namespace InrappSos.ApplicationService.Helpers
                 Directory.CreateDirectory(fileareaPath);
                 var fullPath = Path.Combine(fileareaPath, Path.GetFileName(file.FileName));
                 file.SaveAs(fullPath);
-
             }
         }
 

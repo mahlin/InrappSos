@@ -398,7 +398,7 @@ namespace InrappSos.ApplicationService.Helpers
                     {
                         filelength = Convert.ToInt32(file.Length);
                     }
-                    statuses.Add(UploadResult(file.Name, filelength, file.Name, (extendedFileName), levId, i + 1));
+                    statuses.Add(UploadResult(file.Name, filelength, file.Name, (extendedFileName), levId, i + 1, timestamp));
                 }
             }
         }
@@ -447,7 +447,7 @@ namespace InrappSos.ApplicationService.Helpers
                     {
                         filelength = Convert.ToInt32(file.ContentLength);
                     }
-                    statuses.Add(UploadResult(file.FileName, filelength, file.FileName, (extendedFileName), levId, i + 1));
+                    statuses.Add(UploadResult(file.FileName, filelength, file.FileName, (extendedFileName), levId, i + 1, timestamp));
                 }
             }
         }
@@ -460,6 +460,7 @@ namespace InrappSos.ApplicationService.Helpers
             {
                 var file = request.Files[i];
                 var timestamp = DateTime.Now.ToString("yyyy-MM-dd" + "T" + "HHmmss");
+                var timestampForMail = DateTime.Now.ToString("yyyy-MM-dd" + " " + "HH:mm:ss");
                 var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file.FileName);
                 var extension = Path.GetExtension(file.FileName);
                 extendedFileName = caseNumber + "_" + timestamp + "_" + fileNameWithoutExtension + extension;
@@ -489,7 +490,7 @@ namespace InrappSos.ApplicationService.Helpers
                     {
                         filelength = Convert.ToInt32(file.ContentLength);
                     }
-                    statuses.Add(UploadResult(file.FileName, filelength, file.FileName, file.FileName, filedropId, i + 1));
+                    statuses.Add(UploadResult(file.FileName, filelength, file.FileName, extendedFileName, filedropId, i + 1, timestampForMail));
                 }
             }
         }
@@ -540,7 +541,7 @@ namespace InrappSos.ApplicationService.Helpers
         }
 
 
-        public ViewDataUploadFilesResult UploadResult(String FileName,int fileSize,String FileFullPath, String SosFileName, int LeveransId, int SequenceNumber)
+        public ViewDataUploadFilesResult UploadResult(String FileName,int fileSize,String FileFullPath, String SosFileName, int LeveransId, int SequenceNumber, string Timestamp)
         {
             String getType = System.Web.MimeMapping.GetMimeMapping(FileFullPath);
             var result = new ViewDataUploadFilesResult()
@@ -554,7 +555,8 @@ namespace InrappSos.ApplicationService.Helpers
                 deleteType = DeleteType,
                 sosName = SosFileName,
                 leveransId = LeveransId,
-                sequenceNumber = SequenceNumber
+                sequenceNumber = SequenceNumber,
+                timestamp = Timestamp
             };
             return result;
         }
@@ -652,20 +654,23 @@ namespace InrappSos.ApplicationService.Helpers
             var arendeansvarig = _portalSosRepository.GetCaseResponsible(arende.ArendeansvarId);
             var arendeansvarigEpostadress = arendeansvarig.Epostadress;
             var arendetyp = _portalSosRepository.GetCaseType(arende.ArendetypId);
-
-
-
-            string subject = "Fil till ärende " + arende.Arendenr + " " + arende.Arendenamn + " har kommit";
-            string body = "Hej! <br><br>";
-            body += "Fil till ärende " + arende.Arendenr + " " + arende.Arendenamn + " har kommit.<br><br>";
-            body += userName + " har skickat in filen/filerna: <br>";
+            string subject = "Indata till ärende " + arende.Arendenr + " har inkommit";
+            string body = "Mejladress " + userName + " har skickat in fil/filer till nedanstående ärende.<br><br>";
+            body += "Ärendenummer: " + arende.Arendenr + "<br> ";
+            body += "Ärendenamn: " + arende.Arendenamn + " <br><br>";
+            body += "Följande fil/filer har inkommit: <br>";
+            body += "<table><tr><td style=\"text-align:left;width:300px\">Filnamn</td><td style=\"text-align:right;width:150px;padding-right:25px\">Filstorlek (byte)</td>";
+            body += "<td style=\"text-align:left;width:500px\">Nytt filnamn</td><td style=\"text-align:left;width:200px\">Tidpunkt</td></tr>";
+            body += "<tbody>";
             foreach (var result in uploadResult)
             {
-                body += result.name + "<br> ";
+                body += "<tr><td style=\"text-align:left;width:300px\">" + result.name + "</td><td style=\"text-align:right;width:150px;padding-right:25px\">" + result.size +
+                        "</td><td style=\"text-align:left;width:500px\">" + result.sosName + "</td><td style=\"text-align:left;width:200px\">" + result.timestamp + "</td></tr>";
             }
-            body += "<br><br>Hälsningar inrapporteringsservice<br>";
+            body += "</tbody></table><br><br>Hälsningar inrapporteringsservice<br>";
 
             MailMessage msg = new MailMessage();
+            msg.IsBodyHtml = true;
             MailAddress toMail = new MailAddress(arendeansvarigEpostadress);
             msg.To.Add(toMail);
             MailAddress fromMail = new MailAddress("no-reply.inrapportering@socialstyrelsen.se");
@@ -807,6 +812,7 @@ namespace InrappSos.ApplicationService.Helpers
         public string sosName { get; set; }
         public int leveransId { get; set; }
         public int sequenceNumber { get; set; }
+        public string timestamp { get; set; }
     }
     public class JsonFiles
     {

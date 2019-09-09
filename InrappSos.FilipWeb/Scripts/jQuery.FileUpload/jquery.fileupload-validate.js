@@ -40,23 +40,25 @@ function CheckFileName(selectedRegister, fileName) {
     var regexMatch = null;
     var tmp = null;
     //Hämta regexp för valt register
-    registerLista.forEach(function(register, index) {
-        if (selectedRegister === register.Id.toString()) {
-            var selectedFilkrav = register.SelectedFilkrav;
-            register.Filkrav.forEach(function(filkrav, ix) {
-                if (selectedFilkrav === filkrav.Id) {
-                    filkrav.ForvantadeFiler.forEach(function (forvFil, idx) {
-                        var expression = new RegExp(forvFil.Regexp, "i");
-                        //Kolla om filnamn matchar regex
-                        tmp = fileName.match(expression);
-                        if (tmp !== null) {
-                            regexMatch = tmp;
-                        }
-                    });
-                }
-            });
-        }
-    });
+    if (typeof registerLista !== 'undefined') {
+        registerLista.forEach(function(register, index) {
+            if (selectedRegister === register.Id.toString()) {
+                var selectedFilkrav = register.SelectedFilkrav;
+                register.Filkrav.forEach(function(filkrav, ix) {
+                    if (selectedFilkrav === filkrav.Id) {
+                        filkrav.ForvantadeFiler.forEach(function(forvFil, idx) {
+                            var expression = new RegExp(forvFil.Regexp, "i");
+                            //Kolla om filnamn matchar regex
+                            tmp = fileName.match(expression);
+                            if (tmp !== null) {
+                                regexMatch = tmp;
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
     return regexMatch;
 }
 

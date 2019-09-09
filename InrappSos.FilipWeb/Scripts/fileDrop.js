@@ -83,12 +83,21 @@ function checkIfDisabled(event) {
 
 
 function checkOkToUpload() {
+    var okUpload = true;
     if (filelist.length > 0) {
         for (var i = 0; i < filelist.length; i++) {
             filelist[i].custom = "Arende";
+            if (filelist[i].error) {
+                okUpload = false;
+            }
         }
-        $('.start').prop('disabled', false);
-        $('.start').show();
+        if (okUpload) {
+            $('.start').prop('disabled', false);
+            $('.start').show();        
+        }
+        else {
+            $('.start').hide();
+        }
     } else {
         $('.start').hide();
     }

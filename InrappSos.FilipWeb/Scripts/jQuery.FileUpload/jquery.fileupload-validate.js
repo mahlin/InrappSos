@@ -14,24 +14,25 @@ function CheckOkEmptyFile(selectedRegister, fileName) {
     var allowEmpty = false;
     var regexMatch = null;
     var tmp = null;
-
-    registerLista.forEach(function (register, index) {
-        if (selectedRegister === register.Id.toString()) {
-            var selectedFilkrav = register.SelectedFilkrav;
-            register.Filkrav.forEach(function (filkrav, ix) {
-                if (selectedFilkrav === filkrav.Id) {
-                    filkrav.ForvantadeFiler.forEach(function (forvFil, idx) {
-                        var expression = new RegExp(forvFil.Regexp, "i");
-                        //Kolla om filnamn matchar regex
-                        tmp = fileName.match(expression);
-                        if (tmp !== null) {
-                            allowEmpty = forvFil.Tom;
-                        }
-                    });
-                }
-            });
-        }
-    });
+    if (typeof registerLista !== 'undefined') {
+        registerLista.forEach(function(register, index) {
+            if (selectedRegister === register.Id.toString()) {
+                var selectedFilkrav = register.SelectedFilkrav;
+                register.Filkrav.forEach(function(filkrav, ix) {
+                    if (selectedFilkrav === filkrav.Id) {
+                        filkrav.ForvantadeFiler.forEach(function(forvFil, idx) {
+                            var expression = new RegExp(forvFil.Regexp, "i");
+                            //Kolla om filnamn matchar regex
+                            tmp = fileName.match(expression);
+                            if (tmp !== null) {
+                                allowEmpty = forvFil.Tom;
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
     return allowEmpty;
 }
 
@@ -113,17 +114,19 @@ function CheckPeriodInFileName(selectedRegister, regexMatch) {
     var periodInFilename = (regexMatch[2]);
     //Get valid period for selected register
     var validPeriod = "";
-    registerLista.forEach(function (register, index) {
-        if (selectedRegister === register.Id.toString()) {
-            var selectedFilkrav = register.SelectedFilkrav;
+    if (typeof registerLista !== 'undefined') {
+        registerLista.forEach(function(register, index) {
+            if (selectedRegister === register.Id.toString()) {
+                var selectedFilkrav = register.SelectedFilkrav;
 
-            register.Filkrav.forEach(function (filkrav, ix) {
-                if (selectedFilkrav === filkrav.Id) {
-                    validPeriod = filkrav.Perioder;
-                }
-            });
-        }
-    });
+                register.Filkrav.forEach(function(filkrav, ix) {
+                    if (selectedFilkrav === filkrav.Id) {
+                        validPeriod = filkrav.Perioder;
+                    }
+                });
+            }
+        });
+    }
     return CheckPeriod(periodInFilename, validPeriod);
 }
 
@@ -147,31 +150,32 @@ function DoubletFiles(selectedRegister, fileName) {
     var re;
     var tmp = null;
     var antHits = 0;
-
-    registerLista.forEach(function (register, index) {
-        //alert("index:" + index + ", valt register: " + selectedRegister + ", regsiterId: " + register.Id.toString());
-        if (selectedRegister === register.Id.toString()) {
-            var selectedFilkrav = register.SelectedFilkrav;
-            register.Filkrav.forEach(function(filkrav, ix) {
-                if (selectedFilkrav === filkrav.Id) {
-                    filkrav.ForvantadeFiler.forEach(function (forvFil, idx) {
-                        var expression = new RegExp(forvFil.Regexp, "i");
-                        //Kolla om filnamn matchar regex
-                        tmp = fileName.match(expression);
-                        //Om träff, kolla om nån annan fil i listan matchar samma regex
-                        if (tmp !== null) {
-                            window.filelist.forEach(function (file, i) {
-                                //alert("Regexp" + idx + ": " + regexp);
-                                if (expression.test(file.name)) {
-                                    antHits++;
-                                }
-                            });
-                        }
-                    });
-                }
-            });
-        }
-    });
+    if (typeof registerLista !== 'undefined') {
+        registerLista.forEach(function(register, index) {
+            //alert("index:" + index + ", valt register: " + selectedRegister + ", regsiterId: " + register.Id.toString());
+            if (selectedRegister === register.Id.toString()) {
+                var selectedFilkrav = register.SelectedFilkrav;
+                register.Filkrav.forEach(function(filkrav, ix) {
+                    if (selectedFilkrav === filkrav.Id) {
+                        filkrav.ForvantadeFiler.forEach(function(forvFil, idx) {
+                            var expression = new RegExp(forvFil.Regexp, "i");
+                            //Kolla om filnamn matchar regex
+                            tmp = fileName.match(expression);
+                            //Om träff, kolla om nån annan fil i listan matchar samma regex
+                            if (tmp !== null) {
+                                window.filelist.forEach(function(file, i) {
+                                    //alert("Regexp" + idx + ": " + regexp);
+                                    if (expression.test(file.name)) {
+                                        antHits++;
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
     if (antHits > 1)
         return true;
     return false;

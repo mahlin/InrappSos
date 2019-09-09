@@ -671,6 +671,7 @@ namespace InrappSos.ApplicationService.Helpers
             var arendetyp = _portalSosRepository.GetCaseType(arende.ArendetypId);
             string subject = "Indata till ärende " + arende.Arendenr + " har inkommit";
             string body = "Mejladress " + userName + " har skickat in fil/filer till nedanstående ärende.<br><br>";
+            body += "Ärendetyp: " + arende.Arendetyp.ArendetypNamn + " <br><br>";
             body += "Ärendenummer: " + arende.Arendenr + "<br> ";
             body += "Ärendenamn: " + arende.Arendenamn + " <br><br>";
             body += "Följande fil/filer har inkommit: <br>";
@@ -687,7 +688,9 @@ namespace InrappSos.ApplicationService.Helpers
             MailMessage msg = new MailMessage();
             msg.IsBodyHtml = true;
             MailAddress toMail = new MailAddress(arendeansvarigEpostadress);
+            MailAddress toMailFunktionsbrevlada = new MailAddress("registerservice@socialstyrelsen.se");
             msg.To.Add(toMail);
+            msg.To.Add(toMailFunktionsbrevlada);
             MailAddress fromMail = new MailAddress("no-reply.inrapportering@socialstyrelsen.se");
             msg.From = fromMail;
             //CC:a ev epostadresser för ärendetyp
@@ -713,18 +716,16 @@ namespace InrappSos.ApplicationService.Helpers
 
         private void NotifyFileUploader(List<ViewDataUploadFilesResult> uploadResult, Arende arende, string userName)
         {
-
-            string subject = "Fil till ärende " + arende.Arendenr + " " + arende.Arendenamn + " har mottagits";
+            string subject = "Socialstyrelsen har tagit emot filer i ärende " + arende.Arendenr;
             string body = "Hej! <br><br>";
-            body += "Fil/filer till ärende " + arende.Arendenr + " " + arende.Arendenamn + " har mottagits av Socialstyrelsen.<br><br>";
-            body += "Följande filer har mottagits: <br>";
-            foreach (var result in uploadResult)
-            {
-                body += result.name + "<br> ";
-            }
+            body += "Vi har tagit emot " + uploadResult.Count + " fil/filer i ärende " + arende.Arendenr + " " + arende.Arendenamn + ".<br><br>";
+            body += "För mer detaljerad information om vilka filer som vi tagit emot, vänligen logga in på ditt <a href=\"https://filip@socialstyrelsen.se\">Filip-konto</a>.<br>";
+            body += "Historiken för uppladdade filer hittar du genom att välja <i>Lämna filer</i> i menyn högst upp och därefter i listrutan välja det ärende som avses.<br><br><br>";
+ 
             body += "<br><br>Hälsningar inrapporteringsservice<br>";
 
             MailMessage msg = new MailMessage();
+            msg.IsBodyHtml = true;
             MailAddress toMail = new MailAddress(userName);
             msg.To.Add(toMail);
             MailAddress fromMail = new MailAddress("no-reply.inrapportering@socialstyrelsen.se");

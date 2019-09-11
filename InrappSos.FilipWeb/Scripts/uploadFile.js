@@ -39,18 +39,49 @@ $(document).ready(function () {
             filelist = [];
         });
 
-    $('#btnSubmit').click(function() {
-        var jqXHR = $('#fileupload').fileupload('send', { files: filelist })
-            .success(function (result, textStatus, jqXHR) {
+    $('#btnSubmit').click(function () {
+        var okToUpload = sessionOpen();
+        if (okToUpload) {
+            var jqXHR = $('#fileupload').fileupload('send', { files: filelist })
+                .success(function (result, textStatus, jqXHR) {
                     $("#filTabell tbody tr.template-upload").remove();
                     $("#updateHistoryForm").submit();
-            })
-            .error(function (jqXHR, textStatus, errorThrown) {/* ... */ })
-            .complete(function(result, textStatus, jqXHR) {
-            });
+                })
+                .error(function (jqXHR, textStatus, errorThrown) {/* ... */ })
+                .complete(function (result, textStatus, jqXHR) {
+                });
+        } else {
+            location.href = "/Account/Login";
+        }
     });
 
 });
+
+function sessionOpen() {
+    var sessionOk = false;
+    $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        contentType: 'application/json',
+        url: '/FileUpload/CheckSession',
+        async: false,
+        data: '{}',
+        success: function (data) {
+            if (data === true) {
+                sessionOk = true;
+            }
+            else {
+                sessionOk = false;
+            }
+        },
+        error: function (xhr) {
+            alert('error');
+        }
+    });
+    return sessionOk;
+}
+
+
 
 
 

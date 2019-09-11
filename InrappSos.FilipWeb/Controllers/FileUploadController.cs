@@ -271,8 +271,8 @@ namespace InrappSos.FilipWeb.Controllers
             if (!Request.IsAuthenticated)
             {
                 sessionOpen = false;
+                RedirectToAction("Login", "Account");
             }
-
             return Json(sessionOpen, JsonRequestBehavior.AllowGet);
         }
 

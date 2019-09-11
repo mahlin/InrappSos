@@ -110,6 +110,8 @@ namespace InrappSos.DataAccess
 
         List<Arende> GetCasesForContact(string userId);
 
+        List<Arende> GetCasesForPreContact(int preContactId);
+
         List<Arende> GetCasesForCaseManager(int caseManagerId);
 
         List<Arende> GetCasesByCaseType(int caseTypeId);
@@ -481,6 +483,7 @@ namespace InrappSos.DataAccess
 
         List<List<ApplicationUser>> SearchContact(string[] searchString);
 
+        List<List<PreKontakt>> SearchPreContact(string[] searchString);
         List<List<ArendeAnsvarig>> SearchCaseManager(string[] searchString);
 
         List<List<Arendetyp>> SearchCaseType(string[] searchString);

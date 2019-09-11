@@ -1476,6 +1476,21 @@ namespace InrappSos.ApplicationService
             }
             caseList.Add(allCaseManagerCases);
 
+            //Sök på ej registrerade kontaktpersoner (Prekontakt)
+            var preContactList = _portalSosRepository.SearchPreContact(searchstring);
+            var allPreContactsCases = new List<Arende>();
+            foreach (var itemsList in preContactList)
+            {
+                var preContactCases = new List<Arende>();
+                foreach (var preContact in itemsList)
+                {
+                    //Check if preContact has any cases
+                    preContactCases = _portalSosRepository.GetCasesForPreContact(preContact.Id);
+                    allPreContactsCases.AddRange(preContactCases);
+                }
+            }
+            caseList.Add(allPreContactsCases);
+
             //Sök på ärendetyp
             var caseTypeList = _portalSosRepository.SearchCaseType(searchstring);
             var allCasesTypeCases = new List<Arende>();

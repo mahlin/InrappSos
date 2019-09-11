@@ -38,7 +38,7 @@ namespace ErrorLogNotifier
                 mailRecipients.Add(_mailReciever);
                 Console.WriteLine("The file exists. Sending email.");
                 string subject = "Fellogg för SFTP-filer " + yesterday;
-                string body = "Hej! </br>";
+                string body = "Hej! <br>";
                 body += "Fel inträffade under gårdagens hantering av filer inlämnade via SFTP. Se bifogad fellogg. <br>";
 
                 MailMessage msg = new MailMessage();

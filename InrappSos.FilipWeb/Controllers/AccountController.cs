@@ -483,9 +483,9 @@ namespace InrappSos.FilipWeb.Controllers
                 var code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
                 var callbackUrl = Url.Action("EnableAccountConfirmEmail", "Account", new {userId = user.Id, code = code},
                     protocol: Request.Url.Scheme);
-                var body = "Hej, </br>";
-                body = body + "Du får detta mejl för att du har valt att återaktivera ditt konto i Socialstyrelsens inrapporteringsportal, Filip. </br>";
-                body = body + "Klicka <a href='" + callbackUrl + "'>här</a> för att aktivera ditt konto.</br></br>";
+                var body = "Hej, <br/>";
+                body = body + "Du får detta mejl för att du har valt att återaktivera ditt konto i Socialstyrelsens inrapporteringsportal, Filip. <br/>";
+                body = body + "Klicka <a href='" + callbackUrl + "'>här</a> för att aktivera ditt konto.<br><br>";
                 body = body + "Om du inte har valt att återaktivera ditt konto kan du bortse från detta mejl.";
 
                 await UserManager.SendEmailAsync(user.Id, "Bekräfta e-postadress",body);

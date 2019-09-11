@@ -438,6 +438,20 @@ namespace InrappSos.DataAccess
             return cases;
         }
 
+
+        public List<Arende> GetCasesForPreContact(int preContactId)
+        {
+            var cases = new List<Arende>();
+            var casePreContacts = DbContext.PreKontakt.Where(x => x.Id== preContactId).ToList();
+            foreach (var casePreContact in casePreContacts)
+            {
+                cases = DbContext.Arende.Where(x => x.Id == casePreContact.ArendeId).ToList();
+            }
+            return cases;
+        }
+
+        
+
         public List<Arende> GetCasesForCaseManager(int caseManagerId)
         {
             var cases = DbContext.Arende.Where(x => x.ArendeansvarId == caseManagerId).ToList();
@@ -2451,6 +2465,17 @@ namespace InrappSos.DataAccess
                 contactList.Add(DbContext.Users.Where(x => x.Namn.Contains(word) || x.Email.Contains(word)).ToList());
             }
             return contactList;
+        }
+
+        public List<List<PreKontakt>> SearchPreContact(string[] searchString)
+        {
+            var preContactList = new List<List<PreKontakt>>();
+
+            foreach (string word in searchString)
+            {
+                preContactList.Add(DbContext.PreKontakt.Where(x => x.Epostadress.Contains(word)).ToList());
+            }
+            return preContactList;
         }
 
         public List<List<ArendeAnsvarig>> SearchCaseManager(string[] searchString)

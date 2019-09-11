@@ -264,6 +264,18 @@ namespace InrappSos.FilipWeb.Controllers
             }
         }
 
+
+        public JsonResult CheckSession()
+        {
+            bool sessionOpen = User.Identity.IsAuthenticated;
+            if (!Request.IsAuthenticated)
+            {
+                sessionOpen = false;
+            }
+
+            return Json(sessionOpen, JsonRequestBehavior.AllowGet);
+        }
+
         [Authorize]
         public ActionResult DownloadFile(string filename)
         {

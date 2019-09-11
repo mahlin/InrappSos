@@ -688,9 +688,7 @@ namespace InrappSos.ApplicationService.Helpers
             MailMessage msg = new MailMessage();
             msg.IsBodyHtml = true;
             MailAddress toMail = new MailAddress(arendeansvarigEpostadress);
-            MailAddress toMailFunktionsbrevlada = new MailAddress("registerservice@socialstyrelsen.se");
             msg.To.Add(toMail);
-            msg.To.Add(toMailFunktionsbrevlada);
             MailAddress fromMail = new MailAddress("no-reply.inrapportering@socialstyrelsen.se");
             msg.From = fromMail;
             //CC:a ev epostadresser för ärendetyp

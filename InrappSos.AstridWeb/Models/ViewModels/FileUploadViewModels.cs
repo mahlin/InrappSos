@@ -21,6 +21,7 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public DateTime LastWriteTime { get; set; }
             public DateTime CreationTime { get; set; }
             public long Length { get; set; }
+            public string Path { get; set; }
         }
     }
 

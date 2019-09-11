@@ -115,7 +115,7 @@
                  }
 
                  @grid.GetHtml(htmlAttributes: new { id = "documentsTable" },
-                                 tableStyle: "webgrid-table900",
+                                 tableStyle: "webgrid-table1350",
                                  headerStyle: "webgrid-header",
                                  footerStyle: "webgrid-footer",
                                  alternatingRowStyle: "webgrid-alternating-row",
@@ -125,7 +125,9 @@
                                  columns: grid.Columns(
                                     grid.Column("Filnamn", format: @<text><label id="lblFileName">@item.Filename</label></text>, style: "col5Width"),
                                     grid.Column("Senast ändrad", format: @<text><label id="lblEditDate">@item.LastWriteTime</label></text>, style: "col2Width"),
-                                    grid.Column("Storlek (bytes)", format: @<text><label id="lblSize">@item.Length</label></text>, style: "col2Width"),
+                                    grid.Column("Storlek (bytes)", format: @<text><label id="lblSize">@item.Length</label></text>, style: "col1Width"),
+                                    grid.Column("Sökväg", format: @<text><label id="lblSize">@item.Path</label></text>, style: "col500Width"),
+
                                     grid.Column(null, format: @<text>
                                         <button class="display-mode btn btn-default" onclick="deleteTemplate('@item.Filename');return false;">Ta bort</button>
                                         @*<button class="cancel-user edit-mode btn btn-default">Avbryt</button>*@

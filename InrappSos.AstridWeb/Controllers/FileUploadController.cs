@@ -221,7 +221,8 @@ namespace InrappSos.AstridWeb.Controllers
                     Filename = file.Name,
                     LastWriteTime = file.LastWriteTime,
                     CreationTime = file.CreationTime,
-                    Length = file.Length
+                    Length = file.Length,
+                    Path = file.FullName
                 };
                 filesList.Add(fileVM);
             };

@@ -24,7 +24,7 @@
             if (confirm) {
                 var data = { 'filename': $('#SelectedTemplateFile').val() };
                 $.ajax({
-                    url: '/System/DeleteTemplate',
+                    url: '/FileUpload/DeleteTemplate',
                     type: 'POST',
                     contentType: 'application/json; charset=utf-8',
                     data: JSON.stringify(data),

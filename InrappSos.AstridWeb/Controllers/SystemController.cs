@@ -848,28 +848,6 @@ namespace InrappSos.AstridWeb.Controllers
             return RedirectToAction("GetSpecialDays");
         }
 
-        [HttpPost]
-        [Authorize]
-        public ActionResult DeleteTemplate(string filename)
-        {
-            try
-            {
-                _filesHelper.DeleteTemplateFile(filename);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                ErrorManager.WriteToErrorLog("SystemController", "DeleteTemplate", e.ToString(), e.HResult, User.Identity.Name);
-                var errorModel = new CustomErrorPageModel
-                {
-                    Information = "Ett fel inträffade när mall skulle tas bort.",
-                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
-                };
-                return View("CustomError", errorModel);
-            }
-            return RedirectToAction("GetTemplateDocuments");
-        }
-
         private DateTime SetTime(int hour, int minute)
         {
             DateTime time = new DateTime();

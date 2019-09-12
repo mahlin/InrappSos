@@ -110,6 +110,28 @@ namespace InrappSos.AstridWeb.Controllers
         }
 
         [HttpPost]
+        [Authorize]
+        public ActionResult DeleteTemplate(string filename)
+        {
+            try
+            {
+                _filesHelper.DeleteTemplateFile(filename);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("FileUploadController", "DeleteTemplate", e.ToString(), e.HResult, User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade när mall skulle tas bort.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
+            }
+            return RedirectToAction("GetTemplateDocuments");
+        }
+
+        [HttpPost]
         [Authorize(Roles = "Admin")]
         public JsonResult Upload(FileDropViewModel model)
         {

@@ -263,3 +263,5 @@ __pycache__/
 # Config-files
 ConnectionStrings.config
 PrivateSettings.config
+/InrappSos.FilipWeb/Mallar/CAN_222_2018_20181217T1036.txt
+/InrappSos.FilipWeb/Mallar/LSS_Mall_20190905.xlsx

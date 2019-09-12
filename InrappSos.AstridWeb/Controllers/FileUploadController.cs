@@ -91,13 +91,6 @@ namespace InrappSos.AstridWeb.Controllers
                 try
                 {
                     var userName = User.Identity.GetUserName();
-                    //var infoText = new AdmInformation
-                    //{
-                    //    Informationstyp = model.Informationstyp,
-                    //    Text = model.Text,
-                    //};
-                    //infoText.Text = model.Text;
-                    //_portalSosService.SkapaInformationsText(infoText, userName);
                 }
                 catch (Exception e)
                 {
@@ -213,16 +206,20 @@ namespace InrappSos.AstridWeb.Controllers
         private List<FileUploadViewModels.FileInfoViewModel> ConvertFileInfoToVM(List<FileInfo> files)
         {
             var filesList = new List<FileUploadViewModels.FileInfoViewModel>();
+            var starturl = ConfigurationManager.AppSettings["TemplatesUrl"];
+
 
             foreach (var file in files)
             {
+                var url = Path.Combine(starturl, file.Name);
+
                 var fileVM = new FileUploadViewModels.FileInfoViewModel
                 {
                     Filename = file.Name,
                     LastWriteTime = file.LastWriteTime,
                     CreationTime = file.CreationTime,
                     Length = file.Length,
-                    Path = file.FullName
+                    Path = url
                 };
                 filesList.Add(fileVM);
             };

@@ -157,6 +157,17 @@ namespace InrappSos.FilipWeb.Controllers
             return PartialView("_FilesHistory", model);
         }
 
+        public JsonResult CheckSession()
+        {
+            bool sessionOpen = User.Identity.IsAuthenticated;
+            if (!Request.IsAuthenticated)
+            {
+                sessionOpen = false;
+                RedirectToAction("Login", "Account");
+            }
+            return Json(sessionOpen, JsonRequestBehavior.AllowGet);
+        }
+
 
         /// <summary>  
         /// Create list for register-dropdown  

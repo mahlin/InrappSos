@@ -41,6 +41,8 @@ $(document).ready(function () {
         });
 
     $('#btnSubmit').click(function () {
+        var okToUpload = sessionOpen();
+        if (okToUpload) {
         var jqXHR = $('#fileupload').fileupload('send', { files: filelist })
             .success(function (result, textStatus, jqXHR) {
                 $("#filTabell tbody tr.template-upload").remove();
@@ -49,10 +51,37 @@ $(document).ready(function () {
             })
             .error(function (jqXHR, textStatus, errorThrown) {/* ... */ })
             .complete(function (result, textStatus, jqXHR) {
-            });
+                });
+        } else {
+            location.href = "/Account/Login";
+        }
     });
     
 });
+
+function sessionOpen() {
+    var sessionOk = false;
+    $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        contentType: 'application/json',
+        url: '/FileDrop/CheckSession',
+        async: false,
+        data: '{}',
+        success: function (data) {
+            if (data === true) {
+                sessionOk = true;
+            }
+            else {
+                sessionOk = false;
+            }
+        },
+        error: function (xhr) {
+            alert('error');
+        }
+    });
+    return sessionOk;
+}
 
 $(document).on('change', '#ddlCase', function () {
     filelist = [];

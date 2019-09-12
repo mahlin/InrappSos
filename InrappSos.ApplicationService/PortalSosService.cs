@@ -1424,21 +1424,25 @@ namespace InrappSos.ApplicationService
             var caseOrgList = new List<List<Organisation>>();
             var orgList = new List<Organisation>();
 
-            string[] searchstring = sokStr.Split(' ');
-            var orgSearchList = _portalSosRepository.SearchOrganisation(searchstring);
-
-            foreach (var orgs in orgSearchList)
+            if (orgtypeId != null)
             {
-                foreach (var org in orgs)
+                string[] searchstring = sokStr.Split(' ');
+                var orgSearchList = _portalSosRepository.SearchOrganisation(searchstring);
+
+                foreach (var orgs in orgSearchList)
                 {
-                    var orgtypes = _portalSosRepository.GetOrgTypesIdsForOrg(org.Id);
-                    if (orgtypes.Contains(orgtypeId))
+                    foreach (var org in orgs)
                     {
-                        orgList.Add(org);
+                        var orgtypes = _portalSosRepository.GetOrgTypesIdsForOrg(org.Id);
+                        if (orgtypes.Contains(orgtypeId))
+                        {
+                            orgList.Add(org);
+                        }
                     }
+                    caseOrgList.Add(orgList);
                 }
-                caseOrgList.Add(orgList);
             }
+            
             return caseOrgList;
         }
 

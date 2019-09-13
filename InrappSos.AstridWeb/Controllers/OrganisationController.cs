@@ -1376,7 +1376,6 @@ namespace InrappSos.AstridWeb.Controllers
             var model = new OrganisationViewModels.ArendeViewModel();
             model.OrganisationsId = selectedOrganisationId;
             model.Organisationsnamn = _portalSosService.HamtaOrganisation(selectedOrganisationId).Organisationsnamn;
-            model.StartDatum = DateTime.Now;
             model.Aktiv = true;
             var arendetypList = _portalSosService.HamtaAllaArendetyper();
             ViewBag.ArendetypList = CreateArendetypDropDownList(arendetypList);

@@ -226,14 +226,6 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public string ChosenContactsStr { get; set; }
             public List<ContactViewModel> Kontaktpersoner { get; set; }
             public string KontaktpersonerStr { get; set; }
-
-            [Display(Name = "Startdatum")]
-            [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-            [Required(ErrorMessage = "Fältet Startdatum är obligatoriskt.")]
-            public DateTime StartDatum { get; set; }
-            [Display(Name = "Slutdatum")]
-            [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-            public DateTime? SlutDatum { get; set; }
             [Display(Name = "Rapportörer")]
             public string Rapportorer { get; set; }
 

@@ -211,6 +211,7 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             [Display(Name = "Ärendenamn")]
             public string Arendenamn { get; set; }
             [Display(Name = "Ärendenummer")]
+            [Required(ErrorMessage = "Fältet Ärendenummer är obligatoriskt.")]
             public string Arendenr { get; set; }
 
             public int ArendetypId { get; set; }

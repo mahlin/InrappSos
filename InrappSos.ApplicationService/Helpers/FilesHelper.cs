@@ -285,7 +285,7 @@ namespace InrappSos.ApplicationService.Helpers
             }
             else  //KT,AT,Prod
             {
-                var credentials = new NetworkCredential(@ConfigurationManager.AppSettings["NetworkUser"], ConfigurationManager.AppSettings["NetworkPwd"], ConfigurationManager.AppSettings["DomainToReach"]);
+                var credentials = new NetworkCredential(@ConfigurationManager.AppSettings["NetworkUser"], ConfigurationManager.AppSettings["NetworkPwd"]);
                 try
                 {
                     using (new NetworkConnection(fileareaPath, credentials))

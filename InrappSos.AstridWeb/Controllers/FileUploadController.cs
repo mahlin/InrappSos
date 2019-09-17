@@ -51,6 +51,9 @@ namespace InrappSos.AstridWeb.Controllers
         [Authorize(Roles = "Admin")]
         public ActionResult GetTemplateDocuments()
         {
+            //var domain = Request.Url.Host;
+            //ErrorManager.WriteToErrorLog("FileUploadController", "Domain", domain);
+
             var model = new FileUploadViewModels.FileUploadViewModel();
             try
             {

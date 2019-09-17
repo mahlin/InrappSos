@@ -365,37 +365,37 @@ namespace InrappSos.AstridWeb.Controllers
         }
 
 
-        [HttpPost]
-        public ActionResult UpdateDocument(SystemViewModels.SystemViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    var userName = User.Identity.GetUserName();
+        //[HttpPost]
+        //public ActionResult UpdateDocument(SystemViewModels.SystemViewModel model)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        try
+        //        {
+        //            var userName = User.Identity.GetUserName();
 
-                    AdmDokument dok = new AdmDokument()
-                    {
-                        Id = model.SelectedDocumentId,
-                        //Text = model.SelectedInfoText
-                    };
-                    _filesHelper.UpdateFile(dok, userName);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                    ErrorManager.WriteToErrorLog("SystemController", "UpdateDocument", e.ToString(), e.HResult,
-                        User.Identity.Name);
-                    var errorModel = new CustomErrorPageModel
-                    {
-                        Information = "Ett fel inträffade vid uppdatering av mall.",
-                        ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
-                    };
-                    return View("CustomError", errorModel);
-                }
-            }
-            return RedirectToAction("GetDocuments");
-        }
+        //            AdmDokument dok = new AdmDokument()
+        //            {
+        //                Id = model.SelectedDocumentId,
+        //                //Text = model.SelectedInfoText
+        //            };
+        //            _filesHelper.UpdateFile(dok, userName);
+        //        }
+        //        catch (Exception e)
+        //        {
+        //            Console.WriteLine(e);
+        //            ErrorManager.WriteToErrorLog("SystemController", "UpdateDocument", e.ToString(), e.HResult,
+        //                User.Identity.Name);
+        //            var errorModel = new CustomErrorPageModel
+        //            {
+        //                Information = "Ett fel inträffade vid uppdatering av mall.",
+        //                ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+        //            };
+        //            return View("CustomError", errorModel);
+        //        }
+        //    }
+        //    return RedirectToAction("GetDocuments");
+        //}
 
 
         // GET

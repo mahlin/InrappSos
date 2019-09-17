@@ -2,6 +2,7 @@
 using InrappSos.ApplicationService.DTOModel;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Configuration;
 using System.IO;
 using System.Linq;
@@ -11,6 +12,7 @@ using System.Numerics;
 using InrappSos.ApplicationService.Interface;
 using InrappSos.DomainModel;
 using System.Text.RegularExpressions;
+using System.Net;
 
 namespace InrappSos.ApplicationService.Helpers
 {
@@ -262,17 +264,60 @@ namespace InrappSos.ApplicationService.Helpers
 
         public void UploadTemplateFileAndShowResults(HttpContextBase ContentBase, List<ViewDataUploadFilesResult> resultList, string userId, string userName)
         {
-            var httpRequest = ContentBase.Request;
+            //TODO - test
+            var tmp = ContentBase.Request.Url.Host;
+
             var fileareaPath = ConfigurationManager.AppSettings["TemplatesNetworkPath"];
 
-            //Spara filerna
-            for (int i = 0; i < httpRequest.Files.Count; i++)
+            //Om utvecklingsmiljön
+            if (ConfigurationManager.AppSettings["Env"] == "Utv")
             {
-                var file = httpRequest.Files[i];
-                Directory.CreateDirectory(fileareaPath);
-                var fullPath = Path.Combine(fileareaPath, Path.GetFileName(file.FileName));
-                file.SaveAs(fullPath);
+                var httpRequest = ContentBase.Request;
+
+                //Spara filerna
+                for (int i = 0; i < httpRequest.Files.Count; i++)
+                {
+                    var file = httpRequest.Files[i];
+                    Directory.CreateDirectory(fileareaPath);
+                    var fullPath = Path.Combine(fileareaPath, Path.GetFileName(file.FileName));
+                    file.SaveAs(fullPath);
+                }
             }
+            else  //KT,AT,Prod
+            {
+                var credentials = new NetworkCredential(@ConfigurationManager.AppSettings["NetworkUser"], ConfigurationManager.AppSettings["NetworkPwd"], ConfigurationManager.AppSettings["DomainToReach"]);
+                try
+                {
+                    using (new NetworkConnection(fileareaPath, credentials))
+                    {
+                        var httpRequest = ContentBase.Request;
+
+                        //Spara filerna
+                        for (int i = 0; i < httpRequest.Files.Count; i++)
+                        {
+                            var file = httpRequest.Files[i];
+                            Directory.CreateDirectory(fileareaPath);
+                            var fullPath = Path.Combine(fileareaPath, Path.GetFileName(file.FileName));
+                            file.SaveAs(fullPath);
+                        }
+                    }
+                }
+                catch (Win32Exception e)
+                {
+                    ErrorManager.WriteToErrorLog("FilesHelper", "UploadTemplateFileAndShowResults", e.ToString(),
+                        e.HResult);
+                    Console.WriteLine(e.Message);
+                    Console.ReadLine();
+                }
+                catch (Exception ex)
+                {
+                    ErrorManager.WriteToErrorLog("FilesHelper", "UploadTemplateFileAndShowResults", ex.ToString(),
+                        ex.HResult);
+                    Console.WriteLine(ex.Message);
+                    Console.ReadLine();
+                }
+            }
+           
         }
 
         public void UploadSFTPFilesAndShowResults(List<FileInfo> fileList, List<ViewDataUploadFilesResult> resultList, SFTPkonto ftpAccount, int selectedRegisterId, string selectedUnitId, string selectedPeriod, List<RegisterInfo> registerList)
@@ -735,13 +780,49 @@ namespace InrappSos.ApplicationService.Helpers
 
 
         //************* Files on disk *******************//
+
         public IEnumerable<FileInfo> GetAllTemplateFiles()
         {
             var tempaletFileList = new List<FileInfo>();
-            var _fileareaPath = ConfigurationManager.AppSettings["TemplatesNetworkPath"];
-            //var templateFiles = Directory.GetFiles(_fileareaPath);
-            DirectoryInfo dir = new DirectoryInfo(_fileareaPath);
-            var _filesInFolder = dir.GetFiles().OrderByDescending(p => p.CreationTime).ToList();
+            var fileareaPath = ConfigurationManager.AppSettings["TemplatesNetworkPath"];
+            var _filesInFolder = new List<FileInfo>();
+
+            //Om utvecklingsmiljön
+            if (ConfigurationManager.AppSettings["Env"] == "Utv")
+            {
+                DirectoryInfo dir = new DirectoryInfo(fileareaPath);
+                _filesInFolder = dir.GetFiles().OrderByDescending(p => p.CreationTime).ToList();
+            }
+            else //KT,AT,Prod
+            {
+                //var credentials = new NetworkCredential(@ConfigurationManager.AppSettings["NetworkUser"],
+                //    ConfigurationManager.AppSettings["NetworkPwd"], ConfigurationManager.AppSettings["DomainToReach"]);
+                var credentials = new NetworkCredential(@ConfigurationManager.AppSettings["NetworkUser"],
+                    ConfigurationManager.AppSettings["NetworkPwd"]);
+
+                try
+                {
+                    using (new NetworkConnection(fileareaPath, credentials))
+                    {
+                        DirectoryInfo dir = new DirectoryInfo(fileareaPath);
+                        _filesInFolder = dir.GetFiles().OrderByDescending(p => p.CreationTime).ToList();
+                    }
+                }
+                catch (Win32Exception e)
+                {
+                    ErrorManager.WriteToErrorLog("FilesHelper", "UploadTemplateFileAndShowResults", e.ToString(),
+                        e.HResult);
+                    Console.WriteLine(e.Message);
+                    Console.ReadLine();
+                }
+                catch (Exception ex)
+                {
+                    ErrorManager.WriteToErrorLog("FilesHelper", "UploadTemplateFileAndShowResults", ex.ToString(),
+                        ex.HResult);
+                    Console.WriteLine(ex.Message);
+                    Console.ReadLine();
+                }
+            }
 
             //foreach (var templateFile in _filesInFolder)
             //{
@@ -752,6 +833,24 @@ namespace InrappSos.ApplicationService.Helpers
             //}
             return _filesInFolder;
         }
+
+        //public IEnumerable<FileInfo> GetAllTemplateFiles()
+        //{
+        //    var templateFileList = new List<FileInfo>();
+        //    var _fileareaPath = ConfigurationManager.AppSettings["TemplatesNetworkPath"];
+        //    //var templateFiles = Directory.GetFiles(_fileareaPath);
+        //    DirectoryInfo dir = new DirectoryInfo(_fileareaPath);
+        //    var _filesInFolder = dir.GetFiles().OrderByDescending(p => p.CreationTime).ToList();
+
+        //    //foreach (var templateFile in _filesInFolder)
+        //    //{
+        //    //    var datCreate = templateFile.CreationTime;
+        //    //    var datModified = templateFile.LastWriteTime;
+        //    //    var size = templateFile.Length;
+        //    //    var name = templateFile.Name;
+        //    //}
+        //    return _filesInFolder;
+        //}
 
         public void DeleteTemplateFile(string filename)
         {

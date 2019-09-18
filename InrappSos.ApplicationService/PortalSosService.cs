@@ -585,10 +585,22 @@ namespace InrappSos.ApplicationService
 
         public void HandlePrekontaktUserRegistration(ApplicationUser user, PreKontakt preKontakt)
         {
-            //Lägg till som kontaktperson för ärendet och sätt roll
-            KopplaKontaktpersonTillArende(user.Email,preKontakt.ArendeId,user.Id);
-            //Ta bort från PreKontakt
-            _portalSosRepository.DeletePreKontakt(preKontakt.Id);
+            //Om användaren är kopplad till ett ärende som hör till användarens organisation
+            var arende = _portalSosRepository.GetCase(preKontakt.ArendeId);
+            if (arende.OrganisationsId == user.OrganisationId)
+            {
+                //Lägg till som kontaktperson för ärendet och sätt roll
+                KopplaKontaktpersonTillArende(user.Email, preKontakt.ArendeId, user.Id);
+                //Ta bort från PreKontakt
+                _portalSosRepository.DeletePreKontakt(preKontakt.Id);
+            }
+            else
+            {
+                //TODO
+                //var org = _portalSosRepository.GetOrganisation(arende.OrganisationsId);
+                //if ()
+                KopplaFilipAnvändareTillFilipRollNamn(user.UserName, user.Id, "RegUpp");
+            }
         }
 
         public IEnumerable<AdmFAQKategori> HamtaAllaFAQs()

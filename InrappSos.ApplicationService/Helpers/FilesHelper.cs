@@ -783,7 +783,7 @@ namespace InrappSos.ApplicationService.Helpers
 
         public IEnumerable<FileInfo> GetAllTemplateFiles()
         {
-            var tempaletFileList = new List<FileInfo>();
+            var templateFileList = new List<FileInfo>();
             var fileareaPath = ConfigurationManager.AppSettings["TemplatesNetworkPath"];
             var _filesInFolder = new List<FileInfo>();
 
@@ -834,29 +834,43 @@ namespace InrappSos.ApplicationService.Helpers
             return _filesInFolder;
         }
 
-        //public IEnumerable<FileInfo> GetAllTemplateFiles()
-        //{
-        //    var templateFileList = new List<FileInfo>();
-        //    var _fileareaPath = ConfigurationManager.AppSettings["TemplatesNetworkPath"];
-        //    //var templateFiles = Directory.GetFiles(_fileareaPath);
-        //    DirectoryInfo dir = new DirectoryInfo(_fileareaPath);
-        //    var _filesInFolder = dir.GetFiles().OrderByDescending(p => p.CreationTime).ToList();
-
-        //    //foreach (var templateFile in _filesInFolder)
-        //    //{
-        //    //    var datCreate = templateFile.CreationTime;
-        //    //    var datModified = templateFile.LastWriteTime;
-        //    //    var size = templateFile.Length;
-        //    //    var name = templateFile.Name;
-        //    //}
-        //    return _filesInFolder;
-        //}
-
         public void DeleteTemplateFile(string filename)
         {
             var _fileareaPath = ConfigurationManager.AppSettings["TemplatesNetworkPath"];
-            DirectoryInfo dir = new DirectoryInfo(_fileareaPath);
-            var _filesInFolder = dir.GetFiles().OrderByDescending(p => p.CreationTime).ToList();
+            var _filesInFolder = new List<FileInfo>();
+            //Om utvecklingsmiljön
+            if (ConfigurationManager.AppSettings["Env"] == "Utv")
+            {
+                DirectoryInfo dir = new DirectoryInfo(_fileareaPath);
+                _filesInFolder = dir.GetFiles().OrderByDescending(p => p.CreationTime).ToList();
+            }
+            else //KT,AT,Prod
+            {
+                var credentials = new NetworkCredential(@ConfigurationManager.AppSettings["NetworkUser"],
+                    ConfigurationManager.AppSettings["NetworkPwd"]);
+                try
+                {
+                    using (new NetworkConnection(_fileareaPath, credentials))
+                    {
+                        DirectoryInfo dir = new DirectoryInfo(_fileareaPath);
+                        _filesInFolder = dir.GetFiles().OrderByDescending(p => p.CreationTime).ToList();
+                    }
+                }
+                catch (Win32Exception e)
+                {
+                    ErrorManager.WriteToErrorLog("FilesHelper", "DeleteTemplateFile", e.ToString(),
+                        e.HResult);
+                    Console.WriteLine(e.Message);
+                    Console.ReadLine();
+                }
+                catch (Exception ex)
+                {
+                    ErrorManager.WriteToErrorLog("FilesHelper", "DeleteTemplateFile", ex.ToString(),
+                        ex.HResult);
+                    Console.WriteLine(ex.Message);
+                    Console.ReadLine();
+                }
+            }
 
             foreach (var templateFile in _filesInFolder)
             {
@@ -867,10 +881,46 @@ namespace InrappSos.ApplicationService.Helpers
             }
         }
 
-        //public IEnumerable<FileInfo> GetAllErrorCodeFiles()
-        //{
-        //    var _fileareaPath = ConfigurationManager.AppSettings["ErrorCodesNetworkPath"];
-        //}
+
+
+        public byte[] DownloadFile(string filename)
+        {
+            var dir = ConfigurationManager.AppSettings["DirForFeedback"];
+            string filepath = dir + filename;
+            byte[] filedata = new byte[] { };
+
+            if (ConfigurationManager.AppSettings["Env"] == "Utv")
+            {
+                filedata = System.IO.File.ReadAllBytes(filepath);
+            }
+            else //KT,AT,Prod
+            {
+                var credentials = new NetworkCredential(@ConfigurationManager.AppSettings["NetworkUser"],
+                    ConfigurationManager.AppSettings["NetworkPwd"]);
+                try
+                {
+                    using (new NetworkConnection(filepath, credentials))
+                    {
+                        filedata = System.IO.File.ReadAllBytes(filepath);
+                    }
+                }
+                catch (Win32Exception e)
+                {
+                    ErrorManager.WriteToErrorLog("FilesHelper", "DownloadFile", e.ToString(),e.HResult);
+                    Console.WriteLine(e.Message);
+                    Console.ReadLine();
+                }
+                catch (Exception ex)
+                {
+                    ErrorManager.WriteToErrorLog("FilesHelper", "DownloadFile", ex.ToString(),ex.HResult);
+                    Console.WriteLine(ex.Message);
+                    Console.ReadLine();
+                }
+
+            }
+
+            return filedata;
+        }
 
 
 

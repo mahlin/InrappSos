@@ -196,9 +196,10 @@ namespace InrappSos.AstridWeb.Controllers
         {
             try
             {
+                byte[] filedata = _filesHelper.DownloadFile(filename);
                 var dir = WebConfigurationManager.AppSettings["DirForFeedback"];
                 string filepath = dir + filename;
-                byte[] filedata = System.IO.File.ReadAllBytes(filepath);
+                //byte[] filedata = System.IO.File.ReadAllBytes(filepath);
                 string contentType = MimeMapping.GetMimeMapping(filepath);
 
                 var cd = new System.Net.Mime.ContentDisposition

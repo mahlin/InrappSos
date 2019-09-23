@@ -81,6 +81,8 @@ namespace InrappSos.ApplicationService.Interface
 
         Organisation HamtaOrgForUppgiftsskyldighet(int uppgSkId);
 
+        AdmOrganisationstyp HamtaOrgtyp(string orgtypnamn);
+
         List<OrganisationstypDTO> HamtaOrgtyperForOrganisation(int orgId, List<AdmOrganisationstyp> orgtyperList);
 
         List<OrganisationstypDTO> HamtaOrgtyperForOrganisation(int orgId);

@@ -4,11 +4,13 @@ using System.Configuration;
 using System.Data.Entity.Validation;
 using System.Globalization;
 using System.Linq;
+using System.Net.Mail;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.UI.WebControls;
 using InrappSos.FilipWeb.Models;
 using InrappSos.DataAccess;
 using InrappSos.ApplicationService;
@@ -29,6 +31,7 @@ namespace InrappSos.FilipWeb.Controllers
         private CustomIdentityResultErrorDescriber _errorDecsriber;
         private readonly IPortalSosService _portalService;
         GeneralHelper _generalHelper;
+        MailHelper _mailHelper;
 
         public AccountController()
         {
@@ -36,6 +39,8 @@ namespace InrappSos.FilipWeb.Controllers
             _portalService =
                 new PortalSosService(new PortalSosRepository(new InrappSosDbContext()));
             _generalHelper = new GeneralHelper();
+            _mailHelper = new MailHelper();
+
         }
 
         public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
@@ -46,6 +51,8 @@ namespace InrappSos.FilipWeb.Controllers
             _portalService =
                 new PortalSosService(new PortalSosRepository(new InrappSosDbContext()));
             _generalHelper = new GeneralHelper();
+            _mailHelper = new MailHelper();
+
         }
 
         public ApplicationSignInManager SignInManager
@@ -347,6 +354,7 @@ namespace InrappSos.FilipWeb.Controllers
                 try
                 {
                     var organisation = GetOrganisationForEmailDomain(model.Email);
+                    var user = new ApplicationUser();
                     if (organisation == null)
                     {
                         var connectedViaPrivEmailOrArende = false;
@@ -358,8 +366,8 @@ namespace InrappSos.FilipWeb.Controllers
                             var undantagEpost = _portalService.HamtaUndantagEpostadress(model.Email);
                             await RegisterUser(undantagEpost.OrganisationsId, model);
                             //Sätt roll registeruppgiftslämnare
-                            var user = UserManager.FindByEmail(model.Email);
-                            _portalService.KopplaFilipAnvändareTillFilipRollNamn(user.UserName, user.Id, "RegUpp");
+                            user = UserManager.FindByEmail(model.Email);
+                            //_portalService.KopplaFilipAnvändareTillFilipRollNamn(user.UserName, user.Id, "RegUpp");
                         }
                         //check if user emailadress connected to organisation via ärende/case (table PreKontakt)
                         if (_portalService.IsConnectedViaArende(model.Email))
@@ -369,8 +377,8 @@ namespace InrappSos.FilipWeb.Controllers
                             var preKontakt = _portalService.HamtaPrekontakt(model.Email);
                             var orgId = _portalService.HamtaArendeById(preKontakt.ArendeId).OrganisationsId;
                             //check if user already registred
-                            var user = UserManager.FindByEmail(model.Email);
-                            if (user == null)
+                            user = UserManager.FindByEmail(model.Email);
+                            if (user.SkapadAv == null)
                             {
                                 await RegisterUser(orgId, model);
                                 user = UserManager.FindByEmail(model.Email);
@@ -380,6 +388,8 @@ namespace InrappSos.FilipWeb.Controllers
                                 _portalService.HandlePrekontaktUserRegistration(user, preKontakt);
                             }
                         }
+                        KopplaFilipAnvandareTillRoll(user);
+
                         if (connectedViaPrivEmailOrArende)
                         {
                             ViewBag.Email = model.Email;
@@ -396,43 +406,15 @@ namespace InrappSos.FilipWeb.Controllers
                     {
                         await RegisterUser(organisation.Id, model);
                         //Sätt roll
-                        var user = UserManager.FindByEmail(model.Email);
+                        user = UserManager.FindByEmail(model.Email);
                         var preKontakt = _portalService.HamtaPrekontakt(model.Email);
                         if (preKontakt != null)
                         {
                             _portalService.HandlePrekontaktUserRegistration(user, preKontakt);
                         }
-                        else
-                        {
-                            _portalService.KopplaFilipAnvändareTillFilipRollNamn(user.UserName,user.Id,"RegUpp");
-                        }
+                        KopplaFilipAnvandareTillRoll(user);
                         ViewBag.Email = model.Email;
                         return View("DisplayEmail");
-                        //var user = new ApplicationUser {UserName = model.Email, Email = model.Email};
-                        //user.OrganisationId = organisation.Id;
-                        //user.SkapadAv = model.Email;
-                        //user.SkapadDatum = DateTime.Now;
-                        //user.AndradAv = model.Email;
-                        //user.AndradDatum = DateTime.Now;
-                        //user.Namn = model.Namn;
-                        //user.Kontaktnummer = model.Telefonnummer;
-
-                        //var result = await UserManager.CreateAsync(user, model.Password);
-                        //if (result.Succeeded)
-                        //{
-                        //    await UserManager.SetTwoFactorEnabledAsync(user.Id, true);
-                        //    //Spara valda register
-                        //    //_portalService.SparaValdaRegistersForAnvandare(user.Id, user.UserName, model.RegisterList);
-                        //    //Verifiera epostadress
-                        //    var code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                        //    var callbackUrl = Url.Action("ConfirmEmail", "Account", new {userId = user.Id, code = code},
-                        //        protocol: Request.Url.Scheme);
-                        //    //TODO mail/utvecklingsmiljön
-                        //    await UserManager.SendEmailAsync(user.Id, "Bekräfta e-postadress", "Bekräfta din e-postadress i Socialstyrelsens inrapporteringsportal genom att klicka <a href=\"" + callbackUrl + "\">här</a>");
-                        //    ViewBag.Email = model.Email;
-                        //    return View("DisplayEmail");
-                        //}
-                        //AddErrors(result);
                     }
                 }
                 catch (System.Net.Mail.SmtpException e)
@@ -511,6 +493,57 @@ namespace InrappSos.FilipWeb.Controllers
         {
                 var organisation = _portalService.HamtaOrgForEmailDomain(modelEmail);
                 return organisation;
+        }
+
+        private void KopplaFilipAnvandareTillRoll(ApplicationUser user)
+        {
+            var org = _portalService.HamtaOrganisation(user.OrganisationId);
+            var orgtypeIdForArendetyp = _portalService.HamtaOrgtyp("Ärendeorganisation").Id;
+            var arendeorg = org.Organisationstyp.FirstOrDefault(i => i.OrganisationstypId == orgtypeIdForArendetyp);
+
+            //Om org endast Ärendeorg
+            if (org.Organisationstyp.Count == 1 && arendeorg != null)
+            {
+                _portalService.KopplaFilipAnvändareTillFilipRollNamn(user.UserName, user.Id, "ArendeUpp");
+            }
+            //Om org EJ Ärendeorg, men annan typ
+            else if (org.Organisationstyp.Count > 0 && arendeorg == null)
+            {
+                _portalService.KopplaFilipAnvändareTillFilipRollNamn(user.UserName, user.Id, "RegUpp");
+            }
+            //Om både Ärendeorg och annan orgtyp och användaren kopplad till något ärende
+            else
+            {
+                var userArenden = _portalService.HamtaAnvandaresArenden(user.Id);
+                if (userArenden.Any())
+                {
+                    _portalService.KopplaFilipAnvändareTillFilipRollNamn(user.UserName, user.Id, "ArendeUpp");
+                }
+                //Användaren får ingen roll, maila  inrapportering
+                else
+                {
+                    SendMail(user, org);
+                }
+            }
+        }
+
+        private void SendMail(ApplicationUser user, Organisation org)
+        {
+            MailMessage msg = new MailMessage();
+            MailAddress toMail = new MailAddress(ConfigurationManager.AppSettings["MailSender"]);
+
+            msg.To.Add(toMail);
+            msg.From = toMail;
+            string subject = "Roll ej satt vid registrering";
+            string body = "Hej! <br>";
+            body += "Roll kunde ej sättas när nedanstående användare registrerades i Filip.  <br>";
+
+            body += "Användare: " + user.Email + "<br><br>";
+            body += "Organisation: " + org.Organisationsnamn + "<br><br>";
+            msg.Subject = subject;
+            msg.Body = body;
+
+            _mailHelper.SendEmail(msg);
         }
 
         //

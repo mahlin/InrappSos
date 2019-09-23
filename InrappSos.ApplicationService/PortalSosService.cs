@@ -323,6 +323,12 @@ namespace InrappSos.ApplicationService
             return inrapporteringsKod;
         }
 
+        public AdmOrganisationstyp HamtaOrgtyp(string orgtypnamn)
+        {
+            var orgtyp = _portalSosRepository.GetOrgtypeByName(orgtypnamn);
+            return orgtyp;
+        }
+
         public List<OrganisationstypDTO> HamtaOrgtyperForOrganisation(int orgId, List<AdmOrganisationstyp> orgtyperList)
         {
             var chosenOrgTypeIdsForOrgList = _portalSosRepository.GetOrgTypesIdsForOrg(orgId);
@@ -594,13 +600,13 @@ namespace InrappSos.ApplicationService
                 //Ta bort från PreKontakt
                 _portalSosRepository.DeletePreKontakt(preKontakt.Id);
             }
-            else
-            {
-                //TODO
-                //var org = _portalSosRepository.GetOrganisation(arende.OrganisationsId);
-                //if ()
-                KopplaFilipAnvändareTillFilipRollNamn(user.UserName, user.Id, "RegUpp");
-            }
+            //else
+            //{
+            //    //TODO
+            //    //var org = _portalSosRepository.GetOrganisation(arende.OrganisationsId);
+            //    //if ()
+            //    KopplaFilipAnvändareTillFilipRollNamn(user.UserName, user.Id, "RegUpp");
+            //}
         }
 
         public IEnumerable<AdmFAQKategori> HamtaAllaFAQs()

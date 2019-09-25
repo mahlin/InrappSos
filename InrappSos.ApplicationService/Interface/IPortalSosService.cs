@@ -114,6 +114,8 @@ namespace InrappSos.ApplicationService.Interface
         Organisationsenhet HamtaOrganisationsenhetMedFilkod(string kod, int orgId);
 
         IEnumerable<AdmUppgiftsskyldighet> HamtaUppgiftsskyldighetForOrg(int orgId);
+
+        IEnumerable<AdmUppgiftsskyldighet> HamtaAktivUppgiftsskyldighetForOrg(int orgId);
         AdmUppgiftsskyldighet HamtaUppgiftsskyldighetForOrganisationOchRegister(int orgId, int delregid);
 
         AdmUppgiftsskyldighet HamtaAktivUppgiftsskyldighetForOrganisationOchRegister(int orgId, int delregid);
@@ -122,6 +124,8 @@ namespace InrappSos.ApplicationService.Interface
 
         IEnumerable<AdmEnhetsUppgiftsskyldighet> HamtaEnhetsUppgiftsskyldighetForOrgEnhet(int orgenhetId);
         AdmEnhetsUppgiftsskyldighet HamtaEnhetsUppgiftsskyldighetForUppgiftsskyldighetOchOrgEnhet(int uppgskhId, int orgenhetId);
+
+        AdmEnhetsUppgiftsskyldighet HamtaAktivEnhetsUppgiftsskyldighetForUppgiftsskyldighetOchOrgEnhet(int uppgskhId, int orgenhetId);
 
         IEnumerable<AdmFAQKategori> HamtaFAQkategorier();
 

@@ -699,9 +699,21 @@ namespace InrappSos.DataAccess
             return reportObligationInfo;
         }
 
+        public IEnumerable<AdmUppgiftsskyldighet> GetActiveReportObligationInformationForOrg(int orgId)
+        {
+            var reportObligationInfo = DbContext.AdmUppgiftsskyldighet.Where(x => x.OrganisationId == orgId && x.SkyldigTom == null).Include(x => x.AdmDelregister).ToList();
+            return reportObligationInfo;
+        }
+
         public AdmUppgiftsskyldighet GetReportObligationInformationForOrgAndSubDir(int orgId, int subdirId)
         {
             var reportObligation = DbContext.AdmUppgiftsskyldighet.SingleOrDefault(x => x.OrganisationId == orgId && x.DelregisterId == subdirId);
+            return reportObligation;
+        }
+
+        public AdmUppgiftsskyldighet GetActiveReportObligationInformationForOrgAndSubDir(int orgId, int subdirId)
+        {
+            var reportObligation = DbContext.AdmUppgiftsskyldighet.SingleOrDefault(x => x.OrganisationId == orgId && x.DelregisterId == subdirId && x.SkyldigTom == null);
             return reportObligation;
         }
 
@@ -717,9 +729,21 @@ namespace InrappSos.DataAccess
             return reportObligationsForSubdirAndOrgtype;
         }
 
+        public IEnumerable<AdmUppgiftsskyldighet> GetAllActiveReportObligationsForSubDirAndOrg(int subdirId, int orgId)
+        {
+            var reportObligationsForSubdirAndOrgtype = DbContext.AdmUppgiftsskyldighet.Where(x => x.DelregisterId == subdirId && x.OrganisationId == orgId && x.SkyldigTom == null).ToList();
+            return reportObligationsForSubdirAndOrgtype;
+        }
+
         public IEnumerable<AdmUppgiftsskyldighetOrganisationstyp> GetReportObligationForOrgtype(int orgtypeId)
         {
             var reportObligationOrgtypes = DbContext.AdmUppgiftsskyldighetOrganisationstyp.Where(x => x.OrganisationstypId == orgtypeId).ToList();
+            return reportObligationOrgtypes;
+        }
+
+        public IEnumerable<AdmUppgiftsskyldighetOrganisationstyp> GetActiveReportObligationForOrgtype(int orgtypeId)
+        {
+            var reportObligationOrgtypes = DbContext.AdmUppgiftsskyldighetOrganisationstyp.Where(x => x.OrganisationstypId == orgtypeId && x.SkyldigTom == null).ToList();
             return reportObligationOrgtypes;
         }
 
@@ -732,6 +756,12 @@ namespace InrappSos.DataAccess
         public AdmEnhetsUppgiftsskyldighet GetUnitReportObligationForReportObligationAndOrg(int oblId, int orgunitId)
         {
             var unitReportObigation = DbContext.AdmEnhetsUppgiftsskyldighet.SingleOrDefault(x => x.UppgiftsskyldighetId == oblId && x.OrganisationsenhetsId == orgunitId);
+            return unitReportObigation;
+        }
+
+        public AdmEnhetsUppgiftsskyldighet GetActiveUnitReportObligationForReportObligationAndOrg(int oblId, int orgunitId)
+        {
+            var unitReportObigation = DbContext.AdmEnhetsUppgiftsskyldighet.SingleOrDefault(x => x.UppgiftsskyldighetId == oblId && x.OrganisationsenhetsId == orgunitId && x.SkyldigTom == null);
             return unitReportObigation;
         }
 

@@ -528,6 +528,12 @@ namespace InrappSos.ApplicationService
             return uppgiftsskyldigheter;
         }
 
+        public IEnumerable<AdmUppgiftsskyldighet> HamtaAktivUppgiftsskyldighetForOrg(int orgId)
+        {
+            var uppgiftsskyldigheter = _portalSosRepository.GetActiveReportObligationInformationForOrg(orgId);
+            return uppgiftsskyldigheter;
+        }
+
 
         public AdmUppgiftsskyldighet HamtaAktivUppgiftsskyldighetForOrganisationOchRegister(int orgId, int delregid)
         {
@@ -552,6 +558,14 @@ namespace InrappSos.ApplicationService
             var enhetsuppgiftsskyldighet = _portalSosRepository.GetUnitReportObligationForReportObligationAndOrg(uppgskhId, orgenhetId);
             return enhetsuppgiftsskyldighet;
         }
+
+        public AdmEnhetsUppgiftsskyldighet HamtaAktivEnhetsUppgiftsskyldighetForUppgiftsskyldighetOchOrgEnhet(int uppgskhId,
+            int orgenhetId)
+        {
+            var enhetsuppgiftsskyldighet = _portalSosRepository.GetActiveUnitReportObligationForReportObligationAndOrg(uppgskhId, orgenhetId);
+            return enhetsuppgiftsskyldighet;
+        }
+
         public Organisation HamtaOrgForAnvandare(string userId)
         {
             var org = _portalSosRepository.GetOrgForUser(userId);
@@ -2779,23 +2793,24 @@ namespace InrappSos.ApplicationService
             org.AndradAv = userName;
             _portalSosRepository.UpdateOrganisation(org);
 
+            var notIncludedOrgtypes = new List<AdmOrganisationstyp>();
+            var allOrgtypes = _portalSosRepository.GetAllOrgTypes();
+            foreach (var orgtype in allOrgtypes)
+            {
+                if (org.Organisationstyp.Any(i => i.Id != orgtype.Id))
+                {
+                    notIncludedOrgtypes.Add(orgtype);
+                }
+            }
+
             //Check and set reportobligation depending on orgtypes
             foreach (var orgtyp in org.Organisationstyp)
             {
-                var admUppgskhetOrgtyper = _portalSosRepository.GetReportObligationForOrgtype(orgtyp.OrganisationstypId);
-                foreach (var admUppgskhetOrgtyp in admUppgskhetOrgtyper)
+                var aktivaAdmUppgskhetOrgtyper = _portalSosRepository.GetActiveReportObligationForOrgtype(orgtyp.OrganisationstypId);
+                foreach (var admUppgskhetOrgtyp in aktivaAdmUppgskhetOrgtyper)
                 {
-                    var orguppgskheter = _portalSosRepository.GetAllReportObligationsForSubDirAndOrg(admUppgskhetOrgtyp.DelregisterId, org.Id);
-                    var exists = false;
-                    //If alreday exists, do nothing. Else - create
-                    foreach (var orguppgskhet in orguppgskheter)
-                    {
-                        if (orguppgskhet.SkyldigTom == null)
-                        {
-                            exists = true;
-                        }
-                    }
-                    if (!exists)
+                    var orguppgskheter = _portalSosRepository.GetAllActiveReportObligationsForSubDirAndOrg(admUppgskhetOrgtyp.DelregisterId, org.Id);
+                    if (orguppgskheter == null)
                     {
                         var newUppgskhet = new AdmUppgiftsskyldighet
                         {
@@ -2804,6 +2819,37 @@ namespace InrappSos.ApplicationService
                             SkyldigFrom = DateTime.Now
                         };
                         SkapaUppgiftsskyldighet(newUppgskhet, userName);
+                    }
+                }
+            }
+            //set closingdate on reportobligations on other orgtypes subdirs and disconnect users from that subdir
+            foreach (var orgtype in notIncludedOrgtypes)
+            {
+                //Check if open reportobligations exists on other orgtypes
+                var aktivaUppgskhOrgtyp = _portalSosRepository.GetActiveReportObligationForOrgtype(orgtype.Id);
+                foreach (var orgtyp in aktivaUppgskhOrgtyp)
+                {
+                    var aktivUppgskh = _portalSosRepository.GetActiveReportObligationInformationForOrgAndSubDir(org.Id,orgtyp.DelregisterId);
+                    if (aktivUppgskh != null)
+                    {
+                        aktivUppgskh.SkyldigTom = DateTime.Now;
+                        aktivUppgskh.AndradAv = userName;
+                        _portalSosRepository.UpdateReportObligation(aktivUppgskh);
+                        UppdateraRollForKontaktpersoner(org.Id, orgtyp.DelregisterId);
+                        //enhetsrapportering?
+                        if (aktivUppgskh.RapporterarPerEnhet)
+                        {
+                            var aktivEnhetsUppgskhList = _portalSosRepository.GetActiveUnitReportObligationForReportObligation(aktivUppgskh.Id).ToList();
+                            if (aktivEnhetsUppgskhList.Any())
+                            {
+                                foreach (var aktivEnhetsUppgskh in aktivEnhetsUppgskhList)
+                                {
+                                    aktivEnhetsUppgskh.SkyldigTom = DateTime.Now;
+                                    aktivEnhetsUppgskh.AndradAv = userName;
+                                    _portalSosRepository.UpdateUnitReportObligation(aktivEnhetsUppgskh);
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -2983,7 +3029,7 @@ namespace InrappSos.ApplicationService
             foreach (var org in orgsWithCurrOrgType)
             {
                 //check if already exists (update), otherwise insert into db
-                var reportObligationDb = _portalSosRepository.GetReportObligationInformationForOrgAndSubDir(org.Id, subdirOrgtype.DelregisterId);
+                var reportObligationDb = _portalSosRepository.GetActiveReportObligationInformationForOrgAndSubDir(org.Id, subdirOrgtype.DelregisterId);
 
                 if (reportObligationDb == null && subdirOrgtype.Selected) //Create
                 {
@@ -3008,7 +3054,7 @@ namespace InrappSos.ApplicationService
                     //Enhetsrapportering?
                     if (reportObligationDb.RapporterarPerEnhet)
                     {
-                        var unitReportObligations = _portalSosRepository.GetUnitReportObligationForReportObligation(reportObligationDb.Id);
+                        var unitReportObligations = _portalSosRepository.GetActiveUnitReportObligationForReportObligation(reportObligationDb.Id);
                         foreach (var unitReportObligationDB in unitReportObligations)
                         {
                             unitReportObligationDB.SkyldigTom = DateTime.Now;

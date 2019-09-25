@@ -161,16 +161,24 @@ namespace InrappSos.DataAccess
 
         IEnumerable<AdmUppgiftsskyldighet> GetReportObligationInformationForOrg(int orgId);
 
+        IEnumerable<AdmUppgiftsskyldighet> GetActiveReportObligationInformationForOrg(int orgId);
+
         AdmUppgiftsskyldighet GetReportObligationInformationForOrgAndSubDir(int orgId, int subdirId);
+
+        AdmUppgiftsskyldighet GetActiveReportObligationInformationForOrgAndSubDir(int orgId, int subdirId);
 
         AdmUppgiftsskyldighetOrganisationstyp GetReportObligationForSubDirAndOrgtype(int subdirId, int orgtypeId);
 
         IEnumerable<AdmUppgiftsskyldighet> GetAllReportObligationsForSubDirAndOrg(int subdirId, int orgId);
 
-        IEnumerable<AdmUppgiftsskyldighetOrganisationstyp> GetReportObligationForOrgtype(int orgtypeId);
+        IEnumerable<AdmUppgiftsskyldighet> GetAllActiveReportObligationsForSubDirAndOrg(int subdirId, int orgId);
 
+        IEnumerable<AdmUppgiftsskyldighetOrganisationstyp> GetReportObligationForOrgtype(int orgtypeId);
+        IEnumerable<AdmUppgiftsskyldighetOrganisationstyp> GetActiveReportObligationForOrgtype(int orgtypeId);
         IEnumerable<AdmEnhetsUppgiftsskyldighet> GetUnitReportObligationInformationForOrgUnit(int orgUnitId);
         AdmEnhetsUppgiftsskyldighet GetUnitReportObligationForReportObligationAndOrg(int oblId, int orgunitId);
+
+        AdmEnhetsUppgiftsskyldighet GetActiveUnitReportObligationForReportObligationAndOrg(int oblId, int orgunitId);
 
         IEnumerable<AdmOrganisationstyp> GetAllOrgTypes();
         IEnumerable<AdmFAQKategori> GetAllFAQs();

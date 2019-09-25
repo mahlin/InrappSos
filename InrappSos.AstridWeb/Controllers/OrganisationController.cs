@@ -795,6 +795,10 @@ namespace InrappSos.AstridWeb.Controllers
                     {
                         model.ReportObligations = new List<OrganisationViewModels.ReportObligationsViewModel>();
                     }
+                    if (model.Arenden == null)
+                    {
+                        model.Arenden = new List<OrganisationViewModels.ArendeViewModel>();
+                    }
                 }
                 if (ModelState.IsValid)
                 {
@@ -815,6 +819,10 @@ namespace InrappSos.AstridWeb.Controllers
                 if (model.ReportObligations == null)
                 {
                     model.ReportObligations = new List<OrganisationViewModels.ReportObligationsViewModel>();
+                }
+                if (model.Arenden == null)
+                {
+                    model.Arenden = new List<OrganisationViewModels.ArendeViewModel>();
                 }
                 model.SearchResult = new List<List<Organisation>>();
                 return View("Index",model);
@@ -1564,7 +1572,7 @@ namespace InrappSos.AstridWeb.Controllers
                 model.SelectedOrganisationsenhetsId = selectedOrgenhetsId;
                 //Skapa dropdown för valbara delregister
                 var delregisterList = _portalSosService.HamtaAllaDelregisterForPortalen();
-                var admUppgSkyldighetList = _portalSosService.HamtaUppgiftsskyldighetForOrg(selectedOrganisationId).ToList();
+                var admUppgSkyldighetList = _portalSosService.HamtaAktivUppgiftsskyldighetForOrg(selectedOrganisationId).ToList();
                 var delregisterDropDownList = new List<AdmDelregister>();
 
                 //Endast delregister som har uppgiftsskyldighet ska visas i dropdown
@@ -1575,7 +1583,7 @@ namespace InrappSos.AstridWeb.Controllers
                     {
                         //Kolla att enhetsuppgiftsskyldighet inte redan finns för delreg
                         var uppgskh = admUppgSkyldighetList.SingleOrDefault(x => x.DelregisterId == delregister.Id);
-                        var enhetsuppgiftsskyldighet = _portalSosService.HamtaEnhetsUppgiftsskyldighetForUppgiftsskyldighetOchOrgEnhet(uppgskh.Id, selectedOrgenhetsId);
+                        var enhetsuppgiftsskyldighet = _portalSosService.HamtaAktivEnhetsUppgiftsskyldighetForUppgiftsskyldighetOchOrgEnhet(uppgskh.Id, selectedOrgenhetsId);
                         if (enhetsuppgiftsskyldighet == null)
                         {
                             delregisterDropDownList.Add(delregister);

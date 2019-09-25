@@ -1510,8 +1510,9 @@ namespace InrappSos.AstridWeb.Controllers
         {
             var model = new OrganisationViewModels.ReportObligationsViewModel();
             model.OrganisationId = selectedOrganisationId;
-            var delregisterList = _portalSosService.HamtaAllaDelregisterForPortalen().ToList();
-            var uppgiftsskyldighetList = _portalSosService.HamtaUppgiftsskyldighetForOrg(selectedOrganisationId).ToList();
+            //var delregisterList = _portalSosService.HamtaAllaDelregisterForPortalen().ToList();
+            var delregisterList = _portalSosService.HamtaAllaDelregisterForOrganisationen(model.OrganisationId);
+            var uppgiftsskyldighetList = _portalSosService.HamtaAktivUppgiftsskyldighetForOrg(selectedOrganisationId).ToList();
             var delregisterUtanUppgiftsskyldighetForOrgList = new List<AdmDelregister>();
             //Endast delregister som saknar uppgiftsskyldighet ska visas i dropdown
             foreach (var delregister in delregisterList)

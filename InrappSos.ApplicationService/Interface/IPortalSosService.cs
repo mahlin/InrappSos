@@ -227,6 +227,8 @@ namespace InrappSos.ApplicationService.Interface
 
         IEnumerable<AdmDelregister> HamtaAllaDelregisterForPortalen();
 
+        IEnumerable<AdmDelregister> HamtaAllaDelregisterForOrganisationen(int orgId);
+
         IEnumerable<RegisterInfo> HamtaAllRegisterInformationForOrganisation(int orgId);
 
         IEnumerable<AppUserAdmin> HamtaAllaArendeadministratorerForOrg(int orgId);

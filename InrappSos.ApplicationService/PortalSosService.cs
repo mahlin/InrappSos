@@ -1174,6 +1174,28 @@ namespace InrappSos.ApplicationService
             return delregistersList;
         }
 
+        public IEnumerable<AdmDelregister> HamtaAllaDelregisterForOrganisationen(int orgId)
+        {
+            //Hämta endast de delregister som organisationens orgtyper ska rapportera för
+            var delregistersList = new List<AdmDelregister>();
+            var delregisterIdn = new List<int>();
+            var orgsOrgtypIdn = _portalSosRepository.GetOrgTypesIdsForOrg(orgId);
+            foreach (var orgtypeId in orgsOrgtypIdn)
+            {
+                var delregidn = _portalSosRepository.GetSubdirIdsForOrgtype(orgtypeId);
+                foreach (var delregid in delregidn)
+                {
+                    if (!delregisterIdn.Contains(delregid))
+                    delregisterIdn.Add(delregid);
+                }
+            }
+            foreach (var delregid in delregisterIdn)
+            {
+                delregistersList.Add(_portalSosRepository.GetSubDirectoryById(delregid));
+            }
+            return delregistersList;
+        }
+
         public IEnumerable<RegisterInfo> HamtaAllRegisterInformationForOrganisation(int orgId)
         {
             var allRegisterinfoForOrg = _portalSosRepository.GetAllRegisterInformationForOrganisation(orgId).ToList();

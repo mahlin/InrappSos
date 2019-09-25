@@ -663,6 +663,12 @@ namespace InrappSos.DataAccess
             return orgTypesIdsForSubDir;
         }
 
+        public IEnumerable<int> GetSubdirIdsForOrgtype(int orgtypeId)
+        {
+            var subDirIdsForOrgtype = DbContext.AdmUppgiftsskyldighetOrganisationstyp.Where(x => x.OrganisationstypId == orgtypeId && x.SkyldigTom == null).Select(x => x.DelregisterId).ToList();
+            return subDirIdsForOrgtype;
+        }
+
         public AdmOrganisationstyp GetOrgtype(int orgtypeId)
         {
             var orgtype = DbContext.AdmOrganisationstyp.Where(x => x.Id == orgtypeId).SingleOrDefault();

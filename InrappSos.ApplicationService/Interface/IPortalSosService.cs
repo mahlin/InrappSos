@@ -427,6 +427,10 @@ namespace InrappSos.ApplicationService.Interface
 
         void UppdateraUppgiftsskyldighetOrganisationstyp(AdmUppgiftsskyldighetOrganisationstyp subdirOrgtypes, List<OrganisationstypDTO> listOfOrgtypes, string userName);
 
+        void UppdateraUppgiftsskyldighetForOrganisationer(AdmUppgiftsskyldighetOrganisationstypDTO subdirOrgtype, string userName);
+
+        void UppdateraRollForKontaktpersoner(int orgId, int delregId);
+
         void UppdateraUppgiftsskyldighetOrganisationstyp(AdmUppgiftsskyldighetOrganisationstypDTO subdirOrgtype, string userName);
 
         void UppdateraFAQKategori(AdmFAQKategori faqKategori, string userName);

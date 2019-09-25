@@ -1742,6 +1742,17 @@ namespace InrappSos.DataAccess
             return orgUnits;
         }
 
+        public IEnumerable<Organisation> GetOrgByOrgtype(int orgtypeId)
+        {
+            var orgList = new List<Organisation>();
+            var orgTypes = DbContext.Organisationstyp.Where(x => x.OrganisationstypId == orgtypeId).ToList();
+            foreach (var orgType in orgTypes)
+            {
+                var org = DbContext.Organisation.SingleOrDefault(x => x.Id == orgType.OrganisationsId);
+                orgList.Add(org);
+            }
+            return orgList;
+        }
 
 
         public IEnumerable<AdmEnhetsUppgiftsskyldighet> GetUnitReportObligationForReportObligation(int uppgSkyldighetId)
@@ -2674,6 +2685,16 @@ namespace InrappSos.DataAccess
         //    IdentityDbContext.Users.Remove(cuserToDelete);
         //    IdentityDbContext.SaveChanges();
         //}
+
+        public void DeleteChosenSubDirectoryForUser(string userId, int dirId)
+        {
+            var contactRoleDB = DbContext.Roll.Where(x => x.ApplicationUserId == userId && x.DelregisterId == dirId).FirstOrDefault();
+            if (contactRoleDB != null)
+            {
+                DbContext.Roll.Remove(contactRoleDB);
+                DbContext.SaveChanges();
+            }
+        }
 
         public void DeleteDelivery(int deliveryId)
         {

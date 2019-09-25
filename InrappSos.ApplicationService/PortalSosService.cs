@@ -2933,6 +2933,69 @@ namespace InrappSos.ApplicationService
             }
         }
 
+        public void UppdateraUppgiftsskyldighetForOrganisationer(AdmUppgiftsskyldighetOrganisationstypDTO subdirOrgtype,string userName)
+        {
+            var orgsWithCurrOrgType = _portalSosRepository.GetOrgByOrgtype(subdirOrgtype.Id);
+
+            foreach (var org in orgsWithCurrOrgType)
+            {
+                //check if already exists (update), otherwise insert into db
+                var reportObligationDb = _portalSosRepository.GetReportObligationInformationForOrgAndSubDir(org.Id, subdirOrgtype.DelregisterId);
+
+                if (reportObligationDb == null && subdirOrgtype.Selected) //Create
+                {
+                    reportObligationDb = new AdmUppgiftsskyldighet();
+                    reportObligationDb.OrganisationId = org.Id;
+                    reportObligationDb.DelregisterId = subdirOrgtype.DelregisterId;
+                    reportObligationDb.SkyldigFrom = DateTime.Now;
+                    reportObligationDb.SkyldigTom = null;
+                    reportObligationDb.AndradAv = userName;
+                    reportObligationDb.AndradDatum = DateTime.Now;
+                    reportObligationDb.SkapadAv = userName;
+                    reportObligationDb.SkapadDatum = DateTime.Now;
+
+                    _portalSosRepository.CreateReportObligation(reportObligationDb);
+                }
+                else if (reportObligationDb != null && !subdirOrgtype.Selected) //Update
+                {
+                    reportObligationDb.SkyldigTom = DateTime.Now;
+                    reportObligationDb.AndradAv = userName;
+                    reportObligationDb.AndradDatum = DateTime.Now;
+                    _portalSosRepository.UpdateReportObligation(reportObligationDb); 
+                    //Enhetsrapportering?
+                    if (reportObligationDb.RapporterarPerEnhet)
+                    {
+                        var unitReportObligations = _portalSosRepository.GetUnitReportObligationForReportObligation(reportObligationDb.Id);
+                        foreach (var unitReportObligationDB in unitReportObligations)
+                        {
+                            unitReportObligationDB.SkyldigTom = DateTime.Now;
+                            UppdateraEnhetsUppgiftsskyldighet(unitReportObligationDB, userName);
+                        }
+                    }
+                    UppdateraRollForKontaktpersoner(org.Id, subdirOrgtype.DelregisterId);
+                }
+            }
+        }
+
+        public void UppdateraRollForKontaktpersoner(int orgId, int delregId)
+        {
+            var contacts = _portalSosRepository.GetContactPersonsForOrg(orgId);
+            foreach (var contact in contacts)
+            {
+                var rollList = _portalSosRepository.GetChosenDelRegistersForUser(contact.Id);
+                if (rollList.Any())
+                {
+                    foreach (var roll in rollList)
+                    {
+                        if (roll.DelregisterId == delregId)
+                        {
+                            _portalSosRepository.DeleteChosenSubDirectoriesForUser(contact.Id);
+                        }
+                    }
+                }
+            }
+        }
+
         public void UppdateraUppgiftsskyldighetOrganisationstyp(AdmUppgiftsskyldighetOrganisationstypDTO subdirOrgtype, string userName)
         {
             //check if already exists (update or delete), otherwise insert into db
@@ -2952,7 +3015,7 @@ namespace InrappSos.ApplicationService
 
                  _portalSosRepository.CreateSubdirReportObligation(subdirOrgtypeDb);
             }
-            else if (subdirOrgtypeDb != null && subdirOrgtype.Selected ) //Update
+            else if (subdirOrgtypeDb != null && subdirOrgtype.Selected) //Update
             {
                 subdirOrgtypeDb.SkyldigFrom = subdirOrgtype.SkyldigFrom;
                 subdirOrgtypeDb.SkyldigTom = subdirOrgtype.SkyldigTom;
@@ -2965,7 +3028,10 @@ namespace InrappSos.ApplicationService
                 _portalSosRepository.DeleteSubdirReportObligation(subdirOrgtypeDb);
 
             }
+            UppdateraUppgiftsskyldighetForOrganisationer(subdirOrgtype, userName);
         }
+
+
 
         public void UppdateraFAQKategori(AdmFAQKategori faqKategori, string userName)
         {

@@ -362,6 +362,7 @@ namespace InrappSos.DataAccess
         AdmUppgiftsskyldighet GetUppgiftsskyldighetForOrganisationAndRegister(int orgId, int delregid);
 
         IEnumerable<Organisationsenhet> GetOrganisationUnits(int orgId);
+        IEnumerable<Organisation> GetOrgByOrgtype(int orgtypeId);
         IEnumerable<AdmEnhetsUppgiftsskyldighet> GetUnitReportObligationForReportObligation(int uppgSkyldighetId);
 
         Organisationsenhet GetOrganisationUnit(int orgunitId);
@@ -516,6 +517,8 @@ namespace InrappSos.DataAccess
         void DeleteCaseContact(string contactId, int caseId);
 
         void DeleteChosenSubDirectoriesForUser(string userId);
+
+        void DeleteChosenSubDirectoryForUser(string userId, int dirId);
 
         void DeleteDelivery(int deliveryId);
 

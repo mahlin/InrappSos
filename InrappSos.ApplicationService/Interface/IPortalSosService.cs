@@ -116,6 +116,8 @@ namespace InrappSos.ApplicationService.Interface
         IEnumerable<AdmUppgiftsskyldighet> HamtaUppgiftsskyldighetForOrg(int orgId);
         AdmUppgiftsskyldighet HamtaUppgiftsskyldighetForOrganisationOchRegister(int orgId, int delregid);
 
+        AdmUppgiftsskyldighet HamtaAktivUppgiftsskyldighetForOrganisationOchRegister(int orgId, int delregid);
+
         AdmUppgiftsskyldighet HamtaUppgiftsskyldighetForOrgOchDelreg(int orgId, int delregId);
 
         IEnumerable<AdmEnhetsUppgiftsskyldighet> HamtaEnhetsUppgiftsskyldighetForOrgEnhet(int orgenhetId);

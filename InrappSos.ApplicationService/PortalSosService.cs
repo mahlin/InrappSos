@@ -529,6 +529,12 @@ namespace InrappSos.ApplicationService
         }
 
 
+        public AdmUppgiftsskyldighet HamtaAktivUppgiftsskyldighetForOrganisationOchRegister(int orgId, int delregid)
+        {
+            var uppgiftsskyldighet = _portalSosRepository.GetUppgiftsskyldighetForOrganisationAndRegister(orgId, delregid);
+            return uppgiftsskyldighet;
+        }
+
         public AdmUppgiftsskyldighet HamtaUppgiftsskyldighetForOrgOchDelreg(int orgId, int delregId)
         {
             var uppgiftsskyldighet = _portalSosRepository.GetReportObligationInformationForOrgAndSubDir(orgId, delregId);
@@ -2243,7 +2249,7 @@ namespace InrappSos.ApplicationService
         {
             var registerList = _portalSosRepository.GetChosenDelRegistersForUser(userId).ToList();
             //var allaRegisterList = _portalRepository.GetAllRegisterInformation();
-            var allaRegisterList = _portalSosRepository.GetAllRegisterInformationForOrganisation(orgId).ToList();
+            var allaRegisterList = _portalSosRepository.GetAllActiveRegisterInformationForOrganisation(orgId).ToList();
             var userRegisterList = new List<RegisterInfo>();
 
             foreach (var register in allaRegisterList)
@@ -2317,7 +2323,7 @@ namespace InrappSos.ApplicationService
         {
             var registerList = _portalSosRepository.GetChosenDelRegistersForUser(userId);
             //var allaRegisterList = _portalRepository.GetAllRegisterInformation();
-            var allaRegisterList = _portalSosRepository.GetAllRegisterInformationForOrganisation(orgId);
+            var allaRegisterList = _portalSosRepository.GetAllActiveRegisterInformationForOrganisation(orgId);
 
             foreach (var register in allaRegisterList)
             {
@@ -2450,28 +2456,36 @@ namespace InrappSos.ApplicationService
             org.AndradDatum = DateTime.Now;
             org.AndradAv = userName;
 
-            ////TODO - test
-            //var orgTest = new Organisation
-            //{
-            //    Kommunkod = "1",
-            //    Organisationsnamn = "Maries org",
-            //    Organisationsnr = "123",
-            //    Hemsida = "dn.se",
-            //    EpostAdress = "m@home.se",
-            //    Telefonnr = "111",
-            //    Adress = "ggg",
-            //    Postort = "Sthlm",
-            //    Postnr = "8888",
-            //    Epostdoman = "home.se",
-            //    AktivFrom = DateTime.Now,
-            //    AktivTom = null,
-            //    SkapadAv = "MAH",
-            //    SkapadDatum = DateTime.Now,
-            //    AndradAv = "MAH",
-            //    AndradDatum = DateTime.Now
-            //};
-
             var orgId = _portalSosRepository.CreateOrganisation(org, orgtyperForOrg);
+            //Check and set reportobligation depending on orgtypes
+            foreach (var orgtyp in orgtyperForOrg)
+            {
+                var admUppgskhetOrgtyper = _portalSosRepository.GetReportObligationForOrgtype(orgtyp.OrganisationstypId);
+                foreach (var admUppgskhetOrgtyp in admUppgskhetOrgtyper)
+                {
+                    var orguppgskheter = _portalSosRepository.GetAllReportObligationsForSubDirAndOrg(admUppgskhetOrgtyp.DelregisterId, org.Id);
+                    var exists = false;
+                    //If alreday exists, do nothing. Else - create
+                    foreach (var orguppgskhet in orguppgskheter)
+                    {
+                        if (orguppgskhet.SkyldigTom == null)
+                        {
+                            exists = true;
+                        }
+                    }
+                    if (!exists)
+                    {
+                        var newUppgskhet = new AdmUppgiftsskyldighet
+                        {
+                         OrganisationId =  org.Id,
+                         DelregisterId = admUppgskhetOrgtyp.DelregisterId,
+                         SkyldigFrom = DateTime.Now
+                        };
+                        SkapaUppgiftsskyldighet(newUppgskhet,userName);
+                    }
+                }
+            }
+
             return orgId;
         }
 
@@ -2764,6 +2778,35 @@ namespace InrappSos.ApplicationService
             org.AndradDatum = DateTime.Now;
             org.AndradAv = userName;
             _portalSosRepository.UpdateOrganisation(org);
+
+            //Check and set reportobligation depending on orgtypes
+            foreach (var orgtyp in org.Organisationstyp)
+            {
+                var admUppgskhetOrgtyper = _portalSosRepository.GetReportObligationForOrgtype(orgtyp.OrganisationstypId);
+                foreach (var admUppgskhetOrgtyp in admUppgskhetOrgtyper)
+                {
+                    var orguppgskheter = _portalSosRepository.GetAllReportObligationsForSubDirAndOrg(admUppgskhetOrgtyp.DelregisterId, org.Id);
+                    var exists = false;
+                    //If alreday exists, do nothing. Else - create
+                    foreach (var orguppgskhet in orguppgskheter)
+                    {
+                        if (orguppgskhet.SkyldigTom == null)
+                        {
+                            exists = true;
+                        }
+                    }
+                    if (!exists)
+                    {
+                        var newUppgskhet = new AdmUppgiftsskyldighet
+                        {
+                            OrganisationId = org.Id,
+                            DelregisterId = admUppgskhetOrgtyp.DelregisterId,
+                            SkyldigFrom = DateTime.Now
+                        };
+                        SkapaUppgiftsskyldighet(newUppgskhet, userName);
+                    }
+                }
+            }
         }
 
         public void UppdateraKontaktperson(ApplicationUser user, string userName)
@@ -4185,7 +4228,7 @@ namespace InrappSos.ApplicationService
         {
             foreach (var item in registerInfoList)
             {
-                var uppgiftsskyldighet = HamtaUppgiftsskyldighetForOrganisationOchRegister(orgId, item.Id);
+                var uppgiftsskyldighet = HamtaAktivUppgiftsskyldighetForOrganisationOchRegister(orgId, item.Id);
                 if (uppgiftsskyldighet.RapporterarPerEnhet)
                 {
                     //Ger cirkulär reference, därav keyValuePair nedan
@@ -4195,7 +4238,7 @@ namespace InrappSos.ApplicationService
 
                     item.RapporterarPerEnhet = true;
                     var enhetsuppgiftsskyldighetList =
-                        _portalSosRepository.GetUnitReportObligationForReportObligation(uppgiftsskyldighet.Id);
+                        _portalSosRepository.GetActiveUnitReportObligationForReportObligation(uppgiftsskyldighet.Id);
                     foreach (var enhetsuppgiftsskyldighet in enhetsuppgiftsskyldighetList)
                     {
                         var orgUnit =

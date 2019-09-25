@@ -94,7 +94,9 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public int OrganisationId { get; set; }
             public int DelregisterId { get; set; }
             public string DelregisterKortnamn { get; set; }
+            [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
             public DateTime? SkyldigFrom { get; set; }
+            [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
             public DateTime? SkyldigTom { get; set; }
             public bool RapporterarPerEnhet { get; set; }
 

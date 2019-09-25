@@ -165,6 +165,10 @@ namespace InrappSos.DataAccess
 
         AdmUppgiftsskyldighetOrganisationstyp GetReportObligationForSubDirAndOrgtype(int subdirId, int orgtypeId);
 
+        IEnumerable<AdmUppgiftsskyldighet> GetAllReportObligationsForSubDirAndOrg(int subdirId, int orgId);
+
+        IEnumerable<AdmUppgiftsskyldighetOrganisationstyp> GetReportObligationForOrgtype(int orgtypeId);
+
         IEnumerable<AdmEnhetsUppgiftsskyldighet> GetUnitReportObligationInformationForOrgUnit(int orgUnitId);
         AdmEnhetsUppgiftsskyldighet GetUnitReportObligationForReportObligationAndOrg(int oblId, int orgunitId);
 
@@ -214,6 +218,8 @@ namespace InrappSos.DataAccess
         IEnumerable<AdmDelregister> GetSubDirectoriesWithIncludesForDirectory(int dirId);
 
         IEnumerable<AdmDelregister> GetSubDirsObligatedForOrg(int orgId);
+
+        IEnumerable<AdmDelregister> GetActiveSubDirsObligatedForOrg(int orgId);
 
         IEnumerable<AdmForeskrift> GetRegulationsForDirectory(int dirId);
 
@@ -358,12 +364,17 @@ namespace InrappSos.DataAccess
         //IEnumerable<RegisterInfo> GetAllRegisterInformation();
 
         IEnumerable<RegisterInfo> GetAllRegisterInformationForOrganisation(int orgId);
+        IEnumerable<RegisterInfo> GetAllActiveRegisterInformationForOrganisation(int orgId);
 
         AdmUppgiftsskyldighet GetUppgiftsskyldighetForOrganisationAndRegister(int orgId, int delregid);
+
+        AdmUppgiftsskyldighet GetActiveUppgiftsskyldighetForOrganisationAndRegister(int orgId, int delregid);
 
         IEnumerable<Organisationsenhet> GetOrganisationUnits(int orgId);
         IEnumerable<Organisation> GetOrgByOrgtype(int orgtypeId);
         IEnumerable<AdmEnhetsUppgiftsskyldighet> GetUnitReportObligationForReportObligation(int uppgSkyldighetId);
+
+        IEnumerable<AdmEnhetsUppgiftsskyldighet> GetActiveUnitReportObligationForReportObligation(int uppgSkyldighetId);
 
         Organisationsenhet GetOrganisationUnit(int orgunitId);
 

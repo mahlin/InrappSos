@@ -711,6 +711,18 @@ namespace InrappSos.DataAccess
             return reportObligationForSubdirAndOrgtype;
         }
 
+        public IEnumerable<AdmUppgiftsskyldighet> GetAllReportObligationsForSubDirAndOrg(int subdirId, int orgId)
+        {
+            var reportObligationsForSubdirAndOrgtype = DbContext.AdmUppgiftsskyldighet.Where(x => x.DelregisterId == subdirId && x.OrganisationId == orgId).ToList();
+            return reportObligationsForSubdirAndOrgtype;
+        }
+
+        public IEnumerable<AdmUppgiftsskyldighetOrganisationstyp> GetReportObligationForOrgtype(int orgtypeId)
+        {
+            var reportObligationOrgtypes = DbContext.AdmUppgiftsskyldighetOrganisationstyp.Where(x => x.OrganisationstypId == orgtypeId).ToList();
+            return reportObligationOrgtypes;
+        }
+
         public IEnumerable<AdmEnhetsUppgiftsskyldighet> GetUnitReportObligationInformationForOrgUnit(int orgUnitId)
         {
             var unitReportObligationInfo = DbContext.AdmEnhetsUppgiftsskyldighet.Where(x => x.OrganisationsenhetsId == orgUnitId).ToList();
@@ -914,6 +926,20 @@ namespace InrappSos.DataAccess
         public IEnumerable<AdmDelregister> GetSubDirsObligatedForOrg(int orgId)
         {
             var uppgSkyldighetDelRegIds = DbContext.AdmUppgiftsskyldighet.Where(x => x.OrganisationId == orgId).Select(x => x.DelregisterId).ToList();
+
+            var delregister = DbContext.AdmDelregister
+                .Include(z => z.AdmRegister)
+                .Include(f => f.AdmFilkrav.Select(q => q.AdmForvantadfil))
+                .Where(x => x.Inrapporteringsportal && uppgSkyldighetDelRegIds.Contains(x.Id))
+                .Include(f => f.AdmFilkrav.Select(q => q.AdmForvantadleverans))
+                .ToList();
+
+            return delregister;
+        }
+
+        public IEnumerable<AdmDelregister> GetActiveSubDirsObligatedForOrg(int orgId)
+        {
+            var uppgSkyldighetDelRegIds = DbContext.AdmUppgiftsskyldighet.Where(x => x.OrganisationId == orgId && x.SkyldigTom == null).Select(x => x.DelregisterId).ToList();
 
             var delregister = DbContext.AdmDelregister
                 .Include(z => z.AdmRegister)
@@ -1728,10 +1754,32 @@ namespace InrappSos.DataAccess
             return registerInfoList;
         }
 
+        public IEnumerable<RegisterInfo> GetAllActiveRegisterInformationForOrganisation(int orgId)
+        {
+            var registerInfoList = new List<RegisterInfo>();
+
+            //Get all subdirs thar org are obligated to report for
+            var delregister = GetActiveSubDirsObligatedForOrg(orgId);
+
+            foreach (var item in delregister)
+            {
+                var regInfoObj = CreateRegisterInfoObj(item, orgId);
+                registerInfoList.Add(regInfoObj);
+            }
+
+            return registerInfoList;
+        }
+
         public AdmUppgiftsskyldighet GetUppgiftsskyldighetForOrganisationAndRegister(int orgId, int delregid)
         {
             var uppgiftsskyldighet = DbContext.AdmUppgiftsskyldighet.SingleOrDefault(x => x.OrganisationId == orgId && x.DelregisterId == delregid);
 
+            return uppgiftsskyldighet;
+        }
+
+        public AdmUppgiftsskyldighet GetActiveUppgiftsskyldighetForOrganisationAndRegister(int orgId, int delregid)
+        {
+            var uppgiftsskyldighet = DbContext.AdmUppgiftsskyldighet.SingleOrDefault(x => x.OrganisationId == orgId && x.DelregisterId == delregid && x.SkyldigTom == null);
             return uppgiftsskyldighet;
         }
 
@@ -1758,6 +1806,12 @@ namespace InrappSos.DataAccess
         public IEnumerable<AdmEnhetsUppgiftsskyldighet> GetUnitReportObligationForReportObligation(int uppgSkyldighetId)
         {
             var unitReportObligations = DbContext.AdmEnhetsUppgiftsskyldighet.Where(x => x.UppgiftsskyldighetId == uppgSkyldighetId).ToList();
+            return unitReportObligations;
+        }
+
+        public IEnumerable<AdmEnhetsUppgiftsskyldighet> GetActiveUnitReportObligationForReportObligation(int uppgSkyldighetId)
+        {
+            var unitReportObligations = DbContext.AdmEnhetsUppgiftsskyldighet.Where(x => x.UppgiftsskyldighetId == uppgSkyldighetId && x.SkyldigTom == null).ToList();
             return unitReportObligations;
         }
 

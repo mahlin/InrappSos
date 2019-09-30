@@ -13,15 +13,30 @@ namespace InrappSos.ApplicationService.Helpers
     {
         private static SmtpClient _smtpClient;
         private static bool _mailLogEnabled = bool.Parse(ConfigurationManager.AppSettings["MailLogEnabled"]);
-        private static string _mailLogPath = ConfigurationManager.AppSettings["SFTPWatcherMailLogFile"];
         private static readonly object _mailLogLock = new object();
+        private string _mailLogPath = "C:\\logs\\InrappSos\\";
+        private string _mailLogFileName = "MailLog.txt";
+        private string time = DateTime.Now.ToString("yyyy-MM-dd");
+        private string _mailLogFile = String.Empty;
+
 
         public MailHelper()
         {
             _smtpClient = new SmtpClient(ConfigurationManager.AppSettings["MailServer"]);
             if (_mailLogEnabled)
             {
-                _mailLogPath = _mailLogPath.Replace(".txt", "_" + DateTime.Now.ToString("yyyyMMdd") + ".txt");
+                if (ConfigurationManager.AppSettings.AllKeys.Contains("MailLogPath"))
+                {
+                    _mailLogPath = ConfigurationManager.AppSettings["MailLogPath"];
+                }
+
+                if (ConfigurationManager.AppSettings.AllKeys.Contains("MailLogFileName"))
+                {
+                    _mailLogFileName = ConfigurationManager.AppSettings["MailLogFileName"];
+                }
+
+                _mailLogPath = _mailLogPath + time + "_" + _mailLogFileName;
+                // _mailLogPath = _mailLogPath.Replace(".txt", "_" + DateTime.Now.ToString("yyyyMMdd") + ".txt");
             }
         }
 
@@ -77,7 +92,7 @@ namespace InrappSos.ApplicationService.Helpers
         // Logs a message to either the console or a file
         // </summary>
         // <param name="message">The message</param>
-        private static void Log(string message)
+        private void Log(string message)
         {
 
             if (_mailLogEnabled)

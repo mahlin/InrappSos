@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Configuration;
 using System.IO;
@@ -121,7 +122,7 @@ namespace SFTPFileHandler
                     {
                         //Check files in folder
                         CheckFiles(folder, incorrectPeriodList, incorrectFileCodeList);
-                        HandleIncorrectFilenameList();
+                        HandleIncorrectFilenameList(folder);
                     }
                     else
                     {
@@ -268,9 +269,13 @@ namespace SFTPFileHandler
                         //Delete uploaded files from incoming filearea
                         foreach (var file in okFilesForSubDirList)
                         {
-                            file.Delete();
+                            if (file.Exists)
+                            {
+                                file.Delete();
+                            }
+                            
                         }
-                        HandleErrorLists(incorrectFileCodeList, incorrectPeriodList);
+                        HandleErrorLists(incorrectFileCodeList, incorrectPeriodList, folder);
                         incorrectFileCodeList.Clear();
                         incorrectPeriodList.Clear();
                         DirectoryInfo dir = new DirectoryInfo(folder);
@@ -306,8 +311,8 @@ namespace SFTPFileHandler
                         //Not complete delivery - email user and remove files
                         try
                         {
-                            IncompleteDeliveryHandler(sortedFilesList);
-                            HandleErrorLists(incorrectFileCodeList, incorrectPeriodList);
+                            IncompleteDeliveryHandler(sortedFilesList, folder);
+                            HandleErrorLists(incorrectFileCodeList, incorrectPeriodList,folder);
                             DirectoryInfo dir = new DirectoryInfo(folder);
                             _filesInFolder = dir.GetFiles().OrderByDescending(p => p.CreationTime).ToList();
 
@@ -347,17 +352,17 @@ namespace SFTPFileHandler
                     }
                 }
             }
-            HandleErrorLists(incorrectFileCodeList, incorrectPeriodList);
+            HandleErrorLists(incorrectFileCodeList, incorrectPeriodList, folder);
         }
 
-        private void HandleErrorLists(List<FileInfo> incorrectFileCodeList, List<FileInfo> incorrectPeriodList)
+        private void HandleErrorLists(List<FileInfo> incorrectFileCodeList, List<FileInfo> incorrectPeriodList, string folder)
         {
             //If any files incorrect - email user and move file
             if (incorrectFileCodeList.Any())
             {
                 try
                 {
-                    IncorrectFileCodeHandler(incorrectFileCodeList);
+                    IncorrectFileCodeHandler(incorrectFileCodeList, folder);
                 }
                 catch (System.Net.Mail.SmtpException e)
                 {
@@ -377,7 +382,7 @@ namespace SFTPFileHandler
             {
                 try
                 {
-                    IncorrectPeriodHandler(incorrectPeriodList);
+                    IncorrectPeriodHandler(incorrectPeriodList, folder);
                 }
                 catch (System.Net.Mail.SmtpException e)
                 {
@@ -395,14 +400,14 @@ namespace SFTPFileHandler
             }
         }
 
-        private void HandleIncorrectFilenameList()
+        private void HandleIncorrectFilenameList(string folder)
         {
             //If any files incorrect - email user and move file
             if (_inCorrectFilenameList.Any())
             {
                 try
                 {
-                    IncorrectFilenameHandler();
+                    IncorrectFilenameHandler(folder);
                 }
                 catch (System.Net.Mail.SmtpException e)
                 {
@@ -447,7 +452,7 @@ namespace SFTPFileHandler
             msg.Body = body;
             _mailHelper.SendEmail(msg);
 
-            MoveFilesToErrorFolderAndDeleteFilesFromInbox(filesInFolder);
+            MoveFilesToErrorFolderAndDeleteFilesFromInbox(filesInFolder, folder);
             dir.Delete();
 
         }
@@ -475,11 +480,11 @@ namespace SFTPFileHandler
 
             _mailHelper.SendEmail(subject, body, mailRecipients, _mailSender);
 
-            MoveFilesToErrorFolderAndDeleteFilesFromInbox(filesInFolder);
+            MoveFilesToErrorFolderAndDeleteFilesFromInbox(filesInFolder, folder);
         }
 
 
-        private void IncompleteDeliveryHandler(List<FileInfo> sortedFilesList)
+        private void IncompleteDeliveryHandler(List<FileInfo> sortedFilesList, string folder)
         {
             Console.WriteLine("Sending email. Not complete delivery.");
             var mailRecipients = new List<string>();
@@ -505,11 +510,11 @@ namespace SFTPFileHandler
 
             _mailHelper.SendEmail(subject, body, mailRecipients, _mailSender);
 
-            MoveFilesToErrorFolderAndDeleteFilesFromInbox(sortedFilesList);
+            MoveFilesToErrorFolderAndDeleteFilesFromInbox(sortedFilesList, folder);
 
         }
 
-        private void IncorrectFilenameHandler()
+        private void IncorrectFilenameHandler(string folder)
         {
             //Incorrect filename - move file and email user
             Console.WriteLine("Sending email. Not correct filename.");
@@ -536,10 +541,10 @@ namespace SFTPFileHandler
 
             _mailHelper.SendEmail(subject, body, mailRecipients, _mailSender);
 
-            MoveFilesToErrorFolderAndDeleteFilesFromInbox(_inCorrectFilenameList);
+            MoveFilesToErrorFolderAndDeleteFilesFromInbox(_inCorrectFilenameList, folder);
         }
 
-        private void IncorrectFileCodeHandler(List<FileInfo> incorrectFilesList)
+        private void IncorrectFileCodeHandler(List<FileInfo> incorrectFilesList, string folder)
         {
             //Incorrect filename - move file and email user
             Console.WriteLine("Sending email. Not correct filecode.");
@@ -566,10 +571,10 @@ namespace SFTPFileHandler
 
             _mailHelper.SendEmail(subject, body, mailRecipients, _mailSender);
 
-            MoveFilesToErrorFolderAndDeleteFilesFromInbox(incorrectFilesList);
+            MoveFilesToErrorFolderAndDeleteFilesFromInbox(incorrectFilesList, folder);
         }
 
-        private void IncorrectPeriodHandler(List<FileInfo> incorrectPeriodList)
+        private void IncorrectPeriodHandler(List<FileInfo> incorrectPeriodList, string folder)
         {
             //Incorrect filename - move file and email user
             Console.WriteLine("Sending email. Not correct period in filename.");
@@ -596,19 +601,27 @@ namespace SFTPFileHandler
 
             _mailHelper.SendEmail(subject, body, mailRecipients, _mailSender);
 
-            MoveFilesToErrorFolderAndDeleteFilesFromInbox(incorrectPeriodList);
+            MoveFilesToErrorFolderAndDeleteFilesFromInbox(incorrectPeriodList, folder);
         }
 
 
-        private void WriteFileToErrorFolder(string fullPathDir, FileInfo incorrectFile)
+        private void WriteFileToErrorFolder(string fullPathDir, FileInfo incorrectFile, string folder)
         {
-            Directory.CreateDirectory(fullPathDir);
-            //Tag file with date and time so it becomes unique in folder
-            var tag = DateTime.Now.ToString("_yyyyMMdd" + "T" + "HHmmss");
-            var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(incorrectFile.Name);
-            var extension = Path.GetExtension(incorrectFile.Name);
-            var pathToCopyTo = Path.Combine(fullPathDir, Path.GetFileName(fileNameWithoutExtension + tag + extension));
-            incorrectFile.CopyTo(pathToCopyTo);
+            //File.Exists lies. Have to check the hard way
+            DirectoryInfo dir = new DirectoryInfo(folder);
+            var filesInFolder = dir.GetFiles().OrderByDescending(p => p.CreationTime).ToList();
+            var pathToCheck = Path.Combine(dir.FullName, incorrectFile.Name);
+
+            if (File.Exists(pathToCheck))
+            {
+                Directory.CreateDirectory(fullPathDir);
+                //Tag file with date and time so it becomes unique in folder
+                var tag = DateTime.Now.ToString("_yyyyMMdd" + "T" + "HHmmss");
+                var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(incorrectFile.Name);
+                var extension = Path.GetExtension(incorrectFile.Name);
+                var pathToCopyTo = Path.Combine(fullPathDir, Path.GetFileName(fileNameWithoutExtension + tag + extension));
+                incorrectFile.CopyTo(pathToCopyTo);
+            }
         }
 
         private string GetOrgCodeForOrg(int orgId, RegisterInfo delregInfo)
@@ -691,22 +704,29 @@ namespace SFTPFileHandler
             return complete;
         }
 
-        private void MoveFilesToErrorFolderAndDeleteFilesFromInbox(List<FileInfo> filesInFolder )
+
+        private void MoveFilesToErrorFolderAndDeleteFilesFromInbox(List<FileInfo> filesInFolder, string folder)
         {
             var errorFilesArea = ConfigurationManager.AppSettings["notApprovedFilesFolder"];
             String pathOnServer = Path.Combine(errorFilesArea);
             var fullPathDir = Path.Combine(pathOnServer, _folderName);
 
-            //Kopiera filerna till fel-mappen 
+            //Kopiera filerna till fel-mappen
             foreach (var file in filesInFolder)
             {
-                //Kopiera filen till det aktuella kontots fel-mapp 
-                WriteFileToErrorFolder(fullPathDir, file);
+                //Kopiera filen till det aktuella kontots fel-mapp
+                if (file.Exists)
+                {
+                    WriteFileToErrorFolder(fullPathDir, file, folder);
+                }
             }
             //Ta sen bort filerna från ursprungliga mappen
             foreach (var file in filesInFolder)
             {
-                file.Delete();
+                if (file.Exists)
+                {
+                    file.Delete();
+                }
             }
         }
 

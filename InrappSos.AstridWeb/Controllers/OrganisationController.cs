@@ -594,9 +594,14 @@ namespace InrappSos.AstridWeb.Controllers
                 {
                     foreach (var arende in searchRes)
                     {
-                        var contactPersons = _portalSosService.HamtaAktivaKontaktpersonerForOrg(arende.OrganisationsId).OrderBy(x => x.Email).ToList();
-                        var arendeVm = ConvertArendeToVM(arende, contactPersons);
-                        model.Arenden.Add(arendeVm);
+                        //distinct
+                        var matches = model.Arenden.Where(p => p.Id == arende.Id);
+                        if (!matches.Any())
+                        {
+                            var contactPersons = _portalSosService.HamtaAktivaKontaktpersonerForOrg(arende.OrganisationsId).OrderBy(x => x.Email).ToList();
+                            var arendeVm = ConvertArendeToVM(arende, contactPersons);
+                            model.Arenden.Add(arendeVm);
+                        }
                     }
 
                 }

@@ -437,13 +437,17 @@ function checkOkToUpload() {
             var ok = true;
             if (antAddedRequiredFiles > 1) {
                 var regexMatch = GetRegExpMatch(filkravForSelectedRegister, filelist[0].name);
-                var periodInFirstFilename = (regexMatch[2]);
-                for (var index = 1; index < filelist.length; index++) {
-                    regexMatch = GetRegExpMatch(filkravForSelectedRegister, filelist[index].name);
-                    var periodInFilename = (regexMatch[2]);
-                    if (periodInFirstFilename !== periodInFilename) {
-                        ok = false;
-                        filelist[index].error = 'Alla filer i en leverans måste ha samma period';
+                if (typeof regexMatch !== 'undefined') {
+                    var periodInFirstFilename = (regexMatch[2]);
+                    for (var index = 1; index < filelist.length; index++) {
+                        regexMatch = GetRegExpMatch(filkravForSelectedRegister, filelist[index].name);
+                        if (typeof regexMatch !== 'undefined' && regexMatch !== null) {
+                            var periodInFilename = (regexMatch[2]);
+                            if (periodInFirstFilename !== periodInFilename) {
+                                ok = false;
+                                filelist[index].error = 'Alla filer i en leverans måste ha samma period';
+                            }
+                        }
                     }
                 }
             }
@@ -470,7 +474,8 @@ function checkOkToUpload() {
     }
 }
 
-function GetRegExpMatch(filkravForSelectedRegister, fileName) {
+function
+    GetRegExpMatch(filkravForSelectedRegister, fileName) {
     var regexMatch = null;
     var tmp = null;
     filkravForSelectedRegister.ForvantadeFiler.forEach(function (forvFil, idx) {

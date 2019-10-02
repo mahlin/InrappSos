@@ -75,7 +75,7 @@ function CheckKommunKodInFileName(regexMatch) {
 //Ny 20190403 - alla filnamn kontrolleras mot validFileCode
 function CheckFileCodeInFileName(regexMatch) {
     var filkod = (regexMatch[1]);
-    if (validFileCode === filkod)
+    if (validFileCode.toUpperCase() === filkod.toUpperCase())
         return true;
     return false;
 }

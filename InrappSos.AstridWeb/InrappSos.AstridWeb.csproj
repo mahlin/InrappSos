@@ -434,6 +434,7 @@
     <Content Include="Views\FileUpload\Index.cshtml" />
     <Content Include="Views\FileUpload\_Files.cshtml" />
     <Content Include="Views\FileUpload\AddTemplate.cshtml" />
+    <Content Include="Views\Register\CreateReportObligationForSubdir.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

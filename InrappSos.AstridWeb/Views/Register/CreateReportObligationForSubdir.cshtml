@@ -1,0 +1,74 @@
+﻿@model InrappSos.AstridWeb.Models.ViewModels.RegisterViewModels.AdmUppgiftsskyldighetOrganisationstypViewModel
+
+@{
+    ViewBag.Title = "Skapa ny uppgiftsskyldighet";
+}
+
+<script>
+
+    $(document).on('change', '#ddlOrganisationstyp', function () {
+        $("#OrganisationstypId").val(parseInt($('#ddlOrganisationstyp').val()));
+    });
+
+</script>
+
+
+@using (Html.BeginForm("CreateReportObligationForSubdir", "Register", FormMethod.Post, null))
+    {
+    @Html.AntiForgeryToken()
+
+    @Html.HiddenFor(m => m.DelregisterId)
+
+    <div class="form-horizontal padding-top-55">
+        <h4>Skapa uppgiftsskyldighet</h4>
+        <hr />
+        @*@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model., htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.OrganisationId, htmlAttributes: new { @class = "form-control", disabled = "disabled" })
+            </div>
+        </div>*@
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.Label("Organisationstyp", new { @class = "control-label col-md-2" })
+            <div class="col-md-10" style="width: 225px !important;">
+                @Html.DropDownListFor(m => m.OrganisationstypId, ViewBag.OrgtypesList as SelectList, " - Välj organisationstyp -", new { id = "ddlOrganisationstyp", @class = "form-control", style = "width:275px !important" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.SkyldigFrom, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.SkyldigFrom, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.SkyldigFrom, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.SkyldigTom, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.SkyldigTom, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.SkyldigTom, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Spara" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+    <div>
+        @Html.ActionLink("Tillbaka", "GetOrgtypesForSubDirectory", "Register", new { delregId = Model.DelregisterId }, null)
+
+    </div>
+}
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -234,6 +234,7 @@ namespace InrappSos.AstridWeb.Controllers
                 var delregsOrgtyper = _portalSosService.HamtaDelRegistersOrganisationstyper(subdirId);
                 var allaOrgtyper = _portalSosService.HamtaAllaOrganisationstyper();
                 model.DelRegistersOrganisationstyper = ConvertAdmUppgiftsskyldighetOrganisationstypToVM(delregsOrgtyper, allaOrgtyper);
+                model.SelectedDirectoryId = subdirId;
             }
 
             // Ladda drop down lists. 
@@ -241,6 +242,49 @@ namespace InrappSos.AstridWeb.Controllers
             this.ViewBag.DelregisterList = CreateDelRegisterDropDownList(delregisterList);
 
             return View("EditSubDirectorysOrgtypes", model);
+        }
+
+        [Authorize]
+        public ActionResult CreateReportObligationForSubdir(int selectedSubdirId = 0)
+        {
+            var model = new RegisterViewModels.AdmUppgiftsskyldighetOrganisationstypViewModel();
+            model.DelregisterId = selectedSubdirId;
+            var orgypesList = _portalSosService.HamtaAllaValbaraOrganisationstyperForDelregister(model.DelregisterId);
+            this.ViewBag.OrgtypesList = CreateOrgtypesDropDownList(orgypesList);
+            model.OrganisationstypId = 0;
+            return View(model);
+        }
+
+        // POST
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin, InrappAdmin")]
+        public ActionResult CreateReportObligationForSubdir(RegisterViewModels.AdmUppgiftsskyldighetOrganisationstypViewModel uppgSk)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var userName = User.Identity.GetUserName();
+                    var admUppgSkyldighet = ConvertToDbFromVM(uppgSk);
+                    admUppgSkyldighet.DelregisterId = uppgSk.DelregisterId;
+                    _portalSosService.SkapaUppgiftsskyldighetOrgtyp(admUppgSkyldighet, userName);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    ErrorManager.WriteToErrorLog("RegisterController", "CreateReportObligationForSubdir", e.ToString(), e.HResult, User.Identity.Name);
+                    var errorModel = new CustomErrorPageModel
+                    {
+                        Information = "Ett fel inträffade när ny uppgiftsskyldighet skulle sparas.",
+                        ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                    };
+                    return View("CustomError", errorModel);
+                }
+                return RedirectToAction("GetOrgtypesForSubDirectory", new { delregId = uppgSk.DelregisterId});
+            }
+
+            return View();
         }
 
 
@@ -723,23 +767,22 @@ namespace InrappSos.AstridWeb.Controllers
         {
             var delregOrgtyperVM = new List<RegisterViewModels.AdmUppgiftsskyldighetOrganisationstypViewModel>();
 
-            foreach (var orgtyp in allaOrgtyper)
+            foreach (var delregOrganisationstyp in delregOrgtyper)
             {
                 var orgtypeVM = new RegisterViewModels.AdmUppgiftsskyldighetOrganisationstypViewModel()
                 {
-                    Id = orgtyp.Id,
-                    OrganisationstypNamn  = orgtyp.Typnamn,
-                    SkyldigFrom = null,
-                    SkyldigTom = null
-            };
+                    Id = delregOrganisationstyp.Id,
+                    DelregisterId = delregOrganisationstyp.DelregisterId,
+                    SkyldigFrom = delregOrganisationstyp.SkyldigFrom,
+                    SkyldigTom = delregOrganisationstyp.SkyldigTom
+                };
 
-                foreach (var delregOrganisationstyp in delregOrgtyper)
+                foreach (var orgtyp in allaOrgtyper)
                 {
                     if (delregOrganisationstyp.OrganisationstypId == orgtyp.Id)
                     {
-                        orgtypeVM.Selected = true;
-                        orgtypeVM.SkyldigFrom = delregOrganisationstyp.SkyldigFrom;
-                        orgtypeVM.SkyldigTom = delregOrganisationstyp.SkyldigTom;
+                        orgtypeVM.OrganisationstypId = orgtyp.Id;
+                        orgtypeVM.OrganisationstypNamn = orgtyp.Typnamn;
                     }
                 }
                 delregOrgtyperVM.Add(orgtypeVM);
@@ -774,7 +817,7 @@ namespace InrappSos.AstridWeb.Controllers
             {
                 Id = subdirOrgtype.Id,
                 DelregisterId = subdirOrgtype.DelregisterId,
-                Selected = subdirOrgtype.Selected,
+                OrganisationstypId = subdirOrgtype.OrganisationstypId,
                 SkyldigTom = subdirOrgtype.SkyldigTom
             };
 
@@ -783,6 +826,41 @@ namespace InrappSos.AstridWeb.Controllers
                 subdirOrgtypeDTO.SkyldigFrom = subdirOrgtype.SkyldigFrom.Value;
             }
             return subdirOrgtypeDTO;
+        }
+
+        private IEnumerable<SelectListItem> CreateOrgtypesDropDownList(IEnumerable<AdmOrganisationstyp> orgtypeList)
+        {
+            SelectList lstobj = null;
+
+            var list = orgtypeList
+                .Select(p =>
+                    new SelectListItem
+                    {
+                        Value = p.Id.ToString(),
+                        Text = p.Typnamn
+                    });
+
+            // Setting.  
+            lstobj = new SelectList(list, "Value", "Text");
+
+            return lstobj;
+        }
+
+        private AdmUppgiftsskyldighetOrganisationstyp ConvertToDbFromVM(RegisterViewModels.AdmUppgiftsskyldighetOrganisationstypViewModel uppgSkVM)
+        {
+            var admUppgSk = new AdmUppgiftsskyldighetOrganisationstyp()
+            {
+                Id = uppgSkVM.Id,
+                DelregisterId = uppgSkVM.DelregisterId,
+                OrganisationstypId = uppgSkVM.OrganisationstypId,
+                SkyldigTom = uppgSkVM.SkyldigTom
+            };
+            if (uppgSkVM.SkyldigFrom != null)
+            {
+                admUppgSk.SkyldigFrom = uppgSkVM.SkyldigFrom.Value;
+            }
+
+            return admUppgSk;
         }
 
 

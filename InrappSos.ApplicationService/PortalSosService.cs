@@ -11,6 +11,7 @@ using System.Configuration;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.Remoting.Messaging;
+using System.Text.RegularExpressions;
 using InrappSos.ApplicationService.DTOModel;
 using InrappSos.ApplicationService.Interface;
 using InrappSos.ApplicationService.Helpers;
@@ -2473,7 +2474,24 @@ namespace InrappSos.ApplicationService
             //Remove users chosen registers
             _portalSosRepository.DeleteChosenSubDirectoriesForUser(userId);
         }
-        
+
+        public IEnumerable<AdmOrganisationstyp> HamtaAllaValbaraOrganisationstyperForDelregister(int subdirId)
+        {
+            var resList = new List<AdmOrganisationstyp>();
+            var allOrgtypesList = _portalSosRepository.GetAllOrgTypes();
+            var activesList = _portalSosRepository.GetAllActiveReportObligationsForSubDir(subdirId);
+
+            foreach (var orgtype in allOrgtypesList)
+            {
+                var exists = activesList.Where(x => x.OrganisationstypId == orgtype.Id).ToList();
+                if (!exists.Any())
+                {
+                   resList.Add(orgtype); 
+                }
+            }
+            return resList;
+        }
+
         public void SkapaFilipRoll(ApplicationRole filipRoll, string userName)
         {
             //Sätt datum och användare
@@ -2675,6 +2693,16 @@ namespace InrappSos.ApplicationService
             uppgSk.AndradDatum = DateTime.Now;
             uppgSk.AndradAv = userName;
             _portalSosRepository.CreateReportObligation(uppgSk);
+        }
+
+        public void SkapaUppgiftsskyldighetOrgtyp(AdmUppgiftsskyldighetOrganisationstyp uppgSk, string userName)
+        {
+            //Sätt datum och användare
+            uppgSk.SkapadDatum = DateTime.Now;
+            uppgSk.SkapadAv = userName;
+            uppgSk.AndradDatum = DateTime.Now;
+            uppgSk.AndradAv = userName;
+            _portalSosRepository.CreateReportObligationForOrgtype(uppgSk);
         }
 
         public void SkapaEnhetsUppgiftsskyldighet(AdmEnhetsUppgiftsskyldighet enhetsUppgSk, string userName)
@@ -3014,7 +3042,7 @@ namespace InrappSos.ApplicationService
             foreach (var organisationstyp in listOfOrgtypes)
             {
                 subdirOrgtypes.OrganisationstypId = organisationstyp.Organisationstypid;
-                var subdirOrgtypeDb = _portalSosRepository.GetReportObligationForSubDirAndOrgtype(subdirOrgtypes.DelregisterId, organisationstyp.Organisationstypid);
+                var subdirOrgtypeDb = _portalSosRepository.GetReportObligationForSubDirAndOrgtype(subdirOrgtypes.DelregisterId, organisationstyp.Organisationstypid, subdirOrgtypes.Id);
                 if (organisationstyp.Selected)
                 {
                     subdirOrgtypes.AndradAv = userName;
@@ -3053,13 +3081,13 @@ namespace InrappSos.ApplicationService
                 //check if already exists (update), otherwise insert into db
                 var reportObligationDb = _portalSosRepository.GetActiveReportObligationInformationForOrgAndSubDir(org.Id, subdirOrgtype.DelregisterId);
 
-                if (reportObligationDb == null && subdirOrgtype.Selected) //Create
+                if (reportObligationDb == null) //Create
                 {
                     reportObligationDb = new AdmUppgiftsskyldighet();
                     reportObligationDb.OrganisationId = org.Id;
                     reportObligationDb.DelregisterId = subdirOrgtype.DelregisterId;
-                    reportObligationDb.SkyldigFrom = DateTime.Now;
-                    reportObligationDb.SkyldigTom = null;
+                    reportObligationDb.SkyldigFrom = subdirOrgtype.SkyldigFrom;
+                    reportObligationDb.SkyldigTom = subdirOrgtype.SkyldigTom;
                     reportObligationDb.AndradAv = userName;
                     reportObligationDb.AndradDatum = DateTime.Now;
                     reportObligationDb.SkapadAv = userName;
@@ -3067,9 +3095,10 @@ namespace InrappSos.ApplicationService
 
                     _portalSosRepository.CreateReportObligation(reportObligationDb);
                 }
-                else if (reportObligationDb != null && !subdirOrgtype.Selected) //Update
+                else if (reportObligationDb != null) //Update
                 {
-                    reportObligationDb.SkyldigTom = DateTime.Now;
+                    reportObligationDb.SkyldigTom = subdirOrgtype.SkyldigFrom;
+                    reportObligationDb.SkyldigTom = subdirOrgtype.SkyldigTom;
                     reportObligationDb.AndradAv = userName;
                     reportObligationDb.AndradDatum = DateTime.Now;
                     _portalSosRepository.UpdateReportObligation(reportObligationDb); 
@@ -3079,11 +3108,18 @@ namespace InrappSos.ApplicationService
                         var unitReportObligations = _portalSosRepository.GetActiveUnitReportObligationForReportObligation(reportObligationDb.Id);
                         foreach (var unitReportObligationDB in unitReportObligations)
                         {
-                            unitReportObligationDB.SkyldigTom = DateTime.Now;
+                            unitReportObligationDB.SkyldigFrom = subdirOrgtype.SkyldigFrom;
+                            unitReportObligationDB.SkyldigTom = subdirOrgtype.SkyldigTom;
                             UppdateraEnhetsUppgiftsskyldighet(unitReportObligationDB, userName);
                         }
                     }
-                    UppdateraRollForKontaktpersoner(org.Id, subdirOrgtype.DelregisterId);
+                    if (subdirOrgtype.SkyldigTom != null)
+                    {
+                        if (subdirOrgtype.SkyldigTom > DateTime.Now)
+                        {
+                            UppdateraRollForKontaktpersoner(org.Id, subdirOrgtype.DelregisterId);
+                        }
+                    }
                 }
             }
         }
@@ -3110,9 +3146,9 @@ namespace InrappSos.ApplicationService
         public void UppdateraUppgiftsskyldighetOrganisationstyp(AdmUppgiftsskyldighetOrganisationstypDTO subdirOrgtype, string userName)
         {
             //check if already exists (update or delete), otherwise insert into db
-            var subdirOrgtypeDb = _portalSosRepository.GetReportObligationForSubDirAndOrgtype(subdirOrgtype.DelregisterId, subdirOrgtype.Id);
+            var subdirOrgtypeDb = _portalSosRepository.GetReportObligationForSubDirAndOrgtype(subdirOrgtype.DelregisterId, subdirOrgtype.OrganisationstypId, subdirOrgtype.Id);
                
-            if (subdirOrgtypeDb == null && subdirOrgtype.Selected) //Create
+            if (subdirOrgtypeDb == null) //Create
             {
                 subdirOrgtypeDb = new AdmUppgiftsskyldighetOrganisationstyp();
                 subdirOrgtypeDb.DelregisterId = subdirOrgtype.DelregisterId;
@@ -3126,7 +3162,7 @@ namespace InrappSos.ApplicationService
 
                  _portalSosRepository.CreateSubdirReportObligation(subdirOrgtypeDb);
             }
-            else if (subdirOrgtypeDb != null && subdirOrgtype.Selected) //Update
+            else if (subdirOrgtypeDb != null) //Update
             {
                 subdirOrgtypeDb.SkyldigFrom = subdirOrgtype.SkyldigFrom;
                 subdirOrgtypeDb.SkyldigTom = subdirOrgtype.SkyldigTom;
@@ -3134,11 +3170,7 @@ namespace InrappSos.ApplicationService
                 subdirOrgtypeDb.AndradDatum = DateTime.Now;
                 _portalSosRepository.UpdateSubdirReportObligation(subdirOrgtypeDb);
             }
-            else if (subdirOrgtypeDb != null && !subdirOrgtype.Selected) //Delete
-            {
-                _portalSosRepository.DeleteSubdirReportObligation(subdirOrgtypeDb);
 
-            }
             UppdateraUppgiftsskyldighetForOrganisationer(subdirOrgtype, userName);
         }
 

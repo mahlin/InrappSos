@@ -351,6 +351,8 @@ namespace InrappSos.ApplicationService.Interface
 
         void InaktiveraKontaktperson(string userId);
 
+        IEnumerable<AdmOrganisationstyp> HamtaAllaValbaraOrganisationstyperForDelregister(int subdirId);
+
         bool IsOpen();
         bool IsHelgdag();
         bool IsSpecialdag();
@@ -383,6 +385,7 @@ namespace InrappSos.ApplicationService.Interface
         void SkapaInformationsText(AdmInformation infoText, string userName);
 
         void SkapaUppgiftsskyldighet(AdmUppgiftsskyldighet uppgSk, string userName);
+        void SkapaUppgiftsskyldighetOrgtyp(AdmUppgiftsskyldighetOrganisationstyp uppgSk, string userName);
 
         void SkapaEnhetsUppgiftsskyldighet(AdmEnhetsUppgiftsskyldighet enhetsUppgSk, string userName);
 

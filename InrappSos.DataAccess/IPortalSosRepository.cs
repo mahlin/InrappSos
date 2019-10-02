@@ -169,7 +169,11 @@ namespace InrappSos.DataAccess
 
         AdmUppgiftsskyldighet GetActiveReportObligationInformationForOrgAndSubDir(int orgId, int subdirId);
 
-        AdmUppgiftsskyldighetOrganisationstyp GetReportObligationForSubDirAndOrgtype(int subdirId, int orgtypeId);
+        IEnumerable<AdmUppgiftsskyldighetOrganisationstyp> GetAllActiveReportObligationsForSubDir(int subdirId);
+        IEnumerable<AdmUppgiftsskyldighetOrganisationstyp> GetAllInactiveReportObligationsForSubDir(int subdirId);
+
+
+        AdmUppgiftsskyldighetOrganisationstyp GetReportObligationForSubDirAndOrgtype(int subdirId, int orgtypeId, int subdirorgtypeId);
 
         IEnumerable<AdmUppgiftsskyldighet> GetAllReportObligationsForSubDirAndOrg(int subdirId, int orgId);
 
@@ -412,6 +416,8 @@ namespace InrappSos.DataAccess
         void CreateSpecialDay(AdmSpecialdag specialDay);
         void CreateInformationText(AdmInformation infoText);
         void CreateReportObligation(AdmUppgiftsskyldighet uppgSk);
+
+        void CreateReportObligationForOrgtype(AdmUppgiftsskyldighetOrganisationstyp uppgSk);
 
         void CreateUnitReportObligation(AdmEnhetsUppgiftsskyldighet enhetsUppgSk);
 

@@ -723,9 +723,21 @@ namespace InrappSos.DataAccess
             return reportObligation;
         }
 
-        public AdmUppgiftsskyldighetOrganisationstyp GetReportObligationForSubDirAndOrgtype(int subdirId, int orgtypeId)
+        public IEnumerable<AdmUppgiftsskyldighetOrganisationstyp> GetAllActiveReportObligationsForSubDir(int subdirId)
         {
-            var reportObligationForSubdirAndOrgtype = DbContext.AdmUppgiftsskyldighetOrganisationstyp.SingleOrDefault(x => x.DelregisterId == subdirId && x.OrganisationstypId == orgtypeId);
+            var list = DbContext.AdmUppgiftsskyldighetOrganisationstyp.Where(x => x.DelregisterId == subdirId && x.SkyldigTom == null).ToList();
+            return list;
+        }
+
+        public IEnumerable<AdmUppgiftsskyldighetOrganisationstyp> GetAllInactiveReportObligationsForSubDir(int subdirId)
+        {
+            var list = DbContext.AdmUppgiftsskyldighetOrganisationstyp.Where(x => x.DelregisterId == subdirId && x.SkyldigTom > DateTime.Now).ToList();
+            return list;
+        }
+
+        public AdmUppgiftsskyldighetOrganisationstyp GetReportObligationForSubDirAndOrgtype(int subdirId, int orgtypeId, int subdirorgtypeId)
+        {
+            var reportObligationForSubdirAndOrgtype = DbContext.AdmUppgiftsskyldighetOrganisationstyp.SingleOrDefault(x => x.DelregisterId == subdirId && x.OrganisationstypId == orgtypeId && x.Id == subdirorgtypeId);
             return reportObligationForSubdirAndOrgtype;
         }
 
@@ -1965,6 +1977,12 @@ namespace InrappSos.DataAccess
         public void CreateReportObligation(AdmUppgiftsskyldighet uppgSk)
         {
             DbContext.AdmUppgiftsskyldighet.Add(uppgSk);
+            DbContext.SaveChanges();
+        }
+
+        public void CreateReportObligationForOrgtype(AdmUppgiftsskyldighetOrganisationstyp uppgSk)
+        {
+            DbContext.AdmUppgiftsskyldighetOrganisationstyp.Add(uppgSk);
             DbContext.SaveChanges();
         }
 

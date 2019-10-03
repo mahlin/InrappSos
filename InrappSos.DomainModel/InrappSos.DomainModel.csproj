@@ -75,6 +75,7 @@
     <Compile Include="ArendeAnsvarig.cs" />
     <Compile Include="KontaktpersonSFTPkonto.cs" />
     <Compile Include="LevId.cs" />
+    <Compile Include="KontaktpersonOrganisationsenhet.cs" />
     <Compile Include="SFTPkonto.cs" />
     <Compile Include="AdmOrganisationstyp.cs" />
     <Compile Include="AdmRegister.cs" />

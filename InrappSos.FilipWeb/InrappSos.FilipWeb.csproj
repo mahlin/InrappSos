@@ -459,6 +459,7 @@
     <Content Include="Views\FileDrop\Index.cshtml" />
     <Content Include="Views\FileDrop\_Files.cshtml" />
     <Content Include="Views\FileDrop\_FilesHistory.cshtml" />
+    <Content Include="Views\Manage\ChangeChosenOrgUnits.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

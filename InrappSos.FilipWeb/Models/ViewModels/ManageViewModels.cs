@@ -102,6 +102,25 @@ namespace InrappSos.FilipWeb.Models.ViewModels
         public string PhoneNumberMasked { get; set; }
     }
 
+    public class SubdirViewModel
+    {
+        public int Id { get; set; }
+        public int RegisterId { get; set; }
+        public string Delregisternamn { get; set; }
+        public string Kortnamn { get; set; }
+        public string Beskrivning { get; set; }
+        public List<OrgUnitViewModel> OrgUnitList{ get; set; }
+    }
+
+    public class OrgUnitViewModel
+    {
+        public int Id { get; set; }
+        public int OrganisationsId { get; set; }
+        public string Enhetsnamn { get; set; }
+        public string Enhetskod { get; set; }
+        public bool Selected { get; set; } = false;
+    }
+
     public class ConfigureTwoFactorViewModel
     {
         public string SelectedProvider { get; set; }

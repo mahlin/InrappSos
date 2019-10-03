@@ -14,5 +14,6 @@ namespace InrappSos.ApplicationService.DTOModel
         public DateTime? AktivFrom { get; set; }
         public DateTime? AktivTom { get; set; }
         public string Filkod { get; set; }
+        public bool Selected { get; set; }
     }
 }

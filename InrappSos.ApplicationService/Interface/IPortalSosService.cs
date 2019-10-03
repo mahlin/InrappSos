@@ -335,6 +335,10 @@ namespace InrappSos.ApplicationService.Interface
 
         IEnumerable<RegisterInfo> HamtaRegistersMedAnvandaresVal(string userId, int orgId);
 
+        IEnumerable<Organisationsenhet> HamtaDelregistersAktuellaEnheter(int delregId, int orgId);
+
+        IEnumerable<KontaktpersonOrganisationsenhet> HamtaAnvandarensValdaEnheter(string userId);
+
         IEnumerable<AdmRegister> HamtaRegisterForAnvandare(string userId, int orgId);
 
         Arendetyp HamtaArendetyp(int arendetypId);
@@ -432,7 +436,7 @@ namespace InrappSos.ApplicationService.Interface
         void UppdateraUndantagForvantadFil(List<UndantagForvantadfilDTO> undantagList, string userName);
 
         void UppdateraValdaRegistersForAnvandare(string userId, string userName, List<RegisterInfo> registerList);
-
+        void UppdateraValdaOrganisationsenheterForAnvandare(string userId, string userName, List<OrganisationsenhetDTO> orgenhetsList);
 
         void UppdateraEnhetsUppgiftsskyldighet(AdmEnhetsUppgiftsskyldighet enhetsUppgSkyldighet, string userName);
 
@@ -495,6 +499,8 @@ namespace InrappSos.ApplicationService.Interface
         string MaskPhoneNumber(string phoneNumber);
 
         void SkickaPaminnelse(IEnumerable<RapporteringsresultatDTO> rappResList, string userId);
+
+        bool RapporterarPerEnhet(int delregId, int orgId);
 
     }
 }

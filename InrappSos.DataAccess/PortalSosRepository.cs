@@ -384,6 +384,12 @@ namespace InrappSos.DataAccess
             return orgId;
         }
 
+        public IEnumerable<KontaktpersonOrganisationsenhet> GetUsersChosenOrgUnits(string userId)
+        {
+            var orgUnits = DbContext.KontaktpersonOrganisationsenhet.Where(x => x.ApplicationUserId == userId).ToList();
+            return orgUnits;
+        }
+
         public int GetOrgUnitOrganisationId(int orgUnitId)
         {
             var orgId = DbContext.Organisationsenhet.Where(u => u.Id == orgUnitId).Select(o => o.OrganisationsId).SingleOrDefault();
@@ -579,6 +585,22 @@ namespace InrappSos.DataAccess
         public IEnumerable<Organisationsenhet> GetOrgUnitsByRepOblId(int repOblId)
         {
             var orgUnitRepOligations = DbContext.AdmEnhetsUppgiftsskyldighet.Where(x => x.UppgiftsskyldighetId == repOblId).ToList();
+            var orgUnits = new List<Organisationsenhet>();
+            foreach (var orgUnitRepObligation in orgUnitRepOligations)
+            {
+                var orgUnit = DbContext.Organisationsenhet.SingleOrDefault(x => x.Id == orgUnitRepObligation.OrganisationsenhetsId);
+                if (orgUnit != null)
+                {
+                    orgUnits.Add(orgUnit);
+                }
+            }
+
+            return orgUnits;
+        }
+
+        public IEnumerable<Organisationsenhet> GetActiveOrgUnitsByRepOblId(int repOblId)
+        {
+            var orgUnitRepOligations = DbContext.AdmEnhetsUppgiftsskyldighet.Where(x => x.UppgiftsskyldighetId == repOblId && x.SkyldigTom == null || x.SkyldigTom > DateTime.Now).ToList();
             var orgUnits = new List<Organisationsenhet>();
             foreach (var orgUnitRepObligation in orgUnitRepOligations)
             {
@@ -2166,6 +2188,27 @@ namespace InrappSos.DataAccess
 
                     DbContext.Roll.Add(roll);
                 }
+            }
+            DbContext.SaveChanges();
+        }
+
+        public void UpdateChosenOrgUnitsForUser(string userId, string userName, List<int> orgUnitIdList)
+        {
+            //delete prevoious choices
+            DbContext.KontaktpersonOrganisationsenhet.RemoveRange(DbContext.KontaktpersonOrganisationsenhet.Where(x => x.ApplicationUserId == userId));
+
+            //Insert new choices
+            foreach (var orgUnitId in orgUnitIdList)
+            {
+                var kpOrgunit = new KontaktpersonOrganisationsenhet()
+                {
+                    OrganisationsenhetsId = orgUnitId,
+                    ApplicationUserId = userId,
+                    SkapadDatum = DateTime.Now,
+                    SkapadAv = userName
+                };
+
+                DbContext.KontaktpersonOrganisationsenhet.Add(kpOrgunit);
             }
             DbContext.SaveChanges();
         }

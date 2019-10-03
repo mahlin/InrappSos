@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.Mvc;
 using InrappSos.DataAccess;
 using InrappSos.ApplicationService;
+using InrappSos.ApplicationService.DTOModel;
 using InrappSos.ApplicationService.Helpers;
 using InrappSos.ApplicationService.Interface;
 using InrappSos.DomainModel;
@@ -80,6 +81,7 @@ namespace InrappSos.FilipWeb.Controllers
                 : message == ManageMessageId.AddPhoneSuccess ? "Ditt mobilnummer har sparats."
                 : message == ManageMessageId.RemovePhoneSuccess ? "Ditt mobilnummer har tagits bort."
                 : message == ManageMessageId.ChangeChosenRegister ? "Valda register har registrerats."
+                : message == ManageMessageId.ChangeChosenOrgUnits ? "Valda organisationsenheter har registrerats."
                 : message == ManageMessageId.ChangeNameSuccess ? "Ditt namn har ändrats."
                 : message == ManageMessageId.AddContactNumberSuccess ? "Ditt telefonnummer har ändrats."
                 : "";
@@ -478,6 +480,44 @@ namespace InrappSos.FilipWeb.Controllers
             }
         }
 
+        // GET: /Manage/Name
+        public ActionResult ChangeChosenOrgUnits(int selectedSubdirId = 0)
+        {
+            var model = new SubdirViewModel();
+            var userId = User.Identity.GetUserId();
+            var orgId = _portalService.HamtaUserOrganisationId(userId);
+            var availableOrgUnits = _portalService.HamtaDelregistersAktuellaEnheter(selectedSubdirId, orgId).ToList();
+            var usersOrgUnits = _portalService.HamtaAnvandarensValdaEnheter(userId).ToList();
+            model.Id = selectedSubdirId;
+            model.OrgUnitList = ConvertOrgUnitsToVM(availableOrgUnits, usersOrgUnits);
+            return View(model);
+        }
+
+        // POST: /Account/Register
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ChangeChosenOrgUnits(SubdirViewModel model)
+        {
+            try
+            {
+                //Uppdatera valda organisationsenheter
+                var orgUnitsDTO = ConvertVMOrgUnits(model.OrgUnitList);
+                _portalService.UppdateraValdaOrganisationsenheterForAnvandare(User.Identity.GetUserId(), User.Identity.GetUserName(), orgUnitsDTO);
+                return RedirectToAction("Index", new { Message = ManageMessageId.ChangeChosenOrgUnits });
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.WriteToErrorLog("ManageController", "ChangeChosenOrgUnits", e.ToString(), e.HResult, User.Identity.Name);
+                var errorModel = new CustomErrorPageModel
+                {
+                    Information = "Ett fel inträffade vid byte av valda organisationsenheter.",
+                    ContactEmail = ConfigurationManager.AppSettings["ContactEmail"],
+                };
+                return View("CustomError", errorModel);
+            }
+        }
+
         //
         // POST: /Manage/LinkLogin
         [HttpPost]
@@ -613,6 +653,47 @@ namespace InrappSos.FilipWeb.Controllers
             return false;
         }
 
+
+        private List<InrappSos.FilipWeb.Models.ViewModels.OrgUnitViewModel> ConvertOrgUnitsToVM(List<Organisationsenhet> availableOrgUnits, List<KontaktpersonOrganisationsenhet> usersOrgUnits)
+        {
+            var orgUnitsVMList = new List<InrappSos.FilipWeb.Models.ViewModels.OrgUnitViewModel>();
+            foreach (var availableOrgUnit in availableOrgUnits)
+            {
+                var orgUnitVM = new InrappSos.FilipWeb.Models.ViewModels.OrgUnitViewModel()
+                {
+                    Id = availableOrgUnit.Id,
+                    OrganisationsId = availableOrgUnit.OrganisationsId,
+                    Enhetsnamn = availableOrgUnit.Enhetsnamn,
+                    Enhetskod = availableOrgUnit.Enhetskod
+                };
+                var chosenOrgUnit = usersOrgUnits.Where(x => x.OrganisationsenhetsId == availableOrgUnit.Id);
+                if (chosenOrgUnit.Any())
+                {
+                    orgUnitVM.Selected = true;
+                }
+                orgUnitsVMList.Add(orgUnitVM);
+            }
+            return orgUnitsVMList;            
+        }
+
+        private List<OrganisationsenhetDTO> ConvertVMOrgUnits(List<InrappSos.FilipWeb.Models.ViewModels.OrgUnitViewModel> orgUnitsVM)
+        {
+            var orgUnitsDTOList = new List<OrganisationsenhetDTO>();
+            foreach (var orgUnitVM in orgUnitsVM)
+            {
+                var orgUnitDTO = new OrganisationsenhetDTO
+                {
+                    Id = orgUnitVM.Id,
+                    Enhetsnamn = orgUnitVM.Enhetsnamn,
+                    Enhetskod = orgUnitVM.Enhetskod,
+                    Selected = orgUnitVM.Selected
+                };
+                orgUnitsDTOList.Add(orgUnitDTO);
+            }
+            return orgUnitsDTOList;
+        }
+
+
         public enum ManageMessageId
         {
             AddPhoneSuccess,
@@ -622,6 +703,7 @@ namespace InrappSos.FilipWeb.Controllers
             RemoveLoginSuccess,
             RemovePhoneSuccess,
             ChangeChosenRegister,
+            ChangeChosenOrgUnits,
             ChangeNameSuccess,
             AddContactNumberSuccess,
             Error

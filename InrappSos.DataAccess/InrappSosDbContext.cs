@@ -148,6 +148,14 @@ namespace InrappSos.DataAccess
             modelBuilder.Entity<Roll>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
             modelBuilder.Entity<Roll>().Property(e => e.AndradAv).HasColumnName("andradav");
 
+            //KontaktpersonOrganisationsenhet
+            modelBuilder.Entity<KontaktpersonOrganisationsenhet>().ToTable("KontaktpersonOrganisationenhet");
+            modelBuilder.Entity<KontaktpersonOrganisationsenhet>().Property(e => e.Id).HasColumnName("kontaktpersonorganisationenhetsid");
+            modelBuilder.Entity<KontaktpersonOrganisationsenhet>().Property(e => e.OrganisationsenhetsId).HasColumnName("organisationsenhetsId");
+            modelBuilder.Entity<KontaktpersonOrganisationsenhet>().Property(e => e.ApplicationUserId).HasColumnName("kontaktpersonid");
+            modelBuilder.Entity<KontaktpersonOrganisationsenhet>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
+            modelBuilder.Entity<KontaktpersonOrganisationsenhet>().Property(e => e.SkapadAv).HasColumnName("skapadav");
+
             //Leverans
             modelBuilder.Entity<Leverans>().Property(e => e.Id).HasColumnName("leveransid");
             modelBuilder.Entity<Leverans>().Property(e => e.OrganisationId).HasColumnName("organisationsid");
@@ -724,6 +732,8 @@ namespace InrappSos.DataAccess
 
         public DbSet<ApplicationUserRole> ApplicationUserRole { get; set; }
         public DbSet<ApplicationRole> ApplicationRole { get; set; }
+
+        public DbSet<KontaktpersonOrganisationsenhet> KontaktpersonOrganisationsenhet { get; set; }
 
         //public DbSet<ApplicationRole> ApplicationRole { get; set; }
         //public DbSet<ApplicationUserRole> ApplicationUserRole { get; set; }

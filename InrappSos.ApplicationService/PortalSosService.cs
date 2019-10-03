@@ -2369,11 +2369,42 @@ namespace InrappSos.ApplicationService
                     if (register.Id == userRegister.DelregisterId)
                     {
                         register.Selected = true;
+                        register.RapporterarPerEnhet = RapporterarPerEnhet(register.Id, orgId);
                     }
                 }
             }
 
             return allaRegisterList;
+        }
+
+        public bool RapporterarPerEnhet(int delregId, int orgId)
+        {
+            var uppgskh = _portalSosRepository.GetActiveUppgiftsskyldighetForOrganisationAndRegister(orgId, delregId);
+            if (uppgskh.RapporterarPerEnhet)
+                return true;
+            return false;
+        }
+
+        public IEnumerable<Organisationsenhet> HamtaDelregistersAktuellaEnheter(int delregId, int orgId)
+        {
+            var orgUnitsList = new List<Organisationsenhet>();
+            var uppgskhList = _portalSosRepository.GetAllActiveReportObligationsForSubDirAndOrg(delregId, orgId);
+
+            foreach (var uppgskh in uppgskhList)
+            {
+                if (uppgskh.RapporterarPerEnhet)
+                {
+                    orgUnitsList = _portalSosRepository.GetOrgUnitsByRepOblId(uppgskh.Id).ToList();
+                }
+            }
+            return orgUnitsList;
+
+        }
+
+        public IEnumerable<KontaktpersonOrganisationsenhet> HamtaAnvandarensValdaEnheter(string userId)
+        {
+            var chosenOrgUnits = _portalSosRepository.GetUsersChosenOrgUnits(userId);
+            return chosenOrgUnits;
         }
 
         public IEnumerable<AdmRegister> HamtaRegisterForAnvandare(string userId, int orgId)
@@ -3027,6 +3058,19 @@ namespace InrappSos.ApplicationService
         public void UppdateraValdaRegistersForAnvandare(string userId, string userName, List<RegisterInfo> registerList)
         {
             _portalSosRepository.UpdateChosenRegistersForUser(userId, userName, registerList);
+        }
+
+        public void UppdateraValdaOrganisationsenheterForAnvandare(string userId, string userName, List<OrganisationsenhetDTO> orgenhetsList)
+        {
+            var orgenhetIdList = new List<int>();
+            foreach (var orgenhet in orgenhetsList)
+            {
+                if (orgenhet.Selected)
+                {
+                    orgenhetIdList.Add(orgenhet.Id);
+                }
+            }
+            _portalSosRepository.UpdateChosenOrgUnitsForUser(userId, userName, orgenhetIdList);
         }
 
         public void UppdateraEnhetsUppgiftsskyldighet(AdmEnhetsUppgiftsskyldighet enhetsUppgSkyldighet, string userName)

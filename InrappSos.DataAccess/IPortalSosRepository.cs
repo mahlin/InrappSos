@@ -96,6 +96,8 @@ namespace InrappSos.DataAccess
 
         int GetUserOrganisationId(string userId);
 
+        IEnumerable<KontaktpersonOrganisationsenhet> GetUsersChosenOrgUnits(string userId);
+
         int GetOrgUnitOrganisationId(int orgUnitId);
 
         int GetReportObligationOrganisationId(int repObligationId);
@@ -144,6 +146,8 @@ namespace InrappSos.DataAccess
         IEnumerable<Organisationsenhet> GetOrgUnitsForOrg(int orgId);
 
         IEnumerable<Organisationsenhet> GetOrgUnitsByRepOblId(int repOblId);
+
+        IEnumerable<Organisationsenhet> GetActiveOrgUnitsByRepOblId(int repOblId);
 
         IEnumerable<Organisationsenhet> GetOrgUnitsByRepOblWithInPeriod(int repOblId, string period);
 
@@ -448,6 +452,7 @@ namespace InrappSos.DataAccess
 
         //void UpdateUserInfo(ApplicationUser user);
         void UpdateChosenRegistersForUser(string userId, string userName, List<RegisterInfo> registerList);
+        void UpdateChosenOrgUnitsForUser (string userId, string userName, List<int> orgUnitIdList);
 
         void UpdateNameForUser(string userId, string userName);
         void UpdateOrgUnit(Organisationsenhet orgUnit);

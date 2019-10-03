@@ -76,7 +76,7 @@
 
     <p class="text-success">@ViewBag.StatusMessage</p>
     <div class="row" style="margin-bottom: -10px;">
-        <span style="font-size: 18px; padding-top: 20px; margin-bottom: -10px;">Ändra dina kontouppgifter</span>
+        <span style="font-size: 18px; padding-top: 20px; padding-left: 15px; margin-bottom: -10px;">Ändra dina kontouppgifter</span>
         <input type="button" class="btn btn-default" style="float: right; margin-top: -10px;" value="Inaktivera kontot" id="btnCloseAccount" onclick="disableAccount();" />
     </div>
     <hr />
@@ -100,11 +100,11 @@
             [
             @if (Model.PhoneNumber != null)
             {
-                @Html.ActionLink("Ändra", "AddPhoneNumber")
+                @Html.ActionLink("Ändra mobilnummer", "AddPhoneNumber")
             }
             else
             {
-                @Html.ActionLink("Lägg till", "AddPhoneNumber")
+                @Html.ActionLink("Lägg till mobilnummer", "AddPhoneNumber")
             }
             ]
         </dd>
@@ -114,11 +114,11 @@
             [
             @if (Model.ContactNumber != null)
             {
-                @Html.ActionLink("Ändra", "AddContactNumber")
+                @Html.ActionLink("Ändra kontaktnummer", "AddContactNumber")
             }
             else
             {
-                @Html.ActionLink("Lägg till", "AddContactNumber")
+                @Html.ActionLink("Lägg till kontaktnummer", "AddContactNumber")
             }
             ]
         </dd>
@@ -140,11 +140,15 @@
                         if (Model.RegisterList[i].Selected)
                         {
                             @Html.Raw(Model.RegisterList[i].Namn)
-                            <br/>
+                            if (Model.RegisterList[i].RapporterarPerEnhet)
+                            {
+                                @Html.ActionLink(" [ Ändra enheter ] ", "ChangeChosenOrgUnits", routeValues: new { selectedSubdirId = Model.RegisterList[i].Id }, htmlAttributes: null) 
+                            }
+                            <br />
                         }
                     }
                     [
-                    @Html.ActionLink("Ändra", "ChangeChosenRegisters")
+                    @Html.ActionLink("Ändra valda register", "ChangeChosenRegisters")
                     ]
 
                 </dd>

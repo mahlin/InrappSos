@@ -2804,21 +2804,28 @@ namespace InrappSos.DataAccess
         {
             var contactToDelete = DbContext.Users.SingleOrDefault(x => x.Id == contactId);
 
-            var contactRoles = DbContext.Roll.Where(x => x.ApplicationUserId == contactId).ToList();
+            var contactRoles = DbContext.ApplicationUserRole.Where(x => x.UserId == contactId);
+
+            var contactChosenDirectories = DbContext.Roll.Where(x => x.ApplicationUserId == contactId).ToList();
 
             var contactTypes = DbContext.Kontaktpersonstyp.Where(x => x.KontaktpersonId == contactId).ToList();
 
  
             if (contactToDelete != null)
             {
-                foreach (var role in contactRoles)
+                foreach (var contactChosenDirectoy in contactChosenDirectories)
                 {
-                    DbContext.Roll.Remove(role);
+                    DbContext.Roll.Remove(contactChosenDirectoy);
                     DbContext.SaveChanges();
                 }
                 foreach (var type in contactTypes)
                 {
                     DbContext.Kontaktpersonstyp.Remove(type);
+                    DbContext.SaveChanges();
+                }
+                foreach (var contactRole in contactRoles)
+                {
+                    DbContext.ApplicationUserRole.Remove(contactRole);
                     DbContext.SaveChanges();
                 }
                 DbContext.Users.Remove(contactToDelete);

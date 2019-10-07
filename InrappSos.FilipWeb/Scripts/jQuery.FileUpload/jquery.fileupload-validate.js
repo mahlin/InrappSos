@@ -181,6 +181,17 @@ function DoubletFiles(selectedRegister, fileName) {
     return false;
 }
 
+function AcceptedFileType(filetype) {
+    result = false;
+    var tmp = acceptedFileTypes;
+    acceptedFileTypes.forEach(function(acceptedFiletype, index) {
+        if (acceptedFiletype === filetype) {
+            result = true;
+        }
+    });
+    return result;
+}
+
 //function DoubletFiles2(selectedRegister) {
 //    var re;
 //    var result = false;
@@ -269,10 +280,10 @@ function getTableRows() {
 
     // The File Upload Validation plugin extends the fileupload widget
     // with file validation functionality:
-    $.widget('blueimp.fileupload', $.blueimp.fileupload, {
-
+    $.widget('blueimp.fileupload',
+        $.blueimp.fileupload,
+        {
         options: {
-            
             // The regular expression for allowed file types, matches
             // against either file type or file name:
             acceptFileTypes: /(\.|\/)(txt|xls|xlsx|sas7bdat|xpt)$/i,
@@ -321,33 +332,38 @@ function getTableRows() {
                         (settings.getNumberOfFiles() || 0) + data.files.length >
                             options.maxNumberOfFiles) {
                     file.error = settings.i18n('maxNumberOfFiles');
-                } else if (options.acceptFileTypes &&
-                        !(options.acceptFileTypes.test(file.type) ||
-                        options.acceptFileTypes.test(file.name))) {
-                    file.error = settings.i18n('acceptFileTypes');
+                //} else if (options.acceptFileTypes &&
+                //        !(options.acceptFileTypes.test(file.type) ||
+                //        options.acceptFileTypes.test(file.name))) {
+                //    file.error = settings.i18n('acceptFileTypes');
                 } else if (fileSize > options.maxFileSize) {
                     file.error = settings.i18n('maxFileSize');
                 } else if ($.type(fileSize) === 'number' && !acceptEmptyFile && fileSize < options.minFileSize) {
                     file.error = settings.i18n('minFileSize');
                 }
                 if (!file.error && file.custom !== "Arende") {
-                    //Regexp-kontroller
-                    var currRegister = file.name.substring(0, 3);
-                    var selectedOrgUnitId = $('#SelectedUnitId').val();
-
-                    var regexMatch = CheckFileName(data.selectedRegister, file.name);
-                    if (regexMatch === null) {
-                        file.error = settings.i18n('incorrectFileName');
-                    }
-                    else if (!CheckFileCodeInFileName(regexMatch)) {
-                        file.error = settings.i18n('incorrectFilkodInFileName');
-                    }
-                    else if (!CheckPeriodInFileName(data.selectedRegister, regexMatch)) {
-                        file.error = settings.i18n('incorrectPeriodInFileName');
-                    } else if (DoubletFiles(data.selectedRegister, file.name)) {
-                        file.error = settings.i18n('filetypeAlreadySelected');
+                    var filetype = file.name.split('.').pop();
+                    if (!AcceptedFileType(filetype)) {
+                        file.error = settings.i18n('acceptFileTypes');
                     } else {
-                        delete file.error;
+                        //Regexp-kontroller
+                        var currRegister = file.name.substring(0, 3);
+                        var selectedOrgUnitId = $('#SelectedUnitId').val();
+
+                        var regexMatch = CheckFileName(data.selectedRegister, file.name);
+                        if (regexMatch === null) {
+                            file.error = settings.i18n('incorrectFileName');
+                        }
+                        else if (!CheckFileCodeInFileName(regexMatch)) {
+                            file.error = settings.i18n('incorrectFilkodInFileName');
+                        }
+                        else if (!CheckPeriodInFileName(data.selectedRegister, regexMatch)) {
+                            file.error = settings.i18n('incorrectPeriodInFileName');
+                        } else if (DoubletFiles(data.selectedRegister, file.name)) {
+                            file.error = settings.i18n('filetypeAlreadySelected');
+                        } else {
+                            delete file.error;
+                        }   
                     }
                 }
                 if (file.error || data.files.error) {

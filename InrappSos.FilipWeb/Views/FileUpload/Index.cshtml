@@ -6,6 +6,7 @@
 
 <script>
     var registerLista = @Html.Raw(Json.Encode(Model.RegisterList));
+    var acceptedFileTypes = @Html.Raw(Json.Encode(Model.AcceptedFileTypes));
     var antAddedRequiredFiles = 0;
     var antAddedNotRequiredFiles = 0;
 </script>

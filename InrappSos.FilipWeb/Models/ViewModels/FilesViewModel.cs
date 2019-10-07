@@ -28,6 +28,6 @@ namespace InrappSos.FilipWeb.Models.ViewModels
         public string GiltigInrapporteringsKod { get; set; }
         public string OrganisationsNamn { get; set; }
         public string StartUrl { get; set; }
-
+        public List<string> AcceptedFileTypes { get; set; }
     }
 }

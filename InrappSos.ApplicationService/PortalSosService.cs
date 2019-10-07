@@ -1479,6 +1479,69 @@ namespace InrappSos.ApplicationService
 
         }
 
+        public IEnumerable<FilloggDetaljDTO> HamtaTop100HistorikForOrganisationAndDelreg(int orgId, List<RegisterInfo> valdaDelregister)
+        {
+            var leveransList = new List<Leverans>();
+            foreach (var delreg in valdaDelregister)
+            {
+                var delregLeveransList = _portalSosRepository.GetTop100LeveranserForOrganisationAndDelreg(orgId, delreg.Id).ToList();
+                leveransList.AddRange(delregLeveransList);
+            }
+            //Skapa historikrader/filloggrader
+            var historikLista = SkapaHistorikrader(leveransList.OrderByDescending(x => x.Leveranstidpunkt));
+
+            //var sorteradHistorikLista = historikLista.OrderByDescending(x => x.Leveranstidpunkt).ToList();
+
+            return historikLista;
+        }
+
+        public IEnumerable<FilloggDetaljDTO> HamtaTop100HistorikForOrganisationAndDelregAndOrgenheter(int orgId, List<RegisterInfo> valdaDelregister,
+            List<Organisationsenhet> orgenhetList)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<FilloggDetaljDTO> HamtaTop10HistorikForOrganisationAndDelregOchValdaOrgenheter(int orgId,List<RegisterInfo> valdaDelregister, string userId)
+        {
+            var historikForAnvandaren = new List<FilloggDetaljDTO>();
+            var leveranser = HamtaTop100HistorikForOrganisationAndDelreg(orgId, valdaDelregister);
+
+            foreach (var valtDelregister in valdaDelregister)
+            {
+                if (valtDelregister.RapporterarPerEnhet)
+                {
+                    var valdaOrgenheter = _portalSosRepository.GetUsersChosenOrgUnits(userId);
+                    if (valdaOrgenheter.Any())
+                    {
+                        foreach (var leverans in leveranser)
+                        {
+                            //TODO bara chosenOrgUnits för aktuell delregister när databasen ändrats
+                            //var valdaOrgenheter = _portalSosRepository.GetUsersChosenOrgUnitsForSubDir(userId, leverans.Id);
+
+                            if (leverans.OrganisationsenhetsId != 0)
+                            {
+                                //check if current user report for this orgUnit 
+                                var valdOrgEnhet = valdaOrgenheter.Where(x =>
+                                    x.OrganisationsenhetsId == leverans.OrganisationsenhetsId);
+                                if (valdOrgEnhet.Any())
+                                {
+                                    historikForAnvandaren.Add(leverans);
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var leverans in leveranser)
+                    {
+                        historikForAnvandaren.Add(leverans);
+                    }
+                }
+            }
+            return historikForAnvandaren.OrderByDescending(a => a.Leveranstidpunkt).Take(10);
+        }
+
         public List<List<Organisation>> SokCaseOrganisation(string sokStr)
         {
             var orgtypeId = _portalSosRepository.GetOrgtypeByName("Ärendeorganisation").Id;
@@ -1607,9 +1670,10 @@ namespace InrappSos.ApplicationService
 
                 //Kolla om enhetskod finns för aktuell leverans (stadsdelsleverans)
                 var enhetskod = String.Empty;
+                var orgenhetid = 0;
                 if (leverans.OrganisationsenhetsId != null)
                 {
-                    var orgenhetid = Convert.ToInt32(leverans.OrganisationsenhetsId);
+                    orgenhetid = Convert.ToInt32(leverans.OrganisationsenhetsId);
                     enhetskod = _portalSosRepository.GetEnhetskodForLeverans(orgenhetid);
                 }
 
@@ -1637,6 +1701,7 @@ namespace InrappSos.ApplicationService
                     filloggDetalj.RegisterKortnamn = registerKortnamn;
                     filloggDetalj.Resultatfil = " - ";
                     filloggDetalj.Enhetskod = enhetskod;
+                    filloggDetalj.OrganisationsenhetsId = orgenhetid;
                     filloggDetalj.Period = period;
                     filloggDetalj.SFTPkontoNamn = sftpKonto.Kontonamn;
                     if (aterkoppling != null)
@@ -1659,6 +1724,7 @@ namespace InrappSos.ApplicationService
                         filloggDetalj.RegisterKortnamn = registerKortnamn;
                         filloggDetalj.Resultatfil = "Ej kontrollerad";
                         filloggDetalj.Enhetskod = enhetskod;
+                        filloggDetalj.OrganisationsenhetsId = orgenhetid;
                         filloggDetalj.Period = period;
                         filloggDetalj.SFTPkontoNamn = sftpKonto.Kontonamn;
                         if (aterkoppling != null)

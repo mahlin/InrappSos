@@ -58,77 +58,6 @@ namespace InrappSos.ApplicationService.Helpers
             _mailHelper = new MailHelper();
         }
 
-        //public void DeleteFiles(String pathToDelete)
-        //{
-         
-        //    string path = HostingEnvironment.MapPath(pathToDelete);
-
-        //    System.Diagnostics.Debug.WriteLine(path);
-        //    if (Directory.Exists(path))
-        //    {
-        //        DirectoryInfo di = new DirectoryInfo(path);
-        //        foreach (FileInfo fi in di.GetFiles())
-        //        {
-        //            System.IO.File.Delete(fi.FullName);
-        //            System.Diagnostics.Debug.WriteLine(fi.Name);
-        //        }
-
-        //        di.Delete(true);
-        //    }
-        //}
-
-        //public String DeleteFile(String file)
-        //{
-        //    System.Diagnostics.Debug.WriteLine("DeleteFile");
-        //    //    var req = HttpContext.Current;
-        //    System.Diagnostics.Debug.WriteLine(file);
- 
-        //    String fullPath = Path.Combine(StorageRoot, file);
-        //    System.Diagnostics.Debug.WriteLine(fullPath);
-        //    System.Diagnostics.Debug.WriteLine(System.IO.File.Exists(fullPath));
-        //    String thumbPath = "/" + file + "80x80.jpg";
-        //    String partThumb1 = Path.Combine(StorageRoot, "thumbs");
-        //    String partThumb2 = Path.Combine(partThumb1, file + "80x80.jpg");
-
-        //    System.Diagnostics.Debug.WriteLine(partThumb2);
-        //    System.Diagnostics.Debug.WriteLine(System.IO.File.Exists(partThumb2));
-        //    if (System.IO.File.Exists(fullPath))
-        //    {
-        //        //delete thumb 
-        //        if (System.IO.File.Exists(partThumb2))
-        //        {
-        //            System.IO.File.Delete(partThumb2);
-        //        }
-        //        System.IO.File.Delete(fullPath);
-        //        String succesMessage = "Ok";
-        //        return succesMessage;
-        //    }
-        //    String failMessage = "Error Delete";
-        //    return failMessage;
-        //}
-
-
-        //public JsonFiles GetFileList()
-        //{
-
-        //    var r = new List<ViewDataUploadFilesResult>();
-       
-        //    String fullPath = Path.Combine(StorageRoot);
-        //    if (Directory.Exists(fullPath))
-        //    {
-        //        DirectoryInfo dir = new DirectoryInfo(fullPath);
-        //        foreach (FileInfo file in dir.GetFiles())
-        //        {
-        //            int SizeInt = unchecked((int)file.Length);
-        //            r.Add(UploadResult(file.Name,SizeInt,file.FullName));
-        //        }
-
-        //    }
-        //    JsonFiles files = new JsonFiles(r);
-
-        //    return files;
-        //}
-
         public void UploadAndShowResults(HttpContextBase ContentBase, List<ViewDataUploadFilesResult> resultList, string userId, string userName, string orgKod, int selectedRegisterId, string selectedUnitId, string selectedPeriod, List<RegisterInfo> registerList)
         {
             var httpRequest = ContentBase.Request;
@@ -424,11 +353,24 @@ namespace InrappSos.ApplicationService.Helpers
                 var file = fileList[i];
 
                 //TODO - check filename depending on chosen registertype
-                if (Path.GetExtension(file.Name).ToLower() == ".txt"
-                                               || Path.GetExtension(file.Name).ToLower() == ".xls"
-                                               || Path.GetExtension(file.Name).ToLower() == ".xlsx"
-                                               || Path.GetExtension(file.Name).ToLower() == ".sas7bdat"
-                                               || Path.GetExtension(file.Name).ToLower() == ".xpt")
+                var okFileType = false;
+
+                var _acceptedFileTypes = new List<string>();
+                var acceptedFiletypesStr = ConfigurationManager.AppSettings["AcceptedFileTypes"];
+                string[] acceptedFiletypes = acceptedFiletypesStr.Split(',');
+                foreach (var acceptedFiletype in acceptedFiletypes)
+                {
+                    _acceptedFileTypes.Add(acceptedFiletype);
+                }
+
+                foreach (var acceptedFileType in _acceptedFileTypes)
+                {
+                    if (Path.GetExtension(file.Name).ToLower() == "." + acceptedFileType)
+                    {
+                        okFileType = true;
+                    }
+                }
+                if (okFileType)
                 {
                     String pathOnServer = Path.Combine(StorageRoot);
                     var filOfFilesAddOn = "!" + (i + 1).ToString() + "!" + (fileList.Count).ToString();
@@ -468,16 +410,29 @@ namespace InrappSos.ApplicationService.Helpers
         {
             var extendedFileName = String.Empty;
             var request = requestContext.Request;
+
+            var _acceptedFileTypes = new List<string>();
+            var acceptedFiletypesStr = ConfigurationManager.AppSettings["AcceptedFileTypes"];
+            string[] acceptedFiletypes = acceptedFiletypesStr.Split(',');
+            foreach (var acceptedFiletype in acceptedFiletypes)
+            {
+                _acceptedFileTypes.Add(acceptedFiletype);
+            }
+
             for (int i = 0; i < request.Files.Count; i++)
             {
                 var file = request.Files[i];
 
                 //TODO - check filename depending on chosen registertype
-                if (Path.GetExtension(file.FileName).ToLower() == ".txt" 
-                    || Path.GetExtension(file.FileName).ToLower() == ".xls" 
-                    || Path.GetExtension(file.FileName).ToLower() == ".xlsx"
-                    || Path.GetExtension(file.FileName).ToLower() == ".sas7bdat"
-                    || Path.GetExtension(file.FileName).ToLower() == ".xpt")
+                var okFileType = false;
+                foreach (var acceptedFileType in _acceptedFileTypes)
+                {
+                    if (Path.GetExtension(file.FileName).ToLower() == "." + acceptedFileType)
+                    {
+                        okFileType = true;
+                    }
+                }
+                if (okFileType)
                 {
                     String pathOnServer = Path.Combine(StorageRoot);
                     var filOfFilesAddOn = "!" + (i + 1).ToString() + "!" + (request.Files.Count).ToString();
@@ -530,11 +485,24 @@ namespace InrappSos.ApplicationService.Helpers
                 var filedropId = _portalSosRepository.SaveFiledropFile(file.FileName, extendedFileName, file.ContentLength, selectedCaseId, userId, userName);
 
                 //TODO - check filename depending on chosen registertype
-                if (Path.GetExtension(file.FileName).ToLower() == ".txt"
-                    || Path.GetExtension(file.FileName).ToLower() == ".xls"
-                    || Path.GetExtension(file.FileName).ToLower() == ".xlsx"
-                    || Path.GetExtension(file.FileName).ToLower() == ".sas7bdat"
-                    || Path.GetExtension(file.FileName).ToLower() == ".xpt")
+                var okFileType = false;
+
+                var _acceptedFileTypes = new List<string>();
+                var acceptedFiletypesStr = ConfigurationManager.AppSettings["AcceptedFileTypes"];
+                string[] acceptedFiletypes = acceptedFiletypesStr.Split(',');
+                foreach (var acceptedFiletype in acceptedFiletypes)
+                {
+                    _acceptedFileTypes.Add(acceptedFiletype);
+                }
+
+                foreach (var acceptedFileType in _acceptedFileTypes)
+                {
+                    if (Path.GetExtension(file.FileName).ToLower() == "." + acceptedFileType)
+                    {
+                        okFileType = true;
+                    }
+                }
+                if (okFileType)
                 {
                     String pathOnServer = Path.Combine(StorageRoot);
 

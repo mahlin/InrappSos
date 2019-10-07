@@ -99,7 +99,7 @@ namespace InrappSos.FilipWeb.Controllers
                 //Filtrera historiken utfrån användarens valda register
                 IEnumerable<FilloggDetaljDTO> filteredHistoryFileList = _portalService.FiltreraHistorikForAnvandare(userId, valdaDelregisterInfoList, historyFileList);
 
-                _model.HistorikLista = historyFileList;
+                _model.HistorikLista = historyFileList.Take(10).ToList();
             }
             catch (Exception e)
             {

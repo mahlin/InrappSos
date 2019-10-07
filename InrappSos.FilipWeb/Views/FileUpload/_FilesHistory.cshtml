@@ -16,7 +16,7 @@
     @Html.HiddenFor(m => Model.OrganisationsNamn)
     @Html.HiddenFor(m => Model.StartUrl)
 
-    <H4>Historik för @Html.Raw(Model.OrganisationsNamn) <span style="font-size: 0.7em">(10 senaste)</span></H4>
+    <H4>Historik för @Html.Raw(Model.OrganisationsNamn) <span style="font-size: 0.7em">(@Model.HistorikLista.Count senaste)</span></H4>
     <table class="table table-striped" id="historyTable" >
         <thead>
             <tr class="historyHeader" style="background-color: #f9f9f9;">

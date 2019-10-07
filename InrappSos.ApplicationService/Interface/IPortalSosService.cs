@@ -1,6 +1,7 @@
 ﻿using InrappSos.DomainModel;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -275,6 +276,13 @@ namespace InrappSos.ApplicationService.Interface
         IEnumerable<FilloggDetaljDTO> HamtaTop10HistorikForOrganisationAndUser(int orgId, string userId);
 
         IEnumerable<FilloggDetaljDTO> HamtaTop10HistorikForOrganisationAndDelreg(int orgId, List<RegisterInfo> valdaDelregister);
+
+        IEnumerable<FilloggDetaljDTO> HamtaTop100HistorikForOrganisationAndDelreg(int orgId, List<RegisterInfo> valdaDelregister);
+
+        IEnumerable<FilloggDetaljDTO> HamtaTop100HistorikForOrganisationAndDelregAndOrgenheter(int orgId, List<RegisterInfo> valdaDelregister, List<Organisationsenhet> orgenhetList);
+
+
+        IEnumerable<FilloggDetaljDTO> HamtaTop10HistorikForOrganisationAndDelregOchValdaOrgenheter(int orgId, List<RegisterInfo> valdaDelregister, string userId);
 
         IEnumerable<AppUserAdmin> HamtaAdminUsers();
 

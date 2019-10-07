@@ -66,6 +66,8 @@ namespace InrappSos.DataAccess
 
         IEnumerable<Leverans> GetTop10LeveranserForOrganisationAndDelreg(int orgId, int delregId);
 
+        IEnumerable<Leverans> GetTop100LeveranserForOrganisationAndDelreg(int orgId, int delregId);
+
         IEnumerable<int> GetLeveransIdnForOrganisation(int orgId);
 
         int GetNewLeveransId(string userId, string userName, int orgId, int regId, int orgenhetsId, int forvLevId, string status, int sftpAccountId);

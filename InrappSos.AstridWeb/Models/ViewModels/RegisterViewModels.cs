@@ -78,6 +78,7 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public int OrganisationstypId { get; set; }
             public string OrganisationstypNamn { get; set; }
             public bool Selected { get; set; } = false;
+            [Required(ErrorMessage = "Fältet är obligatoriskt.")]
             public DateTime? SkyldigFrom { get; set; }
             public DateTime? SkyldigTom { get; set; }
 

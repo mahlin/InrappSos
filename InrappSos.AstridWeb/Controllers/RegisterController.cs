@@ -268,6 +268,10 @@ namespace InrappSos.AstridWeb.Controllers
                     var userName = User.Identity.GetUserName();
                     var admUppgSkyldighet = ConvertToDbFromVM(uppgSk);
                     admUppgSkyldighet.DelregisterId = uppgSk.DelregisterId;
+                    if (uppgSk.SkyldigFrom != null)
+                    {
+                        admUppgSkyldighet.SkyldigFrom = uppgSk.SkyldigFrom.Value;
+                    }
                     _portalSosService.SkapaUppgiftsskyldighetOrgtyp(admUppgSkyldighet, userName);
                 }
                 catch (Exception e)

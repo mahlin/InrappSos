@@ -2800,6 +2800,9 @@ namespace InrappSos.ApplicationService
             uppgSk.AndradDatum = DateTime.Now;
             uppgSk.AndradAv = userName;
             _portalSosRepository.CreateReportObligationForOrgtype(uppgSk);
+            //Alla org som har aktuell orgtyp ska få uppgiftsskyldighet för valt delregister
+            var uppgSkDTO = ConvertUppgskOrgtypToDTO(uppgSk);
+            UppdateraUppgiftsskyldighetForOrganisationer(uppgSkDTO, userName);
         }
 
         public void SkapaEnhetsUppgiftsskyldighet(AdmEnhetsUppgiftsskyldighet enhetsUppgSk, string userName)
@@ -2944,9 +2947,61 @@ namespace InrappSos.ApplicationService
             var allOrgtypes = _portalSosRepository.GetAllOrgTypes();
             foreach (var orgtype in allOrgtypes)
             {
-                if (org.Organisationstyp.Any(i => i.Id != orgtype.Id))
+                if (org.Organisationstyp.All(i => i.OrganisationstypId != orgtype.Id))
                 {
                     notIncludedOrgtypes.Add(orgtype);
+                }
+            }
+            //set closingdate on reportobligations on other orgtypes subdirs and disconnect users from that subdir
+            foreach (var orgtype in notIncludedOrgtypes)
+            {
+                //Check if open reportobligations exists on other orgtypes
+                var aktivaUppgskhOrgtyp = _portalSosRepository.GetActiveReportObligationForOrgtype(orgtype.Id);
+                foreach (var orgtyp in aktivaUppgskhOrgtyp)
+                {
+                    var aktivUppgskhNotIncludedOrgtype = _portalSosRepository.GetActiveReportObligationInformationForOrgAndSubDir(org.Id, orgtyp.DelregisterId);
+                    //if not activeReportObligation belongs to includedOrgtype
+                    var exceptionList = new List<AdmUppgiftsskyldighet>();
+                    foreach (var includedOrgtyp in org.Organisationstyp)
+                    {
+                        var aktivaUppgskhValdOrgtypList = _portalSosRepository.GetActiveReportObligationForOrgtype(includedOrgtyp.OrganisationstypId);
+                        foreach (var aktivaUppgskhValdOrgtyp in aktivaUppgskhValdOrgtypList)
+                        {
+                            var aktivUppgskhValdOrgtyp = _portalSosRepository.GetActiveReportObligationInformationForOrgAndSubDir(org.Id, aktivaUppgskhValdOrgtyp.DelregisterId);
+
+                            if (aktivUppgskhValdOrgtyp != null)
+                            {
+                                exceptionList.Add(aktivUppgskhValdOrgtyp);
+                            }
+                        }
+                    }
+                    
+                    if (aktivUppgskhNotIncludedOrgtype != null)
+                    {
+                        //Om org är uppgiftsskyldigt för aktuellt delregister via annan (vald) orgtyp, sätt ej tom-datum
+                        var matches = exceptionList.Where(p => p.Id == aktivUppgskhNotIncludedOrgtype.Id);
+                        if (!matches.Any())
+                        {
+                            aktivUppgskhNotIncludedOrgtype.SkyldigTom = DateTime.Now;
+                            aktivUppgskhNotIncludedOrgtype.AndradAv = userName;
+                            _portalSosRepository.UpdateReportObligation(aktivUppgskhNotIncludedOrgtype);
+                            UppdateraRollForKontaktpersoner(org.Id, orgtyp.DelregisterId);
+                            //enhetsrapportering?
+                            if (aktivUppgskhNotIncludedOrgtype.RapporterarPerEnhet)
+                            {
+                                var aktivEnhetsUppgskhList = _portalSosRepository.GetActiveUnitReportObligationForReportObligation(aktivUppgskhNotIncludedOrgtype.Id).ToList();
+                                if (aktivEnhetsUppgskhList.Any())
+                                {
+                                    foreach (var aktivEnhetsUppgskh in aktivEnhetsUppgskhList)
+                                    {
+                                        aktivEnhetsUppgskh.SkyldigTom = DateTime.Now;
+                                        aktivEnhetsUppgskh.AndradAv = userName;
+                                        _portalSosRepository.UpdateUnitReportObligation(aktivEnhetsUppgskh);
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
@@ -2957,7 +3012,7 @@ namespace InrappSos.ApplicationService
                 foreach (var admUppgskhetOrgtyp in aktivaAdmUppgskhetOrgtyper)
                 {
                     var orguppgskheter = _portalSosRepository.GetAllActiveReportObligationsForSubDirAndOrg(admUppgskhetOrgtyp.DelregisterId, org.Id);
-                    if (orguppgskheter == null)
+                    if (!orguppgskheter.Any())
                     {
                         var newUppgskhet = new AdmUppgiftsskyldighet
                         {
@@ -2969,37 +3024,7 @@ namespace InrappSos.ApplicationService
                     }
                 }
             }
-            //set closingdate on reportobligations on other orgtypes subdirs and disconnect users from that subdir
-            foreach (var orgtype in notIncludedOrgtypes)
-            {
-                //Check if open reportobligations exists on other orgtypes
-                var aktivaUppgskhOrgtyp = _portalSosRepository.GetActiveReportObligationForOrgtype(orgtype.Id);
-                foreach (var orgtyp in aktivaUppgskhOrgtyp)
-                {
-                    var aktivUppgskh = _portalSosRepository.GetActiveReportObligationInformationForOrgAndSubDir(org.Id,orgtyp.DelregisterId);
-                    if (aktivUppgskh != null)
-                    {
-                        aktivUppgskh.SkyldigTom = DateTime.Now;
-                        aktivUppgskh.AndradAv = userName;
-                        _portalSosRepository.UpdateReportObligation(aktivUppgskh);
-                        UppdateraRollForKontaktpersoner(org.Id, orgtyp.DelregisterId);
-                        //enhetsrapportering?
-                        if (aktivUppgskh.RapporterarPerEnhet)
-                        {
-                            var aktivEnhetsUppgskhList = _portalSosRepository.GetActiveUnitReportObligationForReportObligation(aktivUppgskh.Id).ToList();
-                            if (aktivEnhetsUppgskhList.Any())
-                            {
-                                foreach (var aktivEnhetsUppgskh in aktivEnhetsUppgskhList)
-                                {
-                                    aktivEnhetsUppgskh.SkyldigTom = DateTime.Now;
-                                    aktivEnhetsUppgskh.AndradAv = userName;
-                                    _portalSosRepository.UpdateUnitReportObligation(aktivEnhetsUppgskh);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+
         }
 
         public void UppdateraKontaktperson(ApplicationUser user, string userName)
@@ -3184,7 +3209,7 @@ namespace InrappSos.ApplicationService
 
         public void UppdateraUppgiftsskyldighetForOrganisationer(AdmUppgiftsskyldighetOrganisationstypDTO subdirOrgtype,string userName)
         {
-            var orgsWithCurrOrgType = _portalSosRepository.GetOrgByOrgtype(subdirOrgtype.Id);
+            var orgsWithCurrOrgType = _portalSosRepository.GetOrgByOrgtype(subdirOrgtype.OrganisationstypId);
 
             foreach (var org in orgsWithCurrOrgType)
             {
@@ -3745,6 +3770,24 @@ namespace InrappSos.ApplicationService
             return dtoList;
         }
 
+        private AdmUppgiftsskyldighetOrganisationstypDTO ConvertUppgskOrgtypToDTO(AdmUppgiftsskyldighetOrganisationstyp uppgSk)
+        {
+            var uppgSkDTO = new AdmUppgiftsskyldighetOrganisationstypDTO
+            {
+                Id = uppgSk.Id,
+                DelregisterId = uppgSk.DelregisterId,
+                OrganisationstypId = uppgSk.OrganisationstypId,
+                SkyldigTom = uppgSk.SkyldigTom
+            };
+
+            if (uppgSk.SkyldigFrom != null)
+            {
+                uppgSkDTO.SkyldigFrom = uppgSk.SkyldigFrom;
+            }
+        return uppgSkDTO;
+        }
+
+        
         private string GetEmail(RapporteringsresultatDTO rappRes, int regId, int delRegId)
         {
             var email = String.Empty;

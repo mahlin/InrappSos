@@ -246,6 +246,12 @@ namespace InrappSos.ApplicationService
             return userCases;
         }
 
+        public IEnumerable<Leverans> HamtaAnvandaresLeveranser(string userId)
+        {
+            var leveranser = _portalSosRepository.GetUserDeliveries(userId);
+            return leveranser;
+        }
+
         public IEnumerable<Arende> HamtaAnvandaresOppnaArenden(string userId)
         {
             var userOpenCases = new List<Arende>();
@@ -785,6 +791,12 @@ namespace InrappSos.ApplicationService
         {
             var info = _portalSosRepository.GetInfoText(infoId);
             return info;
+        }
+
+        public IEnumerable<Inloggning> HamtaInloggning(string userId)
+        {
+            var logins = _portalSosRepository.GetLogins(userId);
+            return logins;
         }
 
         public IEnumerable<AdmRegister> HamtaRegister()

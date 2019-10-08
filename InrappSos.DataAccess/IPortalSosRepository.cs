@@ -216,6 +216,8 @@ namespace InrappSos.DataAccess
 
         AdmInformation GetInfoText(int infoId);
 
+        IEnumerable<Inloggning> GetLogins(string userId);
+
         AdmInsamlingsfrekvens GetInsamlingsfrekvens(int insamlingsid);
 
         int GetPageInfoTextId(string pageType);
@@ -354,6 +356,8 @@ namespace InrappSos.DataAccess
         string GetUserContactNumber(string userId);
 
         IEnumerable<Arende> GetUserCases(string userId);
+
+        IEnumerable<Leverans> GetUserDeliveries(string userId);
 
         ApplicationUser GetUserByEmail(string email);
 

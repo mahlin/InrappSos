@@ -332,6 +332,7 @@ namespace InrappSos.AstridWeb.Controllers
                     //Hämta användarens valda register
                     contact.ValdaDelregister = GetContactsChosenSubDirectories(contact);
                 }
+                System.Threading.Thread.Sleep(4000);
 
                 //Skapa lista över filip-roller 
                 model.Roller = ConvertRolesToVM(roller);
@@ -1765,8 +1766,10 @@ namespace InrappSos.AstridWeb.Controllers
             foreach (var contact in contacts)
             {
                 var roleVMList = new List<IdentityRoleViewModel>();
+                var logins = _portalSosService.HamtaInloggning(contact.Id);
+                var leveranser = _portalSosService.HamtaAnvandaresLeveranser(contact.Id);
 
-                if (!contact.PhoneNumberConfirmed)
+                if (!contact.PhoneNumberConfirmed && !logins.Any() && !leveranser.Any())
                 {
                     okToDelete = true;
                 }

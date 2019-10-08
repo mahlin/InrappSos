@@ -53,6 +53,8 @@ namespace InrappSos.ApplicationService.Interface
         string HamtaAnvandaresKontaktnummer(string userId);
 
         IEnumerable<Arende> HamtaAnvandaresArenden(string userId);
+
+        IEnumerable<Leverans> HamtaAnvandaresLeveranser(string userId);
         IEnumerable<Arende> HamtaAnvandaresOppnaArenden(string userId);
 
         string HamtaAnvandaresMobilnummer(string userId);
@@ -150,6 +152,8 @@ namespace InrappSos.ApplicationService.Interface
         
 
         AdmInformation HamtaInfo(int infoId);
+
+        IEnumerable<Inloggning> HamtaInloggning(string userId);
 
         IEnumerable<AdmRegister> HamtaRegister();
 

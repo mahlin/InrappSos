@@ -924,6 +924,12 @@ namespace InrappSos.DataAccess
             return infoText;
         }
 
+        public IEnumerable<Inloggning> GetLogins(string userId)
+        {
+            var logins = DbContext.Inloggning.Where(x => x.ApplicationUserId == userId).ToList();
+            return logins;
+        }
+
         public int GetPageInfoTextId(string pageType)
         {
             var pageInfoId = DbContext.AdmInformation.Where(x => x.Informationstyp == pageType).Select(x => x.Id).SingleOrDefault();
@@ -1652,6 +1658,12 @@ namespace InrappSos.DataAccess
                 userCases.Add(arende);
             }
             return userCases;
+        }
+
+        public IEnumerable<Leverans> GetUserDeliveries(string userId)
+        {
+            var deliveries = DbContext.Leverans.Where(x => x.ApplicationUserId == userId).ToList();
+            return deliveries;
         }
 
         public string GetUserPhoneNumber(string userId)
@@ -2816,17 +2828,14 @@ namespace InrappSos.DataAccess
                 foreach (var contactChosenDirectoy in contactChosenDirectories)
                 {
                     DbContext.Roll.Remove(contactChosenDirectoy);
-                    DbContext.SaveChanges();
                 }
                 foreach (var type in contactTypes)
                 {
                     DbContext.Kontaktpersonstyp.Remove(type);
-                    DbContext.SaveChanges();
                 }
                 foreach (var contactRole in contactRoles)
                 {
                     DbContext.ApplicationUserRole.Remove(contactRole);
-                    DbContext.SaveChanges();
                 }
                 DbContext.Users.Remove(contactToDelete);
                 DbContext.SaveChanges();

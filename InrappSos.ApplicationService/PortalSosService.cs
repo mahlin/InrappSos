@@ -504,6 +504,7 @@ namespace InrappSos.ApplicationService
             var orgEnheter = _portalSosRepository.GetOrgUnitsForOrg(orgId);
             return orgEnheter;
         }
+        
 
         public IEnumerable<Organisationsenhet> HamtaOrganisationsenheterMedUppgSkyldighetsId(int uppgSkyldighetsid)
         {
@@ -2413,6 +2414,29 @@ namespace InrappSos.ApplicationService
             //        }
             //    }
             //}
+
+            return userRegisterList;
+        }
+
+        public List<RegisterInfo> HamtaValdaDelregisterOchOrgenheterForAnvandare(string userId, int orgId)
+        {
+            var registerList = _portalSosRepository.GetChosenDelRegistersForUser(userId).ToList();
+            //var allaRegisterList = _portalRepository.GetAllRegisterInformation();
+            var allaRegisterList = _portalSosRepository.GetAllActiveRegisterInformationForOrganisation(orgId).ToList();
+            var userRegisterList = new List<RegisterInfo>();
+
+            foreach (var register in allaRegisterList)
+            {
+                var finns = registerList.Find(r => r.DelregisterId == register.Id);
+                if (finns != null)
+                {
+                    register.SelectedFilkrav = "0";
+                    userRegisterList.Add(register);
+                }
+            }
+
+            //Check if users organisation reports per unit. If thats the case, get list of units
+            userRegisterList = HamtaOrgenheterForAnvandare(userRegisterList, orgId, userId);
 
             return userRegisterList;
         }
@@ -4539,6 +4563,51 @@ namespace InrappSos.ApplicationService
             }
 
             return registerInfoList;
+        }
+
+        public List<RegisterInfo> HamtaOrgenheterForAnvandare(List<RegisterInfo> registerInfoList, int orgId, string userId)
+        {
+            var filteredRegisterInfoList = new List<RegisterInfo>();
+            foreach (var item in registerInfoList)
+            {
+                var uppgiftsskyldighet = HamtaAktivUppgiftsskyldighetForOrganisationOchRegister(orgId, item.Id);
+                if (uppgiftsskyldighet.RapporterarPerEnhet)
+                {
+                    var chosenBol = false;
+                    var anvValdaOrgenheterForDelreg = HamtaAnvandarensValdaEnheterForDelreg(userId, item.Id).ToList();
+                    //Ger cirkulär reference, därav keyValuePair nedan
+                    //item.Orgenheter = orgUnits.ToList();
+                    item.Organisationsenheter = new List<KeyValuePair<string, string>>();
+                    item.Orgenheter = new List<KeyValuePair<string, string>>();
+
+                    item.RapporterarPerEnhet = true;
+                    var enhetsuppgiftsskyldighetList =
+                        _portalSosRepository.GetActiveUnitReportObligationForReportObligation(uppgiftsskyldighet.Id);
+                    foreach (var enhetsuppgiftsskyldighet in enhetsuppgiftsskyldighetList)
+                    {
+                        var orgUnit = _portalSosRepository.GetOrganisationUnit(enhetsuppgiftsskyldighet.OrganisationsenhetsId);
+                        var chosen = anvValdaOrgenheterForDelreg.Where(x => x.Id == orgUnit.Id);
+                        if (chosen.Any())
+                        {
+                            chosenBol = true;
+                            KeyValuePair<string, string> keyValuePair = new KeyValuePair<string, string>(orgUnit.Enhetskod, orgUnit.Enhetsnamn);
+                            item.Organisationsenheter.Add(keyValuePair);
+                            KeyValuePair<string, string> keyValuePairFilkod = new KeyValuePair<string, string>(orgUnit.Enhetskod, orgUnit.Filkod);
+                            item.Orgenheter.Add(keyValuePairFilkod);
+                        }
+                    }
+                    if (chosenBol)
+                    {
+                        filteredRegisterInfoList.Add(item);
+                    }
+                }
+                else
+                {
+                    filteredRegisterInfoList.Add(item);
+                }
+            }
+
+            return filteredRegisterInfoList;
         }
 
         private void HandleRegisteredCaseReporters(ArendeDTO arende, string userName)

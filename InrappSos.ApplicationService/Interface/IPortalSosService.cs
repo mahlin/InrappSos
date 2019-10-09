@@ -110,6 +110,8 @@ namespace InrappSos.ApplicationService.Interface
         IEnumerable<Arende> HamtaArendenForOrg(int orgId);
         IEnumerable<Organisationsenhet> HamtaOrgEnheterForOrg(int orgId);
 
+        List<RegisterInfo> HamtaOrgenheterForAnvandare(List<RegisterInfo> registerInfoList, int orgId, string userId);
+
         IEnumerable<Organisationsenhet> HamtaOrganisationsenheterMedUppgSkyldighetsId(int uppgSkyldighetsid);
 
         IEnumerable<Organisationsenhet> HamtaOrganisationsenheterMedUppgSkyldighetInomPerioden(int uppgSkyldighetsid, string period);
@@ -340,6 +342,8 @@ namespace InrappSos.ApplicationService.Interface
         //IEnumerable<RegisterInfo> HamtaValdaRegistersForAnvandare(string userId, int orgId);
 
         List<RegisterInfo> HamtaValdaDelregisterForAnvandare(string userId, int orgId);
+
+        List<RegisterInfo> HamtaValdaDelregisterOchOrgenheterForAnvandare(string userId, int orgId);
 
         AdmDelregister HamtaValtDelRegisterMedFilnamnsstart(string filnamnsStart);
   

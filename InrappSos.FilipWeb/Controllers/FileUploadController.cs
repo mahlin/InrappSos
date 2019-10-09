@@ -74,7 +74,7 @@ namespace InrappSos.FilipWeb.Controllers
                 }
                 var userOrg = _portalService.HamtaOrgForAnvandare(User.Identity.GetUserId());
                 //Hämta info om valbara register
-                var valdaDelregisterInfoList = _portalService.HamtaValdaDelregisterForAnvandare(User.Identity.GetUserId(), userOrg.Id);
+                var valdaDelregisterInfoList = _portalService.HamtaValdaDelregisterOchOrgenheterForAnvandare(User.Identity.GetUserId(), userOrg.Id);
                 _model.RegisterList = valdaDelregisterInfoList;
 
                 // Ladda drop down lists.  

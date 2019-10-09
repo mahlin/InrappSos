@@ -390,10 +390,16 @@ namespace InrappSos.DataAccess
             return orgId;
         }
 
-        public IEnumerable<KontaktpersonOrganisationsenhet> GetUsersChosenOrgUnits(string userId)
+        //public IEnumerable<RollOrganisationsenhet> GetUsersChosenOrgUnitsForSubdir(string userId, int subdirId)
+        //{
+        //    var orgUnits = DbContext.KontaktpersonOrganisationsenhet.Where(x => x.ApplicationUserId == userId).ToList();
+        //    return orgUnits;
+        //}
+
+        public Roll GetRollForUserAndSubdir(string userId, int subdirId)
         {
-            var orgUnits = DbContext.KontaktpersonOrganisationsenhet.Where(x => x.ApplicationUserId == userId).ToList();
-            return orgUnits;
+            var roll = DbContext.Roll.Where(x => x.DelregisterId == subdirId && x.ApplicationUserId == userId).Include(x => x.RollOrganisationsenhet).SingleOrDefault();
+            return roll;
         }
 
         public int GetOrgUnitOrganisationId(int orgUnitId)
@@ -2210,23 +2216,31 @@ namespace InrappSos.DataAccess
             DbContext.SaveChanges();
         }
 
-        public void UpdateChosenOrgUnitsForUser(string userId, string userName, List<int> orgUnitIdList)
+        public void UpdateChosenOrgUnitsForUserAndSubdir(string userId, string userName, List<int> orgUnitIdList, int rollId, List<Organisationsenhet> availableOrgUnits)
         {
             //delete prevoious choices
-            DbContext.KontaktpersonOrganisationsenhet.RemoveRange(DbContext.KontaktpersonOrganisationsenhet.Where(x => x.ApplicationUserId == userId));
+            foreach (var availableOrgUnit in availableOrgUnits)
+            {
+                var rollOrgUnitToDelete = DbContext.RollOrganisationsenhet.Where(x => x.RollId == rollId && x.OrganisationsenhetsId == availableOrgUnit.Id).SingleOrDefault();
+
+                if (rollOrgUnitToDelete != null)
+                {
+                    DbContext.RollOrganisationsenhet.Remove(rollOrgUnitToDelete);
+                }
+            }
 
             //Insert new choices
             foreach (var orgUnitId in orgUnitIdList)
             {
-                var kpOrgunit = new KontaktpersonOrganisationsenhet()
+                var rollOrgunit = new RollOrganisationsenhet()
                 {
                     OrganisationsenhetsId = orgUnitId,
-                    ApplicationUserId = userId,
+                    RollId= rollId,
                     SkapadDatum = DateTime.Now,
                     SkapadAv = userName
                 };
 
-                DbContext.KontaktpersonOrganisationsenhet.Add(kpOrgunit);
+                DbContext.RollOrganisationsenhet.Add(rollOrgunit);
             }
             DbContext.SaveChanges();
         }

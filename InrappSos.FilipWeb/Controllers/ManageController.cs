@@ -487,7 +487,7 @@ namespace InrappSos.FilipWeb.Controllers
             var userId = User.Identity.GetUserId();
             var orgId = _portalService.HamtaUserOrganisationId(userId);
             var availableOrgUnits = _portalService.HamtaDelregistersAktuellaEnheter(selectedSubdirId, orgId).ToList();
-            var usersOrgUnits = _portalService.HamtaAnvandarensValdaEnheter(userId).ToList();
+            var usersOrgUnits = _portalService.HamtaAnvandarensValdaEnheterForDelreg(userId, selectedSubdirId).ToList();
             model.Id = selectedSubdirId;
             model.OrgUnitList = ConvertOrgUnitsToVM(availableOrgUnits, usersOrgUnits);
             return View(model);
@@ -502,7 +502,8 @@ namespace InrappSos.FilipWeb.Controllers
             {
                 //Uppdatera valda organisationsenheter
                 var orgUnitsDTO = ConvertVMOrgUnits(model.OrgUnitList);
-                _portalService.UppdateraValdaOrganisationsenheterForAnvandare(User.Identity.GetUserId(), User.Identity.GetUserName(), orgUnitsDTO);
+                var org = _portalService.HamtaOrgForAnvandare(User.Identity.GetUserId());
+                _portalService.UppdateraValdaOrganisationsenheterForAnvandareOchDelreg(User.Identity.GetUserId(), User.Identity.GetUserName(), orgUnitsDTO, model.Id, org.Id);
                 return RedirectToAction("Index", new { Message = ManageMessageId.ChangeChosenOrgUnits });
             }
             catch (Exception e)
@@ -654,7 +655,7 @@ namespace InrappSos.FilipWeb.Controllers
         }
 
 
-        private List<InrappSos.FilipWeb.Models.ViewModels.OrgUnitViewModel> ConvertOrgUnitsToVM(List<Organisationsenhet> availableOrgUnits, List<KontaktpersonOrganisationsenhet> usersOrgUnits)
+        private List<InrappSos.FilipWeb.Models.ViewModels.OrgUnitViewModel> ConvertOrgUnitsToVM(List<Organisationsenhet> availableOrgUnits, List<Organisationsenhet> usersOrgUnits)
         {
             var orgUnitsVMList = new List<InrappSos.FilipWeb.Models.ViewModels.OrgUnitViewModel>();
             foreach (var availableOrgUnit in availableOrgUnits)
@@ -666,14 +667,14 @@ namespace InrappSos.FilipWeb.Controllers
                     Enhetsnamn = availableOrgUnit.Enhetsnamn,
                     Enhetskod = availableOrgUnit.Enhetskod
                 };
-                var chosenOrgUnit = usersOrgUnits.Where(x => x.OrganisationsenhetsId == availableOrgUnit.Id);
+                var chosenOrgUnit = usersOrgUnits.Where(x => x.Id == availableOrgUnit.Id);
                 if (chosenOrgUnit.Any())
                 {
                     orgUnitVM.Selected = true;
                 }
                 orgUnitsVMList.Add(orgUnitVM);
             }
-            return orgUnitsVMList;            
+            return orgUnitsVMList;
         }
 
         private List<OrganisationsenhetDTO> ConvertVMOrgUnits(List<InrappSos.FilipWeb.Models.ViewModels.OrgUnitViewModel> orgUnitsVM)

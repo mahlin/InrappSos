@@ -1522,26 +1522,26 @@ namespace InrappSos.ApplicationService
             {
                 if (valtDelregister.RapporterarPerEnhet)
                 {
-                    var valdaOrgenheter = _portalSosRepository.GetUsersChosenOrgUnits(userId);
-                    if (valdaOrgenheter.Any())
-                    {
-                        foreach (var leverans in leveranser)
-                        {
-                            //TODO bara chosenOrgUnits för aktuell delregister när databasen ändrats
-                            //var valdaOrgenheter = _portalSosRepository.GetUsersChosenOrgUnitsForSubDir(userId, leverans.Id);
+                    //var valdaOrgenheter = _portalSosRepository.GetUsersChosenOrgUnits(userId);
+                    //if (valdaOrgenheter.Any())
+                    //{
+                    //    foreach (var leverans in leveranser)
+                    //    {
+                    //        //TODO bara chosenOrgUnits för aktuell delregister när databasen ändrats
+                    //        //var valdaOrgenheter = _portalSosRepository.GetUsersChosenOrgUnitsForSubDir(userId, leverans.Id);
 
-                            if (leverans.OrganisationsenhetsId != 0)
-                            {
-                                //check if current user report for this orgUnit 
-                                var valdOrgEnhet = valdaOrgenheter.Where(x =>
-                                    x.OrganisationsenhetsId == leverans.OrganisationsenhetsId);
-                                if (valdOrgEnhet.Any())
-                                {
-                                    historikForAnvandaren.Add(leverans);
-                                }
-                            }
-                        }
-                    }
+                    //        if (leverans.OrganisationsenhetsId != 0)
+                    //        {
+                    //            //check if current user report for this orgUnit 
+                    //            var valdOrgEnhet = valdaOrgenheter.Where(x =>
+                    //                x.OrganisationsenhetsId == leverans.OrganisationsenhetsId);
+                    //            if (valdOrgEnhet.Any())
+                    //            {
+                    //                historikForAnvandaren.Add(leverans);
+                    //            }
+                    //        }
+                    //    }
+                    //}
                 }
                 else
                 {
@@ -2479,10 +2479,16 @@ namespace InrappSos.ApplicationService
 
         }
 
-        public IEnumerable<KontaktpersonOrganisationsenhet> HamtaAnvandarensValdaEnheter(string userId)
+        public IEnumerable<Organisationsenhet> HamtaAnvandarensValdaEnheterForDelreg(string userId, int subdirId)
         {
-            var chosenOrgUnits = _portalSosRepository.GetUsersChosenOrgUnits(userId);
-            return chosenOrgUnits;
+            var chosenOrgUnitsForDir = new List<Organisationsenhet>();
+            var roll = _portalSosRepository.GetRollForUserAndSubdir(userId, subdirId);
+            foreach (var rollOrgenhet in roll.RollOrganisationsenhet)
+            {
+                var orgenhet = _portalSosRepository.GetOrganisationUnit(rollOrgenhet.OrganisationsenhetsId);
+                chosenOrgUnitsForDir.Add(orgenhet);
+            }
+            return chosenOrgUnitsForDir;
         }
 
         public IEnumerable<AdmRegister> HamtaRegisterForAnvandare(string userId, int orgId)
@@ -3163,9 +3169,11 @@ namespace InrappSos.ApplicationService
             _portalSosRepository.UpdateChosenRegistersForUser(userId, userName, registerList);
         }
 
-        public void UppdateraValdaOrganisationsenheterForAnvandare(string userId, string userName, List<OrganisationsenhetDTO> orgenhetsList)
+        public void UppdateraValdaOrganisationsenheterForAnvandareOchDelreg(string userId, string userName, List<OrganisationsenhetDTO> orgenhetsList, int subdirId, int orgId)
         {
+            var availableOrgUnits = HamtaDelregistersAktuellaEnheter(subdirId, orgId).ToList();
             var orgenhetIdList = new List<int>();
+            var roll = _portalSosRepository.GetRollForUserAndSubdir(userId, subdirId);
             foreach (var orgenhet in orgenhetsList)
             {
                 if (orgenhet.Selected)
@@ -3173,7 +3181,7 @@ namespace InrappSos.ApplicationService
                     orgenhetIdList.Add(orgenhet.Id);
                 }
             }
-            _portalSosRepository.UpdateChosenOrgUnitsForUser(userId, userName, orgenhetIdList);
+            _portalSosRepository.UpdateChosenOrgUnitsForUserAndSubdir(userId, userName, orgenhetIdList, roll.Id, availableOrgUnits);
         }
 
         public void UppdateraEnhetsUppgiftsskyldighet(AdmEnhetsUppgiftsskyldighet enhetsUppgSkyldighet, string userName)

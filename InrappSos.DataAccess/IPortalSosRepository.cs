@@ -98,7 +98,9 @@ namespace InrappSos.DataAccess
 
         int GetUserOrganisationId(string userId);
 
-        IEnumerable<KontaktpersonOrganisationsenhet> GetUsersChosenOrgUnits(string userId);
+        //IEnumerable<RollOrganisationsenhet> GetUsersChosenOrgUnitsForSubdir(string userId, int subdirId);
+
+        Roll GetRollForUserAndSubdir(string userId, int subdirId);
 
         int GetOrgUnitOrganisationId(int orgUnitId);
 
@@ -458,7 +460,7 @@ namespace InrappSos.DataAccess
 
         //void UpdateUserInfo(ApplicationUser user);
         void UpdateChosenRegistersForUser(string userId, string userName, List<RegisterInfo> registerList);
-        void UpdateChosenOrgUnitsForUser (string userId, string userName, List<int> orgUnitIdList);
+        void UpdateChosenOrgUnitsForUserAndSubdir (string userId, string userName, List<int> orgUnitIdList, int rollId, List<Organisationsenhet> availableOrgUnits);
 
         void UpdateNameForUser(string userId, string userName);
         void UpdateOrgUnit(Organisationsenhet orgUnit);

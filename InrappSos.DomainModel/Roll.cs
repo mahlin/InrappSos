@@ -14,5 +14,6 @@ namespace InrappSos.DomainModel
         public string SkapadAv { get; set; }
         public DateTime AndradDatum { get; set; }
         public string AndradAv { get; set; }
+        public virtual ICollection<RollOrganisationsenhet> RollOrganisationsenhet { get; set; }
     }
 }

@@ -148,13 +148,16 @@ namespace InrappSos.DataAccess
             modelBuilder.Entity<Roll>().Property(e => e.AndradDatum).HasColumnName("andraddatum");
             modelBuilder.Entity<Roll>().Property(e => e.AndradAv).HasColumnName("andradav");
 
-            //KontaktpersonOrganisationsenhet
-            modelBuilder.Entity<KontaktpersonOrganisationsenhet>().ToTable("KontaktpersonOrganisationenhet");
-            modelBuilder.Entity<KontaktpersonOrganisationsenhet>().Property(e => e.Id).HasColumnName("kontaktpersonorganisationenhetsid");
-            modelBuilder.Entity<KontaktpersonOrganisationsenhet>().Property(e => e.OrganisationsenhetsId).HasColumnName("organisationsenhetsId");
-            modelBuilder.Entity<KontaktpersonOrganisationsenhet>().Property(e => e.ApplicationUserId).HasColumnName("kontaktpersonid");
-            modelBuilder.Entity<KontaktpersonOrganisationsenhet>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
-            modelBuilder.Entity<KontaktpersonOrganisationsenhet>().Property(e => e.SkapadAv).HasColumnName("skapadav");
+            //RollOrganisationsenhet
+            modelBuilder.Entity<RollOrganisationsenhet>().Property(e => e.Id).HasColumnName("rollorganisationsenhetsid");
+            modelBuilder.Entity<RollOrganisationsenhet>().Property(e => e.OrganisationsenhetsId).HasColumnName("organisationsenhetsid");
+            modelBuilder.Entity<RollOrganisationsenhet>().Property(e => e.RollId).HasColumnName("rollid");
+            modelBuilder.Entity<RollOrganisationsenhet>().Property(e => e.SkapadDatum).HasColumnName("skapaddatum");
+            modelBuilder.Entity<RollOrganisationsenhet>().Property(e => e.SkapadAv).HasColumnName("skapadav");
+            modelBuilder.Entity<RollOrganisationsenhet>()
+                .HasRequired(c => c.Roll)
+                .WithMany(d => d.RollOrganisationsenhet)
+                .HasForeignKey(c => c.RollId);
 
             //Leverans
             modelBuilder.Entity<Leverans>().Property(e => e.Id).HasColumnName("leveransid");
@@ -733,7 +736,7 @@ namespace InrappSos.DataAccess
         public DbSet<ApplicationUserRole> ApplicationUserRole { get; set; }
         public DbSet<ApplicationRole> ApplicationRole { get; set; }
 
-        public DbSet<KontaktpersonOrganisationsenhet> KontaktpersonOrganisationsenhet { get; set; }
+        public DbSet<RollOrganisationsenhet> RollOrganisationsenhet { get; set; }
 
         //public DbSet<ApplicationRole> ApplicationRole { get; set; }
         //public DbSet<ApplicationUserRole> ApplicationUserRole { get; set; }

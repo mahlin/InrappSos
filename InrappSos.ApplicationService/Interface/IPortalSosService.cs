@@ -349,7 +349,7 @@ namespace InrappSos.ApplicationService.Interface
 
         IEnumerable<Organisationsenhet> HamtaDelregistersAktuellaEnheter(int delregId, int orgId);
 
-        IEnumerable<KontaktpersonOrganisationsenhet> HamtaAnvandarensValdaEnheter(string userId);
+        IEnumerable<Organisationsenhet> HamtaAnvandarensValdaEnheterForDelreg(string userId, int subdirId);
 
         IEnumerable<AdmRegister> HamtaRegisterForAnvandare(string userId, int orgId);
 
@@ -448,7 +448,7 @@ namespace InrappSos.ApplicationService.Interface
         void UppdateraUndantagForvantadFil(List<UndantagForvantadfilDTO> undantagList, string userName);
 
         void UppdateraValdaRegistersForAnvandare(string userId, string userName, List<RegisterInfo> registerList);
-        void UppdateraValdaOrganisationsenheterForAnvandare(string userId, string userName, List<OrganisationsenhetDTO> orgenhetsList);
+        void UppdateraValdaOrganisationsenheterForAnvandareOchDelreg(string userId, string userName, List<OrganisationsenhetDTO> orgenhetsList, int subdirId, int orgId);
 
         void UppdateraEnhetsUppgiftsskyldighet(AdmEnhetsUppgiftsskyldighet enhetsUppgSkyldighet, string userName);
 

@@ -43,7 +43,14 @@ namespace InrappSos.FilipWeb.Controllers
                 var userId = User.Identity.GetUserId();
                 var userOrg = _portalService.HamtaOrgForAnvandare(User.Identity.GetUserId());
                 IEnumerable<FilloggDetaljDTO> historyFileList = _portalService.HamtaHistorikForOrganisation(userOrg.Id);
-                model.HistorikLista = historyFileList.ToList();
+                
+                var valdaDelregisterInfoList = _portalService.HamtaValdaDelregisterForAnvandare(User.Identity.GetUserId(), userOrg.Id);
+
+                //Filtrera historiken utfrån användarens valda register och enheter
+                IEnumerable<FilloggDetaljDTO> filteredHistoryFileList = _portalService.FiltreraHistorikForAnvandare(userId, valdaDelregisterInfoList, historyFileList.ToList());
+
+                model.HistorikLista = filteredHistoryFileList.ToList();
+
                 model.OrganisationsNamn = userOrg.Organisationsnamn;
                 IEnumerable<AdmRegister> admRegList = _portalService.HamtaRegisterForAnvandare(userId, userOrg.Id);
                 model.RegisterList = ConvertAdmRegisterToViewModel(admRegList.ToList());

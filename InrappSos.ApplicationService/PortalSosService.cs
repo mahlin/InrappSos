@@ -544,7 +544,7 @@ namespace InrappSos.ApplicationService
 
         public AdmUppgiftsskyldighet HamtaAktivUppgiftsskyldighetForOrganisationOchRegister(int orgId, int delregid)
         {
-            var uppgiftsskyldighet = _portalSosRepository.GetUppgiftsskyldighetForOrganisationAndRegister(orgId, delregid);
+            var uppgiftsskyldighet = _portalSosRepository.GetActiveReportObligationInformationForOrgAndSubDir(orgId, delregid);
             return uppgiftsskyldighet;
         }
 
@@ -1664,7 +1664,19 @@ namespace InrappSos.ApplicationService
             foreach (var rad in valdaDelregisterList)
             {
                 var aktuellaLeveranser = historikForOrganisation.Where(x => x.RegisterKortnamn == rad.Kortnamn).ToList();
-                historikForAnvandareList.AddRange(aktuellaLeveranser);
+
+                if (rad.RapporterarPerEnhet)
+                {
+                    var anvValdaOrgenheterForDelreg = HamtaAnvandarensValdaEnheterForDelreg(userId, rad.Id);
+                    foreach (var valdOrgenhet in anvValdaOrgenheterForDelreg)
+                    {
+                        historikForAnvandareList.AddRange(aktuellaLeveranser.Where(x => x.OrganisationsenhetsId == valdOrgenhet.Id).ToList());
+                    }
+                }
+                else
+                {
+                    historikForAnvandareList.AddRange(aktuellaLeveranser);
+                }
             }
             return historikForAnvandareList.OrderByDescending(x => x.Leveranstidpunkt).ToList();
         }

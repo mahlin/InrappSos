@@ -94,12 +94,12 @@ namespace InrappSos.FilipWeb.Controllers
                 _model.GiltigInrapporteringsKod = userOrg.Inrapporteringskod;
                 _model.OrganisationsNamn = userOrg.Organisationsnamn;
 
-                var historyFileList = _portalService.HamtaTop10HistorikForOrganisationAndDelreg(orgIdForUser, valdaDelregisterInfoList).ToList();
+                var historyFileList = _portalService.HamtaTop100HistorikForOrganisationAndDelreg(orgIdForUser, valdaDelregisterInfoList).ToList();
 
-                //Filtrera historiken utfrån användarens valda register
+                //Filtrera historiken utfrån användarens valda register och enheter
                 IEnumerable<FilloggDetaljDTO> filteredHistoryFileList = _portalService.FiltreraHistorikForAnvandare(userId, valdaDelregisterInfoList, historyFileList);
 
-                _model.HistorikLista = historyFileList.Take(10).ToList();
+                _model.HistorikLista = filteredHistoryFileList.Take(10).ToList();
             }
             catch (Exception e)
             {

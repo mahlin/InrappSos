@@ -105,6 +105,9 @@ $(document).on('submit', '#updateHistoryForm', function () {
 $(document).on('change','#ddlRegister',
     function() {
         var selectedRegister = $('#ddlRegister').val();
+        $('#singelenhetsInfo').html("");
+        $('#enhetsInfo').hide();
+
 
         $('#fileupload').fileupload(
             'option',
@@ -186,29 +189,39 @@ $(document).on('change','#ddlRegister',
                     }
                     // No3 - Check if organisation is supposed to leave files per unit
                     if (register.RapporterarPerEnhet) {
-                        //Populate unit-dropdown
-                        var vals = {};
-                        register.Organisationsenheter.forEach(function(unit, index) {
-                            vals[unit.Key] = unit.Value;
-                        });
-
-                        var $ddlUnits = $("#ddlUnits");
-                        $ddlUnits.empty();
-                        $ddlUnits.append("<option> - Välj enhet - </option>");
-                        $.each(vals,
-                            function(index, value) {
-                                $ddlUnits.append("<option value=" + index + " >" + value + "</option>");
-                                //alert(index + ' : ' + value);
+                        if (register.Organisationsenheter.length === 1) {
+                            var infoEnhet = "<b>Du rapporterar för organisationsenhet " + register.Organisationsenheter[0].Value + ".</b><br>"; 
+                            $('#singelenhetsInfo').html(infoEnhet);
+                            $('.fileinput-button').show();
+                            $('#fileinputButton').prop('disabled', false);
+                            $('#fileinputButton').removeClass('disabled');
+                            $('#filesExplorerOpener').prop('disabled', false);
+                            $('#filesExplorerOpener').removeClass('disabled');
+                        } else {
+                            //Populate unit-dropdown
+                            var vals = {};
+                            register.Organisationsenheter.forEach(function (unit, index) {
+                                vals[unit.Key] = unit.Value;
                             });
 
-                        $('#enhetsInfo').show();
+                            var $ddlUnits = $("#ddlUnits");
+                            $ddlUnits.empty();
+                            $ddlUnits.append("<option> - Välj enhet - </option>");
+                            $.each(vals,
+                                function (index, value) {
+                                    $ddlUnits.append("<option value=" + index + " >" + value + "</option>");
+                                    //alert(index + ' : ' + value);
+                                });
+
+                            $('#enhetsInfo').show();   
+                            $('.fileinput-button').hide();
+                            $('#fileinputButton').prop('disabled', true);
+                            $('#fileinputButton').addClass('disabled');
+                            $('#fileinputButton').parent().addClass('disabled');
+                            $('#fileinputButton').prop('readonly', true);
+                            $('#fileinputButton').addClass('readonly');
+                        }
                         $('#ingetAttRapportera').hide();
-                        $('.fileinput-button').hide();
-                        $('#fileinputButton').prop('disabled', true);
-                        $('#fileinputButton').addClass('disabled');
-                        $('#fileinputButton').parent().addClass('disabled');
-                        $('#fileinputButton').prop('readonly', true);
-                        $('#fileinputButton').addClass('readonly');
                         //$('.fileinput-button')
                         //    .prop('disabled', true)
                         //    .parent().addClass('disabled');

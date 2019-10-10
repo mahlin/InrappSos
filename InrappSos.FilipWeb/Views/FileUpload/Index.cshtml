@@ -72,6 +72,13 @@
                 </div>
             </div>
         </div>
+        @*<div hidden id="singelenhetsInfo" class="row col-12" style="margin-left: 0px;">
+            <div class="form-group">
+            </div>
+        </div>*@
+        <div class="row col-12" id="singelenhetsInfo" class="singelenhetsInfo" style="padding: 0px; margin-left:0px; font-size: 0.9em">
+        </div>
+        <br />
         <div hidden id="ingetAttRapportera">
             <section id="ingetAttRapporteraForm">
                 @using (Html.BeginForm("IngetAttRapportera", "FileUpload", new { ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))

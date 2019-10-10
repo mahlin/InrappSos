@@ -100,6 +100,16 @@ namespace InrappSos.FilipWeb.Controllers
                 IEnumerable<FilloggDetaljDTO> filteredHistoryFileList = _portalService.FiltreraHistorikForAnvandare(userId, valdaDelregisterInfoList, historyFileList);
 
                 _model.HistorikLista = filteredHistoryFileList.Take(10).ToList();
+
+                var _acceptedFileTypes = new List<string>();
+                var acceptedFiletypesStr = ConfigurationManager.AppSettings["AcceptedFileTypes"];
+                string[] acceptedFiletypes = acceptedFiletypesStr.Split(',');
+                foreach (var acceptedFiletype in acceptedFiletypes)
+                {
+                    _acceptedFileTypes.Add(acceptedFiletype);
+                }
+
+                _model.AcceptedFileTypes = _acceptedFileTypes;
             }
             catch (Exception e)
             {

@@ -100,6 +100,8 @@ namespace InrappSos.FilipWeb.Controllers
                 BrowserRemembered = await AuthenticationManager.TwoFactorBrowserRememberedAsync(userId),
                 RegisterList = _portalService.HamtaRegistersMedAnvandaresVal(userId, orgId).ToList()
             };
+
+            //model.RegisterList = _portalService.HamtaOrgenheter(model.RegisterList, orgId);
             return View(model);
         }
 
@@ -485,10 +487,12 @@ namespace InrappSos.FilipWeb.Controllers
         {
             var model = new SubdirViewModel();
             var userId = User.Identity.GetUserId();
+            var subdir = _portalService.HamtaDelregister(selectedSubdirId);
             var orgId = _portalService.HamtaUserOrganisationId(userId);
             var availableOrgUnits = _portalService.HamtaDelregistersAktuellaEnheter(selectedSubdirId, orgId).ToList();
             var usersOrgUnits = _portalService.HamtaAnvandarensValdaEnheterForDelreg(userId, selectedSubdirId).ToList();
             model.Id = selectedSubdirId;
+            model.Delregisternamn = subdir.Delregisternamn;
             model.OrgUnitList = ConvertOrgUnitsToVM(availableOrgUnits, usersOrgUnits);
             return View(model);
         }

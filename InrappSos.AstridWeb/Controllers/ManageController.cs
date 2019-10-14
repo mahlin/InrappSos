@@ -172,7 +172,7 @@ namespace InrappSos.AstridWeb.Controllers
                     user.AndradAv = user.Email;
                     user.AndradDatum = DateTime.Now;
                     _portalSosService.UppdateraAnvandarInfo(user, User.Identity.GetUserName());
-                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                    await SignInManager.SignInAsync(user, isPersistent: true, rememberBrowser: false);
                 }
                 return RedirectToAction("Index", new { Message = ManageMessageId.ChangePasswordSuccess });
             }
@@ -204,7 +204,7 @@ namespace InrappSos.AstridWeb.Controllers
                         user.AndradAv = user.Email;
                         user.AndradDatum = DateTime.Now;
                         _portalSosService.UppdateraAnvandarInfo(user, User.Identity.GetUserName());
-                        await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                        await SignInManager.SignInAsync(user, isPersistent: true, rememberBrowser: false);
                     }
                     return RedirectToAction("Index", new { Message = ManageMessageId.SetPasswordSuccess });
                 }

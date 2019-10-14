@@ -19,6 +19,7 @@ namespace InrappSos.DomainModel
         public List<KeyValuePair<string, string>> Organisationsenheter { get; set; }
         public List<KeyValuePair<string, string>> Orgenheter { get; set; }
         public List<RegisterFilkrav> Filkrav { get; set; }
+        public List<OrgUnitInfo> OrgInfo { get; set; }
         public string SelectedFilkrav { get; set; }
     }
 }

@@ -142,7 +142,33 @@
                             @Html.Raw(Model.RegisterList[i].Namn)
                             if (Model.RegisterList[i].RapporterarPerEnhet)
                             {
-                                @Html.ActionLink(" [ Ändra enheter ] ", "ChangeChosenOrgUnits", routeValues: new { selectedSubdirId = Model.RegisterList[i].Id }, htmlAttributes: null) 
+                                var valdaOrgenheter = 0;
+                                if (Model.RegisterList[i].OrgInfo.Count > 0)
+                                {
+                                    @Html.Raw(" - <b>Valda enheter:</b> ");
+
+                                    for (int idx = 0; idx < Model.RegisterList[i].OrgInfo.Count; idx++)
+                                    {
+                                        if (Model.RegisterList[i].OrgInfo[idx].Selected)
+                                        {
+                                            if (valdaOrgenheter > 0)
+                                            {
+                                                @Html.Raw(", ")
+                                            }
+                                            valdaOrgenheter++;
+                                            @Html.Raw(Model.RegisterList[i].OrgInfo[idx].Enhetsnamn)
+                                        }
+                                    }
+                                }
+                                @*if (valdaOrgenheter > 0)
+                                {
+                                    @Html.Raw(", ")
+                                }*@
+                                if (valdaOrgenheter == 0)
+                                {
+                                    @Html.Raw("Inga ")
+                                }
+                                @Html.ActionLink(" [ Ändra enheter ] ", "ChangeChosenOrgUnits", routeValues: new { selectedSubdirId = Model.RegisterList[i].Id }, htmlAttributes: null)
                             }
                             <br />
                         }

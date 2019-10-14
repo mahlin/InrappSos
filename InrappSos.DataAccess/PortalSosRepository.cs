@@ -2193,24 +2193,66 @@ namespace InrappSos.DataAccess
         public void UpdateChosenRegistersForUser(string userId, string userName, List<RegisterInfo> registerList)
         {
             //delete prevoious choices
-            DbContext.Roll.RemoveRange(DbContext.Roll.Where(x => x.ApplicationUserId == userId));
+            //DbContext.Roll.RemoveRange(DbContext.Roll.Where(x => x.ApplicationUserId == userId));
 
             //Insert new choices
             foreach (var register in registerList)
             {
+                var rollDb = DbContext.Roll.SingleOrDefault(x => x.DelregisterId == register.Id && x.ApplicationUserId == userId);
+
                 if (register.Selected)
                 {
-                    var roll = new Roll
-                    {
-                        DelregisterId = register.Id,
-                        ApplicationUserId = userId,
-                        SkapadDatum = DateTime.Now,
-                        SkapadAv = userName,
-                        AndradDatum = DateTime.Now,
-                        AndradAv = userName
-                    };
+                    //If not exists - create new Roll and set all chooseable orgUnits (RollOrganisationsenhet)
+                    if (rollDb == null)
+                    { 
+                        var roll = new Roll
+                        {
+                            DelregisterId = register.Id,
+                            ApplicationUserId = userId,
+                            SkapadDatum = DateTime.Now,
+                            SkapadAv = userName,
+                            AndradDatum = DateTime.Now,
+                            AndradAv = userName
+                        };
 
-                    DbContext.Roll.Add(roll);
+                        DbContext.Roll.Add(roll);
+                        DbContext.SaveChanges();
+
+                        //Get choosable orgUnits
+                        var org = GetOrgForUser(userId);
+                        var uppgskhId = DbContext.AdmUppgiftsskyldighet.SingleOrDefault(x => x.DelregisterId == register.Id && x.OrganisationId == org.Id && (x.SkyldigTom == null || x.SkyldigTom > DateTime.Now));
+                        if (uppgskhId != null)
+                        {
+                            var uppgskOrgUnits = DbContext.AdmEnhetsUppgiftsskyldighet.Where(x => x.UppgiftsskyldighetId == uppgskhId.Id && (x.SkyldigTom == null || x.SkyldigTom > DateTime.Now)).ToList();
+                            if (uppgskOrgUnits.Any())
+                            {
+                                foreach (var uppgskOrgUnit in uppgskOrgUnits)
+                                {
+                                    var rollOrgUnit = new RollOrganisationsenhet
+                                    {
+                                        RollId = roll.Id,
+                                        OrganisationsenhetsId = uppgskOrgUnit.OrganisationsenhetsId,
+                                        SkapadDatum = DateTime.Now,
+                                        SkapadAv = userName
+                                    };
+                                    DbContext.RollOrganisationsenhet.Add(rollOrgUnit);
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    //If exists - remove ev RollOrganisationsenhet and then Roll
+                    if (rollDb != null)
+                    {
+                        var orgUnitsForRoll = DbContext.RollOrganisationsenhet.Where(x => x.RollId == rollDb.Id).ToList();
+                        foreach (var orgUnitForRoll in orgUnitsForRoll)
+                        {
+                            DbContext.RollOrganisationsenhet.Remove(orgUnitForRoll);
+                        }
+                        DbContext.Roll.Remove(rollDb);
+                    }
                 }
             }
             DbContext.SaveChanges();

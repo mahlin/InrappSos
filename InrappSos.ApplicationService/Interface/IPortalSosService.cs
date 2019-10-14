@@ -111,6 +111,7 @@ namespace InrappSos.ApplicationService.Interface
         IEnumerable<Organisationsenhet> HamtaOrgEnheterForOrg(int orgId);
 
         List<RegisterInfo> HamtaOrgenheterForAnvandare(List<RegisterInfo> registerInfoList, int orgId, string userId);
+        List<RegisterInfo> HamtaOrgenheter(List<RegisterInfo> registerInfoList, int orgId);
 
         IEnumerable<Organisationsenhet> HamtaOrganisationsenheterMedUppgSkyldighetsId(int uppgSkyldighetsid);
 
@@ -319,9 +320,13 @@ namespace InrappSos.ApplicationService.Interface
 
         IEnumerable<FilloggDetaljDTO> HamtaHistorikForOrganisationRegisterPeriod(int orgId, List<AdmDelregister> delregisterList, string periodForReg, List<Leverans> levstatusRapportList);
 
+        IEnumerable<FilloggDetaljDTO> HamtaHistorikForOrganisationRegisterPeriodUser(int orgId, List<AdmDelregister> delregisterList, string periodForReg, List<Leverans> levstatusRapportList, string userId);
+
         string HamtaSammanlagdStatusForPeriod(IEnumerable<FilloggDetaljDTO> historikLista);
 
         string KontrolleraOmKomplettaEnhetsleveranser(int orgId, LeveransStatusDTO leveransStatusObj, List<AdmDelregister> delregisterList);
+
+        string KontrolleraOmKomplettaEnhetsleveranserForAnv(int orgId, LeveransStatusDTO leveransStatusObj, List<AdmDelregister> delregisterList, string user);
 
         void KopplaAstridAnvändareTillAstridRoll(string userName, string astridUserId, string rollId);
 

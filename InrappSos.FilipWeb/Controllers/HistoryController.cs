@@ -145,7 +145,7 @@ namespace InrappSos.FilipWeb.Controllers
                             leveransStatus.Rapporteringsstart = forvlevList.FirstOrDefault(x => x.Period == period).Rapporteringsstart;
                             leveransStatus.Rapporteringssenast = forvlevList.FirstOrDefault(x => x.Period == period).Rapporteringsenast;
 
-                            leveransStatus.HistorikLista = _portalService.HamtaHistorikForOrganisationRegisterPeriod(userOrg.Id, delregList, period, leveransStatusRapportList).ToList();
+                            leveransStatus.HistorikLista = _portalService.HamtaHistorikForOrganisationRegisterPeriodUser(userOrg.Id, delregList, period, leveransStatusRapportList, userId).ToList();
                             if (leveransStatus.HistorikLista.Any())
                             {
                                 leveransStatus.Status = _portalService.HamtaSammanlagdStatusForPeriod(leveransStatus.HistorikLista);

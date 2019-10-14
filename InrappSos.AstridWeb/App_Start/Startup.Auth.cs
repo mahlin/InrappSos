@@ -37,9 +37,10 @@ namespace InrappSos.AstridWeb
                     // This is a security feature which is used when you change a password or add an external login to your account.  
                     OnValidateIdentity =
                         SecurityStampValidator.OnValidateIdentity<ApplicationUserManager, AppUserAdmin>(
-                            validateInterval: TimeSpan.FromMinutes(30),
+                            validateInterval: TimeSpan.FromHours(8),
                             regenerateIdentity: (manager, user) => user.GenerateUserIdentityAsync(manager))
-                }
+                },
+                ExpireTimeSpan = TimeSpan.FromHours(8)
             });
             app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
 

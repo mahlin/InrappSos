@@ -2088,6 +2088,59 @@ namespace InrappSos.ApplicationService
 
             return sorteradHistorikLista;
         }
+
+        public IEnumerable<FilloggDetaljDTO> HamtaHistorikForOrganisationRegisterPeriodUser(int orgId, List<AdmDelregister> delregisterList, string periodForReg, List<Leverans> levstatusRapportList, string userId)
+        {
+            var historikLista = new List<FilloggDetaljDTO>();
+            var sorteradHistorikLista = new List<FilloggDetaljDTO>();
+
+            foreach (var delregister in delregisterList)
+            {
+                //Forvantadleveransid för delregister och period
+                var forvLevId = delregister.AdmForvantadleverans.Where(x => x.Period == periodForReg).Select(x => x.Id).SingleOrDefault();
+
+                var senasteLeverans = new Leverans();
+                //kan org rapportera per enhet för aktuellt delregister och period? => hämta senaste leverans per enhet
+                var uppgiftsskyldighet = delregister.AdmUppgiftsskyldighet.SingleOrDefault(x => x.OrganisationId == orgId);
+                if (uppgiftsskyldighet != null)
+                {
+                    if (uppgiftsskyldighet.RapporterarPerEnhet)
+                    {
+                        var anvValdaOrgenheterForDelreg = HamtaAnvandarensValdaEnheterForDelreg(userId, delregister.Id);
+                        //var orgEnhetsList = _portalSosRepository.GetOrgUnitsForOrg(orgId);
+                        foreach (var valdOrgenhet in anvValdaOrgenheterForDelreg)
+                        {
+                            senasteLeverans = levstatusRapportList.Where(x => x.DelregisterId == delregister.Id && x.AdmForvantadleverans.Period == periodForReg && x.OrganisationsenhetsId == valdOrgenhet.Id).OrderByDescending(x => x.Id).FirstOrDefault();
+                            if (senasteLeverans != null)
+                            {
+                                AddHistorikListItem(senasteLeverans, historikLista);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //senasteLeverans =
+                        //    _portalSosRepository.GetLatestDeliveryForOrganisationSubDirectoryAndPeriod(orgId, delregister.Id,
+                        //        forvLevId);
+                        senasteLeverans = levstatusRapportList.SingleOrDefault(x => x.DelregisterId == delregister.Id && x.AdmForvantadleverans.Period == periodForReg);
+                        if (senasteLeverans != null)
+                        {
+                            AddHistorikListItem(senasteLeverans, historikLista);
+                        }
+
+                    }
+                }
+
+            }
+            if (historikLista.Count > 0)
+            {
+                sorteradHistorikLista = historikLista.OrderBy(x => x.Enhetskod).ThenBy(x => x.RegisterKortnamn).ThenByDescending(x => x.Id).ToList();
+            }
+
+            return sorteradHistorikLista;
+        }
+
+
         //TODO - hårdkodat. Lös på annat sätt
         public string HamtaSammanlagdStatusForPeriod(IEnumerable<FilloggDetaljDTO> historikLista)
         {
@@ -2188,6 +2241,71 @@ namespace InrappSos.ApplicationService
                                 foreach (var orgenhet in orgEnhetsList)
                                 {
                                     var xList = leveransStatusObj.HistorikLista.Where(hist =>hist.RegisterKortnamn == delregister.Kortnamn).ToList();
+                                    if (xList.All(x => x.Enhetskod != orgenhet.Enhetskod))
+                                    {
+                                        status = "error";
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return status;
+        }
+
+        public string KontrolleraOmKomplettaEnhetsleveranserForAnv(int orgId, LeveransStatusDTO leveransStatusObj, List<AdmDelregister> delregisterList, string userId)
+        {
+            var status = leveransStatusObj.Status;
+            var year = leveransStatusObj.Period.Substring(0, 4);
+            var month = "01";
+            if (leveransStatusObj.Period.Length == 6)
+            {
+                var monthTmp = leveransStatusObj.Period.Substring(4, 2);
+                //TODO - fulfix för HSL halvårsrapp. Används ej??
+                if (monthTmp == "H1")
+                {
+                    month = "01";
+                }
+                else if (monthTmp == "H2")
+                {
+                    month = "07";
+                }
+                else
+                {
+                    month = leveransStatusObj.Period.Substring(4, 2);
+                }
+            }
+            var periodDate = new DateTime(Convert.ToInt32(year), Convert.ToInt32(month), 1);
+
+            foreach (var delregister in delregisterList)
+            {
+                var uppgiftsskyldighet = delregister.AdmUppgiftsskyldighet.SingleOrDefault(x => x.OrganisationId == orgId);
+                if (uppgiftsskyldighet != null)
+                {
+                    if (uppgiftsskyldighet.RapporterarPerEnhet && uppgiftsskyldighet.SkyldigFrom <= periodDate) //Rapporterar organisationen detta register per enhet?
+                    {
+                        if (uppgiftsskyldighet.SkyldigTom == null)
+                        {
+                            var orgEnhetsList = _portalSosRepository
+                                .GetOrgUnitsByRepOblWithInPeriod(uppgiftsskyldighet.Id, leveransStatusObj.Period)
+                                .ToList();
+                            if (orgEnhetsList.Any()) //Kontrollera att alla användarens valda oganisationsenheter har levererat fil
+                            {
+                                var anvValdaOrgenheterForDelreg = HamtaAnvandarensValdaEnheterForDelreg(userId, delregister.Id);
+                                var orgenheterAttKolla = new List<Organisationsenhet>();
+                                foreach (var orgenhet in orgEnhetsList)
+                                {
+                                    var match = anvValdaOrgenheterForDelreg.Where(x => x.Id == orgenhet.Id).SingleOrDefault();
+                                    if (match != null)
+                                    {
+                                       orgenheterAttKolla.Add(match); 
+                                    }
+                                }
+
+                                foreach (var orgenhet in orgenheterAttKolla)
+                                {
+                                    var xList = leveransStatusObj.HistorikLista.Where(hist => hist.RegisterKortnamn == delregister.Kortnamn).ToList();
                                     if (xList.All(x => x.Enhetskod != orgenhet.Enhetskod))
                                     {
                                         status = "error";
@@ -2473,19 +2591,49 @@ namespace InrappSos.ApplicationService
         public IEnumerable<RegisterInfo> HamtaRegistersMedAnvandaresVal(string userId, int orgId)
         {
             var registerList = _portalSosRepository.GetChosenDelRegistersForUser(userId);
-            //var allaRegisterList = _portalRepository.GetAllRegisterInformation();
             var allaRegisterList = _portalSosRepository.GetAllActiveRegisterInformationForOrganisation(orgId);
 
             foreach (var register in allaRegisterList)
             {
+                //För enhetsrapportering
+                if (RapporterarPerEnhet(register.Id, orgId))
+                {
+                    var availableOrgUnits = HamtaDelregistersAktuellaEnheter(register.Id, orgId).ToList();
+                    register.OrgInfo = new List<OrgUnitInfo>();
+                    foreach (var availableOrgUnit in availableOrgUnits)
+                    {
+                        var orgUnit = new OrgUnitInfo()
+                        {
+                            Id = availableOrgUnit.Id,
+                            OrganisationsId = availableOrgUnit.OrganisationsId,
+                            Enhetsnamn = availableOrgUnit.Enhetsnamn,
+                            Enhetskod = availableOrgUnit.Enhetskod
+                        };
+                        register.OrgInfo.Add(orgUnit);
+                    }
+                }
+                //Användarens valda register/orgenheter
                 foreach (var userRegister in registerList)
                 {
                     if (register.Id == userRegister.DelregisterId)
                     {
                         register.Selected = true;
                         register.RapporterarPerEnhet = RapporterarPerEnhet(register.Id, orgId);
+                        if (RapporterarPerEnhet(register.Id, orgId))
+                        {
+                            var usersOrgUnits = HamtaAnvandarensValdaEnheterForDelreg(userId, userRegister.DelregisterId).ToList();
+                            foreach (var orgiInfo in register.OrgInfo)
+                            {
+                                var chosenOrgUnit = usersOrgUnits.Where(x => x.Id == orgiInfo.Id);
+                                if (chosenOrgUnit.Any())
+                                {
+                                    orgiInfo.Selected = true;
+                                }
+                            }
+                        }
                     }
                 }
+
             }
 
             return allaRegisterList;
@@ -4533,7 +4681,7 @@ namespace InrappSos.ApplicationService
         }
 
 
-        private List<RegisterInfo> HamtaOrgenheter(List<RegisterInfo> registerInfoList, int orgId)
+        public List<RegisterInfo> HamtaOrgenheter(List<RegisterInfo> registerInfoList, int orgId)
         {
             foreach (var item in registerInfoList)
             {

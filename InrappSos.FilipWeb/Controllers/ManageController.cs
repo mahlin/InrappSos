@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Security;
 using InrappSos.DataAccess;
 using InrappSos.ApplicationService;
 using InrappSos.ApplicationService.DTOModel;

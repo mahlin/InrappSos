@@ -2950,7 +2950,18 @@ namespace InrappSos.DataAccess
         public void DeleteChosenSubDirectoriesForUser(string userId)
         {
             var rollList = DbContext.Roll.Where(x => x.ApplicationUserId == userId).ToList();
-            DbContext.Roll.RemoveRange(rollList);
+            if (rollList.Any())
+            {
+                foreach (var roll in rollList)
+                {
+                    var orgUnitList = DbContext.RollOrganisationsenhet.Where(x => x.RollId == roll.Id).ToList();
+                    if (orgUnitList.Any())
+                    {
+                        DbContext.RollOrganisationsenhet.RemoveRange(orgUnitList);
+                    }
+                    DbContext.Roll.RemoveRange(rollList);
+                }
+            }
             DbContext.SaveChanges();
         }
 

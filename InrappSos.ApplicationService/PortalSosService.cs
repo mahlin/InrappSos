@@ -2770,7 +2770,7 @@ namespace InrappSos.ApplicationService
         public void InaktiveraKontaktperson(string userId)
         {
             _portalSosRepository.DisableContact(userId);
-            //Remove users chosen registers
+            //Remove users chosen registers and chosen orgUnits per register
             _portalSosRepository.DeleteChosenSubDirectoriesForUser(userId);
         }
 

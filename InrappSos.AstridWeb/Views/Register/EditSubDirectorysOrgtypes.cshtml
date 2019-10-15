@@ -109,21 +109,28 @@
 
 
     @* Om sökresultat för delreg finns, visa listan *@
+        if (Model.SelectedDirectoryId != 0)
+        {
+            if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin"))
+            {
+                <br/>
+                <br/>
+                <div class="row">
+                    <div class="col-md-8">
+                        @Html.ActionLink("Skapa ny uppgiftsskyldighet", "CreateReportObligationForSubdir", "Register", new {selectedSubdirId = Model.SelectedSubDirectoryId}, new {style = "padding-left:20px;"})
+                    </div>
+                </div>
+            }
+        }
+
         if (Model.DelRegistersOrganisationstyper?.Count > 0)
         {
-
             @Html.HiddenFor(m => m.SelectedDirectoryId)
 
             if (Request.IsAuthenticated)
             {
                 if (User.IsInRole("Admin") || User.IsInRole("InrappAdmin"))
                 {
-                    <br/><br/>
-                    <div class="row">
-                        <div class="col-md-8">
-                            @Html.ActionLink("Skapa ny uppgiftsskyldighet", "CreateReportObligationForSubdir", "Register", new { selectedSubdirId = Model.SelectedSubDirectoryId}, new {style = "padding-left:20px;"})
-                        </div>
-                    </div>
                     <section id="adminSubdirOrgtypesForm">
                         <hr/>
                         <div id="gridContent" style="font-family: Arial; padding: 20px;">

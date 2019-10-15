@@ -240,7 +240,7 @@ namespace InrappSos.DataAccess
 
         IEnumerable<AdmDelregister> GetSubDirectoriesForDirectory(int dirId);
         IEnumerable<AdmDelregister> GetSubDirectoriesWithIncludesForDirectory(int dirId);
-
+        AdmDelregister GetSubDirectoryWithIncludes(int subdirId);
         IEnumerable<AdmDelregister> GetSubDirsObligatedForOrg(int orgId);
 
         IEnumerable<AdmDelregister> GetActiveSubDirsObligatedForOrg(int orgId);

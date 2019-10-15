@@ -699,7 +699,7 @@ namespace InrappSos.DataAccess
 
         public IEnumerable<int> GetSubdirIdsForOrgtype(int orgtypeId)
         {
-            var subDirIdsForOrgtype = DbContext.AdmUppgiftsskyldighetOrganisationstyp.Where(x => x.OrganisationstypId == orgtypeId && x.SkyldigTom == null).Select(x => x.DelregisterId).ToList();
+            var subDirIdsForOrgtype = DbContext.AdmUppgiftsskyldighetOrganisationstyp.Where(x => x.OrganisationstypId == orgtypeId && x.SkyldigTom == null || x.SkyldigTom > DateTime.Now).Select(x => x.DelregisterId).ToList();
             return subDirIdsForOrgtype;
         }
 
@@ -741,7 +741,7 @@ namespace InrappSos.DataAccess
 
         public IEnumerable<AdmUppgiftsskyldighet> GetActiveReportObligationInformationForOrg(int orgId)
         {
-            var reportObligationInfo = DbContext.AdmUppgiftsskyldighet.Where(x => x.OrganisationId == orgId && x.SkyldigTom == null).Include(x => x.AdmDelregister).ToList();
+            var reportObligationInfo = DbContext.AdmUppgiftsskyldighet.Where(x => x.OrganisationId == orgId && x.SkyldigTom == null || x.SkyldigTom > DateTime.Now).Include(x => x.AdmDelregister).ToList();
             return reportObligationInfo;
         }
 
@@ -753,13 +753,13 @@ namespace InrappSos.DataAccess
 
         public AdmUppgiftsskyldighet GetActiveReportObligationInformationForOrgAndSubDir(int orgId, int subdirId)
         {
-            var reportObligation = DbContext.AdmUppgiftsskyldighet.SingleOrDefault(x => x.OrganisationId == orgId && x.DelregisterId == subdirId && x.SkyldigTom == null);
+            var reportObligation = DbContext.AdmUppgiftsskyldighet.SingleOrDefault(x => x.OrganisationId == orgId && x.DelregisterId == subdirId && x.SkyldigTom == null || x.SkyldigTom > DateTime.Now);
             return reportObligation;
         }
 
         public IEnumerable<AdmUppgiftsskyldighetOrganisationstyp> GetAllActiveReportObligationsForSubDir(int subdirId)
         {
-            var list = DbContext.AdmUppgiftsskyldighetOrganisationstyp.Where(x => x.DelregisterId == subdirId && x.SkyldigTom == null).ToList();
+            var list = DbContext.AdmUppgiftsskyldighetOrganisationstyp.Where(x => x.DelregisterId == subdirId && x.SkyldigTom == null || x.SkyldigTom > DateTime.Now).ToList();
             return list;
         }
 
@@ -783,7 +783,7 @@ namespace InrappSos.DataAccess
 
         public IEnumerable<AdmUppgiftsskyldighet> GetAllActiveReportObligationsForSubDirAndOrg(int subdirId, int orgId)
         {
-            var reportObligationsForSubdirAndOrgtype = DbContext.AdmUppgiftsskyldighet.Where(x => x.DelregisterId == subdirId && x.OrganisationId == orgId && x.SkyldigTom == null).ToList();
+            var reportObligationsForSubdirAndOrgtype = DbContext.AdmUppgiftsskyldighet.Where(x => x.DelregisterId == subdirId && x.OrganisationId == orgId && x.SkyldigTom == null || x.SkyldigTom > DateTime.Now).ToList();
             return reportObligationsForSubdirAndOrgtype;
         }
 
@@ -795,7 +795,7 @@ namespace InrappSos.DataAccess
 
         public IEnumerable<AdmUppgiftsskyldighetOrganisationstyp> GetActiveReportObligationForOrgtype(int orgtypeId)
         {
-            var reportObligationOrgtypes = DbContext.AdmUppgiftsskyldighetOrganisationstyp.Where(x => x.OrganisationstypId == orgtypeId && x.SkyldigTom == null).ToList();
+            var reportObligationOrgtypes = DbContext.AdmUppgiftsskyldighetOrganisationstyp.Where(x => x.OrganisationstypId == orgtypeId && x.SkyldigTom == null || x.SkyldigTom > DateTime.Now).ToList();
             return reportObligationOrgtypes;
         }
 
@@ -813,7 +813,7 @@ namespace InrappSos.DataAccess
 
         public AdmEnhetsUppgiftsskyldighet GetActiveUnitReportObligationForReportObligationAndOrg(int oblId, int orgunitId)
         {
-            var unitReportObigation = DbContext.AdmEnhetsUppgiftsskyldighet.SingleOrDefault(x => x.UppgiftsskyldighetId == oblId && x.OrganisationsenhetsId == orgunitId && x.SkyldigTom == null);
+            var unitReportObigation = DbContext.AdmEnhetsUppgiftsskyldighet.SingleOrDefault(x => x.UppgiftsskyldighetId == oblId && x.OrganisationsenhetsId == orgunitId && x.SkyldigTom == null || x.SkyldigTom > DateTime.Now);
             return unitReportObigation;
         }
 
@@ -1011,6 +1011,12 @@ namespace InrappSos.DataAccess
             return reg;
         }
 
+        public AdmDelregister GetSubDirectoryWithIncludes(int subdirId)
+        {
+            var subdir = DbContext.AdmDelregister.Where(x => x.Id == subdirId).Include(x => x.AdmUppgiftsskyldighet).Include(x => x.AdmForvantadleverans).SingleOrDefault();
+            return subdir;
+        }
+
         public IEnumerable<AdmDelregister> GetSubDirsObligatedForOrg(int orgId)
         {
             var uppgSkyldighetDelRegIds = DbContext.AdmUppgiftsskyldighet.Where(x => x.OrganisationId == orgId).Select(x => x.DelregisterId).ToList();
@@ -1027,7 +1033,7 @@ namespace InrappSos.DataAccess
 
         public IEnumerable<AdmDelregister> GetActiveSubDirsObligatedForOrg(int orgId)
         {
-            var uppgSkyldighetDelRegIds = DbContext.AdmUppgiftsskyldighet.Where(x => x.OrganisationId == orgId && x.SkyldigTom == null).Select(x => x.DelregisterId).ToList();
+            var uppgSkyldighetDelRegIds = DbContext.AdmUppgiftsskyldighet.Where(x => x.OrganisationId == orgId && x.SkyldigTom == null || x.SkyldigTom > DateTime.Now).Select(x => x.DelregisterId).ToList();
 
             var delregister = DbContext.AdmDelregister
                 .Include(z => z.AdmRegister)
@@ -1873,7 +1879,7 @@ namespace InrappSos.DataAccess
 
         public AdmUppgiftsskyldighet GetActiveUppgiftsskyldighetForOrganisationAndRegister(int orgId, int delregid)
         {
-            var uppgiftsskyldighet = DbContext.AdmUppgiftsskyldighet.SingleOrDefault(x => x.OrganisationId == orgId && x.DelregisterId == delregid && x.SkyldigTom == null);
+            var uppgiftsskyldighet = DbContext.AdmUppgiftsskyldighet.SingleOrDefault(x => x.OrganisationId == orgId && x.DelregisterId == delregid && x.SkyldigTom == null || x.SkyldigTom > DateTime.Now);
             return uppgiftsskyldighet;
         }
 
@@ -1905,7 +1911,7 @@ namespace InrappSos.DataAccess
 
         public IEnumerable<AdmEnhetsUppgiftsskyldighet> GetActiveUnitReportObligationForReportObligation(int uppgSkyldighetId)
         {
-            var unitReportObligations = DbContext.AdmEnhetsUppgiftsskyldighet.Where(x => x.UppgiftsskyldighetId == uppgSkyldighetId && x.SkyldigTom == null).ToList();
+            var unitReportObligations = DbContext.AdmEnhetsUppgiftsskyldighet.Where(x => x.UppgiftsskyldighetId == uppgSkyldighetId && x.SkyldigTom == null || x.SkyldigTom > DateTime.Now).ToList();
             return unitReportObligations;
         }
 

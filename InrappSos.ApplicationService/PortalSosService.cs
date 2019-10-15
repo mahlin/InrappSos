@@ -866,6 +866,30 @@ namespace InrappSos.ApplicationService
             return subDirectories;
         }
 
+        public IEnumerable<AdmDelregister> HamtaDelRegisterMedUndertabeller(List<RegisterInfo> delregList)
+        {
+            var subdirList = new List<AdmDelregister>();
+            foreach (var delreg in delregList)
+            {
+                var subDirectory = _portalSosRepository.GetSubDirectoryWithIncludes(delreg.Id);
+                subdirList.Add(subDirectory);
+            }
+            return subdirList;
+        }
+
+        public IEnumerable<AdmDelregister> HamtaAnvandarensDelregisterForRegister(int regId, List<AdmDelregister> delregList)
+        {
+            var subdirList = new List<AdmDelregister>();
+            foreach (var delreg in delregList)
+            {
+                if (delreg.RegisterId == regId)
+                {
+                    subdirList.Add(delreg);
+                }
+            }
+            return subdirList;
+        }
+
 
         public IEnumerable<AdmForeskrift> HamtaForeskrifterForRegister(int regId)
         {
@@ -1688,6 +1712,11 @@ namespace InrappSos.ApplicationService
 
             foreach (var leverans in leveransList)
             {
+                //TODO
+                if (leverans.Id == 37847)
+                {
+                    var x = 1;
+                }
                 var filloggDetalj = new FilloggDetaljDTO();
                 var aterkopplingskontakt = "";
                 //Kolla om återkopplingsfil finns för aktuell leverans
@@ -2127,7 +2156,6 @@ namespace InrappSos.ApplicationService
                         {
                             AddHistorikListItem(senasteLeverans, historikLista);
                         }
-
                     }
                 }
 
@@ -2285,7 +2313,7 @@ namespace InrappSos.ApplicationService
                 {
                     if (uppgiftsskyldighet.RapporterarPerEnhet && uppgiftsskyldighet.SkyldigFrom <= periodDate) //Rapporterar organisationen detta register per enhet?
                     {
-                        if (uppgiftsskyldighet.SkyldigTom == null)
+                        if (uppgiftsskyldighet.SkyldigTom == null || uppgiftsskyldighet.SkyldigTom > DateTime.Now)
                         {
                             var orgEnhetsList = _portalSosRepository
                                 .GetOrgUnitsByRepOblWithInPeriod(uppgiftsskyldighet.Id, leveransStatusObj.Period)
@@ -2293,22 +2321,24 @@ namespace InrappSos.ApplicationService
                             if (orgEnhetsList.Any()) //Kontrollera att alla användarens valda oganisationsenheter har levererat fil
                             {
                                 var anvValdaOrgenheterForDelreg = HamtaAnvandarensValdaEnheterForDelreg(userId, delregister.Id);
-                                var orgenheterAttKolla = new List<Organisationsenhet>();
-                                foreach (var orgenhet in orgEnhetsList)
+                                if (anvValdaOrgenheterForDelreg != null)
                                 {
-                                    var match = anvValdaOrgenheterForDelreg.Where(x => x.Id == orgenhet.Id).SingleOrDefault();
-                                    if (match != null)
+                                    var orgenheterAttKolla = new List<Organisationsenhet>();
+                                    foreach (var orgenhet in orgEnhetsList)
                                     {
-                                       orgenheterAttKolla.Add(match); 
+                                        var match = anvValdaOrgenheterForDelreg.Where(x => x.Id == orgenhet.Id).SingleOrDefault();
+                                        if (match != null)
+                                        {
+                                            orgenheterAttKolla.Add(match);
+                                        }
                                     }
-                                }
-
-                                foreach (var orgenhet in orgenheterAttKolla)
-                                {
-                                    var xList = leveransStatusObj.HistorikLista.Where(hist => hist.RegisterKortnamn == delregister.Kortnamn).ToList();
-                                    if (xList.All(x => x.Enhetskod != orgenhet.Enhetskod))
+                                    foreach (var orgenhet in orgenheterAttKolla)
                                     {
-                                        status = "error";
+                                        var xList = leveransStatusObj.HistorikLista.Where(hist => hist.RegisterKortnamn == delregister.Kortnamn).ToList();
+                                        if (xList.All(x => x.Enhetskod != orgenhet.Enhetskod))
+                                        {
+                                            status = "error";
+                                        }
                                     }
                                 }
                             }
@@ -2639,6 +2669,18 @@ namespace InrappSos.ApplicationService
             return allaRegisterList;
         }
 
+        public IEnumerable<AdmDelregister> HamtaAnvandarensValdaDelregister(string userId, int orgId)
+        {
+            var delregList = new List<AdmDelregister>();
+            var rollList = _portalSosRepository.GetChosenDelRegistersForUser(userId);
+            foreach (var roll in rollList)
+            {
+                var delreg = _portalSosRepository.GetSubDirectoryWithIncludes(roll.DelregisterId);
+                delregList.Add(delreg);
+            }
+            return delregList;
+        }
+
         public bool RapporterarPerEnhet(int delregId, int orgId)
         {
             var uppgskh = _portalSosRepository.GetActiveUppgiftsskyldighetForOrganisationAndRegister(orgId, delregId);
@@ -2742,6 +2784,27 @@ namespace InrappSos.ApplicationService
         public IEnumerable<Leverans> HamtaLeveransStatusRapporterForOrgDelregPerioder(int orgId, List<AdmDelregister> delregisterList, List<string> periodsForRegister)
         {
             
+            var delregIdList = new List<int>();
+            var levStatusRappList = new List<Leverans>();
+
+            foreach (var delreg in delregisterList)
+            {
+                delregIdList.Add(delreg.Id);
+            }
+
+            var forvlevIdList = _portalSosRepository.GetExpectedDeliveriesForSubdirsAndPeriods(delregIdList, periodsForRegister).Select(x => x.Id).ToList();
+
+            if (forvlevIdList.Count != 0)
+            {
+                levStatusRappList = _portalSosRepository.GetDeliveryStatusReport(orgId, delregIdList, forvlevIdList).ToList();
+            }
+
+            return levStatusRappList;
+        }
+
+        public IEnumerable<Leverans> HamtaLeveransStatusRapporterForOrgDelregPerioderUser(int orgId, List<AdmDelregister> delregisterList, List<string> periodsForRegister, string userId)
+        {
+
             var delregIdList = new List<int>();
             var levStatusRappList = new List<Leverans>();
 

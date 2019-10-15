@@ -92,9 +92,11 @@ namespace InrappSos.FilipWeb.Controllers
                 var userId = User.Identity.GetUserId();
                 var userOrg = _portalService.HamtaOrgForAnvandare(User.Identity.GetUserId());
                 model.OrganisationsNamn = userOrg.Organisationsnamn;
+                //Hämta register och delregister utifrån användarens val
                 IEnumerable<AdmRegister> admRegList = _portalService.HamtaRegisterForAnvandare(userId, userOrg.Id);
+                var delregForAnvandareList = _portalService.HamtaAnvandarensValdaDelregister(userId, userOrg.Id).ToList();
 
-                //hämta historik före resp register och period inom valt år
+                //hämta historik för resp register och period inom valt år
                 foreach (var register in admRegList)
                 {
                     var periodsForRegister = new List<string>();
@@ -103,7 +105,11 @@ namespace InrappSos.FilipWeb.Controllers
                         RegisterKortnamn = register.Kortnamn,
                         Leveranser = new List<LeveransStatusDTO>()
                     };
-                    var delregList = _portalService.HamtaDelRegisterMedUndertabellerForRegister(register.Id).ToList();
+                    //var delregList = _portalService.HamtaDelRegisterMedUndertabellerForRegister(register.Id).ToList();
+
+                    //var delregList = _portalService.HamtaDelRegisterMedUndertabeller(delregForAnvandareList).ToList();
+                    //var delregList = delregForAnvandareList.Where(x => x.RegisterId == register.Id).ToList();
+                    var delregList = _portalService.HamtaAnvandarensDelregisterForRegister(register.Id, delregForAnvandareList).ToList();
 
 
                     //För att hitta giltiga perioder för valt år måste vi ner på registrets delregister
@@ -150,7 +156,9 @@ namespace InrappSos.FilipWeb.Controllers
                             {
                                 leveransStatus.Status = _portalService.HamtaSammanlagdStatusForPeriod(leveransStatus.HistorikLista);
                                 //kan org rapportera per enhet för registrets delregister? => kontrollera att alla enheter rapporterat (#180)
-                                leveransStatus.Status = _portalService.KontrolleraOmKomplettaEnhetsleveranser(userOrg.Id, leveransStatus, delregList);
+                                //Änding 2019-10-15 - nu ska bara de av användaren valda enheterna för aktuellt delregister kontrolleras
+                                //leveransStatus.Status = _portalService.KontrolleraOmKomplettaEnhetsleveranser(userOrg.Id, leveransStatus, delregList);
+                                leveransStatus.Status = _portalService.KontrolleraOmKomplettaEnhetsleveranserForAnv(userOrg.Id,leveransStatus, delregList, userId);
 
                             }
                             else

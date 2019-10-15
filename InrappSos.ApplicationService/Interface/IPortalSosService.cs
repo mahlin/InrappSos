@@ -177,6 +177,9 @@ namespace InrappSos.ApplicationService.Interface
         IEnumerable<AdmDelregister> HamtaDelRegisterForRegister(int regId);
 
         IEnumerable<AdmDelregister> HamtaDelRegisterMedUndertabellerForRegister(int regId);
+        IEnumerable<AdmDelregister> HamtaDelRegisterMedUndertabeller(List<RegisterInfo> delregList);
+
+        IEnumerable<AdmDelregister> HamtaAnvandarensDelregisterForRegister(int regId, List<AdmDelregister> delregList);
 
         IEnumerable<AdmForeskrift> HamtaForeskrifterForRegister(int regId);
 
@@ -356,6 +359,7 @@ namespace InrappSos.ApplicationService.Interface
 
         IEnumerable<RegisterInfo> HamtaRegistersMedAnvandaresVal(string userId, int orgId);
 
+        IEnumerable<AdmDelregister> HamtaAnvandarensValdaDelregister(string userId, int orgId);
         IEnumerable<Organisationsenhet> HamtaDelregistersAktuellaEnheter(int delregId, int orgId);
 
         IEnumerable<Organisationsenhet> HamtaAnvandarensValdaEnheterForDelreg(string userId, int subdirId);
@@ -373,6 +377,8 @@ namespace InrappSos.ApplicationService.Interface
         string HamtaArendesEjRegistreradeKontaktpersoner(int orgId, int arendeId);
 
         IEnumerable<Leverans> HamtaLeveransStatusRapporterForOrgDelregPerioder( int orgId, List<AdmDelregister> delregisterList, List<string> periodsForRegister);
+
+        IEnumerable<Leverans> HamtaLeveransStatusRapporterForOrgDelregPerioderUser(int orgId, List<AdmDelregister> delregisterList, List<string> periodsForRegister, string userId);
 
         void InaktiveraKontaktperson(string userId);
 

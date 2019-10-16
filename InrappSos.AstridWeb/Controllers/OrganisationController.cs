@@ -1636,7 +1636,7 @@ namespace InrappSos.AstridWeb.Controllers
                     var userName = User.Identity.GetUserName();
                     var userOrg = _portalSosService.HamtaOrgForAnvandare(User.Identity.GetUserId());
                     var admEnhetsUppgSkyldighet = ConvertViewModelToAdmEnhetsUppgiftsskyldighet(enhetsUppgSk);
-                    admEnhetsUppgSkyldighet.UppgiftsskyldighetId = _portalSosService.HamtaUppgiftsskyldighetForOrgOchDelreg(Convert.ToInt32(enhetsUppgSk.SelectedOrganisationId),
+                    admEnhetsUppgSkyldighet.UppgiftsskyldighetId = _portalSosService.HamtaAktivUppgiftsskyldighetForOrganisationOchRegister(Convert.ToInt32(enhetsUppgSk.SelectedOrganisationId),
                             Convert.ToInt32(enhetsUppgSk.SelectedDelregisterId)).Id;
                     var enhetsId = _portalSosService.SkapaEnhetsUppgiftsskyldighet(admEnhetsUppgSkyldighet, userName);
                     _portalSosService.KopplaOrganisationsensKPTillEnheterna(userOrg.Id, enhetsId,enhetsUppgSk.SelectedDelregisterId, userName);

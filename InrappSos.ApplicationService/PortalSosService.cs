@@ -2200,11 +2200,11 @@ namespace InrappSos.ApplicationService
                 }
 
 
-                if (rad.Leveransstatus.Trim() == "Inget att rapportera" || rad.Leveransstatus == "Leveransen är godkänd")
+                if (rad.Leveransstatus == "Leveransen är godkänd")
                 {
                     ok = true;
                 }
-                else if (rad.Leveransstatus == "Leveransen är godkänd med varningar")
+                else if (rad.Leveransstatus.Trim() == "Inget att rapportera" || rad.Leveransstatus == "Leveransen är godkänd med varningar")
                 {
                     warning = true;
                 }

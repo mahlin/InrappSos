@@ -3070,7 +3070,7 @@ namespace InrappSos.ApplicationService
             UppdateraUppgiftsskyldighetForOrganisationer(uppgSkDTO, userName);
         }
 
-        public void SkapaEnhetsUppgiftsskyldighet(AdmEnhetsUppgiftsskyldighet enhetsUppgSk, string userName)
+        public int SkapaEnhetsUppgiftsskyldighet(AdmEnhetsUppgiftsskyldighet enhetsUppgSk, string userName)
         {
             //Sätt datum och användare
             enhetsUppgSk.SkapadDatum = DateTime.Now;
@@ -3078,6 +3078,34 @@ namespace InrappSos.ApplicationService
             enhetsUppgSk.AndradDatum = DateTime.Now;
             enhetsUppgSk.AndradAv = userName;
             _portalSosRepository.CreateUnitReportObligation(enhetsUppgSk);
+            return enhetsUppgSk.Id;
+        }
+
+        public void KopplaOrganisationsensKPTillEnheterna(int orgId, int orgUnitId, int subdirId, string userName)
+        {
+            var contacts = _portalSosRepository.GetContactPersonsForOrg(orgId);
+            foreach (var contact in contacts)
+            {
+                var rollList = _portalSosRepository.GetChosenDelRegistersForUser(contact.Id).ToList();
+                if (rollList.Any())
+                {
+                    foreach (var roll in rollList)
+                    {
+                        if (roll.DelregisterId == subdirId)
+                        {
+                            var rollOrgEnhet = new RollOrganisationsenhet
+                            {
+                                RollId = roll.Id,
+                                OrganisationsenhetsId = orgUnitId,
+                                SkapadDatum = DateTime.Now,
+                                SkapadAv = userName
+                        };
+                            _portalSosRepository.CreateRollOrganisationsenhet(rollOrgEnhet);
+                        }
+                    }
+                }
+            }
+
         }
 
         public void SkapaRegister(AdmRegister reg, string userName)

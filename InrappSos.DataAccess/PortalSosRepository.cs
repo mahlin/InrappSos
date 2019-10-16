@@ -2038,6 +2038,12 @@ namespace InrappSos.DataAccess
             DbContext.SaveChanges();
         }
 
+        public void CreateRollOrganisationsenhet(RollOrganisationsenhet rollOrgUnit)
+        {
+            DbContext.RollOrganisationsenhet.Add(rollOrgUnit);
+            DbContext.SaveChanges();
+        }
+
         public void CreateUnitReportObligation(AdmEnhetsUppgiftsskyldighet enhetsUppgSk)
         {
             DbContext.AdmEnhetsUppgiftsskyldighet.Add(enhetsUppgSk);

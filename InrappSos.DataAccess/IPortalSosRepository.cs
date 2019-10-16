@@ -431,6 +431,8 @@ namespace InrappSos.DataAccess
 
         void CreateReportObligationForOrgtype(AdmUppgiftsskyldighetOrganisationstyp uppgSk);
 
+        void CreateRollOrganisationsenhet(RollOrganisationsenhet rollOrgUnit);
+
         void CreateUnitReportObligation(AdmEnhetsUppgiftsskyldighet enhetsUppgSk);
 
         void CreateSubdirReportObligation(AdmUppgiftsskyldighetOrganisationstyp subdirOrgtype);

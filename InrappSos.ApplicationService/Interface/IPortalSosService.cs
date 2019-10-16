@@ -418,7 +418,9 @@ namespace InrappSos.ApplicationService.Interface
         void SkapaUppgiftsskyldighet(AdmUppgiftsskyldighet uppgSk, string userName);
         void SkapaUppgiftsskyldighetOrgtyp(AdmUppgiftsskyldighetOrganisationstyp uppgSk, string userName);
 
-        void SkapaEnhetsUppgiftsskyldighet(AdmEnhetsUppgiftsskyldighet enhetsUppgSk, string userName);
+        int SkapaEnhetsUppgiftsskyldighet(AdmEnhetsUppgiftsskyldighet enhetsUppgSk, string userName);
+
+        void KopplaOrganisationsensKPTillEnheterna(int orgId, int orgUnitId, int subdirId, string userName);
 
         void SkapaRegister(AdmRegister reg, string userName);
 

@@ -239,9 +239,20 @@
                                         grid.Column("SkyldigFrom", "Fr.o.m", format: @<text>
                                                                                          <span class="display-mode"><label id="lblSkyldigFrom">@( item.SkyldigFrom != null ? item.SkyldigFrom.ToString("yyyy-MM-dd") : item.SkyldigFrom)</label></span>
                                                                                          <input type="text" id="UnitRepSkyldigFrom" value="@( item.SkyldigFrom != null ? item.SkyldigFrom.ToString("yyyy-MM-dd") : item.SkyldigFrom)" class="edit-mode form-control"/></text>, style: "col2Width"),
-                                        grid.Column("SkyldigTom", "T.o.m", format: @<text>
-                                                                                       <span class="display-mode"><label id="lblSkyldigTom">@( item.SkyldigTom != null ? item.SkyldigTom.ToString("yyyy-MM-dd") : item.SkyldigTom)</label></span>
-                                                                                       <input type="text" id="UnitRepSkyldigTom" value="@( item.SkyldigTom != null ? item.SkyldigTom.ToString("yyyy-MM-dd") : item.SkyldigTom)" class="edit-mode form-control"/></text>, style: "col2Width"),
+
+                                        grid.Column("SkyldigTom", "T.o.m", format:
+                                            @<text>
+                                                @if (item.SkyldigTom != null)
+                                                {
+                                                    <span class="display-mode">@( item.SkyldigTom != null ? item.SkyldigTom.ToString("yyyy-MM-dd") : item.SkyldigTom)</span>
+                                                    <label id="lblSkyldigTom" class="edit-mode">@( item.SkyldigTom != null ? item.SkyldigTom.ToString("yyyy-MM-dd") : item.SkyldigTom)</label>
+                                                }
+                                                else
+                                                {
+                                                    <span class="display-mode"><label id="lblSkyldigTom">@( item.SkyldigTom != null ? item.SkyldigTom.ToString("yyyy-MM-dd") : item.SkyldigTom)</label></span>
+                                                    <input type="text" id="UnitRepSkyldigTom" value="@( item.SkyldigTom != null ? item.SkyldigTom.ToString("yyyy-MM-dd") : item.SkyldigTom)" class="edit-mode form-control" />                                        }
+                                             </text>,style: "col2Width"),
+
                                         grid.Column(null, format: @<text>
                                                                       <button class="edit-user display-mode btn btn-default">Ändra</button>
                                                                       <button class="save-user edit-mode btn btn-default">Spara</button>

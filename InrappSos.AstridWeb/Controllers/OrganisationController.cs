@@ -1634,12 +1634,12 @@ namespace InrappSos.AstridWeb.Controllers
                 try
                 {
                     var userName = User.Identity.GetUserName();
-                    var userOrg = _portalSosService.HamtaOrgForAnvandare(User.Identity.GetUserId());
+                    var userOrg = enhetsUppgSk.SelectedOrganisationId;
                     var admEnhetsUppgSkyldighet = ConvertViewModelToAdmEnhetsUppgiftsskyldighet(enhetsUppgSk);
                     admEnhetsUppgSkyldighet.UppgiftsskyldighetId = _portalSosService.HamtaAktivUppgiftsskyldighetForOrganisationOchRegister(Convert.ToInt32(enhetsUppgSk.SelectedOrganisationId),
                             Convert.ToInt32(enhetsUppgSk.SelectedDelregisterId)).Id;
                     var enhetsId = _portalSosService.SkapaEnhetsUppgiftsskyldighet(admEnhetsUppgSkyldighet, userName);
-                    _portalSosService.KopplaOrganisationsensKPTillEnheterna(userOrg.Id, enhetsId,enhetsUppgSk.SelectedDelregisterId, userName);
+                    _portalSosService.KopplaOrganisationsensKPTillEnheterna(enhetsUppgSk.SelectedOrganisationId, admEnhetsUppgSkyldighet.OrganisationsenhetsId,enhetsUppgSk.SelectedDelregisterId, userName);
                 }
                 catch (Exception e)
                 {

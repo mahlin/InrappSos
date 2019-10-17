@@ -102,6 +102,8 @@ namespace InrappSos.DataAccess
 
         Roll GetRollForUserAndSubdir(string userId, int subdirId);
 
+        RollOrganisationsenhet GetRollOrganisationsenhet(int rollId);
+
         int GetOrgUnitOrganisationId(int orgUnitId);
 
         int GetReportObligationOrganisationId(int repObligationId);

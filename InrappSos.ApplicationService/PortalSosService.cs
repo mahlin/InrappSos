@@ -8,6 +8,7 @@ using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
 using System.Configuration;
+using System.Data.Entity;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.Remoting.Messaging;
@@ -3091,16 +3092,20 @@ namespace InrappSos.ApplicationService
                 {
                     foreach (var roll in rollList)
                     {
-                        if (roll.DelregisterId == subdirId)
+                       if (roll.DelregisterId == subdirId)
                         {
-                            var rollOrgEnhet = new RollOrganisationsenhet
+                            var exists = _portalSosRepository.GetRollOrganisationsenhet(roll.Id);
+                            if (exists == null)
                             {
-                                RollId = roll.Id,
-                                OrganisationsenhetsId = orgUnitId,
-                                SkapadDatum = DateTime.Now,
-                                SkapadAv = userName
-                        };
-                            _portalSosRepository.CreateRollOrganisationsenhet(rollOrgEnhet);
+                                var rollOrgEnhet = new RollOrganisationsenhet
+                                {
+                                    RollId = roll.Id,
+                                    OrganisationsenhetsId = orgUnitId,
+                                    SkapadDatum = DateTime.Now,
+                                    SkapadAv = userName
+                                };
+                                _portalSosRepository.CreateRollOrganisationsenhet(rollOrgEnhet);
+                            }
                         }
                     }
                 }

@@ -192,6 +192,7 @@ $(document).on('change','#ddlRegister',
                         if (register.Organisationsenheter.length === 1) {
                             var infoEnhet = "<b>Du rapporterar för organisationsenhet " + register.Organisationsenheter[0].Value + ".</b><br>"; 
                             $('#singelenhetsInfo').html(infoEnhet);
+                            validFileCode = register.Orgenheter[0].Value;
                             $('.fileinput-button').show();
                             $('#fileinputButton').prop('disabled', false);
                             $('#fileinputButton').removeClass('disabled');

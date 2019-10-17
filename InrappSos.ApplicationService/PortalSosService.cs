@@ -2080,7 +2080,7 @@ namespace InrappSos.ApplicationService
 
                 var senasteLeverans = new Leverans();
                 //kan org rapportera per enhet för aktuellt delregister och period? => hämta senaste leverans per enhet
-                var uppgiftsskyldighet = delregister.AdmUppgiftsskyldighet.SingleOrDefault(x => x.OrganisationId == orgId);
+                var uppgiftsskyldighet = delregister.AdmUppgiftsskyldighet.SingleOrDefault(x => x.OrganisationId == orgId && x.SkyldigTom == null || x.SkyldigTom > DateTime.Now);
                 if (uppgiftsskyldighet != null)
                 {
                     if (uppgiftsskyldighet.RapporterarPerEnhet)
@@ -2131,7 +2131,7 @@ namespace InrappSos.ApplicationService
 
                 var senasteLeverans = new Leverans();
                 //kan org rapportera per enhet för aktuellt delregister och period? => hämta senaste leverans per enhet
-                var uppgiftsskyldighet = delregister.AdmUppgiftsskyldighet.SingleOrDefault(x => x.OrganisationId == orgId);
+                var uppgiftsskyldighet = delregister.AdmUppgiftsskyldighet.SingleOrDefault(x => x.OrganisationId == orgId && x.SkyldigTom == null || x.SkyldigTom > DateTime.Now);
                 if (uppgiftsskyldighet != null)
                 {
                     if (uppgiftsskyldighet.RapporterarPerEnhet)

@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErrorLogNotifier", "ErrorLo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateUser", "CreateUser\CreateUser.csproj", "{DF270ECE-E693-4301-ABAF-C60AACAA19F7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InitializeRollOrganisationsenhet", "InitializeRollOrganisationsenhet\InitializeRollOrganisationsenhet.csproj", "{9DE914DD-4CBF-44A3-8D21-F799FE4D3F10}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{DF270ECE-E693-4301-ABAF-C60AACAA19F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF270ECE-E693-4301-ABAF-C60AACAA19F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DF270ECE-E693-4301-ABAF-C60AACAA19F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DE914DD-4CBF-44A3-8D21-F799FE4D3F10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DE914DD-4CBF-44A3-8D21-F799FE4D3F10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DE914DD-4CBF-44A3-8D21-F799FE4D3F10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DE914DD-4CBF-44A3-8D21-F799FE4D3F10}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

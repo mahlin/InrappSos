@@ -235,6 +235,12 @@ namespace InrappSos.ApplicationService
             return user;
         }
 
+        public string HamtaAnvandarId(ApplicationUser user)
+        {
+            var userId = user.Id;
+            return userId;
+        }
+
         public string HamtaAnvandaresKontaktnummer(string userId)
         {
             var contactNumber = _portalSosRepository.GetUserContactNumber(userId);
@@ -573,6 +579,12 @@ namespace InrappSos.ApplicationService
         {
             var enhetsuppgiftsskyldighet = _portalSosRepository.GetActiveUnitReportObligationForReportObligationAndOrg(uppgskhId, orgenhetId);
             return enhetsuppgiftsskyldighet;
+        }
+
+        public IEnumerable<AdmEnhetsUppgiftsskyldighet> HamtaAktivEnhetsUppgiftsskyldighetForUppgiftsskyldighet(int uppgskhId)
+        {
+            var enhetsuppgskhList = _portalSosRepository.GetActiveUnitReportObligationForReportObligation(uppgskhId);
+            return enhetsuppgskhList;
         }
 
         public Organisation HamtaOrgForAnvandare(string userId)
@@ -2567,6 +2579,12 @@ namespace InrappSos.ApplicationService
             return userRegisterList;
         }
 
+        public List<Roll> HamtaValdaDelregisterRollForAnvandare(string userId)
+        {
+            var rollList = _portalSosRepository.GetChosenDelRegistersForUser(userId).ToList();
+            return rollList;
+        }
+
         public List<RegisterInfo> HamtaValdaDelregisterOchOrgenheterForAnvandare(string userId, int orgId)
         {
             var registerList = _portalSosRepository.GetChosenDelRegistersForUser(userId).ToList();
@@ -3835,6 +3853,11 @@ namespace InrappSos.ApplicationService
         public void SparaValdaRegistersForAnvandare(string userId, string userName, List<RegisterInfo> regIdList)
         {
             _portalSosRepository.SaveChosenRegistersForUser(userId, userName, regIdList);
+        }
+
+        public void SparaRollOrganisationsenhet(RollOrganisationsenhet rollOrgenhet)
+        {
+            _portalSosRepository.CreateRollOrganisationsenhet(rollOrgenhet);
         }
 
         public void SaveToLoginLog(string userid, string userName)

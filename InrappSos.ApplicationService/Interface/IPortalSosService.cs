@@ -50,6 +50,8 @@ namespace InrappSos.ApplicationService.Interface
 
         ApplicationUser HamtaAnvandareMedEpost(string epost);
 
+        string HamtaAnvandarId(ApplicationUser user);
+
         string HamtaAnvandaresKontaktnummer(string userId);
 
         IEnumerable<Arende> HamtaAnvandaresArenden(string userId);
@@ -132,6 +134,8 @@ namespace InrappSos.ApplicationService.Interface
         AdmEnhetsUppgiftsskyldighet HamtaEnhetsUppgiftsskyldighetForUppgiftsskyldighetOchOrgEnhet(int uppgskhId, int orgenhetId);
 
         AdmEnhetsUppgiftsskyldighet HamtaAktivEnhetsUppgiftsskyldighetForUppgiftsskyldighetOchOrgEnhet(int uppgskhId, int orgenhetId);
+
+        IEnumerable<AdmEnhetsUppgiftsskyldighet> HamtaAktivEnhetsUppgiftsskyldighetForUppgiftsskyldighet(int uppgskhId);
 
         IEnumerable<AdmFAQKategori> HamtaFAQkategorier();
 
@@ -351,6 +355,8 @@ namespace InrappSos.ApplicationService.Interface
 
         List<RegisterInfo> HamtaValdaDelregisterForAnvandare(string userId, int orgId);
 
+        List<Roll> HamtaValdaDelregisterRollForAnvandare(string userId);
+
         List<RegisterInfo> HamtaValdaDelregisterOchOrgenheterForAnvandare(string userId, int orgId);
 
         AdmDelregister HamtaValtDelRegisterMedFilnamnsstart(string filnamnsStart);
@@ -509,6 +515,8 @@ namespace InrappSos.ApplicationService.Interface
         void SparaOppettider(OpeningHoursInfoDTO oppetTider, string userName);
         void SparaTillDatabasFillogg(string userName, string ursprungligtFilNamn, string nyttFilNamn, int leveransId, int sequenceNumber);
         void SparaValdaRegistersForAnvandare(string userId, string userName, List<RegisterInfo> registerList);
+
+        void SparaRollOrganisationsenhet(RollOrganisationsenhet rollOrgenhet);
         void SaveToLoginLog(string userid, string userName);
 
         void TaBortFAQKategori(int faqKategoriId);

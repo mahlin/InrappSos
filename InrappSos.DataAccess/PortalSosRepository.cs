@@ -402,10 +402,16 @@ namespace InrappSos.DataAccess
             return roll;
         }
 
-        public RollOrganisationsenhet GetRollOrganisationsenhet(int rollId)
+        public IEnumerable<RollOrganisationsenhet> GetRollOrganisationsenhet(int rollId)
         {
-            var rollOrgEnhet = DbContext.RollOrganisationsenhet.SingleOrDefault(x => x.RollId == rollId);
+            var rollOrgEnhet = DbContext.RollOrganisationsenhet.Where(x => x.RollId == rollId).ToList();
             return rollOrgEnhet;
+        }
+
+        public RollOrganisationsenhet GetRollOrganisationsenhetForRollAndOrgUnit(int rollId, int orgUnitId)
+        {
+            var rollOrgenhet = DbContext.RollOrganisationsenhet.SingleOrDefault(x => x.RollId == rollId && x.OrganisationsenhetsId == orgUnitId);
+            return rollOrgenhet;
         }
 
         public int GetOrgUnitOrganisationId(int orgUnitId)

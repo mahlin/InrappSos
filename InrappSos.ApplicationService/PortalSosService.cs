@@ -2637,6 +2637,12 @@ namespace InrappSos.ApplicationService
             return sftpKontoRegisterList;
         }
 
+        public RollOrganisationsenhet HamtaRollOrgenhet(int rollId, int orgUnitId)
+        {
+            var rollOrgenhet = _portalSosRepository.GetRollOrganisationsenhetForRollAndOrgUnit(rollId, orgUnitId);
+            return rollOrgenhet;
+        }
+
         public IEnumerable<RegisterInfo> HamtaRegistersMedAnvandaresVal(string userId, int orgId)
         {
             var registerList = _portalSosRepository.GetChosenDelRegistersForUser(userId);
@@ -3112,7 +3118,7 @@ namespace InrappSos.ApplicationService
                     {
                        if (roll.DelregisterId == subdirId)
                         {
-                            var exists = _portalSosRepository.GetRollOrganisationsenhet(roll.Id);
+                            var exists = _portalSosRepository.GetRollOrganisationsenhetForRollAndOrgUnit(roll.Id, orgUnitId);
                             if (exists == null)
                             {
                                 var rollOrgEnhet = new RollOrganisationsenhet

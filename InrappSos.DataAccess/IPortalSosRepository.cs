@@ -102,7 +102,9 @@ namespace InrappSos.DataAccess
 
         Roll GetRollForUserAndSubdir(string userId, int subdirId);
 
-        RollOrganisationsenhet GetRollOrganisationsenhet(int rollId);
+        IEnumerable<RollOrganisationsenhet> GetRollOrganisationsenhet(int rollId);
+
+        RollOrganisationsenhet GetRollOrganisationsenhetForRollAndOrgUnit(int rollId, int orgUnitId);
 
         int GetOrgUnitOrganisationId(int orgUnitId);
 

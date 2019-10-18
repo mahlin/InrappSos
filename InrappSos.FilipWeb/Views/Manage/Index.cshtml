@@ -143,10 +143,9 @@
                             if (Model.RegisterList[i].RapporterarPerEnhet)
                             {
                                 var valdaOrgenheter = 0;
+                                @Html.Raw(" - <b>Valda enheter:</b> ");
                                 if (Model.RegisterList[i].OrgInfo.Count > 0)
                                 {
-                                    @Html.Raw(" - <b>Valda enheter:</b> ");
-
                                     for (int idx = 0; idx < Model.RegisterList[i].OrgInfo.Count; idx++)
                                     {
                                         if (Model.RegisterList[i].OrgInfo[idx].Selected)
@@ -161,9 +160,9 @@
                                     }
                                 }
                                 @*if (valdaOrgenheter > 0)
-                                {
-                                    @Html.Raw(", ")
-                                }*@
+                    {
+                        @Html.Raw(", ")
+                    }*@
                                 if (valdaOrgenheter == 0)
                                 {
                                     @Html.Raw("Inga ")

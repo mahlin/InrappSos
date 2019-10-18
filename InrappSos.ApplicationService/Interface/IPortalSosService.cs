@@ -363,6 +363,8 @@ namespace InrappSos.ApplicationService.Interface
   
         List<RegisterInfo> HamtaRelevantaDelregisterForSFTPKonto(SFTPkonto sftpKonto);
 
+        RollOrganisationsenhet HamtaRollOrgenhet(int rollId, int orgUnitId);
+
         IEnumerable<RegisterInfo> HamtaRegistersMedAnvandaresVal(string userId, int orgId);
 
         IEnumerable<AdmDelregister> HamtaAnvandarensValdaDelregister(string userId, int orgId);

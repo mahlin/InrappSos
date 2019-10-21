@@ -2267,7 +2267,8 @@ namespace InrappSos.ApplicationService
 
             foreach (var delregister in delregisterList)
             {
-                var uppgiftsskyldighet = delregister.AdmUppgiftsskyldighet.SingleOrDefault(x => x.OrganisationId == orgId);
+                //var uppgiftsskyldighet = delregister.AdmUppgiftsskyldighet.SingleOrDefault(x => x.OrganisationId == orgId);
+                var uppgiftsskyldighet = delregister.AdmUppgiftsskyldighet.Where(x => x.OrganisationId == orgId && x.SkyldigTom == null || x.SkyldigTom > DateTime.Now).SingleOrDefault();
                 if (uppgiftsskyldighet != null)
                 {
                     if (uppgiftsskyldighet.RapporterarPerEnhet && uppgiftsskyldighet.SkyldigFrom <= periodDate) //Rapporterar organisationen detta register per enhet?

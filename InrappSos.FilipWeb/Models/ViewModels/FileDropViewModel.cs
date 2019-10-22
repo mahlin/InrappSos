@@ -20,6 +20,7 @@ namespace InrappSos.FilipWeb.Models.ViewModels
         public string SelectedCaseNumber { get; set; }
         public List<FildroppDetaljDTO> HistorikLista { get; set; }
         public string StartUrl { get; set; }
+        public List<string> AcceptedFileTypes { get; set; }
 
     }
 }

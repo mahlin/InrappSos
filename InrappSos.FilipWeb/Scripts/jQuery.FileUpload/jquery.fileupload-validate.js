@@ -341,11 +341,11 @@ function getTableRows() {
                 } else if ($.type(fileSize) === 'number' && !acceptEmptyFile && fileSize < options.minFileSize) {
                     file.error = settings.i18n('minFileSize');
                 }
-                if (!file.error && file.custom !== "Arende") {
+                if (!file.error) {
                     var filetype = file.name.split('.').pop();
                     if (!AcceptedFileType(filetype)) {
                         file.error = settings.i18n('acceptFileTypes');
-                    } else {
+                    } else if (file.custom !== "Arende") {
                         //Regexp-kontroller
                         var currRegister = file.name.substring(0, 3);
                         var selectedOrgUnitId = $('#SelectedUnitId').val();

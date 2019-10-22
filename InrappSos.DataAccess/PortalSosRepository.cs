@@ -3061,6 +3061,11 @@ namespace InrappSos.DataAccess
                         };
                         forvantadeFiler.Add(forvFil);
                         regFilkrav.InfoText = regFilkrav.InfoText + "<br> Filformat: " + forvFil.Filmask;
+                       
+                        if (forvantadeFiler.Count > 1 && !forvFil.Obligatorisk)
+                        {
+                            regFilkrav.InfoText = regFilkrav.InfoText + " (ej obligatorisk)";
+                        }
                     }
                 }
                 //regFilkrav.AntalFiler = forvantadeFilerDb.Count;
@@ -3072,6 +3077,11 @@ namespace InrappSos.DataAccess
                 //get period och forvantadleveransId
                 GetPeriodsForAktuellLeverans(filkrav, regFilkrav);
                 regFilkrav.InfoText = regFilkrav.InfoText + "<br> Antal filer: " + regFilkrav.AntalFiler;
+                
+                if (regFilkrav.AntalFiler > 1 && antObligatoriskaFiler < regFilkrav.AntalFiler)
+                {
+                    regFilkrav.InfoText = regFilkrav.InfoText + " (varav " + antObligatoriskaFiler + " obligatoriska)";
+                }
                 regFilkrav.Id = i;
 
                 //Om inga aktuella perioder finns för filkravet ska det inte läggas med i RegInfo

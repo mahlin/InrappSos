@@ -148,7 +148,7 @@ $(document).on('change','#ddlRegister',
                     validFileCode = $("#GiltigInrapporteringsKod").val();
                 var info = "";
                 if (register.Filkrav.length === 0) {
-                    info = "<b>Det finns ingen pågående insamling av de valda uppgifterna.</b><br>" + register.InfoText ;
+                    info = "<b>Det finns ingen pågående insamling av de valda uppgifterna.</b><br>" + register.InfoText;
                     $('#registerInfo').html(info); 
                     $('.fileinput-button').hide();
                     $('.start').hide();
@@ -168,9 +168,7 @@ $(document).on('change','#ddlRegister',
                 } else {
                     $('.fileinput-button').show();
                     $('#parallellaForeskrifter').hide();
-                    if (register.Kortnamn === 'LVM' || register.Kortnamn === 'OJ2') {
-                        info = register.InfoText + register.Filkrav[0].InfoText;
-                    }
+                    info = register.InfoText + "<br>" + register.Filkrav[0].InfoText;
                     register.SelectedFilkrav = register.Filkrav[0].Id;
                     $('#registerInfo').html(info);
 

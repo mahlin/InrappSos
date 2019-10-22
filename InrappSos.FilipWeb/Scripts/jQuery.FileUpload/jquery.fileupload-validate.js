@@ -184,8 +184,8 @@ function DoubletFiles(selectedRegister, fileName) {
 function AcceptedFileType(filetype) {
     result = false;
     var tmp = acceptedFileTypes;
-    acceptedFileTypes.forEach(function(acceptedFiletype, index) {
-        if (acceptedFiletype === filetype) {
+    acceptedFileTypes.forEach(function (acceptedFiletype, index) {
+        if (acceptedFiletype.toUpperCase() === filetype.toUpperCase()) {
             result = true;
         }
     });

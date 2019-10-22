@@ -113,7 +113,6 @@ namespace InrappSos.AstridWeb.Models.ViewModels
             public int? InsamlingsfrekvensId { get; set; }
             public SelectList InsamlingsfrekvensDDL { get; set; }
             public string Insamlingsfrekvens { get; set; }
-            [Required(ErrorMessage = "Fältet ForeskriftsId är obligatoriskt.")]
             public int? ForeskriftsId { get; set; }
             public string Namn { get; set; }
             public int? Uppgiftsstartdag { get; set; }

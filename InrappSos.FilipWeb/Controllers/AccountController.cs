@@ -378,7 +378,7 @@ namespace InrappSos.FilipWeb.Controllers
                             var orgId = _portalService.HamtaArendeById(preKontakt.ArendeId).OrganisationsId;
                             //check if user already registred
                             user = UserManager.FindByEmail(model.Email);
-                            if (user.SkapadAv == null)
+                            if (user == null)
                             {
                                 await RegisterUser(orgId, model);
                                 user = UserManager.FindByEmail(model.Email);

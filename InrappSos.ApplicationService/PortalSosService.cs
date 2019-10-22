@@ -2724,7 +2724,7 @@ namespace InrappSos.ApplicationService
             {
                 if (uppgskh.RapporterarPerEnhet)
                 {
-                    orgUnitsList = _portalSosRepository.GetOrgUnitsByRepOblId(uppgskh.Id).ToList();
+                    orgUnitsList = _portalSosRepository.GetActiveOrgUnitsByRepOblId(uppgskh.Id).ToList();
                 }
             }
             return orgUnitsList;

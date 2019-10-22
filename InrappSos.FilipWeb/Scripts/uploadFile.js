@@ -170,8 +170,6 @@ $(document).on('change','#ddlRegister',
                     $('#parallellaForeskrifter').hide();
                     if (register.Kortnamn === 'LVM' || register.Kortnamn === 'OJ2') {
                         info = register.InfoText + register.Filkrav[0].InfoText;
-                    } else {
-                        info = "<span style='color:red'>Notera att våra kontrollprogram inte accepterar <b>rubrikrad</b> i filerna. Kontrollera att dina filer inte innehåller rubrikrad innan uppladdning.</span><br>" + register.InfoText + register.Filkrav[0].InfoText;
                     }
                     register.SelectedFilkrav = register.Filkrav[0].Id;
                     $('#registerInfo').html(info);
@@ -199,6 +197,9 @@ $(document).on('change','#ddlRegister',
                             $('#fileinputButton').removeClass('disabled');
                             $('#filesExplorerOpener').prop('disabled', false);
                             $('#filesExplorerOpener').removeClass('disabled');
+                            if ($('#ddlPerioder').length > 0 && !obligatoryRegister) {
+                                $('#ingetAttRapportera').show();
+                            }
                         } else {
                             //Populate unit-dropdown
                             var vals = {};
@@ -222,8 +223,8 @@ $(document).on('change','#ddlRegister',
                             $('#fileinputButton').parent().addClass('disabled');
                             $('#fileinputButton').prop('readonly', true);
                             $('#fileinputButton').addClass('readonly');
+                            $('#ingetAttRapportera').hide();
                         }
-                        $('#ingetAttRapportera').hide();
                         //$('.fileinput-button')
                         //    .prop('disabled', true)
                         //    .parent().addClass('disabled');

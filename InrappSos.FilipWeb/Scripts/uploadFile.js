@@ -190,6 +190,8 @@ $(document).on('change','#ddlRegister',
                             $('#singelenhetsInfo').html(infoEnhet);
                             validFileCode = register.Orgenheter[0].Value;
                             $("#SelectedUnitId").val(register.Organisationsenheter[0].Key);
+                            //$("#IngetAttRapporteraForSelectedUnitId").val($('#ddlUnits').val());
+                            $("#IngetAttRapporteraForSelectedUnitId").val(register.Organisationsenheter[0].Key);
                             $('.fileinput-button').show();
                             $('#fileinputButton').prop('disabled', false);
                             $('#fileinputButton').removeClass('disabled');
